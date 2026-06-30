@@ -80,14 +80,6 @@ Data Flow:
 - Reviews/refunds (review/refund service)
 - Admin/seller dashboards (data aggregation, analytics)
 
-Validation Report:
-- Completeness: All must/should/nice-to-have features mapped to entities and services.
-- Clarity: Explicit entities, roles, service boundaries, integration, and compliance.
-- Compliance: PCI DSS, encryption, RBAC, audit logging, privacy, data retention, accessibility.
-- Error Handling: Circuit breakers, retries, audit logs, graceful failure (e.g., payment).
-- Scalability: Microservices, 100,000 concurrent users, 99.9% uptime.
-- Accessibility: WCAG 2.1 AA.
-- All acceptance highlights addressed.
 
 Architecture Diagram: (Description)
 - Clients → API Gateway → Microservices (User, Catalog, Cart, Order, Payment, Notification, Review/Refund, Dashboard, Audit Logging) → Database Layer → External Integrations (Payment, Notification).
