@@ -1,241 +1,108 @@
-# High-Level Design and Domain Model: Online Shopping Platform
+Domain Model (UML/ERD):
+Entities:
+- User (attributes: userId, name, email, passwordHash, role, registrationDate)
+- Seller (attributes: sellerId, userId, businessName, contactInfo, status)
+- Product (attributes: productId, sellerId, name, description, price, inventoryCount, category, images)
+- Catalog (attributes: catalogId, products)
+- Cart (attributes: cartId, userId, items, createdAt, updatedAt)
+- CartItem (attributes: cartItemId, cartId, productId, quantity)
+- Order (attributes: orderId, userId, cartId, status, paymentMethod, paymentStatus, orderDate, shippingAddress)
+- Payment (attributes: paymentId, orderId, method, amount, status, transactionRef)
+- Review (attributes: reviewId, productId, userId, rating, comment, createdAt)
+- Notification (attributes: notificationId, userId, type, content, sentAt)
+- Refund (attributes: refundId, orderId, amount, status, requestedAt, processedAt)
+- Dashboard (attributes: dashboardId, userId, role, widgets, lastAccessed)
+- Role (attributes: roleId, name, permissions)
+Relationships:
+- User ↔ Role (many-to-one, RBAC)
+- User ↔ Seller (one-to-one)
+- Seller ↔ Product (one-to-many)
+- Product ↔ Review (one-to-many)
+- User ↔ Cart (one-to-one)
+- Cart ↔ CartItem (one-to-many)
+- CartItem ↔ Product (many-to-one)
+- User ↔ Order (one-to-many)
+- Order ↔ Payment (one-to-one)
+- Order ↔ Refund (one-to-one)
+- User ↔ Notification (one-to-many)
+- User ↔ Dashboard (one-to-one)
 
+High-Level Design (HLD):
+Architecture Overview:
+- Modular microservices architecture: Auth Service, Catalog Service, Cart Service, Order Service, Payment Service, Notification Service, Review Service, Dashboard Service.
+- API Gateway for routing, security, and monitoring.
+- Frontend: Responsive SPA (React/Angular) with accessibility features.
+- Backend: RESTful APIs, stateless services, scalable containers (Kubernetes).
+- Database: Relational (PostgreSQL) for core entities, NoSQL (Redis) for session/cache.
+- Integration: Payment Gateway (PCI DSS), Email/SMS notifications, external fraud detection.
+Component Descriptions:
+- Authentication: Registration, login, RBAC (Role-Based Access Control).
+- Catalog: Product listing, search/filter, seller management.
+- Cart: Item management, persistence, checkout orchestration.
+- Order: Order lifecycle, tracking, refunds.
+- Payment: Secure checkout, multiple payment methods, PCI DSS compliance.
+- Review: Ratings/comments, moderation.
+- Notification: Real-time, batch alerts.
+- Dashboard: Role-specific analytics/views.
+Integration Points:
+- Payment Gateway (Stripe/PayPal), Email/SMS APIs, Fraud Detection Service.
+Security/Compliance Features:
+- Input validation, output filtering, encrypted data flows (AES-256, TLS 1.3).
+- RBAC/ABAC for access control, audit logging, secrets management (Vault/KMS).
+- PCI DSS compliance for payments.
+- Data retention policies, consent management, data lineage tracking, compliance reporting.
+- Accessibility: WCAG 2.1 AA compliance.
+Data Flow:
+- User registers/logs in → receives role → accesses catalog → adds items to cart → initiates checkout → payment processed → order created/tracked → notifications sent → reviews/refunds managed.
+
+Validation Report:
+- Requirements Coverage: Registration, authentication, profile updates, role-based access, product catalog, search/filter, cart, checkout, order tracking, dashboards, notifications, reviews, refunds, performance, scalability, accessibility.
+- Compliance: PCI DSS (payments), GDPR (privacy/consent), WCAG 2.1 AA (accessibility), audit logging, data retention, consent management.
+- Error Handling: Graceful payment failure, retries, logging, circuit breaker patterns for external integrations, fraud detection, accessibility compliance.
+- Clarity/Completeness: All core and should-have features mapped; nice-to-have items (recommendations, wishlist, logistics) noted for future scope.
+
+Architecture Diagram:
+[HLD/appName_HLD.md]
 ---
+# Online Shopping Platform High-Level Design
 
-## Domain Model (ERD/UML)
+## Architecture Overview
+- Microservices: Auth, Catalog, Cart, Order, Payment, Notification, Review, Dashboard
+- API Gateway
+- SPA Frontend (React/Angular), Backend (REST APIs, Kubernetes)
+- PostgreSQL (core), Redis (cache/session)
+- Payment gateway, Email/SMS, Fraud detection integrations
 
-**Entities & Attributes:**
+## Major Components
+- Authentication (RBAC)
+- Product Catalog/Search
+- Cart/Checkout
+- Order/Tracking/Refunds
+- Reviews
+- Notifications
+- Dashboards
 
-- **User** (UserID, Email, PasswordHash, Role, RegistrationDate, Status)
-- **Profile** (ProfileID, UserID, Name, Address, Phone, Preferences)
-- **Product** (ProductID, SellerID, Name, Description, Price, StockQty, Category, Status)
-- **Seller** (SellerID, UserID, BusinessName, VerificationStatus, Rating)
-- **Cart** (CartID, UserID, CreatedAt, UpdatedAt)
-- **CartItem** (CartItemID, CartID, ProductID, Quantity)
-- **Order** (OrderID, UserID, TotalAmount, Status, CreatedAt, PaymentID, RefundID)
-- **OrderItem** (OrderItemID, OrderID, ProductID, Quantity, Price)
-- **Payment** (PaymentID, OrderID, Amount, Status, PaymentMethod, TransactionDate)
-- **Refund** (RefundID, OrderID, Amount, Status, RequestedAt, ProcessedAt)
-- **Review** (ReviewID, ProductID, UserID, Rating, Comment, CreatedAt)
-- **Notification** (NotificationID, UserID, Type, Message, Status, CreatedAt)
+## Integration Points
+- Stripe/PayPal
+- Email/SMS APIs
+- Fraud detection
 
-**Relationships:**
-- User 1--* Profile
-- User 1--* Cart
-- Cart 1--* CartItem
-- User 1--* Order
-- Order 1--* OrderItem
-- Product 1--* OrderItem
-- Seller 1--* Product
-- Product 1--* Review
-- User 1--* Review
-- Order 1--1 Payment
-- Order 1--0..1 Refund
-- User 1--* Notification
+## Security & Compliance
+- AES-256/TLS 1.3
+- PCI DSS, GDPR, WCAG 2.1 AA
+- RBAC/ABAC, audit logging, Vault/KMS
+- Data retention, consent, lineage, compliance reporting
 
----
-
-### UML Class Diagram (Text Representation)
-
-```uml
-@startuml
-class User {
-  UserID: UUID
-  Email: string
-  PasswordHash: string
-  Role: enum
-  RegistrationDate: datetime
-  Status: enum
-}
-class Profile {
-  ProfileID: UUID
-  UserID: UUID
-  Name: string
-  Address: string
-  Phone: string
-  Preferences: json
-}
-class Seller {
-  SellerID: UUID
-  UserID: UUID
-  BusinessName: string
-  VerificationStatus: enum
-  Rating: float
-}
-class Product {
-  ProductID: UUID
-  SellerID: UUID
-  Name: string
-  Description: string
-  Price: decimal
-  StockQty: int
-  Category: string
-  Status: enum
-}
-class Cart {
-  CartID: UUID
-  UserID: UUID
-  CreatedAt: datetime
-  UpdatedAt: datetime
-}
-class CartItem {
-  CartItemID: UUID
-  CartID: UUID
-  ProductID: UUID
-  Quantity: int
-}
-class Order {
-  OrderID: UUID
-  UserID: UUID
-  TotalAmount: decimal
-  Status: enum
-  CreatedAt: datetime
-  PaymentID: UUID
-  RefundID: UUID
-}
-class OrderItem {
-  OrderItemID: UUID
-  OrderID: UUID
-  ProductID: UUID
-  Quantity: int
-  Price: decimal
-}
-class Payment {
-  PaymentID: UUID
-  OrderID: UUID
-  Amount: decimal
-  Status: enum
-  PaymentMethod: string
-  TransactionDate: datetime
-}
-class Refund {
-  RefundID: UUID
-  OrderID: UUID
-  Amount: decimal
-  Status: enum
-  RequestedAt: datetime
-  ProcessedAt: datetime
-}
-class Review {
-  ReviewID: UUID
-  ProductID: UUID
-  UserID: UUID
-  Rating: int
-  Comment: string
-  CreatedAt: datetime
-}
-class Notification {
-  NotificationID: UUID
-  UserID: UUID
-  Type: enum
-  Message: string
-  Status: enum
-  CreatedAt: datetime
-}
-User "1" -- "*" Profile
-User "1" -- "*" Cart
-Cart "1" -- "*" CartItem
-User "1" -- "*" Order
-Order "1" -- "*" OrderItem
-Product "1" -- "*" OrderItem
-Seller "1" -- "*" Product
-Product "1" -- "*" Review
-User "1" -- "*" Review
-Order "1" -- "1" Payment
-Order "1" -- "0..1" Refund
-User "1" -- "*" Notification
-@enduml
-```
-
----
-
-## High-Level Design (HLD)
-
-### Architecture Overview
-- **Frontend:** SPA (React/Angular/Vue) with WCAG 2.1 AA accessibility compliance.
-- **Backend:** RESTful API (Node.js/Python/Java/Spring Boot)
-- **Database:** PostgreSQL (RDBMS), Redis (caching/session)
-- **Authentication:** OAuth2.0/JWT, RBAC/ABAC
-- **Payment Gateway:** PCI DSS-compliant integration
-- **Notification Service:** Email/SMS/Push
-- **Admin/Seller Dashboards:** Role-based portals
-- **Cloud Infrastructure:** AWS/Azure/GCP
-- **CI/CD:** Automated pipelines, infrastructure as code
-- **Monitoring:** Centralized logging (ELK), metrics (Prometheus/Grafana)
-- **Scalability:** Auto-scaling, load balancing
-- **Availability:** Multi-AZ deployment, 99.9% uptime
-
-### Major Components
-1. **User Management:** Registration, login, RBAC, profile, consent management
-2. **Product Catalog:** CRUD, search, filter, recommendations
-3. **Shopping Cart:** Add, update, remove, checkout
-4. **Order Management:** Placement, tracking, refunds
-5. **Payment Processing:** Multiple gateways, PCI DSS, encryption
-6. **Review/Rating:** Product reviews, seller ratings
-7. **Notification Engine:** Email/SMS/Push events
-8. **Admin Dashboard:** Platform metrics, user/seller mgmt, compliance
-9. **Seller Dashboard:** Inventory, order, refund mgmt
-10. **Audit Logging:** All critical actions
-
-### Integration Points
-- **3rd-party Payment Gateway (PCI DSS)**
-- **Email/SMS Service Providers**
-- **Cloud Storage for assets (product images, etc.)**
-
-### Security & Compliance Features
-- **Encryption:** AES-256 at rest, TLS 1.3 in transit
-- **Input Validation/Output Filtering:** All API endpoints
-- **RBAC/ABAC:** Fine-grained access control
-- **Audit Logging:** Immutable logs, access reviews
-- **Secrets Management:** Vault/KMS
-- **Fraud Detection:** Transaction monitoring
-- **Data Retention Policy:** Configurable per regulation
-- **Consent Management:** GDPR/CCPA consent tracking
-- **Data Lineage:** Track data flows for compliance
-- **Compliance Reporting:** Automated, auditable
-
-### Data Flow (Summary)
-1. User registers/logs in (OAuth2/JWT, encrypted)
-2. Browses/searches product catalog (filtered, cached)
-3. Adds products to cart (session-based)
-4. Proceeds to checkout (PCI DSS, payment gateway)
-5. Order created, notifications sent
-6. Seller/admin dashboards for management
-
-### Error Handling
-- **Graceful Degradation:** Circuit breaker for 3rd-party services
-- **Retry Logic:** Payments, notifications
-- **Centralized Logging:** Error monitoring
-
----
+## Data Flow
+1. User registration/login
+2. Catalog browsing/search
+3. Cart management/checkout
+4. Payment/order/refund
+5. Notifications, reviews
 
 ## Validation Report
-
-**Requirements Coverage:**
-- Registration/Login: Covered
-- Product Catalog: Covered
-- Search/Filter: Covered
-- Shopping Cart: Covered
-- Secure Checkout: Covered
-- Order Tracking: Covered
-- RBAC: Covered
-- Seller/Admin Dashboards: Covered
-- Notifications: Covered
-- Multiple Payment Methods: Covered
-- Reviews/Refunds: Covered
-- Recommendations/Wishlist: Outlined as extensible
-- Logistics Integration: Outlined as extensible
-
-**Compliance:**
-- PCI DSS, GDPR/CCPA, WCAG 2.1 AA: Addressed
-- Data retention, consent, lineage: Addressed
-
-**Error Handling:**
-- Retries, logging, circuit breaker: Addressed
-
-**Risks:**
-- Payment outage, regulation change, fraud: Mitigations included
+- All mandatory and should-have requirements addressed
+- Compliance features integrated
+- Robust error handling/logging patterns
 
 ---
-
-# End of Document
