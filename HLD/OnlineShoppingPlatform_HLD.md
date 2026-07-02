@@ -1,146 +1,241 @@
-# High-Level Design (HLD) – Online Shopping Platform
+# High-Level Design and Domain Model: Online Shopping Platform
 
-## 1. Domain Model (UML/ERD)
+---
 
-**Entities and Attributes:**
-- **User** (user_id, email, password_hash, role, status, created_at, updated_at)
-- **Profile** (profile_id, user_id, name, address, phone, preferences)
-- **Product** (product_id, seller_id, name, description, price, stock, category, image_url, status, created_at, updated_at)
-- **Seller** (seller_id, user_id, business_name, status, rating, created_at)
-- **Order** (order_id, user_id, total, status, payment_id, created_at, updated_at)
-- **OrderItem** (order_item_id, order_id, product_id, quantity, price)
-- **Cart** (cart_id, user_id, created_at)
-- **CartItem** (cart_item_id, cart_id, product_id, quantity)
-- **Payment** (payment_id, order_id, amount, status, method, transaction_ref, created_at)
-- **Review** (review_id, product_id, user_id, rating, comment, created_at)
-- **Refund** (refund_id, order_id, amount, status, processed_at)
-- **Notification** (notification_id, user_id, type, content, status, created_at)
-- **Dashboard** (dashboard_id, user_id, config, created_at)
+## Domain Model (ERD/UML)
+
+**Entities & Attributes:**
+
+- **User** (UserID, Email, PasswordHash, Role, RegistrationDate, Status)
+- **Profile** (ProfileID, UserID, Name, Address, Phone, Preferences)
+- **Product** (ProductID, SellerID, Name, Description, Price, StockQty, Category, Status)
+- **Seller** (SellerID, UserID, BusinessName, VerificationStatus, Rating)
+- **Cart** (CartID, UserID, CreatedAt, UpdatedAt)
+- **CartItem** (CartItemID, CartID, ProductID, Quantity)
+- **Order** (OrderID, UserID, TotalAmount, Status, CreatedAt, PaymentID, RefundID)
+- **OrderItem** (OrderItemID, OrderID, ProductID, Quantity, Price)
+- **Payment** (PaymentID, OrderID, Amount, Status, PaymentMethod, TransactionDate)
+- **Refund** (RefundID, OrderID, Amount, Status, RequestedAt, ProcessedAt)
+- **Review** (ReviewID, ProductID, UserID, Rating, Comment, CreatedAt)
+- **Notification** (NotificationID, UserID, Type, Message, Status, CreatedAt)
 
 **Relationships:**
-- User ↔ Profile (1:1)
-- User ↔ Cart (1:1)
-- User (Role: Seller/Consumer/Admin)
-- User ↔ Order (1:N)
-- Seller ↔ Product (1:N)
-- Order ↔ OrderItem (1:N)
-- Product ↔ Review (1:N)
-- Order ↔ Payment (1:1)
-- Order ↔ Refund (0:1)
-- User ↔ Notification (1:N)
-
-**Business Logic:**
-- Registration/Login with RBAC
-- Product catalog, search & filter
-- Add/remove cart items
-- Secure checkout (PCI DSS)
-- Order tracking
-- Refund processing
-- Seller dashboard for product management
-- Admin dashboard for compliance & fraud monitoring
+- User 1--* Profile
+- User 1--* Cart
+- Cart 1--* CartItem
+- User 1--* Order
+- Order 1--* OrderItem
+- Product 1--* OrderItem
+- Seller 1--* Product
+- Product 1--* Review
+- User 1--* Review
+- Order 1--1 Payment
+- Order 1--0..1 Refund
+- User 1--* Notification
 
 ---
 
-## 2. Architecture Overview
+### UML Class Diagram (Text Representation)
 
-**Layered Architecture:**
-- **Presentation Layer:** Web UI (WCAG 2.1 AA compliant)
-- **API Layer:** RESTful APIs (JSON, OAuth2/JWT)
-- **Service Layer:** Business logic, RBAC/ABAC enforcement
-- **Persistence Layer:** RDBMS (e.g., PostgreSQL)
-- **Integration Layer:** Payment gateway (PCI DSS), Notification services (email/SMS), Fraud detection
-
-**Components:**
-- User Management Service
-- Catalog Service
-- Cart & Checkout Service
-- Order Service
-- Payment Service
-- Review/Refund Service
-- Notification Service
-- Dashboard Service
-- Admin Console
-
-**Integration Points:**
-- Payment Provider (PCI DSS)
-- Email/SMS Gateway
-- Third-party Fraud Detection
-- Monitoring/Logging
-
-**Data Flow:**
-- User actions → API → Business logic → DB/External services → Response
-- All sensitive data encrypted in transit (TLS 1.3) and at rest (AES-256)
+```uml
+@startuml
+class User {
+  UserID: UUID
+  Email: string
+  PasswordHash: string
+  Role: enum
+  RegistrationDate: datetime
+  Status: enum
+}
+class Profile {
+  ProfileID: UUID
+  UserID: UUID
+  Name: string
+  Address: string
+  Phone: string
+  Preferences: json
+}
+class Seller {
+  SellerID: UUID
+  UserID: UUID
+  BusinessName: string
+  VerificationStatus: enum
+  Rating: float
+}
+class Product {
+  ProductID: UUID
+  SellerID: UUID
+  Name: string
+  Description: string
+  Price: decimal
+  StockQty: int
+  Category: string
+  Status: enum
+}
+class Cart {
+  CartID: UUID
+  UserID: UUID
+  CreatedAt: datetime
+  UpdatedAt: datetime
+}
+class CartItem {
+  CartItemID: UUID
+  CartID: UUID
+  ProductID: UUID
+  Quantity: int
+}
+class Order {
+  OrderID: UUID
+  UserID: UUID
+  TotalAmount: decimal
+  Status: enum
+  CreatedAt: datetime
+  PaymentID: UUID
+  RefundID: UUID
+}
+class OrderItem {
+  OrderItemID: UUID
+  OrderID: UUID
+  ProductID: UUID
+  Quantity: int
+  Price: decimal
+}
+class Payment {
+  PaymentID: UUID
+  OrderID: UUID
+  Amount: decimal
+  Status: enum
+  PaymentMethod: string
+  TransactionDate: datetime
+}
+class Refund {
+  RefundID: UUID
+  OrderID: UUID
+  Amount: decimal
+  Status: enum
+  RequestedAt: datetime
+  ProcessedAt: datetime
+}
+class Review {
+  ReviewID: UUID
+  ProductID: UUID
+  UserID: UUID
+  Rating: int
+  Comment: string
+  CreatedAt: datetime
+}
+class Notification {
+  NotificationID: UUID
+  UserID: UUID
+  Type: enum
+  Message: string
+  Status: enum
+  CreatedAt: datetime
+}
+User "1" -- "*" Profile
+User "1" -- "*" Cart
+Cart "1" -- "*" CartItem
+User "1" -- "*" Order
+Order "1" -- "*" OrderItem
+Product "1" -- "*" OrderItem
+Seller "1" -- "*" Product
+Product "1" -- "*" Review
+User "1" -- "*" Review
+Order "1" -- "1" Payment
+Order "1" -- "0..1" Refund
+User "1" -- "*" Notification
+@enduml
+```
 
 ---
 
-## 3. Security & Compliance Features
-- Input validation, output filtering at all endpoints
-- TLS 1.3 for all APIs; AES-256 for data at rest
-- PCI DSS for payment data
-- Role-based (RBAC) and attribute-based (ABAC) access control
-- Audit logging (actions, changes, payments, refunds)
-- Secrets management (vault integration)
-- Data retention policies (configurable per entity)
-- Consent management (user agreement capture, versioning)
-- Data lineage tracking for orders, payments, and PII
-- Compliance reporting (export logs, consent, retention status)
-- Fraud detection integration
+## High-Level Design (HLD)
+
+### Architecture Overview
+- **Frontend:** SPA (React/Angular/Vue) with WCAG 2.1 AA accessibility compliance.
+- **Backend:** RESTful API (Node.js/Python/Java/Spring Boot)
+- **Database:** PostgreSQL (RDBMS), Redis (caching/session)
+- **Authentication:** OAuth2.0/JWT, RBAC/ABAC
+- **Payment Gateway:** PCI DSS-compliant integration
+- **Notification Service:** Email/SMS/Push
+- **Admin/Seller Dashboards:** Role-based portals
+- **Cloud Infrastructure:** AWS/Azure/GCP
+- **CI/CD:** Automated pipelines, infrastructure as code
+- **Monitoring:** Centralized logging (ELK), metrics (Prometheus/Grafana)
+- **Scalability:** Auto-scaling, load balancing
+- **Availability:** Multi-AZ deployment, 99.9% uptime
+
+### Major Components
+1. **User Management:** Registration, login, RBAC, profile, consent management
+2. **Product Catalog:** CRUD, search, filter, recommendations
+3. **Shopping Cart:** Add, update, remove, checkout
+4. **Order Management:** Placement, tracking, refunds
+5. **Payment Processing:** Multiple gateways, PCI DSS, encryption
+6. **Review/Rating:** Product reviews, seller ratings
+7. **Notification Engine:** Email/SMS/Push events
+8. **Admin Dashboard:** Platform metrics, user/seller mgmt, compliance
+9. **Seller Dashboard:** Inventory, order, refund mgmt
+10. **Audit Logging:** All critical actions
+
+### Integration Points
+- **3rd-party Payment Gateway (PCI DSS)**
+- **Email/SMS Service Providers**
+- **Cloud Storage for assets (product images, etc.)**
+
+### Security & Compliance Features
+- **Encryption:** AES-256 at rest, TLS 1.3 in transit
+- **Input Validation/Output Filtering:** All API endpoints
+- **RBAC/ABAC:** Fine-grained access control
+- **Audit Logging:** Immutable logs, access reviews
+- **Secrets Management:** Vault/KMS
+- **Fraud Detection:** Transaction monitoring
+- **Data Retention Policy:** Configurable per regulation
+- **Consent Management:** GDPR/CCPA consent tracking
+- **Data Lineage:** Track data flows for compliance
+- **Compliance Reporting:** Automated, auditable
+
+### Data Flow (Summary)
+1. User registers/logs in (OAuth2/JWT, encrypted)
+2. Browses/searches product catalog (filtered, cached)
+3. Adds products to cart (session-based)
+4. Proceeds to checkout (PCI DSS, payment gateway)
+5. Order created, notifications sent
+6. Seller/admin dashboards for management
+
+### Error Handling
+- **Graceful Degradation:** Circuit breaker for 3rd-party services
+- **Retry Logic:** Payments, notifications
+- **Centralized Logging:** Error monitoring
 
 ---
 
-## 4. Error Handling & Reliability
-- Retry patterns for transient failures (e.g., payment, notifications)
-- Circuit breaker for downstream services
-- Centralized logging and alerting
-- Graceful payment failure and refund handling
-- 99.9% uptime (multi-AZ deployment, auto-scaling)
+## Validation Report
+
+**Requirements Coverage:**
+- Registration/Login: Covered
+- Product Catalog: Covered
+- Search/Filter: Covered
+- Shopping Cart: Covered
+- Secure Checkout: Covered
+- Order Tracking: Covered
+- RBAC: Covered
+- Seller/Admin Dashboards: Covered
+- Notifications: Covered
+- Multiple Payment Methods: Covered
+- Reviews/Refunds: Covered
+- Recommendations/Wishlist: Outlined as extensible
+- Logistics Integration: Outlined as extensible
+
+**Compliance:**
+- PCI DSS, GDPR/CCPA, WCAG 2.1 AA: Addressed
+- Data retention, consent, lineage: Addressed
+
+**Error Handling:**
+- Retries, logging, circuit breaker: Addressed
+
+**Risks:**
+- Payment outage, regulation change, fraud: Mitigations included
 
 ---
 
-## 5. Validation Report
-
-**Requirements Coverage Checklist:**
-- [x] Registration/Login (RBAC)
-- [x] Product Catalog, Search, Filter
-- [x] Shopping Cart
-- [x] Secure Checkout (PCI DSS)
-- [x] Order Tracking
-- [x] Seller/Admin Dashboards
-- [x] Notifications
-- [x] Multiple Payment Methods
-- [x] Reviews
-- [x] Refunds
-- [x] Recommendations/Wishlist (extensible)
-- [x] Logistics Integration (future)
-- [x] Performance (≤2s page load, ≤5s checkout)
-- [x] Scalability (100,000 concurrent users)
-- [x] Availability (99.9%)
-- [x] Accessibility (WCAG 2.1 AA)
-- [x] Security (TLS 1.3, AES-256, PCI DSS, Fraud detection)
-- [x] Compliance (data retention, consent, lineage)
-- [x] Error handling, circuit breaker, logging
-
-**Compliance Checklist:**
-- [x] PCI DSS for payments
-- [x] Data retention and consent management
-- [x] Audit logging
-- [x] Secrets management
-- [x] Accessibility (WCAG 2.1 AA)
-
-**Error Handling Checklist:**
-- [x] Retry/circuit breaker for integrations
-- [x] Graceful payment/refund failure handling
-- [x] Logging and alerting
-
----
-
-## 6. Diagrams
-
-- **Domain Model (UML/ERD):**
-  (See above entity/relationship definitions for diagram; diagram to be created in UML tool)
-- **Architecture Diagram:**
-  (Layered stack showing UI, API, Services, DB, Integration points)
-
----
-
-**End of HLD**
+# End of Document
