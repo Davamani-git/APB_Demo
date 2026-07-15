@@ -1,0 +1,410 @@
+# EPIC BREAKDOWN: ETL Data Management for EUMDR Compliance - Restricted Substances Reporting
+
+## EXECUTIVE SUMMARY
+
+**Epic Overview:**
+Implementation of Extract, Transform, Load (ETL) Data Management capabilities to ensure compliance with European Medical Device Regulation (EUMDR) for restricted substances reporting in pharmaceutical/medical device products.
+
+**Key Stories Generated:** 12 user stories covering data extraction, transformation, validation, reporting, audit trails, and compliance monitoring.
+
+**Compliance Highlights:**
+- EUMDR Regulation (EU) 2017/745 compliance for restricted substances
+- REACH Regulation (EC) 1907/2006 for substance registration
+- RoHS Directive compliance integration
+- GxP data integrity principles (ALCOA+)
+- FDA 21 CFR Part 11 for electronic records
+- ISO 13485 quality management alignment
+
+**Recommendations:**
+- Prioritize data validation and audit trail stories (Critical path)
+- Implement phased rollout with validation checkpoints
+- Establish cross-functional review team including regulatory affairs, quality assurance, and IT
+- Plan for quarterly regulatory update reviews
+
+---
+
+## DETAILED ANALYSIS
+
+### Epic Breakdown
+
+**Primary Objective:** Enable automated ETL processes to extract restricted substance data from multiple sources, transform it according to EUMDR requirements, and load it into compliant reporting systems.
+
+**Regulatory Context:**
+- EUMDR requires manufacturers to report substances of concern (SVHC - Substances of Very High Concern)
+- Annex I requirements for chemical, physical, and biological properties
+- Article 32 requirements for post-market surveillance data
+- SCIP database submission requirements
+
+**User Roles Identified:**
+1. Regulatory Affairs Manager
+2. Quality Assurance Specialist
+3. Data Steward
+4. Compliance Officer
+5. System Administrator
+6. Product Manager
+7. Auditor
+
+**Workflow Mapping:**
+1. Data Source Integration → 2. Data Extraction → 3. Data Transformation → 4. Data Validation → 5. Compliance Check → 6. Report Generation → 7. Regulatory Submission → 8. Audit Trail Maintenance
+
+**Dependencies:**
+- Master Data Management (MDM) system
+- Substance database (ECHA, CAS registry)
+- Document management system
+- Reporting infrastructure
+- Authentication/authorization system
+- Notification system
+
+**Risks & Mitigation:**
+- Risk: Data quality issues → Mitigation: Multi-layer validation rules
+- Risk: Regulatory changes → Mitigation: Configurable rule engine
+- Risk: System downtime → Mitigation: Redundancy and backup procedures
+- Risk: Audit findings → Mitigation: Comprehensive audit trails and documentation
+
+---
+
+## DELIVERABLES: USER STORIES
+
+### Story 1: Configure Data Source Connections
+
+**Title:** Configure Data Source Connections for Restricted Substances Data
+
+**User Story:**
+As a System Administrator
+I want to configure secure connections to multiple data sources containing restricted substances information
+So that the ETL process can reliably extract data from ERP, PLM, and external substance databases
+
+**Acceptance Criteria:**
+
+**Scenario 1:** Successful database connection configuration
+- Given I am logged in as a System Administrator
+- When I configure a new data source with valid credentials and connection parameters
+- Then the system validates the connection, stores encrypted credentials, and confirms successful configuration
+- And the connection is available for ETL job scheduling
+
+**Scenario 2:** Connection failure handling
+- Given I am configuring a data source
+- When the connection test fails due to invalid credentials or network issues
+- Then the system displays specific error messages and logs the failure
+- And no partial configuration is saved
+
+**Scenario 3:** Connection security validation
+- Given I am configuring a data source
+- When I save the configuration
+- Then the system enforces TLS/SSL encryption, validates certificate authenticity
+- And stores credentials using industry-standard encryption (AES-256)
+
+**Additional Details:**
+- **Priority:** Critical
+- **Story Points:** 8
+- **Dependencies:** Network infrastructure, database access permissions, encryption key management system
+- **Compliance Notes:** 
+  - Must comply with FDA 21 CFR Part 11 for electronic records security
+  - GxP data integrity - secure data transfer
+  - GDPR considerations for data access logging
+  - ISO 27001 information security standards
+
+---
+
+### Story 2: Extract Restricted Substances Data
+
+**Title:** Extract Restricted Substances Data from Multiple Sources
+
+**User Story:**
+As a Data Steward
+I want to automatically extract restricted substances data from configured sources on a scheduled basis
+So that we have current data for EUMDR compliance reporting without manual intervention
+
+**Acceptance Criteria:**
+
+**Scenario 1:** Successful scheduled extraction
+- Given ETL jobs are scheduled to run daily at 2:00 AM
+- When the scheduled time is reached and data sources are available
+- Then the system extracts all restricted substances data modified since last extraction
+- And logs extraction metrics (records extracted, duration, source system)
+
+**Scenario 2:** Incremental data extraction
+- Given previous extraction completed successfully
+- When a new extraction job runs
+- Then only new or modified records since last extraction are retrieved
+- And a delta log is maintained for audit purposes
+
+**Scenario 3:** Error handling and retry logic
+- Given an extraction job encounters a source system timeout
+- When the error is detected
+- Then the system retries up to 3 times with exponential backoff
+- And alerts are sent to administrators if all retries fail
+- And the job status is marked as "Failed with Retry Exhausted"
+
+**Additional Details:**
+- **Priority:** Critical
+- **Story Points:** 13
+- **Dependencies:** Story 1 (Data source connections), scheduling infrastructure, monitoring system
+- **Compliance Notes:**
+  - Maintain extraction audit trail per GxP requirements
+  - Timestamp all extractions with UTC time
+  - Log all data access for GDPR compliance
+  - Ensure data lineage tracking from source to target
+
+---
+
+### Story 3: Transform Data to EUMDR Format
+
+**Title:** Transform Extracted Data to EUMDR-Compliant Format
+
+**User Story:**
+As a Regulatory Affairs Manager
+I want extracted substances data to be automatically transformed into EUMDR-required format and structure
+So that submissions to regulatory authorities meet all technical and content requirements
+
+**Acceptance Criteria:**
+
+**Scenario 1:** Successful data transformation
+- Given extracted data is available in staging area
+- When the transformation process executes
+- Then data is mapped to EUMDR fields (CAS number, substance name, concentration, classification)
+- And all mandatory fields are populated or flagged as missing
+- And data is formatted according to EUMDR technical specifications
+
+**Scenario 2:** Unit conversion and standardization
+- Given source data contains concentrations in various units (ppm, %, mg/kg)
+- When transformation occurs
+- Then all values are converted to standard EUMDR units
+- And conversion factors are logged for traceability
+- And original values are preserved in metadata
+
+**Scenario 3:** Substance classification mapping
+- Given source data contains internal substance codes
+- When transformation maps to regulatory classifications
+- Then CAS numbers are validated against ECHA database
+- And GHS classifications are applied correctly
+- And SVHC status is determined based on current candidate list
+
+**Additional Details:**
+- **Priority:** Critical
+- **Story Points:** 13
+- **Dependencies:** Story 2 (Data extraction), EUMDR technical specifications, ECHA substance database API, business rules engine
+- **Compliance Notes:**
+  - EUMDR Regulation (EU) 2017/745 Annex I requirements
+  - REACH Regulation (EC) 1907/2006 compliance
+  - Maintain transformation logic documentation for validation
+  - Version control for transformation rules
+
+---
+
+### Story 4: Validate Data Quality and Completeness
+
+**Title:** Validate Data Quality and Completeness Against EUMDR Requirements
+
+**User Story:**
+As a Quality Assurance Specialist
+I want transformed data to be automatically validated against EUMDR quality rules and completeness checks
+So that only accurate and complete data proceeds to reporting and submission
+
+**Acceptance Criteria:**
+
+**Scenario 1:** Mandatory field validation
+- Given transformed data is ready for validation
+- When validation rules execute
+- Then all EUMDR mandatory fields are checked for presence and valid values
+- And records with missing mandatory data are flagged with specific error codes
+- And a validation report is generated listing all issues
+
+**Scenario 2:** Business rule validation
+- Given validation rules are configured for concentration thresholds and substance combinations
+- When data validation occurs
+- Then concentration values are checked against regulatory thresholds (0.1% for SVHC)
+- And prohibited substance combinations are identified
+- And warnings are generated for substances approaching threshold limits
+
+**Scenario 3:** Data consistency validation
+- Given multiple data sources provide overlapping information
+- When consistency checks run
+- Then discrepancies between sources are identified and logged
+- And a reconciliation report highlights conflicts requiring manual review
+- And data steward is notified of critical inconsistencies
+
+**Additional Details:**
+- **Priority:** Critical
+- **Story Points:** 13
+- **Dependencies:** Story 3 (Data transformation), validation rules engine, EUMDR requirements database
+- **Compliance Notes:**
+  - ALCOA+ principles (Attributable, Legible, Contemporaneous, Original, Accurate, Complete, Consistent, Enduring, Available)
+  - GxP data integrity requirements
+  - ISO 13485 quality management system alignment
+  - Validation documentation per FDA guidance
+
+---
+
+### Story 5: Generate EUMDR Compliance Reports
+
+**Title:** Generate EUMDR-Compliant Restricted Substances Reports
+
+**User Story:**
+As a Regulatory Affairs Manager
+I want to generate standardized EUMDR compliance reports for restricted substances
+So that I can submit accurate documentation to regulatory authorities and maintain compliance records
+
+**Acceptance Criteria:**
+
+**Scenario 1:** Standard report generation
+- Given validated data is available in the reporting database
+- When I request an EUMDR restricted substances report for a specific product or date range
+- Then the system generates a report in EUMDR-specified format (XML/PDF)
+- And the report includes all mandatory sections: product identification, substance details, concentrations, classifications
+- And the report is digitally signed and timestamped
+
+**Scenario 2:** Multi-product batch reporting
+- Given I need to submit reports for multiple products
+- When I select products and initiate batch report generation
+- Then individual reports are created for each product
+- And a summary report consolidates key information across all products
+- And all reports are packaged for regulatory submission
+
+**Scenario 3:** Historical report retrieval
+- Given I need to access previously generated reports for audit purposes
+- When I search by product ID, date range, or submission reference
+- Then the system retrieves exact reports as originally generated
+- And audit trail shows who generated, accessed, and submitted each report
+- And reports are available in both human-readable and machine-readable formats
+
+**Additional Details:**
+- **Priority:** High
+- **Story Points:** 8
+- **Dependencies:** Story 4 (Data validation), reporting engine, digital signature infrastructure, document management system
+- **Compliance Notes:**
+  - EUMDR Article 32 post-market surveillance requirements
+  - FDA 21 CFR Part 11 for electronic signatures
+  - Report retention per EU MDR requirements (minimum 10 years)
+  - Audit trail for all report generation and access
+
+---
+
+### Story 6: Implement Audit Trail for Data Lineage
+
+**Title:** Implement Comprehensive Audit Trail for Data Lineage and Traceability
+
+**User Story:**
+As a Compliance Officer
+I want complete audit trails tracking all data movements, transformations, and access throughout the ETL process
+So that we can demonstrate compliance during regulatory inspections and trace any data issue to its source
+
+**Acceptance Criteria:**
+
+**Scenario 1:** ETL process audit logging
+- Given any ETL process (extract, transform, load) executes
+- When the process completes (successfully or with errors)
+- Then the system logs: timestamp, user/system account, source/target systems, record counts, processing duration
+- And all transformations applied are documented with before/after values for sample records
+- And the audit log is immutable and stored in tamper-evident format
+
+**Scenario 2:** Data access audit trail
+- Given a user accesses restricted substances data or reports
+- When the access occurs
+- Then the system logs: user identity, timestamp, data accessed, purpose (if provided), access method
+- And failed access attempts are logged with reason for failure
+- And audit logs are retained per regulatory requirements (minimum 10 years)
+
+**Scenario 3:** Change management audit trail
+- Given configuration changes are made to ETL jobs, validation rules, or data mappings
+- When changes are saved
+- Then the system captures: what changed, who made the change, when, why (change justification)
+- And previous versions are archived for rollback capability
+- And change approval workflow is documented in audit trail
+
+**Additional Details:**
+- **Priority:** Critical
+- **Story Points:** 13
+- **Dependencies:** Audit logging infrastructure, secure storage, identity management system
+- **Compliance Notes:**
+  - FDA 21 CFR Part 11 Subpart B audit trail requirements
+  - GxP data integrity guidance (WHO, MHRA, FDA)
+  - EUMDR traceability requirements
+  - ISO 13485 documentation and record keeping
+  - Audit logs must be reviewed regularly and protected from unauthorized modification
+
+---
+
+### Story 7: Configure Substance Threshold Alerts
+
+**Title:** Configure Automated Alerts for Substance Threshold Violations
+
+**User Story:**
+As a Regulatory Affairs Manager
+I want to receive automated alerts when restricted substance concentrations approach or exceed regulatory thresholds
+So that I can take proactive corrective actions before compliance violations occur
+
+**Acceptance Criteria:**
+
+**Scenario 1:** Threshold configuration
+- Given I am configuring alert rules for restricted substances
+- When I define threshold values (e.g., 0.1% for SVHC, specific limits for heavy metals)
+- Then the system validates thresholds against regulatory requirements
+- And allows configuration of warning levels (e.g., 80% of limit) and critical levels (at or above limit)
+- And threshold rules are versioned and audit-logged
+
+**Scenario 2:** Real-time threshold monitoring
+- Given validated data is loaded into the system
+- When substance concentrations are evaluated against configured thresholds
+- Then violations are immediately identified and categorized (warning/critical)
+- And alerts are sent via email and system notifications to designated recipients
+- And a dashboard displays all current threshold violations with severity indicators
+
+**Scenario 3:** Alert escalation and tracking
+- Given an alert has been generated for a threshold violation
+- When the alert is not acknowledged within defined timeframe (e.g., 24 hours)
+- Then the alert is escalated to management level contacts
+- And all alert history is tracked (generated, viewed, acknowledged, resolved)
+- And resolution actions are documented for audit purposes
+
+**Additional Details:**
+- **Priority:** High
+- **Story Points:** 8
+- **Dependencies:** Story 4 (Data validation), notification system, user management system, dashboard infrastructure
+- **Compliance Notes:**
+  - EUMDR proactive risk management requirements
+  - ISO 14971 risk management for medical devices
+  - Alert configuration must be validated and documented
+  - Alert response procedures must be defined in SOPs
+
+---
+
+### Story 8: Integrate with SCIP Database
+
+**Title:** Integrate with ECHA SCIP Database for Substance Submission
+
+**User Story:**
+As a Regulatory Affairs Manager
+I want the system to automatically prepare and submit substance information to the ECHA SCIP database
+So that we comply with EU Waste Framework Directive requirements for articles containing SVHCs
+
+**Acceptance Criteria:**
+
+**Scenario 1:** SCIP submission file preparation
+- Given validated restricted substances data is available
+- When I initiate SCIP submission preparation for specific products
+- Then the system generates IUCLID format files with all required information
+- And validates files against ECHA technical specifications
+- And creates submission package with supporting documentation
+
+**Scenario 2:** Automated SCIP submission
+- Given SCIP submission files are prepared and validated
+- When I authorize submission
+- Then the system connects to ECHA SCIP portal via API
+- And submits data with proper authentication and encryption
+- And receives and stores submission confirmation reference numbers
+- And logs complete submission transaction for audit trail
+
+**Scenario 3:** Submission status tracking
+- Given submissions have been made to SCIP database
+- When I check submission status
+- Then the system displays: submission date, reference number, status (pending/accepted/rejected)
+- And retrieves any feedback or error messages from ECHA
+- And alerts responsible parties if resubmission is required
+- And maintains complete submission history
+
+**Additional Details:**
+- **Priority:** High
+- **Story Points:** 13
+- **Dependencies:** Story 5 (Report generation), ECHA SCIP API access, IUCLID format converter, secure file transfer infrastructure
+- **
