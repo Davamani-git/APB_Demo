@@ -1,0 +1,45 @@
+{
+  "month": "2026-05",
+  "currency": "USD",
+  "totalSpend": 1850.75,
+  "transactionCount": 58,
+  "averageTransactionAmount": 31.91,
+  "categories": [
+    {
+      "categoryId": "groceries",
+      "categoryName": "Groceries",
+      "amount": 520.5,
+      "percentage": 28.1,
+      "transactionCount": 18
+    },
+    {
+      "categoryId": "travel",
+      "categoryName": "Travel",
+      "amount": 430,
+      "percentage": 23.2,
+      "transactionCount": 5
+    },
+    {
+      "categoryId": "dining",
+      "categoryName": "Dining",
+      "amount": 310.25,
+      "percentage": 16.8,
+      "transactionCount": 12
+    },
+    {
+      "categoryId": "utilities",
+      "categoryName": "Utilities",
+      "amount": 220,
+      "percentage": 11.9,
+      "transactionCount": 8
+    },
+    {
+      "categoryId": "other",
+      "categoryName": "Other",
+      "amount": 370,
+      "percentage": 20.0,
+      "transactionCount": 15
+    }
+  ],
+  "isPartial": false
+}
