@@ -1,9 +1,0 @@
-.personal-insights-dashboard .filters-panel { margin-bottom: 20px; }
-.insight-card { margin-bottom: 15px; }
-.insight-card.insight-dismissed { opacity: 0.5; }
-.pi-insight-skeleton .skeleton-line { height: 12px; background-color: #eee; margin-bottom: 6px; }
-.pi-insight-skeleton .skeleton-title { width: 60%; }
-.insight-blocked-banner { margin-top: 10px; }
-.spinning { -webkit-animation: spin 1s linear infinite; animation: spin 1s linear infinite; }
-@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
-@keyframes spin { 100% { transform: rotate(360deg); } }
