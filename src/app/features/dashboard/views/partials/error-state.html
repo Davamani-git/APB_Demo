@@ -1,0 +1,7 @@
+<div ng-if="error" class="alert alert-danger dashboard-error-banner">
+  <strong>We couldn't load your insights.</strong>
+  <p>{{error.message}}</p>
+  <button type="button" class="btn btn-link" ng-click="reload()">Retry</button>
+</div>
+<script type="text/ng-template" id="error-banner-inline-controller">
+</script>

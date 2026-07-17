@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en" ng-app="app">
+<head>
+  <meta charset="utf-8">
+  <title>Monthly Credit Card Spend Summary Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- AngularJS and dependencies -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular-route.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular-messages.min.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/dashboard.css">
+  <link rel="stylesheet" href="src/app/shared/styles/shared.css">
+</head>
+<body>
+  <div ng-view></div>
+
+  <!-- Core app scripts -->
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/app.config.js"></script>
+  <script src="src/app/app.routes.js"></script>
+  <script src="src/app/app.run.js"></script>
+
+  <!-- Core config -->
+  <script src="src/app/core/config/env.config.js"></script>
+  <script src="src/app/core/config/api.config.js"></script>
+  <script src="src/app/core/config/logging.config.js"></script>
+
+  <!-- Core utilities -->
+  <script src="src/app/core/utils/validation.utils.js"></script>
+  <script src="src/app/core/utils/date.utils.js"></script>
+  <script src="src/app/core/utils/formatting.utils.js"></script>
+
+  <!-- Core models -->
+  <script src="src/app/core/models/category-breakdown.model.js"></script>
+  <script src="src/app/core/models/error.model.js"></script>
+  <script src="src/app/core/models/monthly-summary.model.js"></script>
+
+  <!-- Core services -->
+  <script src="src/app/core/services/auth-token.service.js"></script>
+  <script src="src/app/core/services/error-mapper.service.js"></script>
+  <script src="src/app/core/services/telemetry.service.js"></script>
+  <script src="src/app/core/services/consent.service.js"></script>
+  <script src="src/app/core/services/insights-api.service.js"></script>
+  <script src="src/app/core/services/http.interceptor.js"></script>
+
+  <!-- Shared filters and directives -->
+  <script src="src/app/shared/filters/currency-safe.filter.js"></script>
+  <script src="src/app/shared/filters/percentage.filter.js"></script>
+  <script src="src/app/shared/directives/loading-spinner.directive.js"></script>
+  <script src="src/app/shared/directives/tooltip.directive.js"></script>
+
+  <!-- Dashboard feature -->
+  <script src="src/app/features/dashboard/dashboard.module.js"></script>
+  <script src="src/app/features/dashboard/dashboard.routes.js"></script>
+  <script src="src/app/features/dashboard/services/dashboard-state.service.js"></script>
+  <script src="src/app/features/dashboard/directives/month-picker.directive.js"></script>
+  <script src="src/app/features/dashboard/directives/kpi-card.directive.js"></script>
+  <script src="src/app/features/dashboard/directives/category-chart.directive.js"></script>
+  <script src="src/app/features/dashboard/directives/error-banner.directive.js"></script>
+  <script src="src/app/features/dashboard/controllers/dashboard.controller.js"></script>
+</body>
+</html>

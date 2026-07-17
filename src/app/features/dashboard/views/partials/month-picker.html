@@ -1,0 +1,10 @@
+<div class="month-picker">
+  <label for="monthSelect">Select month</label>
+  <select id="monthSelect"
+          class="form-control"
+          ng-model="ngModel"
+          ng-options="m for m in availableMonths"
+          ng-change="onMonthSelected()">
+  </select>
+  <p class="text-danger" ng-if="monthInvalid">Please select a valid month.</p>
+</div>

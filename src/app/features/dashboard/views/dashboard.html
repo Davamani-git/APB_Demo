@@ -1,0 +1,46 @@
+<div class="container monthly-dashboard" ng-class="{ 'is-loading': vm.isLoading }">
+  <div class="row">
+    <div class="col-xs-12">
+      <h1>Monthly Credit Card Spend</h1>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-6">
+      <month-picker ng-model="vm.month" on-change="vm.onMonthChange(newMonth)"></month-picker>
+    </div>
+    <div class="col-sm-6 text-right">
+      <button type="button" class="btn btn-default" ng-click="vm.refresh()">Refresh</button>
+    </div>
+  </div>
+
+  <error-banner error="vm.error"></error-banner>
+
+  <loading-spinner ng-if="vm.isLoading"></loading-spinner>
+
+  <div ng-if="vm.hasData() && vm.isConsentGranted()">
+    <div class="row kpi-row">
+      <div class="col-sm-4">
+        <kpi-card title="Total Spend" value="vm.summary.totalSpend" currency="vm.summary.currency"></kpi-card>
+      </div>
+      <div class="col-sm-4">
+        <kpi-card title="Transactions" value="vm.summary.transactionCount"></kpi-card>
+      </div>
+      <div class="col-sm-4">
+        <kpi-card title="Average Transaction" value="vm.summary.averageTransactionAmount" currency="vm.summary.currency"></kpi-card>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12">
+        <category-chart categories="vm.summary.categoryBreakdown"></category-chart>
+      </div>
+    </div>
+  </div>
+
+  <div ng-if="vm.summary && !vm.isConsentGranted() && !vm.error">
+    <div class="alert alert-warning">
+      Insights cannot be displayed because consent is not granted. Please update your preferences.
+    </div>
+  </div>
+</div>
