@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en" ng-app="apbSpendDashboard">
+<head>
+  <meta charset="utf-8">
+  <title>Monthly Spend Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/monthly-dashboard.css">
+</head>
+<body>
+  <div ng-controller="ShellController as shell">
+    <apb-header></apb-header>
+
+    <div class="container-fluid apb-shell-container">
+      <div class="row">
+        <div class="col-xs-12">
+          <div ng-view></div>
+        </div>
+      </div>
+    </div>
+
+    <apb-footer></apb-footer>
+    <apb-notifications></apb-notifications>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-sanitize.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.6/ui-bootstrap-tpls.min.js"></script>
+
+  <script src="app.js"></script>
+
+  <script src="core/core.module.js"></script>
+  <script src="core/core.constants.js"></script>
+  <script src="core/core.config.js"></script>
+  <script src="core/core.routes.js"></script>
+  <script src="core/http.interceptor.js"></script>
+
+  <script src="layout/layout.module.js"></script>
+  <script src="layout/shell.controller.js"></script>
+  <script src="layout/header.directive.js"></script>
+  <script src="layout/footer.directive.js"></script>
+  <script src="layout/notifications.directive.js"></script>
+
+  <script src="spend-dashboard/spend-dashboard.module.js"></script>
+  <script src="spend-dashboard/models/breakdown.model.js"></script>
+  <script src="spend-dashboard/models/monthly-summary.model.js"></script>
+  <script src="spend-dashboard/services/spend-summary.service.js"></script>
+  <script src="spend-dashboard/services/profile.service.js"></script>
+  <script src="spend-dashboard/services/config.service.js"></script>
+  <script src="spend-dashboard/controllers/monthly-dashboard.controller.js"></script>
+  <script src="spend-dashboard/directives/monthly-kpi-cards.directive.js"></script>
+  <script src="spend-dashboard/directives/monthly-breakdown-chart.directive.js"></script>
+  <script src="spend-dashboard/directives/freshness-indicator.directive.js"></script>
+
+  <script src="shared/shared.module.js"></script>
+  <script src="shared/filters/currency-short.filter.js"></script>
+  <script src="shared/directives/loading-spinner.directive.js"></script>
+  <script src="shared/services/logger.service.js"></script>
+  <script src="shared/models/error.model.js"></script>
+
+  <script src="security/security.module.js"></script>
+  <script src="security/auth-token.service.js"></script>
+
+  <script src="config/env.config.js"></script>
+  <script src="config/logging.config.js"></script>
+</body>
+</html>

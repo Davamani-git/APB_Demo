@@ -1,0 +1,46 @@
+<div class="apb-monthly-dashboard" ng-cloak>
+  <loading-spinner is-loading="vm.isLoading"></loading-spinner>
+
+  <div class="row">
+    <div class="col-sm-8">
+      <h2>Monthly Spending Summary</h2>
+    </div>
+    <div class="col-sm-4 text-right apb-month-picker-container">
+      <label for="monthSelector" class="control-label">Select Month</label>
+      <select id="monthSelector" class="form-control" ng-model="vm.selectedMonth" ng-change="vm.onMonthChange()" ng-options="m for m in vm.monthOptions">
+      </select>
+    </div>
+  </div>
+
+  <div class="row" ng-if="vm.error">
+    <div class="col-xs-12">
+      <div class="alert alert-danger">
+        <strong>Error:</strong> {{vm.error.message}}
+      </div>
+    </div>
+  </div>
+
+  <div class="row" ng-if="!vm.error">
+    <div class="col-xs-12">
+      <freshness-indicator timestamp="vm.summary.lastUpdated" is-stale="vm.showStaleWarning"></freshness-indicator>
+    </div>
+  </div>
+
+  <div class="row" ng-if="!vm.error">
+    <div class="col-xs-12">
+      <monthly-kpi-cards summary="vm.summary"></monthly-kpi-cards>
+    </div>
+  </div>
+
+  <div class="row" ng-if="!vm.error && vm.summary && vm.breakdownEnabled">
+    <div class="col-xs-12">
+      <monthly-breakdown-chart breakdown="vm.summary.breakdown"></monthly-breakdown-chart>
+    </div>
+  </div>
+
+  <div class="row apb-entry-point-info" ng-if="!vm.error && vm.summary">
+    <div class="col-xs-12">
+      <p class="text-muted">Use this monthly summary as your entry point to deeper insights. Additional views can reuse your selected month without requiring you to re-enter it. All information is aggregated and does not expose sensitive card or personal details.</p>
+    </div>
+  </div>
+</div>

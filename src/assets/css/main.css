@@ -1,0 +1,55 @@
+body {
+  padding-top: 50px;
+  padding-bottom: 30px;
+}
+
+.apb-shell-container {
+  margin-top: 20px;
+}
+
+.apb-footer {
+  margin-top: 40px;
+  padding: 15px 0;
+  border-top: 1px solid #eee;
+  color: #777;
+}
+
+.apb-loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 9999;
+}
+
+.apb-loading-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.glyphicon-spin {
+  -webkit-animation: spin 1000ms infinite linear;
+  animation: spin 1000ms infinite linear;
+}
+
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(359deg);
+  }
+}
