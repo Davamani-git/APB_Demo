@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en" ng-app="rbApp">
+<head>
+  <meta charset="utf-8">
+  <title>Retail Banking - Insights & Reminders</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/insights.css">
+  <link rel="stylesheet" href="assets/css/reminders.css">
+</head>
+<body>
+  <rb-navbar></rb-navbar>
+
+  <div class="container" ng-view></div>
+
+  <rb-footer></rb-footer>
+
+  <!-- AngularJS and application scripts -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-sanitize.min.js"></script>
+
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/app.config.js"></script>
+  <script src="src/app/app.routes.js"></script>
+  <script src="src/app/app.constants.js"></script>
+
+  <script src="src/app/core/core.module.js"></script>
+  <script src="src/app/core/services/auth.service.js"></script>
+  <script src="src/app/core/services/rbac.service.js"></script>
+  <script src="src/app/core/services/http-interceptor.service.js"></script>
+  <script src="src/app/core/services/api-gateway.service.js"></script>
+  <script src="src/app/core/services/logging.service.js"></script>
+  <script src="src/app/core/services/telemetry.service.js"></script>
+  <script src="src/app/core/services/error-handler.service.js"></script>
+  <script src="src/app/core/models/user-session.model.js"></script>
+  <script src="src/app/core/models/insight.model.js"></script>
+  <script src="src/app/core/models/profile.model.js"></script>
+  <script src="src/app/core/models/preferences.model.js"></script>
+  <script src="src/app/core/filters/date-range.filter.js"></script>
+  <script src="src/app/core/filters/category-label.filter.js"></script>
+  <script src="src/app/core/filters/currency-safe.filter.js"></script>
+  <script src="src/app/core/directives/loading-spinner.directive.js"></script>
+  <script src="src/app/core/directives/pagination.directive.js"></script>
+  <script src="src/app/core/directives/insight-card.directive.js"></script>
+
+  <script src="src/app/features/insights/insights.module.js"></script>
+  <script src="src/app/features/insights/insights.routes.js"></script>
+  <script src="src/app/features/insights/services/insights.service.js"></script>
+  <script src="src/app/features/insights/services/insights-profile.service.js"></script>
+  <script src="src/app/features/insights/services/insights-config.service.js"></script>
+  <script src="src/app/features/insights/services/insights-cache.service.js"></script>
+  <script src="src/app/features/insights/models/insights-query.model.js"></script>
+  <script src="src/app/features/insights/models/insights-feedback.model.js"></script>
+  <script src="src/app/features/insights/controllers/insights-dashboard.controller.js"></script>
+  <script src="src/app/features/insights/controllers/insights-detail.controller.js"></script>
+  <script src="src/app/features/insights/controllers/insights-feedback.controller.js"></script>
+  <script src="src/app/features/insights/directives/insights-filter-panel.directive.js"></script>
+  <script src="src/app/features/insights/directives/insights-list.directive.js"></script>
+  <script src="src/app/features/insights/directives/insights-explanation.directive.js"></script>
+
+  <script src="src/app/features/reminders/reminders.module.js"></script>
+  <script src="src/app/features/reminders/reminders.routes.js"></script>
+  <script src="src/app/features/reminders/services/reminders.service.js"></script>
+  <script src="src/app/features/reminders/services/recurring-detection.service.js"></script>
+  <script src="src/app/features/reminders/services/reminders-preferences.service.js"></script>
+  <script src="src/app/features/reminders/services/reminders-calendar.service.js"></script>
+  <script src="src/app/features/reminders/models/reminder.model.js"></script>
+  <script src="src/app/features/reminders/models/recurring-pattern.model.js"></script>
+  <script src="src/app/features/reminders/models/reminder-preferences.model.js"></script>
+  <script src="src/app/features/reminders/controllers/reminders-dashboard.controller.js"></script>
+  <script src="src/app/features/reminders/controllers/reminders-detail.controller.js"></script>
+  <script src="src/app/features/reminders/controllers/reminders-settings.controller.js"></script>
+  <script src="src/app/features/reminders/directives/reminders-calendar.directive.js"></script>
+  <script src="src/app/features/reminders/directives/reminder-card.directive.js"></script>
+  <script src="src/app/features/reminders/directives/reminder-channel-toggle.directive.js"></script>
+
+  <script src="src/app/shared/components/navbar/navbar.directive.js"></script>
+  <script src="src/app/shared/components/navbar/navbar.html"></script>
+  <script src="src/app/shared/components/footer/footer.directive.js"></script>
+  <script src="src/app/shared/components/footer/footer.html"></script>
+</body>
+</html>

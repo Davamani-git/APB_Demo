@@ -1,0 +1,38 @@
+<div class="insights-detail" ng-if="!vm.isLoading">
+  <div ng-if="vm.error" class="alert alert-danger">{{vm.error.message}}</div>
+
+  <div ng-if="vm.insight">
+    <button class="btn btn-link" ng-click="vm.navigateBack()">&laquo; Back to insights</button>
+
+    <h2>{{vm.insight.title}}</h2>
+    <p>{{vm.insight.summary}}</p>
+
+    <p>
+      <span class="label label-default">{{vm.insight.category | categoryLabel}}</span>
+      <span class="text-muted">{{{from: vm.insight.timeWindow.from, to: vm.insight.timeWindow.to} | dateRange}}</span>
+    </p>
+
+    <insights-explanation insight="vm.insight"></insights-explanation>
+
+    <div class="insight-actions" ng-if="vm.insight.actions && vm.insight.actions.length">
+      <h4>Suggested actions</h4>
+      <ul>
+        <li ng-repeat="action in vm.insight.actions">
+          <a ng-if="action.type === 'LINK'" ng-href="{{action.url}}">{{action.label}}</a>
+          <span ng-if="action.type !== 'LINK'">{{action.label}}</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="insight-feedback" ng-if="vm.insight.state === 'ACTIVE'">
+      <h4>Was this insight useful?</h4>
+      <div ng-controller="InsightsFeedbackController as fb" ng-init="fb.insight = vm.insight">
+        <button class="btn btn-success" ng-click="fb.markUseful()">Yes</button>
+        <button class="btn btn-warning" ng-click="fb.markNotUseful()">No</button>
+        <button class="btn btn-default" ng-click="fb.hideInsight()">Hide this insight</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+<rb-loading-spinner ng-if="vm.isLoading"></rb-loading-spinner>

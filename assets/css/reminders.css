@@ -1,0 +1,30 @@
+.reminders-dashboard h2 {
+  margin-bottom: 20px;
+}
+
+.reminder-card {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.reminder-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.reminder-actions {
+  margin-top: 10px;
+}
+
+.reminders-calendar .calendar-day {
+  border-bottom: 1px solid #eee;
+  padding: 5px 0;
+}
+
+.reminders-calendar .calendar-day.has-reminders {
+  background-color: #f9f9f9;
+}

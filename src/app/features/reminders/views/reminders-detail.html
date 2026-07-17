@@ -1,0 +1,16 @@
+<div class="reminders-detail" ng-if="!vm.isLoading">
+  <div ng-if="vm.error" class="alert alert-danger">{{vm.error.message}}</div>
+  <div ng-if="vm.reminder">
+    <button class="btn btn-link" ng-click="vm.navigateBack()">&laquo; Back to reminders</button>
+
+    <h2>{{vm.reminder.merchantName}}</h2>
+    <p>Due date: {{vm.reminder.dueDate | date: 'fullDate'}}</p>
+    <p>Amount: {{vm.reminder.amount | currencySafe:vm.reminder.currency}}</p>
+    <p>Status: {{vm.reminder.status}}</p>
+    <p>Lead time: {{vm.reminder.leadTimeDays}} days</p>
+
+    <button class="btn btn-default" ng-click="vm.dismiss()" ng-disabled="vm.reminder.status === 'DISMISSED'">Dismiss</button>
+    <button class="btn btn-primary" ng-click="vm.markHandled()" ng-disabled="vm.reminder.status === 'HANDLED'">Mark as handled</button>
+  </div>
+</div>
+<rb-loading-spinner ng-if="vm.isLoading"></rb-loading-spinner>

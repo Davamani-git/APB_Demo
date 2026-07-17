@@ -1,0 +1,17 @@
+<div class="insights-dashboard">
+  <h2>Personalized Financial Insights</h2>
+
+  <insights-filter-panel
+    filters="vm.filters"
+    on-apply="vm.applyFilters()"
+    on-clear="vm.clearFilters()"></insights-filter-panel>
+
+  <div ng-if="vm.error" class="alert alert-danger">{{vm.error.message}}</div>
+
+  <rb-loading-spinner ng-if="vm.isLoading"></rb-loading-spinner>
+
+  <insights-list
+    ng-if="!vm.isLoading && !vm.error"
+    insights="vm.insights"
+    on-select="vm.onInsightSelected(insight)"></insights-list>
+</div>

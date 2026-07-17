@@ -1,0 +1,28 @@
+.insights-dashboard h2 {
+  margin-bottom: 20px;
+}
+
+.insight-card {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 15px;
+  cursor: pointer;
+}
+
+.insight-card:hover {
+  background-color: #f9f9f9;
+}
+
+.insight-title {
+  margin-top: 0;
+}
+
+.insight-meta {
+  font-size: 0.9em;
+  color: #777;
+}
+
+.insights-explanation {
+  margin-top: 20px;
+}

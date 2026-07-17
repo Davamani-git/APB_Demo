@@ -1,0 +1,1 @@
+/* Logging configuration placeholder. Logging levels and destinations are defined in backend and EnvConfig. */

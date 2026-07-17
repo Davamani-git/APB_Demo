@@ -1,0 +1,57 @@
+<div class="reminders-dashboard">
+  <h2>Bill Reminders</h2>
+
+  <form class="form-inline" ng-submit="vm.applyFilters()">
+    <div class="form-group">
+      <label>From</label>
+      <input type="date" ng-model="vm.filters.fromDate" class="form-control">
+    </div>
+    <div class="form-group">
+      <label>To</label>
+      <input type="date" ng-model="vm.filters.toDate" class="form-control">
+    </div>
+    <div class="form-group">
+      <label>Status</label>
+      <select class="form-control" ng-model="vm.filters.status">
+        <option value="">All</option>
+        <option value="PENDING">Pending</option>
+        <option value="SENT">Sent</option>
+        <option value="DISMISSED">Dismissed</option>
+        <option value="HANDLED">Handled</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Apply</button>
+    <button type="button" class="btn btn-default" ng-click="vm.clearFilters()">Clear</button>
+  </form>
+
+  <div ng-if="vm.error" class="alert alert-danger">{{vm.error.message}}</div>
+
+  <rb-loading-spinner ng-if="vm.isLoading"></rb-loading-spinner>
+
+  <div ng-if="!vm.isLoading && !vm.error">
+    <h3>Upcoming bills</h3>
+    <div class="row">
+      <div class="col-sm-6" ng-repeat="reminder in vm.upcomingReminders">
+        <reminder-card
+          reminder="reminder"
+          on-select="vm.selectReminder(reminder)"
+          on-dismiss="vm.selectReminder(reminder); vm.reminder = reminder; vm.dismiss(reminder)"
+          on-handled="vm.selectReminder(reminder); vm.reminder = reminder; vm.markHandled(reminder)"></reminder-card>
+      </div>
+    </div>
+
+    <h3>Past reminders</h3>
+    <div class="row">
+      <div class="col-sm-6" ng-repeat="reminder in vm.pastReminders">
+        <reminder-card
+          reminder="reminder"
+          on-select="vm.selectReminder(reminder)"
+          on-dismiss="vm.selectReminder(reminder)"
+          on-handled="vm.selectReminder(reminder)"></reminder-card>
+      </div>
+    </div>
+
+    <h3>Calendar view</h3>
+    <reminders-calendar reminders="vm.upcomingReminders" on-select="vm.selectReminder(reminder)"></reminders-calendar>
+  </div>
+</div>

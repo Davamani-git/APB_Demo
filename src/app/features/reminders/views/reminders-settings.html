@@ -1,0 +1,39 @@
+<div class="reminders-settings">
+  <h2>Reminder Settings</h2>
+
+  <div ng-if="vm.error" class="alert alert-danger">{{vm.error.message}}</div>
+
+  <form name="settingsForm" ng-submit="vm.savePreferences()">
+    <div class="form-group">
+      <label>Reminder channels</label>
+      <reminder-channel-toggle channels="vm.preferences.channels"></reminder-channel-toggle>
+    </div>
+
+    <div class="form-group">
+      <label>Default lead time (days before due date)</label>
+      <input type="number" class="form-control" ng-model="vm.preferences.leadTimeDays" min="0" max="30" required>
+      <p class="help-block">This default will be applied to newly detected recurring bills. You can adjust lead time per bill where supported.</p>
+    </div>
+
+    <div class="form-group">
+      <label>Time zone</label>
+      <input type="text" class="form-control" ng-model="vm.preferences.timezone">
+    </div>
+
+    <div class="form-group">
+      <label>Consent</label>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" ng-model="vm.preferences.consent.email"> Email communications
+        </label>
+      </div>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" ng-model="vm.preferences.consent.sms"> SMS communications
+        </label>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" ng-disabled="vm.isSaving">Save settings</button>
+  </form>
+</div>
