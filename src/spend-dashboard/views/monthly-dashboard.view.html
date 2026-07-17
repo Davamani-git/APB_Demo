@@ -1,0 +1,82 @@
+<div class="apb-monthly-dashboard" ng-cloak>
+  <loading-spinner is-loading="vm.isLoading"></loading-spinner>
+
+  <div class="row">
+    <div class="col-sm-6">
+      <h2>Monthly Spending Summary</h2>
+    </div>
+    <div class="col-sm-6 text-right apb-month-selector-container">
+      <label for="monthSelect" class="control-label">Select Month:</label>
+      <select id="monthSelect"
+              class="form-control apb-month-selector"
+              ng-model="vm.selectedMonth"
+              ng-options="opt.value as opt.label for opt in vm.monthOptions"
+              ng-change="vm.onMonthChange()">
+      </select>
+    </div>
+  </div>
+
+  <div class="row" ng-if="vm.error">
+    <div class="col-xs-12">
+      <div class="alert alert-danger">
+        <strong>Error:</strong> {{vm.error.message}}
+      </div>
+    </div>
+  </div>
+
+  <div class="row" ng-if="!vm.error && vm.selectedMonth">
+    <div class="col-xs-12">
+      <p class="apb-selected-month-label">Showing data for <strong>{{vm.selectedMonth}}</strong></p>
+    </div>
+  </div>
+
+  <div class="row" ng-if="!vm.error && vm.selectedMonth">
+    <div class="col-xs-12">
+      <freshness-indicator timestamp="vm.summary.lastUpdated" is-stale="vm.showStaleWarning"></freshness-indicator>
+    </div>
+  </div>
+
+  <div class="row" ng-if="!vm.error && vm.selectedMonth">
+    <div class="col-xs-12">
+      <monthly-kpi-cards summary="vm.summary"></monthly-kpi-cards>
+    </div>
+  </div>
+
+  <div class="row" ng-if="!vm.error && vm.selectedMonth">
+    <div class="col-md-8">
+      <monthly-breakdown-chart breakdown="vm.summary.breakdown"></monthly-breakdown-chart>
+    </div>
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">Insights</div>
+        <div class="panel-body">
+          <p>
+            Use this dashboard as your entry point to deeper spending insights.
+          </p>
+          <p>
+            Select a month to see your total spend, number of transactions, and a high-level breakdown of where you spent the most.
+          </p>
+          <p>
+            All information shown here is aggregated and does not display card numbers or sensitive personal details.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" ng-if="!vm.error && vm.selectedMonth && !vm.hasMonthlySummaryAvailable && !vm.isLoading">
+    <div class="col-xs-12">
+      <div class="alert alert-info">
+        There is no spending activity for the selected period. Totals and KPIs are shown as zero.
+      </div>
+    </div>
+  </div>
+
+  <div class="row apb-dashboard-actions" ng-if="!vm.error && vm.selectedMonth">
+    <div class="col-xs-12 text-right">
+      <button type="button" class="btn btn-default" ng-click="vm.refresh()">
+        <span class="glyphicon glyphicon-refresh"></span> Refresh
+      </button>
+    </div>
+  </div>
+</div>
