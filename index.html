@@ -1,148 +1,58 @@
 <!doctype html>
-<html lang="en" ng-app="davBankingWebApp">
+<html ng-app="davBankingInsightsApp">
 <head>
   <meta charset="utf-8">
-  <title>DAVBanking1 - Personalized Insights</title>
+  <title>DAVBanking1 - Personalized Financial Insights</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- Styles -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <link rel="stylesheet" href="assets/styles/personal-insights.css">
-  <link rel="stylesheet" href="assets/styles/context-recommendations.css">
-  <link rel="stylesheet" href="assets/styles/budget-alerts.css">
-  <link rel="stylesheet" href="assets/styles/bill-reminders.css">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/insights.css">
 </head>
 <body>
-  <div class="container" ng-cloak>
-    <div class="page-header">
-      <h1>DAVBanking1 <small>AI Insights &amp; Financial Wellness</small></h1>
-    </div>
+  <div ui-view></div>
 
-    <nav class="navbar navbar-default">
-      <div class="container-fluid">
-        <ul class="nav navbar-nav">
-          <li><a href="#/personal-insights">Personal Insights</a></li>
-          <li><a href="#/budgets">Budgets &amp; Alerts</a></li>
-          <li><a href="#/bill-reminders">Bill Reminders</a></li>
-          <li><a href="#/recommendations">Recommendations</a></li>
-        </ul>
-      </div>
-    </nav>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-animate.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-sanitize.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.29/angular-ui-router.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.6/ui-bootstrap-tpls.js"></script>
 
-    <div ng-view></div>
-  </div>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/app.constants.js"></script>
+  <script src="src/app/app.config.js"></script>
+  <script src="src/app/app.run.js"></script>
 
-  <!-- Scripts -->
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="src/app/shared/services/logging.service.js"></script>
+  <script src="src/app/shared/services/error-handler.service.js"></script>
+  <script src="src/app/shared/services/security-context.service.js"></script>
+  <script src="src/app/shared/services/api-interceptor.service.js"></script>
 
-  <!-- Core / Insight Delivery -->
-  <script src="app/insight-delivery/insight-delivery.module.js"></script>
-  <script src="app/insight-delivery/config/insight-delivery.config.js"></script>
-  <script src="app/insight-delivery/config/insight-delivery.constants.js"></script>
-  <script src="app/insight-delivery/services/security-context.service.js"></script>
-  <script src="app/insight-delivery/services/audit-event.service.js"></script>
-  <script src="app/insight-delivery/services/insight-delivery-policy.service.js"></script>
-  <script src="app/insight-delivery/services/insight-delivery-api.service.js"></script>
-  <script src="app/insight-delivery/controllers/privacy-consent.controller.js"></script>
-  <script src="app/insight-delivery/directives/id-policy-guard.directive.js"></script>
-  <script src="app/insight-delivery/directives/id-blocked-banner.directive.js"></script>
+  <script src="src/app/shared/models/insight.model.js"></script>
+  <script src="src/app/shared/models/transaction.model.js"></script>
+  <script src="src/app/shared/models/user-preferences.model.js"></script>
 
-  <!-- Personal Insights -->
-  <script src="app/personal-insights/personal-insights.module.js"></script>
-  <script src="app/personal-insights/config/personal-insights.constants.js"></script>
-  <script src="app/personal-insights/config/personal-insights.routes.js"></script>
-  <script src="app/personal-insights/services/insight-api.service.js"></script>
-  <script src="app/personal-insights/services/insight-model.service.js"></script>
-  <script src="app/personal-insights/services/insight-preference.service.js"></script>
-  <script src="app/personal-insights/controllers/personal-insights-dashboard.controller.js"></script>
-  <script src="app/personal-insights/controllers/personal-insights-detail.controller.js"></script>
-  <script src="app/personal-insights/controllers/insight-preferences.controller.js"></script>
-  <script src="app/personal-insights/directives/pi-insight-card.directive.js"></script>
-  <script src="app/personal-insights/directives/pi-insight-list.directive.js"></script>
-  <script src="app/personal-insights/directives/pi-insight-skeleton.directive.js"></script>
-  <script src="app/personal-insights/directives/pi-consent-banner.directive.js"></script>
-  <script src="app/personal-insights/filters/pi-currency.filter.js"></script>
-  <script src="app/personal-insights/filters/pi-percent.filter.js"></script>
-  <script src="app/personal-insights/filters/pi-date-range.filter.js"></script>
+  <script src="src/app/shared/directives/loading-spinner/loading-spinner.directive.js"></script>
 
-  <!-- Context Recommendations -->
-  <script src="app/context-recommendations/context-recommendations.module.js"></script>
-  <script src="app/context-recommendations/config/context-recommendations.constants.js"></script>
-  <script src="app/context-recommendations/config/context-recommendations.routes.js"></script>
-  <script src="app/context-recommendations/services/recommendation-api.service.js"></script>
-  <script src="app/context-recommendations/services/recommendation-model.service.js"></script>
-  <script src="app/context-recommendations/services/recommendation-preference.service.js"></script>
-  <script src="app/context-recommendations/controllers/context-recommendations-panel.controller.js"></script>
-  <script src="app/context-recommendations/controllers/context-recommendations-list.controller.js"></script>
-  <script src="app/context-recommendations/controllers/context-recommendation-detail.controller.js"></script>
-  <script src="app/context-recommendations/directives/cr-recommendation-tile.directive.js"></script>
-  <script src="app/context-recommendations/directives/cr-recommendation-list.directive.js"></script>
-  <script src="app/context-recommendations/directives/cr-explainability-badge.directive.js"></script>
-  <script src="app/context-recommendations/filters/cr-percent.filter.js"></script>
-  <script src="app/context-recommendations/filters/cr-risk-label.filter.js"></script>
+  <script src="src/app/personalized-insights/personalized-insights.module.js"></script>
+  <script src="src/app/personalized-insights/core/core.module.js"></script>
+  <script src="src/app/personalized-insights/core/insight-constants.constant.js"></script>
+  <script src="src/app/personalized-insights/core/feature-flags.constant.js"></script>
+  <script src="src/app/personalized-insights/core/insight-mapper.factory.js"></script>
 
-  <!-- Recommendation Control -->
-  <script src="app/recommendation-control/recommendation-control.module.js"></script>
-  <script src="app/recommendation-control/config/recommendation-control.constants.js"></script>
-  <script src="app/recommendation-control/config/recommendation-control.routes.js"></script>
-  <script src="app/recommendation-control/services/recommendation-control-api.service.js"></script>
-  <script src="app/recommendation-control/services/recommendation-feedback.service.js"></script>
-  <script src="app/recommendation-control/directives/rc-confirm-dismiss-bar.directive.js"></script>
-  <script src="app/recommendation-control/controllers/recommendation-history.controller.js"></script>
+  <script src="src/app/personalized-insights/services/services.module.js"></script>
+  <script src="src/app/personalized-insights/services/cache.service.js"></script>
+  <script src="src/app/personalized-insights/services/insights-api.service.js"></script>
+  <script src="src/app/personalized-insights/services/preferences-api.service.js"></script>
+  <script src="src/app/personalized-insights/services/compliance-api.service.js"></script>
+  <script src="src/app/personalized-insights/services/audit-log-api.service.js"></script>
 
-  <!-- Budget Alerts -->
-  <script src="app/budget-alerts/budget-alerts.module.js"></script>
-  <script src="app/budget-alerts/config/budget-alerts.constants.js"></script>
-  <script src="app/budget-alerts/config/budget-alerts.routes.js"></script>
-  <script src="app/budget-alerts/services/budget-alert-api.service.js"></script>
-  <script src="app/budget-alerts/services/budget-model.service.js"></script>
-  <script src="app/budget-alerts/services/alert-model.service.js"></script>
-  <script src="app/budget-alerts/controllers/budget-dashboard.controller.js"></script>
-  <script src="app/budget-alerts/controllers/budget-edit.controller.js"></script>
-  <script src="app/budget-alerts/controllers/alert-history.controller.js"></script>
-  <script src="app/budget-alerts/directives/ba-budget-card.directive.js"></script>
-  <script src="app/budget-alerts/directives/ba-alert-row.directive.js"></script>
-  <script src="app/budget-alerts/filters/ba-currency.filter.js"></script>
-  <script src="app/budget-alerts/filters/ba-alert-status.filter.js"></script>
-
-  <!-- Bill Reminders -->
-  <script src="app/bill-reminders/bill-reminders.module.js"></script>
-  <script src="app/bill-reminders/config/bill-reminders.constants.js"></script>
-  <script src="app/bill-reminders/config/bill-reminders.routes.js"></script>
-  <script src="app/bill-reminders/services/bill-reminder-api.service.js"></script>
-  <script src="app/bill-reminders/services/bill-reminder-model.service.js"></script>
-  <script src="app/bill-reminders/services/bill-reminder-preference.service.js"></script>
-  <script src="app/bill-reminders/controllers/bill-reminders-dashboard.controller.js"></script>
-  <script src="app/bill-reminders/controllers/bill-reminder-preferences.controller.js"></script>
-  <script src="app/bill-reminders/directives/br-reminder-card.directive.js"></script>
-  <script src="app/bill-reminders/directives/br-quiet-hours-selector.directive.js"></script>
-  <script src="app/bill-reminders/filters/br-date.filter.js"></script>
-  <script src="app/bill-reminders/filters/br-amount.filter.js"></script>
-
-  <!-- Root app module wiring personal insights etc -->
-  <script>
-    (function () {
-      'use strict';
-
-      angular
-        .module('davBanking.core', ['davBanking.insightDelivery']);
-
-      angular
-        .module('davBankingWebApp', [
-          'ngRoute',
-          'davBanking.core',
-          'davBanking.personalInsights',
-          'davBanking.contextRecommendations',
-          'davBanking.recommendationControl',
-          'davBanking.budgetAlerts',
-          'davBanking.billReminders'
-        ])
-        .config(['$routeProvider', function ($routeProvider) {
-          $routeProvider.otherwise({ redirectTo: '/personal-insights' });
-        }]);
-    })();
-  </script>
+  <script src="src/app/personalized-insights/ui/ui.module.js"></script>
+  <script src="src/app/personalized-insights/ui/insights.routes.js"></script>
+  <script src="src/app/personalized-insights/ui/controllers/insights-dashboard.controller.js"></script>
+  <script src="src/app/personalized-insights/ui/controllers/insight-detail.controller.js"></script>
+  <script src="src/app/personalized-insights/ui/controllers/insight-preferences.controller.js"></script>
+  <script src="src/app/personalized-insights/ui/directives/insight-card/insight-card.directive.js"></script>
+  <script src="src/app/personalized-insights/ui/directives/insight-list/insight-list.directive.js"></script>
 </body>
 </html>

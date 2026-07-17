@@ -1,0 +1,29 @@
+<div class="container insights-dashboard" ng-init="vm.init()">
+  <div class="page-header">
+    <h1>Personalized Financial Insights</h1>
+  </div>
+
+  <div class="row" ng-if="vm.state === 'loading'">
+    <div class="col-xs-12 text-center">
+      <loading-spinner></loading-spinner>
+    </div>
+  </div>
+
+  <div class="row" ng-if="vm.state === 'error'">
+    <div class="col-xs-12">
+      <div class="alert alert-danger">{{vm.errorMessage}}</div>
+    </div>
+  </div>
+
+  <div class="row" ng-if="vm.state === 'empty'">
+    <div class="col-xs-12">
+      <div class="alert alert-info">No insights are available at this time.</div>
+    </div>
+  </div>
+
+  <div class="row" ng-if="vm.state === 'loaded'">
+    <div class="col-xs-12">
+      <insight-list insights="vm.insights" on-action="vm.onInsightAction(insight, action)"></insight-list>
+    </div>
+  </div>
+</div>

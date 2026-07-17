@@ -1,0 +1,23 @@
+.insights-dashboard {
+  margin-top: 20px;
+}
+
+.insight-card {
+  margin-bottom: 15px;
+}
+
+.insight-card--high {
+  border-left: 4px solid #d9534f;
+}
+
+.insight-card--medium {
+  border-left: 4px solid #f0ad4e;
+}
+
+.insight-detail {
+  margin-top: 20px;
+}
+
+.insight-preferences {
+  margin-top: 20px;
+}

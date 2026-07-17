@@ -1,0 +1,28 @@
+<div class="container insight-detail" ng-switch="vm.state">
+  <div class="page-header">
+    <h1>Insight Details</h1>
+  </div>
+
+  <div ng-switch-when="loading" class="text-center">
+    <loading-spinner></loading-spinner>
+  </div>
+
+  <div ng-switch-when="error" class="alert alert-danger">
+    {{vm.errorMessage}}
+  </div>
+
+  <div ng-switch-when="loaded" ng-if="vm.insight">
+    <h2>{{vm.insight.title}}</h2>
+    <p>{{vm.insight.summary}}</p>
+
+    <div ng-if="vm.insight.details">
+      <h4>Details</h4>
+      <pre>{{vm.insight.details | json}}</pre>
+    </div>
+
+    <div ng-if="vm.insight.explanation">
+      <h4>Explanation</h4>
+      <p ng-if="vm.insight.explanation.highLevel">{{vm.insight.explanation.highLevel}}</p>
+    </div>
+  </div>
+</div>

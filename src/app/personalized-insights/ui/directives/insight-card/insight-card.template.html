@@ -1,0 +1,19 @@
+<div class="panel panel-default insight-card" ng-class="{'insight-card--high': insight.severity === 'HIGH', 'insight-card--medium': insight.severity === 'MEDIUM'}">
+  <div class="panel-heading">
+    <h3 class="panel-title">{{::insight.title}}</h3>
+    <span class="label label-info">{{::insight.category}}</span>
+    <span class="label label-default pull-right" ng-if="insight.createdAt">{{::insight.createdAt | date:'mediumDate'}}</span>
+  </div>
+  <div class="panel-body">
+    <p>{{::insight.summary}}</p>
+    <div ng-if="insight.explanation && insight.explanation.highLevel">
+      <small class="text-muted">{{::insight.explanation.highLevel}}</small>
+    </div>
+  </div>
+  <div class="panel-footer text-right">
+    <button type="button" class="btn btn-primary btn-sm" ng-if="insight.isActionable()" ng-click="handleAction('VIEW_DETAILS')">
+      {{::insight.actionLabel || 'View details'}}
+    </button>
+    <button type="button" class="btn btn-link btn-sm" ng-click="handleAction('DISMISS')">Dismiss</button>
+  </div>
+</div>
