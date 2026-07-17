@@ -1,0 +1,33 @@
+<div class="bill-reminder-preferences" ng-cloak>
+  <h2>Bill Reminder Preferences</h2>
+
+  <div ng-if="vm.loading">
+    <span class="glyphicon glyphicon-refresh spinning"></span> Loading...</div>
+
+  <div class="alert alert-danger" ng-if="vm.error">{{vm.error}}</div>
+  <div class="alert alert-success" ng-if="vm.success">{{vm.success}}</div>
+
+  <form name="preferencesForm" ng-if="!vm.loading && vm.model" novalidate
+        ng-submit="vm.save(preferencesForm)">
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" ng-model="vm.model.enabled"> Enable bill reminders
+      </label>
+    </div>
+
+    <fieldset ng-disabled="!vm.model.enabled">
+      <legend>Channels</legend>
+      <div class="checkbox" ng-repeat="(channel, enabled) in vm.model.channels">
+        <label>
+          <input type="checkbox" ng-model="vm.model.channels[channel]"> {{channel}}
+        </label>
+      </div>
+
+      <legend>Quiet hours</legend>
+      <br-quiet-hours-selector quiet-hours="vm.model.quietHours"></br-quiet-hours-selector>
+    </fieldset>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="button" class="btn btn-default" ng-click="vm.reset()">Reset</button>
+  </form>
+</div>

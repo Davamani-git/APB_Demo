@@ -1,0 +1,17 @@
+<div class="modal-body" ng-controller="PrivacyConsentController as vm">
+  <div ng-if="vm.loading" class="text-center">
+    <span class="glyphicon glyphicon-refresh spinning"></span> Loading privacy settings...
+  </div>
+  <div ng-if="!vm.loading">
+    <h3>Personalized insights and recommendations</h3>
+    <p>
+      We use your account and transaction data to provide AI-driven insights and recommendations that may help you
+      manage your finances. You can choose whether to allow this type of processing.
+    </p>
+    <div class="alert alert-danger" ng-if="vm.error">{{vm.error}}</div>
+    <div class="text-right">
+      <button type="button" class="btn btn-default" ng-click="vm.decline()">Decline</button>
+      <button type="button" class="btn btn-primary" ng-click="vm.accept()">Accept</button>
+    </div>
+  </div>
+</div>

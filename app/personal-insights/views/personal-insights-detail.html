@@ -1,0 +1,54 @@
+<div class="personal-insights-detail" ng-cloak>
+  <button class="btn btn-link" ng-click="vm.backToDashboard()">
+    <span class="glyphicon glyphicon-chevron-left"></span> Back to insights
+  </button>
+
+  <div ng-if="vm.loading">
+    <pi-insight-skeleton></pi-insight-skeleton>
+  </div>
+
+  <div class="alert alert-danger" ng-if="vm.error">{{vm.error}}</div>
+
+  <div ng-if="!vm.loading && vm.insight" id-policy-guard="vm.insight">
+    <h2>{{vm.insight.title}}</h2>
+    <p class="text-muted">Category: {{vm.insight.category}} | Severity: {{vm.insight.severity}}</p>
+
+    <p ng-if="vm.insight.description">{{vm.insight.description}}</p>
+    <p ng-if="!vm.insight.description">{{vm.insight.summary}}</p>
+
+    <div ng-if="vm.insight.impactAmount">
+      <strong>Impact:</strong>
+      {{vm.insight.impactAmount | piCurrency:vm.insight.currency}}
+      <span ng-if="vm.insight.timeRange">over {{vm.insight.timeRange | piDateRange}}</span>
+    </div>
+
+    <div class="related-accounts" ng-if="vm.insight.relatedAccounts.length">
+      <h4>Related accounts</h4>
+      <ul>
+        <li ng-repeat="acct in vm.insight.relatedAccounts">
+          {{acct.maskedAccountId}} ({{acct.type}})
+        </li>
+      </ul>
+      <button class="btn btn-default btn-sm" ng-click="vm.showRelatedTransactions()">
+        View related transactions
+      </button>
+    </div>
+
+    <div class="insight-actions">
+      <button type="button" class="btn btn-success" ng-click="vm.markHelpful()">
+        Helpful
+      </button>
+      <button type="button" class="btn btn-default" ng-click="vm.markNotHelpful()">
+        Not helpful
+      </button>
+    </div>
+
+    <div class="panel panel-default" style="margin-top: 20px;">
+      <div class="panel-heading">Context-aware recommendations</div>
+      <div class="panel-body">
+        <cr-recommendation-list ng-if="vm.insight.id"
+                                context="{ contextType: 'INSIGHT', contextId: vm.insight.id }"></cr-recommendation-list>
+      </div>
+    </div>
+  </div>
+</div>

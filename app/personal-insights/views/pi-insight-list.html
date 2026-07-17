@@ -1,0 +1,12 @@
+<div class="pi-insight-list">
+  <div ng-if="!insights.length" class="alert alert-info">
+    No insights available for the selected filters.
+  </div>
+  <div class="row" ng-if="insights.length">
+    <div class="col-md-6" ng-repeat="insight in insights">
+      <pi-insight-card insight="insight"
+                       on-open="onOpen({ insight: insight })"
+                       on-dismiss="onDismiss({ insight: insight })"></pi-insight-card>
+    </div>
+  </div>
+</div>

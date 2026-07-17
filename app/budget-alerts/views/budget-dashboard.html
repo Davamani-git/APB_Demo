@@ -1,0 +1,25 @@
+<div class="budget-dashboard" ng-cloak>
+  <div class="clearfix">
+    <h2 class="pull-left">Budgets</h2>
+    <button type="button" class="btn btn-primary pull-right" ng-click="vm.createBudget()">Create budget</button>
+  </div>
+
+  <div ng-if="vm.loading">
+    <span class="glyphicon glyphicon-refresh spinning"></span> Loading budgets...
+  </div>
+  <div class="alert alert-danger" ng-if="vm.error">{{vm.error}}</div>
+
+  <div class="row" ng-if="!vm.loading && vm.budgets.length">
+    <div class="col-md-4" ng-repeat="budget in vm.budgets">
+      <ba-budget-card budget="budget" on-edit="vm.editBudget(budget)"></ba-budget-card>
+    </div>
+  </div>
+
+  <div ng-if="!vm.loading && !vm.budgets.length" class="alert alert-info">
+    No budgets configured yet.
+  </div>
+
+  <p>
+    <a href="#/alerts">View alert history</a>
+  </p>
+</div>

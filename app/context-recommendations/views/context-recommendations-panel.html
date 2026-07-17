@@ -1,0 +1,17 @@
+<div class="context-recommendations-panel" ng-cloak>
+  <div ng-if="vm.loading">
+    <span class="glyphicon glyphicon-refresh spinning"></span> Loading recommendations...
+  </div>
+  <div class="alert alert-danger" ng-if="vm.error">{{vm.error}}</div>
+  <div ng-if="!vm.loading && !vm.error">
+    <div ng-if="!vm.recommendations.length" class="text-muted">
+      No recommendations available right now.
+    </div>
+    <div ng-repeat="rec in vm.recommendations">
+      <cr-recommendation-tile recommendation="rec"
+                               on-confirm="vm.onConfirm(rec)"
+                               on-dismiss="vm.onDismiss(rec)"
+                               on-view-details="vm.onViewDetails(rec)"></cr-recommendation-tile>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,29 @@
+<div class="context-recommendation-detail" ng-cloak>
+  <button class="btn btn-link" href="#/recommendations" onclick="window.location.hash = '#/recommendations'; return false;">
+    <span class="glyphicon glyphicon-chevron-left"></span> Back to recommendations
+  </button>
+
+  <div ng-if="vm.loading">
+    <span class="glyphicon glyphicon-refresh spinning"></span> Loading...
+  </div>
+  <div class="alert alert-danger" ng-if="vm.error">{{vm.error}}</div>
+
+  <div ng-if="!vm.loading && vm.recommendation">
+    <h2>{{vm.recommendation.title}}</h2>
+    <p>{{vm.recommendation.description || vm.recommendation.shortDescription}}</p>
+
+    <p ng-if="vm.recommendation.expectedBenefit.annualSavings">
+      Potential annual savings: {{vm.recommendation.expectedBenefit.annualSavings | currency:vm.recommendation.expectedBenefit.currency + ' '}}
+    </p>
+
+    <p ng-if="vm.recommendation.risk">
+      Risk: {{vm.recommendation.risk | crRiskLabel}} ({{vm.recommendation.risk.score | number:2}})
+    </p>
+
+    <cr-explainability-badge explanation="vm.recommendation.explanation"></cr-explainability-badge>
+
+    <div class="recommendation-actions" style="margin-top: 15px;">
+      <rc-confirm-dismiss-bar recommendation="vm.recommendation" context="vm.recommendation.context"></rc-confirm-dismiss-bar>
+    </div>
+  </div>
+</div>

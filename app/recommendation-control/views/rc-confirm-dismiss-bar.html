@@ -1,0 +1,12 @@
+<div class="rc-confirm-dismiss-bar">
+  <button type="button" class="btn btn-success btn-sm"
+          ng-click="confirm()" ng-disabled="state.busy || state.confirmed">
+    Confirm
+  </button>
+  <button type="button" class="btn btn-default btn-sm"
+          ng-click="dismiss()" ng-disabled="state.busy || state.dismissed">
+    Dismiss
+  </button>
+  <span class="text-success" ng-if="state.confirmed">Confirmed</span>
+  <span class="text-muted" ng-if="state.dismissed">Dismissed</span>
+</div>

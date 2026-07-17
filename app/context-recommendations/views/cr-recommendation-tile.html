@@ -1,0 +1,22 @@
+<div class="panel panel-default recommendation-tile" id-policy-guard="recommendation">
+  <div class="panel-heading">
+    <h3 class="panel-title">{{recommendation.title}}</h3>
+  </div>
+  <div class="panel-body">
+    <p>{{recommendation.shortDescription}}</p>
+    <p ng-if="recommendation.expectedBenefit.annualSavings">
+      Estimated annual savings:
+      {{recommendation.expectedBenefit.annualSavings | currency:recommendation.expectedBenefit.currency + ' '}}
+    </p>
+    <p class="text-muted" ng-if="recommendation.risk">
+      {{recommendation.risk | crRiskLabel}}
+    </p>
+    <cr-explainability-badge explanation="recommendation.explanation"></cr-explainability-badge>
+  </div>
+  <div class="panel-footer text-right">
+    <rc-confirm-dismiss-bar recommendation="recommendation" context="recommendation.context"></rc-confirm-dismiss-bar>
+    <button type="button" class="btn btn-link btn-sm" ng-click="onViewDetails({ recommendation: recommendation })">
+      View details
+    </button>
+  </div>
+</div>
