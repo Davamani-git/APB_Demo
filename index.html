@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="davmsApp">
+<head>
+  <meta charset="UTF-8">
+  <title>DAVMS Monthly Spending Summary Dashboard</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="src/css/main.css">
+  <link rel="stylesheet" href="src/css/monthly-summary.css">
+</head>
+<body>
+  <div class="container davms-root-container">
+    <header class="davms-header">
+      <h1 class="davms-title">Monthly Spending Summary</h1>
+    </header>
+
+    <!-- Primary view container -->
+    <div ng-view class="davms-view-container"></div>
+  </div>
+
+  <!-- Scripts: AngularJS core and modules -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-sanitize.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.6/ui-bootstrap-tpls.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+  <!-- Application scripts (order is critical) -->
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/app.config.js"></script>
+  <script src="src/app/app.run.js"></script>
+
+  <script src="src/app/core/constants/env-constants.js"></script>
+
+  <script src="src/app/core/models/error-model.js"></script>
+  <script src="src/app/core/models/summary-model.js"></script>
+  <script src="src/app/core/models/breakdown-model.js"></script>
+  <script src="src/app/core/models/month-context-model.js"></script>
+
+  <script src="src/app/core/services/logging.service.js"></script>
+  <script src="src/app/core/services/config.service.js"></script>
+  <script src="src/app/core/services/env-config.service.js"></script>
+  <script src="src/app/core/services/http-interceptor.service.js"></script>
+  <script src="src/app/core/services/error-mapping.service.js"></script>
+  <script src="src/app/core/services/telemetry.service.js"></script>
+  <script src="src/app/core/services/month-selection.service.js"></script>
+  <script src="src/app/core/services/kpi.service.js"></script>
+  <script src="src/app/core/services/breakdown.service.js"></script>
+  <script src="src/app/core/services/summary-api.service.js"></script>
+  <script src="src/app/core/services/summary-mock.service.js"></script>
+
+  <script src="src/app/features/monthly-summary/monthly-summary.controller.js"></script>
+  <script src="src/app/features/monthly-summary/monthly-summary.directive.js"></script>
+  <script src="src/app/features/monthly-summary/monthly-summary-filters.js"></script>
+</body>
+</html>

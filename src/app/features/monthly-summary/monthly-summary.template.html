@@ -1,0 +1,78 @@
+<div class="monthly-summary-dashboard" ng-class="{ 'loading': vm.isLoading }">
+  <div class="row">
+    <div class="col-sm-4">
+      <label for="monthSelect">Select Month</label>
+      <select id="monthSelect" class="form-control" ng-model="vm.selectedMonth" ng-options="month for month in vm.availableMonths" ng-change="vm.handleMonthChange()">
+      </select>
+    </div>
+  </div>
+
+  <div class="row" ng-if="vm.isLoading">
+    <div class="col-sm-12 text-center monthly-summary-loading">
+      <span class="glyphicon glyphicon-refresh spinning"></span>
+      <span>Loading monthly summary...</span>
+    </div>
+  </div>
+
+  <div ng-if="vm.error && !vm.isLoading" class="row">
+    <div class="col-sm-12">
+      <div class="alert alert-danger">
+        <strong>Error:</strong> {{ vm.error.message }}
+      </div>
+    </div>
+  </div>
+
+  <div ng-if="!vm.isLoading && !vm.error && vm.summary" class="monthly-summary-content">
+    <div class="row monthly-summary-kpi-row">
+      <div class="col-sm-4">
+        <div class="panel panel-default kpi-card">
+          <div class="panel-heading">Total Spend</div>
+          <div class="panel-body">
+            <span class="kpi-value">{{ vm.summary.totalSpend | currencyNoSymbol }}</span>
+            <span class="kpi-currency">{{ vm.summary.currencyCode }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="panel panel-default kpi-card">
+          <div class="panel-heading">Transactions</div>
+          <div class="panel-body">
+            <span class="kpi-value">{{ vm.summary.transactionCount }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4" ng-if="vm.summary.averageTransactionAmount">
+        <div class="panel panel-default kpi-card">
+          <div class="panel-heading">Average Transaction</div>
+          <div class="panel-body">
+            <span class="kpi-value">{{ vm.summary.averageTransactionAmount | currencyNoSymbol }}</span>
+            <span class="kpi-currency">{{ vm.summary.currencyCode }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row monthly-summary-breakdown-row" ng-if="vm.breakdown && vm.breakdown.categories.length">
+      <div class="col-sm-12">
+        <h3>Spend Breakdown</h3>
+        <div class="row">
+          <div class="col-sm-3" ng-repeat="cat in vm.breakdown.categories">
+            <div class="panel panel-default breakdown-card">
+              <div class="panel-heading">{{ cat.label }}</div>
+              <div class="panel-body">
+                <div class="breakdown-amount">{{ cat.amount | currencyNoSymbol }} {{ vm.summary.currencyCode }}</div>
+                <div class="breakdown-percentage">{{ cat.percentage }}%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row monthly-summary-meta-row">
+      <div class="col-sm-12 text-right">
+        <small>Data as of {{ vm.summary.dataFreshness }}</small>
+      </div>
+    </div>
+  </div>
+</div>
