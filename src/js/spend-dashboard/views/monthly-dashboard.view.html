@@ -1,0 +1,41 @@
+<div class="davms-dashboard-container" ng-cloak>
+  <div class="row">
+    <div class="col-xs-12">
+      <month-selector
+        selected-month="vm.selectedMonth"
+        available-months="vm.availableMonths"
+        on-month-change="vm.onMonthChange(selectedMonth)">
+      </month-selector>
+    </div>
+  </div>
+
+  <div class="row" ng-if="vm.isLoading">
+    <div class="col-xs-12">
+      <p class="davms-loading">Loading monthly spending summary...</p>
+    </div>
+  </div>
+
+  <div class="row" ng-if="vm.errorMessage">
+    <div class="col-xs-12">
+      <div class="alert alert-info davms-error-banner" ng-bind="vm.errorMessage"></div>
+    </div>
+  </div>
+
+  <div class="row" ng-if="!vm.isLoading">
+    <div class="col-xs-12">
+      <summary-kpi-cards kpis="vm.kpis"></summary-kpi-cards>
+    </div>
+  </div>
+
+  <div class="row" ng-if="!vm.isLoading">
+    <div class="col-xs-12">
+      <h3>Basic Breakdown of Monthly Spend</h3>
+      <basic-spend-breakdown-chart
+        breakdown-series="vm.breakdownSeries"
+        breakdown-tiles="vm.breakdownTiles"
+        mode="tiles"
+        on-category-click="vm.handleCategoryClick(category)">
+      </basic-spend-breakdown-chart>
+    </div>
+  </div>
+</div>
