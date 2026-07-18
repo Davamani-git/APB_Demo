@@ -1,0 +1,45 @@
+<div class="monthly-dashboard">
+  <div class="dashboard-header">
+    <h2>Monthly Spending Summary</h2>
+    <p class="text-muted">Review your credit card spending patterns and insights</p>
+  </div>
+
+  <div class="alert alert-danger error-banner" ng-if="vm.errorMessage">
+    <strong>Error:</strong> {{ vm.errorMessage }}
+  </div>
+
+  <div class="loading-spinner" ng-if="vm.isLoading">
+    <i class="glyphicon glyphicon-refresh spinning"></i> Loading your spending summary...
+  </div>
+
+  <div ng-if="!vm.isLoading">
+    <month-selector
+      available-months="vm.availableMonths"
+      selected-month="vm.selectedMonth"
+      on-month-change="vm.onMonthChange(selectedMonth)">
+    </month-selector>
+
+    <summary-kpi-cards kpis="vm.kpis"></summary-kpi-cards>
+
+    <basic-spend-breakdown-chart
+      breakdown-series="vm.breakdownSeries"
+      breakdown-tiles="vm.breakdownTiles"
+      mode="both">
+    </basic-spend-breakdown-chart>
+
+    <div class="partial-data-warning" ng-if="vm.breakdownModel and vm.breakdownModel.hasPartialData">
+      <strong>Note:</strong> Some breakdown data is currently unavailable. The information shown may be incomplete.
+    </div>
+  </div>
+</div>
+
+<style>
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>

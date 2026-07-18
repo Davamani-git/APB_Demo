@@ -1,0 +1,149 @@
+.dashboard-header {
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.dashboard-header h2 {
+  margin-top: 0;
+  color: #333;
+}
+
+.month-selector-container {
+  margin-bottom: 20px;
+}
+
+.month-selector-label {
+  font-weight: bold;
+  margin-right: 10px;
+  display: inline-block;
+}
+
+.month-selector-control {
+  display: inline-block;
+  min-width: 200px;
+}
+
+.kpi-cards-container {
+  margin-bottom: 30px;
+}
+
+.kpi-card {
+  background-color: white;
+  padding: 20px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.kpi-card-label {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.kpi-card-value {
+  font-size: 32px;
+  font-weight: bold;
+  color: #337ab7;
+  margin-bottom: 5px;
+}
+
+.kpi-card-unit {
+  font-size: 14px;
+  color: #999;
+}
+
+.breakdown-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
+}
+
+.breakdown-header {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.breakdown-chart-container {
+  position: relative;
+  height: 400px;
+  margin-bottom: 20px;
+}
+
+.breakdown-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.breakdown-tile {
+  flex: 1 1 calc(33.333% - 15px);
+  min-width: 200px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fafafa;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.breakdown-tile:hover {
+  background-color: #f0f0f0;
+  border-color: #337ab7;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.breakdown-tile-label {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.breakdown-tile-amount {
+  font-size: 20px;
+  color: #337ab7;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.breakdown-tile-percentage {
+  font-size: 14px;
+  color: #666;
+}
+
+.no-data-message {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+  font-size: 16px;
+}
+
+.partial-data-warning {
+  background-color: #fcf8e3;
+  border: 1px solid #faebcc;
+  color: #8a6d3b;
+  padding: 10px 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+  .kpi-card-value {
+    font-size: 24px;
+  }
+  
+  .breakdown-tile {
+    flex: 1 1 100%;
+  }
+}

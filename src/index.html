@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="davms.app">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DAVMS Monthly Spending Summary Dashboard</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/spend-dashboard.css">
+</head>
+<body>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#/dashboard/monthly-summary">DAVMS</a>
+      </div>
+      <ul class="nav navbar-nav">
+        <li><a href="#/dashboard/monthly-summary">Monthly Summary</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div ng-view></div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-sanitize.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+
+  <script src="js/app/app.module.js"></script>
+  <script src="js/app/app.config.js"></script>
+  <script src="js/app/app.run.js"></script>
+  <script src="telemetry/logging.config.js"></script>
+  <script src="telemetry/metrics.config.js"></script>
+
+  <script src="js/spend-dashboard/spend-dashboard.module.js"></script>
+  <script src="js/spend-dashboard/spend-dashboard.routes.js"></script>
+  <script src="js/spend-dashboard/config/spend-dashboard.config.js"></script>
+  <script src="js/spend-dashboard/models/monthly-summary.model.js"></script>
+  <script src="js/spend-dashboard/models/spend-breakdown.model.js"></script>
+  <script src="js/spend-dashboard/services/config.service.js"></script>
+  <script src="js/spend-dashboard/services/logging.service.js"></script>
+  <script src="js/spend-dashboard/services/error-handling.service.js"></script>
+  <script src="js/spend-dashboard/services/monthly-summary-api.service.js"></script>
+  <script src="js/spend-dashboard/services/month-selection.service.js"></script>
+  <script src="js/spend-dashboard/services/kpi-computation.service.js"></script>
+  <script src="js/spend-dashboard/services/spend-breakdown-mapper.service.js"></script>
+  <script src="js/spend-dashboard/factories/http-interceptor.factory.js"></script>
+  <script src="js/spend-dashboard/filters/currency-format.filter.js"></script>
+  <script src="js/spend-dashboard/filters/percentage-format.filter.js"></script>
+  <script src="js/spend-dashboard/directives/month-selector.directive.js"></script>
+  <script src="js/spend-dashboard/directives/summary-kpi-cards.directive.js"></script>
+  <script src="js/spend-dashboard/directives/basic-spend-breakdown-chart.directive.js"></script>
+  <script src="js/spend-dashboard/controllers/monthly-dashboard.controller.js"></script>
+</body>
+</html>
