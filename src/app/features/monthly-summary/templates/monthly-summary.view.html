@@ -1,0 +1,26 @@
+<div class="monthly-summary" ng-cloak>
+  <h1>Monthly Spending Summary</h1>
+
+  <month-selector
+    selected-month="vm.selectedMonth"
+    available-months="vm.availableMonths"
+    on-month-change="vm.onMonthChange(month)">
+  </month-selector>
+
+  <div ng-if="vm.isLoading" class="loading">
+    <img ng-src="assets/img/loading-spinner.gif" alt="Loading" />
+  </div>
+
+  <div ng-if="vm.error" class="alert alert-danger">
+    {{ vm.error.message }}
+  </div>
+
+  <div ng-if="!vm.isLoading && vm.summary">
+    <monthly-summary-cards summary="vm.summary"></monthly-summary-cards>
+
+    <monthly-summary-chart
+      summary="vm.summary"
+      ng-if="vm.summary.breakdownItems && vm.summary.breakdownItems.length">
+    </monthly-summary-chart>
+  </div>
+</div>

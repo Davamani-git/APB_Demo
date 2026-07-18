@@ -1,0 +1,8 @@
+{
+  "telemetry": {
+    "endpoint": "https://telemetry.dev.davms.example.com",
+    "batchSize": 20,
+    "flushIntervalMs": 30000,
+    "logLevel": "info"
+  }
+}

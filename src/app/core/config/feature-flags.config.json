@@ -1,0 +1,7 @@
+{
+  "features": {
+    "enableBasicBreakdown": true,
+    "enableAverageTransactionValue": true,
+    "enableDataFreshnessIndicator": true
+  }
+}

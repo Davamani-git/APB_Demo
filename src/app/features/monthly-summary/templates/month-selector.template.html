@@ -1,0 +1,9 @@
+<div class="month-selector">
+  <label for="monthSelect">Select month:</label>
+  <select id="monthSelect"
+          class="form-control"
+          ng-model="vm.selectedMonth"
+          ng-options="month | monthDisplay for month in vm.availableMonths"
+          ng-change="vm.handleChange()">
+  </select>
+</div>

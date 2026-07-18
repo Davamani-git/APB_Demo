@@ -1,0 +1,12 @@
+<div class="summary-chart" ng-if="vm.summary && vm.summary.breakdownItems && vm.summary.breakdownItems.length">
+  <h2>Spending Breakdown</h2>
+  <div class="breakdown-bar" ng-repeat="item in vm.summary.breakdownItems">
+    <div class="label">{{ item.categoryLabel }}</div>
+    <div class="bar">
+      <div class="fill" ng-style="{ width: item.percentage + '%' }"></div>
+    </div>
+    <div class="amount">
+      {{ item.amount | currencySafe:vm.summary.currencyCode }} ({{ item.percentage | number:1 }}%)
+    </div>
+  </div>
+</div>

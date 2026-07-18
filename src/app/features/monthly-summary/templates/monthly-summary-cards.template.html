@@ -1,0 +1,28 @@
+<div class="summary-cards" ng-if="vm.summary">
+  <div class="row">
+    <div class="col-sm-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">Total Spend</div>
+        <div class="panel-body">
+          {{ vm.summary.totalSpend | currencySafe:vm.summary.currencyCode }}
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">Transactions</div>
+        <div class="panel-body">
+          {{ vm.summary.transactionCount }}
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4" ng-if="vm.summary.transactionCount > 0">
+      <div class="panel panel-default">
+        <div class="panel-heading">Average Transaction Value</div>
+        <div class="panel-body">
+          {{ vm.summary.averageTransactionValue | currencySafe:vm.summary.currencyCode }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
