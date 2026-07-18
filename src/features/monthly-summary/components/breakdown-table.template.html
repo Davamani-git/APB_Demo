@@ -1,0 +1,19 @@
+<table class="table table-striped" ng-if="vm.breakdown && vm.breakdown.length">
+    <thead>
+        <tr>
+            <th>Category</th>
+            <th class="text-right">Amount</th>
+            <th class="text-right">Transactions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="item in vm.breakdown">
+            <td>{{item.categoryLabel}}</td>
+            <td class="text-right">{{item.totalAmount | number:2}}</td>
+            <td class="text-right">{{item.transactionCount}}</td>
+        </tr>
+    </tbody>
+</table>
+<div ng-if="!vm.breakdown || !vm.breakdown.length" class="text-muted">
+    No breakdown data available for this month.
+</div>

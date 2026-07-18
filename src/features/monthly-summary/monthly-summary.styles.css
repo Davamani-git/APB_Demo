@@ -1,0 +1,44 @@
+.monthly-summary-dashboard {
+    padding-top: 15px;
+    padding-bottom: 30px;
+}
+
+.month-selector {
+    margin-bottom: 20px;
+}
+
+.kpi-card {
+    text-align: center;
+}
+
+.kpi-card .panel-heading {
+    display: flex;
+    align-items: center;
+}
+
+.kpi-card .kpi-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+}
+
+.kpi-card .kpi-label {
+    font-weight: bold;
+}
+
+.kpi-card .kpi-value {
+    font-size: 1.5em;
+}
+
+.summary-chart {
+    margin-top: 20px;
+}
+
+.loading-spinner .spinning {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}

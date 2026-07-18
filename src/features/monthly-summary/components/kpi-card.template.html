@@ -1,0 +1,11 @@
+<div class="col-sm-4 col-xs-12">
+    <div class="panel panel-default kpi-card" ng-class="vm.kpi.cssClass">
+        <div class="panel-heading">
+            <img ng-if="vm.kpi.icon" ng-src="{{vm.kpi.icon}}" alt="" class="kpi-icon">
+            <span class="kpi-label">{{vm.kpi.label}}</span>
+        </div>
+        <div class="panel-body">
+            <span class="kpi-value">{{vm.kpi.formatValue()}}</span>
+        </div>
+    </div>
+</div>
