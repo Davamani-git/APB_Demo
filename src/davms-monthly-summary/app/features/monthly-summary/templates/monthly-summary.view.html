@@ -1,0 +1,92 @@
+<div class="davms-monthly-summary">
+  <!-- Selectors Row -->
+  <div class="row davms-selector-row">
+    <div class="col-xs-12 col-md-6">
+      <label>Account</label>
+      <select class="form-control" ng-model="vm.selectedAccountId" ng-options="acc.id as acc.displayName for acc in vm.accounts" ng-change="vm.onAccountChange()"></select>
+    </div>
+    <div class="col-xs-12 col-md-6">
+      <label>Month</label>
+      <select class="form-control" ng-model="vm.selectedMonth" ng-options="month.value as month.label for month in vm.availableMonths" ng-change="vm.onMonthChange()"></select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="row" ng-if="vm.isLoading">
+    <div class="col-xs-12">
+      <div class="davms-loading text-center">
+        <span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+        <span>Loading monthly summary...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div class="row" ng-if="vm.error">
+    <div class="col-xs-12">
+      <div class="alert alert-danger">
+        <strong>Error:</strong> {{ vm.error.userMessage }}
+        <button class="btn btn-default btn-sm pull-right" ng-click="vm.retry()" ng-if="vm.error.retryable">Retry</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="row" ng-if="vm.hasData && vm.isEmpty">
+    <div class="col-xs-12">
+      <div class="alert alert-info">
+        No transactions found for the selected month.
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI & Breakdown Content -->
+  <div ng-if="vm.hasData && !vm.isEmpty">
+    <!-- KPI Cards -->
+    <div class="row davms-kpi-row">
+      <summary-card
+        label="Total Spend"
+        icon="glyphicon glyphicon-credit-card"
+        value="vm.kpiSummary.totalSpend"
+        value-format="currency"
+        subtext="This month">
+      </summary-card>
+
+      <summary-card
+        label="Transactions"
+        icon="glyphicon glyphicon-list-alt"
+        value="vm.kpiSummary.transactionCount"
+        value-format="number">
+      </summary-card>
+
+      <summary-card
+        label="Avg. Transaction"
+        icon="glyphicon glyphicon-stats"
+        value="vm.kpiSummary.averageTransactionValue"
+        value-format="currency"
+        subtext="Per transaction">
+      </summary-card>
+
+      <summary-card
+        ng-if="vm.kpiSummary.topCategoryLabel"
+        label="Top Category"
+        icon="glyphicon glyphicon-tags"
+        value="vm.kpiSummary.topCategoryLabel"
+        value-format="string"
+        subtext="{{ vm.kpiSummary.topCategoryAmount | currencyPrecise }}">
+      </summary-card>
+    </div>
+
+    <!-- Breakdown Chart -->
+    <div class="row davms-breakdown-row" ng-if="vm.breakdownEntries.length">
+      <breakdown-chart entries="vm.breakdownEntries" title="Monthly Spend Breakdown"></breakdown-chart>
+    </div>
+
+    <!-- Actions -->
+    <div class="row davms-actions-row">
+      <div class="col-xs-12 text-right">
+        <a class="btn btn-primary" href="#/spend-analytics">View Detailed Insights</a>
+      </div>
+    </div>
+  </div>
+</div>
