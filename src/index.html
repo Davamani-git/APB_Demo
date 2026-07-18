@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="davms.app">
+<head>
+  <meta charset="UTF-8">
+  <title>DAVMS Monthly Spending Summary Dashboard</title>
+  <link rel="stylesheet" href="src/js/lib/bootstrap.min.css">
+  <link rel="stylesheet" href="src/assets/css/app.css">
+  <link rel="stylesheet" href="src/assets/css/spend-dashboard.css">
+</head>
+<body>
+  <div class="container-fluid">
+    <div ng-view></div>
+  </div>
+
+  <script src="src/js/lib/jquery.min.js"></script>
+  <script src="src/js/lib/bootstrap.min.js"></script>
+  <script src="src/js/lib/angular.min.js"></script>
+  <script src="src/js/lib/angular-route.min.js"></script>
+  <script src="src/js/lib/angular-animate.min.js"></script>
+  <script src="src/js/lib/angular-sanitize.min.js"></script>
+  <script src="src/js/lib/ui-bootstrap.min.js"></script>
+  <script src="src/js/lib/chart.min.js"></script>
+
+  <script src="src/js/app/app.module.js"></script>
+  <script src="src/js/app/app.config.js"></script>
+  <script src="src/js/app/app.run.js"></script>
+
+  <script src="src/telemetry/logging.config.js"></script>
+  <script src="src/telemetry/metrics.config.js"></script>
+
+  <script src="src/js/spend-dashboard/spend-dashboard.module.js"></script>
+  <script src="src/js/spend-dashboard/spend-dashboard.routes.js"></script>
+  <script src="src/js/spend-dashboard/config/spend-dashboard.config.js"></script>
+
+  <script src="src/js/spend-dashboard/models/monthly-summary.model.js"></script>
+  <script src="src/js/spend-dashboard/models/spend-breakdown.model.js"></script>
+
+  <script src="src/js/spend-dashboard/services/config.service.js"></script>
+  <script src="src/js/spend-dashboard/services/logging.service.js"></script>
+  <script src="src/js/spend-dashboard/services/error-handling.service.js"></script>
+  <script src="src/js/spend-dashboard/services/monthly-summary-api.service.js"></script>
+  <script src="src/js/spend-dashboard/services/month-selection.service.js"></script>
+  <script src="src/js/spend-dashboard/services/kpi-computation.service.js"></script>
+  <script src="src/js/spend-dashboard/services/spend-breakdown-mapper.service.js"></script>
+
+  <script src="src/js/spend-dashboard/factories/http-interceptor.factory.js"></script>
+
+  <script src="src/js/spend-dashboard/filters/currency-format.filter.js"></script>
+  <script src="src/js/spend-dashboard/filters/percentage-format.filter.js"></script>
+
+  <script src="src/js/spend-dashboard/directives/month-selector.directive.js"></script>
+  <script src="src/js/spend-dashboard/directives/summary-kpi-cards.directive.js"></script>
+  <script src="src/js/spend-dashboard/directives/basic-spend-breakdown-chart.directive.js"></script>
+
+  <script src="src/js/spend-dashboard/controllers/monthly-dashboard.controller.js"></script>
+</body>
+</html>

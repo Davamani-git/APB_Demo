@@ -1,0 +1,23 @@
+<div ng-if="mode === 'tiles'" class="row">
+  <div class="col-sm-3" ng-repeat="series in breakdownSeries">
+    <div class="list-group">
+      <a href="javascript:void(0)" class="list-group-item" ng-repeat="category in series.labels track by $index" ng-click="handleTileClick({
+            code: series.labels[$index],
+            label: series.labels[$index],
+            amount: series.data[$index],
+            percentage: series.tooltips[$index]
+          })">
+        <span class="breakdown-label" ng-bind="series.labels[$index]"></span>
+        <span class="breakdown-amount pull-right" ng-bind="series.data[$index] | number:2"></span>
+        <div class="clearfix"></div>
+        <small class="text-muted" ng-bind="series.tooltips[$index]"></small>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div ng-if="mode !== 'tiles'">
+  <div class="alert alert-info">
+    Visual chart representation is available when Chart.js is integrated. The current view shows the breakdown in tile format when mode is set to 'tiles'.
+  </div>
+</div>
