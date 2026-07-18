@@ -1,1 +1,0 @@
-angular.module('davms.summary', ['ngRoute', 'ngAnimate', 'ui.bootstrap']);
