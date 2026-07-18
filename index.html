@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DAVMS1 Monthly Spending Summary Dashboard</title>
+
+    <!-- Stylesheet loading order -->
+    <!-- 1. Bootstrap CSS (CDN) -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+    <!-- 2. Feature-specific styles -->
+    <link rel="stylesheet" href="src/features/monthly-summary/monthly-summary.styles.css">
+
+    <!-- 3. Any additional global styles could be added here (none defined in this LLD) -->
+</head>
+<body>
+    <div class="container-fluid" ng-controller="MonthlySummaryController as vm">
+        <header class="row">
+            <div class="col-xs-12">
+                <h1 class="page-header">Monthly Spending Summary</h1>
+            </div>
+        </header>
+
+        <!-- Main content area using ng-view for routing -->
+        <main class="row">
+            <div class="col-xs-12" ng-view></div>
+        </main>
+
+        <footer class="row">
+            <div class="col-xs-12 text-center">
+                <small>&copy; DAVMS1 Credit Card Services</small>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Script loading order -->
+
+    <!-- 1. AngularJS core and libraries (CDN only, no local Angular) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-sanitize.min.js"></script>
+
+    <!-- 2. Angular UI Bootstrap (CDN) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.6/ui-bootstrap-tpls.min.js"></script>
+
+    <!-- 3. Chart.js (CDN) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+
+    <!-- 4. Application scripts (local) -->
+    <!-- Root module, config, run -->
+    <script src="src/app.module.js"></script>
+    <script src="src/app.config.js"></script>
+    <script src="src/app.run.js"></script>
+
+    <!-- Core config -->
+    <script src="src/core/config/env.config.js"></script>
+    <script src="src/core/config/routes.config.js"></script>
+
+    <!-- Models -->
+    <script src="src/core/models/monthly-summary.model.js"></script>
+    <script src="src/core/models/spend-breakdown.model.js"></script>
+    <script src="src/core/models/kpi.model.js"></script>
+    <script src="src/core/models/error.model.js"></script>
+    <script src="src/core/models/user-account.model.js"></script>
+
+    <!-- Services -->
+    <script src="src/core/services/env-config.service.js"></script>
+    <script src="src/core/services/logging.service.js"></script>
+    <script src="src/core/services/http-interceptor.service.js"></script>
+    <script src="src/core/services/monthly-summary.api.service.js"></script>
+    <script src="src/core/services/monthly-summary.mock.service.js"></script>
+    <script src="src/core/services/monthly-summary.service.js"></script>
+
+    <!-- Filters -->
+    <script src="src/core/filters/currency-symbol.filter.js"></script>
+    <script src="src/core/filters/month-label.filter.js"></script>
+
+    <!-- Directives -->
+    <script src="src/core/directives/kpi-card.directive.js"></script>
+    <script src="src/core/directives/summary-chart.directive.js"></script>
+    <script src="src/core/directives/loading-spinner.directive.js"></script>
+
+    <!-- Feature: Monthly Summary -->
+    <script src="src/features/monthly-summary/monthly-summary.controller.js"></script>
+    <script src="src/features/monthly-summary/components/month-selector.directive.js"></script>
+    <script src="src/features/monthly-summary/components/breakdown-table.directive.js"></script>
+</body>
+</html>

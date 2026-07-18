@@ -1,0 +1,47 @@
+<div class="monthly-summary-dashboard">
+    <div class="row">
+        <div class="col-xs-12">
+            <month-selector selected-month="vm.selectedMonth" on-change="vm.onMonthChange(month)"></month-selector>
+        </div>
+    </div>
+
+    <div class="row" ng-if="vm.loading">
+        <div class="col-xs-12 text-center">
+            <loading-spinner visible="vm.loading"></loading-spinner>
+        </div>
+    </div>
+
+    <div class="row" ng-if="vm.hasError() && !vm.loading">
+        <div class="col-xs-12">
+            <div class="alert alert-danger">
+                <strong>Error:</strong> {{vm.error.message}}
+                <button type="button" class="btn btn-link" ng-if="vm.error.retryable" ng-click="vm.retry()">Try again</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" ng-if="vm.hasData() && !vm.loading">
+        <div class="col-xs-12">
+            <h2>{{vm.selectedMonth | monthLabel}}</h2>
+        </div>
+    </div>
+
+    <div class="row" ng-if="vm.hasData() && !vm.loading">
+        <kpi-card ng-repeat="kpi in vm.kpis" kpi="kpi"></kpi-card>
+    </div>
+
+    <div class="row" ng-if="vm.hasData() && !vm.loading">
+        <div class="col-md-6 col-xs-12">
+            <summary-chart breakdown="vm.summary.breakdown" currency-code="{{vm.summary.currencyCode}}"></summary-chart>
+        </div>
+        <div class="col-md-6 col-xs-12">
+            <breakdown-table breakdown="vm.summary.breakdown" currency-code="{{vm.summary.currencyCode}}"></breakdown-table>
+        </div>
+    </div>
+
+    <div class="row" ng-if="!vm.loading && vm.summary && vm.summary.isEmpty()">
+        <div class="col-xs-12 text-muted">
+            No spending recorded for this month.
+        </div>
+    </div>
+</div>
