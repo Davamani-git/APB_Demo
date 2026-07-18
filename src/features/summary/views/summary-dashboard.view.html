@@ -1,0 +1,45 @@
+<div class="summary-dashboard">
+  <div class="page-header">
+    <h1>Monthly Spending Summary</h1>
+  </div>
+
+  <!-- Month Selector -->
+  <div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="monthSelector">Select Month:</label>
+        <select id="monthSelector" 
+                class="form-control" 
+                ng-model="vm.selectedMonth.key" 
+                ng-change="vm.onMonthChanged(vm.selectedMonth.key)"
+                ng-options="month.key as month.label for month in vm.months">
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div class="alert alert-info" ng-if="vm.isLoading">
+    <i class="glyphicon glyphicon-refresh glyphicon-spin"></i> Loading summary data...
+  </div>
+
+  <!-- Error Message -->
+  <div class="alert alert-danger" ng-if="vm.error">
+    <strong>Error:</strong> {{ vm.error }}
+  </div>
+
+  <!-- Summary Cards -->
+  <div ng-if="vm.kpis && !vm.isLoading">
+    <davms-summary-cards kpis="vm.kpis"></davms-summary-cards>
+  </div>
+
+  <!-- Breakdown Chart -->
+  <div ng-if="vm.breakdownItems.length && vm.featureFlags.SHOW_BREAKDOWN_CHART && !vm.isLoading">
+    <davms-summary-chart items="vm.breakdownItems"></davms-summary-chart>
+  </div>
+
+  <!-- No Data Message -->
+  <div class="alert alert-warning" ng-if="!vm.kpis && !vm.isLoading && !vm.error">
+    No spending data available for the selected month.
+  </div>
+</div>
