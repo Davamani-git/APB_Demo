@@ -1,0 +1,77 @@
+<div class="davms-dashboard" ng-class="{ 'davms-loading': vm.isLoading }">
+  <!-- Loading State -->
+  <loading-spinner ng-if="vm.isLoading"></loading-spinner>
+
+  <!-- Error State -->
+  <error-panel
+    ng-if="vm.hasError"
+    error="vm.error"
+    on-retry="vm.retry()">
+  </error-panel>
+
+  <!-- Main Content -->
+  <div ng-if="!vm.isLoading && !vm.hasError">
+    <!-- Month Selector & Summary Header -->
+    <div class="row davms-month-selector-row">
+      <div class="col-xs-12 col-sm-6">
+        <month-selector
+          month-options="vm.monthOptions"
+          selected-month="vm.selectedMonth"
+          on-change="vm.onMonthChange()">
+        </month-selector>
+      </div>
+      <div class="col-xs-12 col-sm-6 text-right davms-summary-header">
+        <h4 class="davms-summary-month-label" ng-if="vm.selectedMonth">
+          Summary for {{ vm.selectedMonth }}
+        </h4>
+      </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row davms-kpi-row" ng-if="vm.kpiCards.length">
+      <div class="col-xs-12 col-sm-4" ng-repeat="card in vm.kpiCards track by card.id">
+        <kpi-card card="card"></kpi-card>
+      </div>
+    </div>
+
+    <!-- Breakdown Chart -->
+    <div class="row davms-breakdown-row" ng-if="vm.breakdownChartData.data.length">
+      <div class="col-xs-12 col-md-8">
+        <breakdown-chart
+          chart-data="vm.breakdownChartData"
+          total-spend="vm.monthlySummary.kpiSummary.totalSpend">
+        </breakdown-chart>
+      </div>
+      <div class="col-xs-12 col-md-4">
+        <div class="panel panel-default">
+          <div class="panel-heading">Spend Breakdown</div>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th class="text-right">Amount</th>
+                <th class="text-right">% of Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="entry in vm.monthlySummary.breakdownEntries">
+                <td>{{ entry.categoryLabel }}</td>
+                <td class="text-right">{{ entry.amount | currencyNoSymbol }}</td>
+                <td class="text-right">{{ entry.percentageOfTotal | number:1 }}%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="row" ng-if="!vm.monthlySummary || !vm.monthlySummary.hasData">
+      <div class="col-xs-12">
+        <div class="alert alert-info">
+          No monthly spending data available for the selected month.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

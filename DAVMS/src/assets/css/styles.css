@@ -1,0 +1,43 @@
+body {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  background-color: #f5f5f5;
+}
+
+.davms-app-root {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.davms-header {
+  margin-bottom: 20px;
+}
+
+.davms-logo {
+  height: 40px;
+  margin-right: 10px;
+}
+
+.davms-title {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.davms-footer {
+  margin-top: 30px;
+  color: #777;
+}
+
+.davms-loading-spinner .glyphicon-spin {
+  -webkit-animation: spin 1s infinite linear;
+  animation: spin 1s infinite linear;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(359deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(359deg); }
+}
