@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DAVMS Monthly Spending Summary Dashboard</title>
+
+  <!-- Bootstrap CSS (CDN) -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+  <!-- Application Styles (local) - order matters: base first, feature-specific second -->
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+<body>
+  <div class="container-fluid davms-app-root">
+    <!-- Header -->
+    <header class="row davms-header">
+      <div class="col-xs-12 col-sm-6 davms-header-left">
+        <img src="assets/img/logo/davms-logo.png" alt="DAVMS" class="davms-logo" />
+        <h1 class="davms-title">Monthly Spending Summary</h1>
+      </div>
+      <div class="col-xs-12 col-sm-6 davms-header-right text-right">
+        <span class="davms-user-context" ng-bind="::'Credit Card Dashboard'">
+        </span>
+      </div>
+    </header>
+
+    <!-- Navigation (simple for this epic) -->
+    <nav class="row davms-nav">
+      <div class="col-xs-12">
+        <!-- Simple breadcrumb-style navigation (no router links for other epics) -->
+        <ol class="breadcrumb">
+          <li class="active">Monthly Summary</li>
+        </ol>
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="row davms-main">
+      <div class="col-xs-12">
+        <div ng-view></div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="row davms-footer">
+      <div class="col-xs-12 text-center">
+        <small>&copy; <span ng-bind="::(new Date()).getFullYear()"></span> DAVMS - Credit Card Monthly Spending Summary</small>
+      </div>
+    </footer>
+  </div>
+
+  <!-- AngularJS Core (CDN) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <!-- Angular Route (CDN) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <!-- Angular Animate (CDN) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-animate.min.js"></script>
+  <!-- Angular Sanitize (CDN) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-sanitize.min.js"></script>
+  <!-- Angular UI Bootstrap (CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.6/ui-bootstrap-tpls.min.js"></script>
+  <!-- Chart.js (CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+
+  <!-- Application Scripts (local) - Script Loading Order -->
+  <!-- 1. Root module & core configuration -->
+  <script src="app/app.module.js"></script>
+  <script src="app/app.config.js"></script>
+  <script src="app/app.routes.js"></script>
+  <script src="app/app.run.js"></script>
+
+  <!-- 2. Core constants & models -->
+  <script src="app/core/constants/env.config.js"></script>
+  <script src="app/core/constants/app.constants.js"></script>
+  <script src="app/core/models/error.model.js"></script>
+  <script src="app/core/models/month-option.model.js"></script>
+  <script src="app/core/models/kpi-summary.model.js"></script>
+  <script src="app/core/models/breakdown-entry.model.js"></script>
+  <script src="app/core/models/monthly-summary.model.js"></script>
+
+  <!-- 3. Core services & infrastructure -->
+  <script src="app/core/services/config.service.js"></script>
+  <script src="app/core/services/feature-flags.service.js"></script>
+  <script src="app/core/services/telemetry.service.js"></script>
+  <script src="app/core/services/logging.service.js"></script>
+  <script src="app/core/services/http-interceptor.service.js"></script>
+
+  <!-- 4. API & mock services -->
+  <script src="app/core/api/summary-api.service.js"></script>
+  <script src="app/core/api/summary-mock.service.js"></script>
+
+  <!-- 5. Dashboard module & components -->
+  <script src="app/dashboard/dashboard.module.js"></script>
+  <script src="app/dashboard/dashboard.routes.js"></script>
+  <script src="app/dashboard/dashboard.service.js"></script>
+  <script src="app/dashboard/dashboard.mapper.service.js"></script>
+  <script src="app/dashboard/dashboard.controller.js"></script>
+  <script src="app/dashboard/dashboard.directive.js"></script>
+
+  <!-- 6. Shared components, directives, filters -->
+  <script src="app/shared/filters/currency-no-symbol.filter.js"></script>
+  <script src="app/shared/directives/loading-spinner.directive.js"></script>
+  <script src="app/shared/directives/error-panel.directive.js"></script>
+  <script src="app/shared/components/kpi-card.directive.js"></script>
+  <script src="app/shared/components/breakdown-chart.directive.js"></script>
+  <script src="app/shared/components/month-selector.directive.js"></script>
+</body>
+</html>

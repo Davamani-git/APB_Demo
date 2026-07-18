@@ -1,0 +1,5 @@
+[
+  { "value": "2024-06", "label": "June 2024", "isCurrent": true },
+  { "value": "2024-05", "label": "May 2024", "isCurrent": false },
+  { "value": "2024-04", "label": "April 2024", "isCurrent": false }
+]

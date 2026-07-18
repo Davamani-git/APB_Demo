@@ -1,0 +1,55 @@
+.davms-dashboard {
+  background-color: #ffffff;
+  padding: 15px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.davms-month-selector-row {
+  margin-bottom: 15px;
+}
+
+.davms-kpi-row {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.davms-kpi-card {
+  margin-bottom: 15px;
+}
+
+.davms-kpi-icon {
+  max-width: 32px;
+}
+
+.davms-kpi-label {
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+
+.davms-kpi-value {
+  font-size: 1.4em;
+  font-weight: bold;
+}
+
+.davms-breakdown-row {
+  margin-top: 15px;
+}
+
+.davms-breakdown-chart {
+  min-height: 250px;
+}
+
+.davms-loading {
+  opacity: 0.6;
+}
+
+@media (max-width: 767px) {
+  .davms-dashboard {
+    padding: 10px;
+  }
+
+  .davms-kpi-card {
+    margin-bottom: 10px;
+  }
+}

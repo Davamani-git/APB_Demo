@@ -1,0 +1,17 @@
+<div class="panel panel-default davms-kpi-card" ng-class="vm.card.cssClass">
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-xs-3 text-center">
+        <img ng-src="{{ vm.card.icon }}" alt="" class="davms-kpi-icon" />
+      </div>
+      <div class="col-xs-9">
+        <h4 class="davms-kpi-label">{{ vm.card.label }}</h4>
+        <p class="davms-kpi-value">
+          <span ng-if="vm.card.id === 'totalSpend'">{{ vm.card.value | currencyNoSymbol }}</span>
+          <span ng-if="vm.card.id === 'transactionCount'">{{ vm.card.value }}</span>
+          <span ng-if="vm.card.id === 'avgTransaction'">{{ vm.card.value | currencyNoSymbol }}</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

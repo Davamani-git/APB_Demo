@@ -1,0 +1,17 @@
+[
+  {
+    "categoryCode": "ONLINE",
+    "categoryLabel": "Online Purchases",
+    "amount": 456.78
+  },
+  {
+    "categoryCode": "IN_STORE",
+    "categoryLabel": "In Store",
+    "amount": 777.78
+  },
+  {
+    "categoryCode": "OTHER",
+    "categoryLabel": "Other",
+    "amount": 0.0
+  }
+]
