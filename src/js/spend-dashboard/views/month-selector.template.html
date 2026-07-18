@@ -1,9 +1,0 @@
-<div class="form-inline">
-  <label for="monthSelector" class="control-label">Select Month:</label>
-  <select id="monthSelector"
-          class="form-control"
-          ng-model="selectedMonth"
-          ng-options="month as (month.year + '-' + (month.month < 10 ? ('0' + month.month) : month.month)) for month in availableMonths"
-          ng-change="onChange()">
-  </select>
-</div>
