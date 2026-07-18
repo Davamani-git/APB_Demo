@@ -1,0 +1,64 @@
+<div class="monthly-dashboard-container" ng-class="{'loading': vm.isLoading}">
+  <div class="row">
+    <div class="col-sm-12">
+      <h2>Monthly Spending Summary</h2>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-6">
+      <month-selector
+        selected-month="vm.selectedMonth"
+        available-months="vm.availableMonths"
+        on-month-change="vm.onMonthChange(selectedMonth)"></month-selector>
+    </div>
+    <div class="col-sm-6 text-right" ng-if="vm.summaryModel && vm.summaryModel.dataFreshness && vm.summaryModel.dataFreshness.asOfDate">
+      <p>
+        Data as of {{vm.summaryModel.dataFreshness.asOfDate}} ({{vm.summaryModel.dataFreshness.source}})
+        <span ng-if="vm.summaryModel.dataFreshness.isApproximate"> - Values are approximate</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="row" ng-if="vm.errorMessage" class="error-banner">
+    <div class="col-sm-12">
+      <div class="alert alert-warning" role="alert">
+        {{vm.errorMessage}}
+      </div>
+    </div>
+  </div>
+
+  <div class="row" ng-if="vm.summaryModel && vm.summaryModel.transactionCount === 0">
+    <div class="col-sm-12">
+      <div class="alert alert-info" role="alert">
+        There is no spending activity for the selected month. No totals or charts are displayed.
+      </div>
+    </div>
+  </div>
+
+  <div class="row" ng-if="vm.summaryModel && vm.summaryModel.transactionCount > 0">
+    <div class="col-sm-12">
+      <summary-kpi-cards kpis="vm.kpis"></summary-kpi-cards>
+    </div>
+  </div>
+
+  <div class="row" ng-if="vm.summaryModel && vm.summaryModel.transactionCount > 0">
+    <div class="col-sm-12">
+      <basic-spend-breakdown-chart
+        breakdown-series="vm.breakdownSeries"
+        mode="{{vm.breakdownMode}}"></basic-spend-breakdown-chart>
+    </div>
+  </div>
+
+  <div class="row" ng-if="vm.summaryModel && vm.summaryModel.transactionCount > 0">
+    <div class="col-sm-12 text-right">
+      <button type="button" class="btn btn-primary" ng-click="vm.navigateToInsights()">
+        View Deeper Insights
+      </button>
+    </div>
+  </div>
+
+  <div class="loading-overlay" ng-if="vm.isLoading">
+    <span>Loading monthly spending summary...</span>
+  </div>
+</div>
