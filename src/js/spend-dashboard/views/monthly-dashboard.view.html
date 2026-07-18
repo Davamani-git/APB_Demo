@@ -1,0 +1,26 @@
+<div class="monthly-dashboard-container" ng-init="vm.init('CC_DEFAULT_ACCOUNT')">
+  <div class="alert alert-info" ng-if="vm.isLoading">
+    <p>Loading your monthly spending summary...</p>
+  </div>
+
+  <div class="alert alert-danger davms-error-banner" ng-if="vm.errorMessage">
+    <p ng-bind="vm.errorMessage"></p>
+  </div>
+
+  <month-selector
+    available-months="vm.availableMonths"
+    selected-month="vm.selectedMonth"
+    on-month-change="vm.onMonthChange(selectedMonth)"></month-selector>
+
+  <summary-kpi-cards kpis="vm.kpis"></summary-kpi-cards>
+
+  <basic-spend-breakdown-chart
+    breakdown-series="vm.breakdownSeries"
+    mode="vm.breakdownMode"></basic-spend-breakdown-chart>
+
+  <div class="text-right" ng-if="vm.breakdownSeries && vm.breakdownSeries.length">
+    <button type="button" class="btn btn-link" ng-click="vm.navigateToInsights()">
+      View deeper spending insights
+    </button>
+  </div>
+</div>
