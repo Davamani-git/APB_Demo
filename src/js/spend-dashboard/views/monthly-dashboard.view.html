@@ -1,0 +1,71 @@
+<div class="main-content">
+  <div class="dashboard-header">
+    <div class="row">
+      <div class="col-md-8">
+        <h2>Monthly Spending Summary</h2>
+        <p class="text-muted">View your credit card spending patterns and insights</p>
+      </div>
+      <div class="col-md-4">
+        <month-selector 
+          selected-month="vm.selectedMonth"
+          available-months="vm.availableMonths"
+          on-month-change="vm.onMonthChange(selectedMonth)">
+        </month-selector>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div ng-if="vm.isLoading" class="loading-spinner">
+    <div class="text-center">
+      <i class="glyphicon glyphicon-refresh glyphicon-spin" style="font-size: 24px;"></i>
+      <p>Loading your spending summary...</p>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div ng-if="vm.errorMessage && !vm.isLoading" class="error-banner alert alert-danger">
+    <i class="glyphicon glyphicon-exclamation-sign"></i>
+    {{ vm.errorMessage }}
+  </div>
+
+  <!-- Main Content -->
+  <div ng-if="!vm.isLoading && !vm.errorMessage">
+    <!-- KPI Cards -->
+    <summary-kpi-cards kpis="vm.kpis"></summary-kpi-cards>
+
+    <!-- Spending Breakdown -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="breakdown-section">
+          <div class="row">
+            <div class="col-md-8">
+              <h3>Spending Breakdown</h3>
+            </div>
+            <div class="col-md-4 text-right">
+              <button class="btn btn-default btn-sm" ng-click="vm.toggleChartMode()">
+                <i class="glyphicon" ng-class="vm.chartMode === 'chart' ? 'glyphicon-th-list' : 'glyphicon-stats'"></i>
+                {{ vm.chartMode === 'chart' ? 'Show Tiles' : 'Show Chart' }}
+              </button>
+            </div>
+          </div>
+          
+          <basic-spend-breakdown-chart 
+            breakdown-series="vm.breakdownSeries"
+            breakdown-tiles="vm.breakdownTiles"
+            mode="{{ vm.chartMode }}">
+          </basic-spend-breakdown-chart>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Data State -->
+  <div ng-if="!vm.isLoading && !vm.errorMessage && vm.summaryModel && !vm.summaryModel.hasData()" class="no-data-message">
+    <div class="text-center">
+      <i class="glyphicon glyphicon-info-sign" style="font-size: 48px; color: #6c757d; margin-bottom: 20px;"></i>
+      <h4>No spending activity</h4>
+      <p>There are no transactions for the selected month.</p>
+    </div>
+  </div>
+</div>
