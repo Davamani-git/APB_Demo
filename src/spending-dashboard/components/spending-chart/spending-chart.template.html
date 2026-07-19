@@ -1,0 +1,14 @@
+<div class="panel panel-default spending-chart-card">
+  <div class="panel-heading">
+    <h3 class="panel-title">Spend Breakdown</h3>
+  </div>
+  <div class="panel-body">
+    <div ng-if="!vm.breakdown || !vm.breakdown.categories || !vm.breakdown.categories.length" class="spending-chart-empty">
+      <img src="assets/images/spending-chart-placeholder.png" alt="No spending data" class="img-responsive spending-chart-placeholder">
+      <p class="text-muted">No breakdown data available for the selected month.</p>
+    </div>
+    <div ng-if="vm.breakdown && vm.breakdown.categories && vm.breakdown.categories.length" class="spending-chart-container">
+      <canvas width="300" height="300" aria-label="Spending by category" role="img"></canvas>
+    </div>
+  </div>
+</div>

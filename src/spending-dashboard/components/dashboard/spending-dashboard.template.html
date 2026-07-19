@@ -1,0 +1,63 @@
+<div class="spending-dashboard" ng-class="{ 'is-loading': vm.isLoading }" role="region" aria-label="Spending dashboard">
+  <!-- Month selection -->
+  <div class="row spending-month-row">
+    <div class="col-xs-12 col-sm-4">
+      <label for="monthSelect" class="control-label">Select Month</label>
+      <select id="monthSelect"
+              class="form-control"
+              ng-model="vm.selectedMonth"
+              ng-options="month for month in vm.availableMonths"
+              ng-change="vm.onMonthChange()"
+              aria-label="Select month for spending summary">
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div class="row" ng-if="vm.isLoading">
+    <div class="col-xs-12">
+      <div class="alert alert-info spending-loading">
+        <span class="sr-only">Loading</span>
+        <i class="glyphicon glyphicon-refresh spinning-icon" aria-hidden="true"></i>
+        Loading monthly spending summary...
+      </div>
+    </div>
+  </div>
+
+  <!-- Error state -->
+  <div class="row" ng-if="vm.hasError && !vm.isLoading">
+    <div class="col-xs-12">
+      <div class="alert alert-danger spending-error" role="alert">
+        {{ vm.error.getUserMessage() }}
+        <button type="button" class="btn btn-danger btn-sm" ng-if="vm.error.retryable" ng-click="vm.retry()">
+          Retry
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty state -->
+  <div class="row" ng-if="!vm.isLoading && !vm.hasError && vm.summary && vm.summary.isEmpty()">
+    <div class="col-xs-12">
+      <div class="alert alert-warning spending-empty" role="status">
+        No spending data available for the selected month.
+      </div>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="row" ng-if="!vm.isLoading && !vm.hasError && vm.summary && !vm.summary.isEmpty()">
+    <!-- KPI cards -->
+    <section class="col-xs-12 spending-kpi-section" aria-label="Monthly summary KPIs">
+      <kpi-cards kpis="vm.kpis"></kpi-cards>
+    </section>
+
+    <!-- Chart and breakdown -->
+    <section class="col-xs-12 col-md-6 spending-chart-section" aria-label="Spending breakdown chart">
+      <spending-chart breakdown="vm.breakdown"></spending-chart>
+    </section>
+    <section class="col-xs-12 col-md-6 spending-breakdown-section" aria-label="Spending breakdown table">
+      <breakdown-table breakdown="vm.breakdown"></breakdown-table>
+    </section>
+  </div>
+</div>

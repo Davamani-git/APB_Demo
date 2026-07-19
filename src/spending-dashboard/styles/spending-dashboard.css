@@ -1,0 +1,133 @@
+/* Layout and typography */
+.spending-header {
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.spending-title {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.spending-subtitle {
+  color: #777777;
+  margin-top: 4px;
+}
+
+.spending-card-icon {
+  max-height: 48px;
+}
+
+.spending-main {
+  margin-bottom: 40px;
+}
+
+.spending-footer {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-top: 1px solid #eeeeee;
+  margin-top: 20px;
+}
+
+/* KPI cards */
+.spending-kpi-cards {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.spending-kpi-card {
+  margin-bottom: 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.spending-kpi-icon {
+  float: left;
+  font-size: 24px;
+  margin-right: 10px;
+  color: #007bff;
+}
+
+.spending-kpi-content {
+  overflow: hidden;
+}
+
+.spending-kpi-label {
+  font-size: 14px;
+  color: #888888;
+}
+
+.spending-kpi-value {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.spending-kpi-unit {
+  font-size: 12px;
+  margin-left: 4px;
+  color: #999999;
+}
+
+/* States */
+.spending-loading,
+.spending-error,
+.spending-empty {
+  margin-top: 15px;
+}
+
+.spending-dashboard.is-loading {
+  opacity: 0.8;
+}
+
+.spinning-icon {
+  -webkit-animation: spin 1s linear infinite;
+  animation: spin 1s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Chart and breakdown cards */
+.spending-chart-card,
+.spending-breakdown-card {
+  margin-top: 15px;
+  border-radius: 8px;
+}
+
+.spending-chart-placeholder {
+  max-width: 100%;
+  margin-bottom: 10px;
+}
+
+.spending-chart-empty {
+  text-align: center;
+}
+
+.spending-breakdown-table th,
+.spending-breakdown-table td {
+  vertical-align: middle;
+}
+
+/* Responsive behavior */
+@media (max-width: 767px) {
+  .spending-header-icon {
+    display: none;
+  }
+
+  .spending-kpi-card {
+    margin-bottom: 16px;
+  }
+}
+
+/* Page title style (design system alignment) */
+.spending-dashboard-page-title {
+  font-size: 24px;
+  margin-bottom: 24px;
+}

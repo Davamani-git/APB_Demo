@@ -1,0 +1,18 @@
+<div class="row spending-kpi-cards">
+  <div class="col-xs-12 col-sm-3" ng-repeat="kpi in vm.kpis" ng-class="'kpi-card-' + $index">
+    <div class="panel panel-default spending-kpi-card">
+      <div class="panel-body">
+        <div class="spending-kpi-icon" aria-hidden="true">
+          <span class="glyphicon" ng-class="kpi.icon"></span>
+        </div>
+        <div class="spending-kpi-content">
+          <div class="spending-kpi-label">{{ kpi.label }}</div>
+          <div class="spending-kpi-value">
+            {{ kpi.formatValue() }}
+            <span class="spending-kpi-unit" ng-if="kpi.unit">{{ kpi.unit }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

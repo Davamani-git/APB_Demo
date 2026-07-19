@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Monthly Spending Summary Dashboard</title>
+
+  <!-- Stylesheet loading order -->
+  <!-- 1. Bootstrap CSS (CDN) -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+  <!-- 2. Application CSS -->
+  <link rel="stylesheet" href="src/spending-dashboard/styles/spending-dashboard.css">
+</head>
+<body>
+  <div class="container-fluid" ng-cloak>
+    <!-- Header -->
+    <header class="row spending-header" role="banner">
+      <div class="col-xs-12 col-sm-8">
+        <h1 class="spending-title spending-dashboard-page-title">Monthly Spending Summary</h1>
+        <p class="spending-subtitle">Credit Card Spend Overview</p>
+      </div>
+      <div class="col-xs-12 col-sm-4 text-right hidden-xs spending-header-icon">
+        <img src="assets/images/card-icon.png" alt="Credit card icon" class="img-responsive spending-card-icon">
+      </div>
+    </header>
+
+    <!-- Main content routed via ng-view -->
+    <main class="row spending-main" role="main">
+      <div class="col-xs-12" ng-view></div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="row spending-footer" role="contentinfo">
+      <div class="col-xs-12 text-center">
+        <small>&copy; 2026 Spending Dashboard</small>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Script loading order -->
+  <!-- 1. AngularJS core (CDN) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+
+  <!-- 2. Angular Route (CDN) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+
+  <!-- 3. Angular Animate (CDN) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-animate.min.js"></script>
+
+  <!-- 4. Angular Sanitize (CDN) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-sanitize.min.js"></script>
+
+  <!-- 5. Angular UI Bootstrap (CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.6/ui-bootstrap-tpls.min.js"></script>
+
+  <!-- 6. Chart.js (CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+
+  <!-- 7. Application scripts (local) -->
+  <!-- Root module and core app scripts -->
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/app.config.js"></script>
+  <script src="src/app/app.routes.js"></script>
+  <script src="src/app/app.run.js"></script>
+
+  <!-- Core configuration -->
+  <script src="src/core/config/env.config.js"></script>
+  <script src="src/core/config/feature-flags.constant.js"></script>
+
+  <!-- Core models -->
+  <script src="src/core/models/spending-summary.model.js"></script>
+  <script src="src/core/models/spending-breakdown.model.js"></script>
+  <script src="src/core/models/kpi.model.js"></script>
+  <script src="src/core/models/error.model.js"></script>
+
+  <!-- Core services -->
+  <script src="src/core/services/env.service.js"></script>
+  <script src="src/core/services/spending-dashboard-api.service.js"></script>
+  <script src="src/core/services/spending-dashboard-mock.service.js"></script>
+
+  <!-- Interceptors -->
+  <script src="src/core/interceptors/http-error.interceptor.js"></script>
+
+  <!-- Spending dashboard components -->
+  <script src="src/spending-dashboard/components/dashboard/spending-dashboard.controller.js"></script>
+  <script src="src/spending-dashboard/components/kpi-cards/kpi-cards.directive.js"></script>
+  <script src="src/spending-dashboard/components/spending-chart/spending-chart.directive.js"></script>
+  <script src="src/spending-dashboard/components/breakdown-table/breakdown-table.directive.js"></script>
+</body>
+</html>
