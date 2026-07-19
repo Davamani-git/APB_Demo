@@ -1,7 +1,0 @@
-<div class="month-selector">
-    <select class="form-control" ng-model="vm.internalSelectedMonth" ng-change="vm.onInternalChange()" ng-disabled="!vm.months || vm.months.length === 0">
-        <option ng-repeat="month in vm.months" ng-value="month.month">
-            {{month.month | dateFormat}}<span ng-if="!month.hasData"> (no activity)</span>
-        </option>
-    </select>
-</div>
