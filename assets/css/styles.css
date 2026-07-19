@@ -1,0 +1,268 @@
+body.app-body {
+  background-color: #F4F6F9;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #172B4D;
+}
+
+.dashboard-header {
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
+.dashboard-title {
+  font-size: 32px;
+  font-weight: 600;
+  color: #172B4D;
+}
+
+.dashboard-subtitle {
+  font-size: 14px;
+  color: #5E6C84;
+}
+
+.dashboard-breadcrumb {
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #5E6C84;
+}
+
+.nav-tabs-custom {
+  margin-bottom: 16px;
+}
+
+.nav-tabs-custom > li > a {
+  font-weight: 500;
+  color: #5E6C84;
+}
+
+.nav-tabs-custom > li.active > a,
+.nav-tabs-custom > li.active > a:focus,
+.nav-tabs-custom > li.active > a:hover {
+  color: #0052CC;
+  border-color: #0052CC #0052CC transparent;
+}
+
+.filter-panel {
+  background-color: #FFFFFF;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.filter-panel-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.filter-row {
+  margin-top: 8px;
+}
+
+.filter-label {
+  font-size: 13px;
+  color: #5E6C84;
+  margin-bottom: 4px;
+}
+
+.kpi-card-container {
+  margin-bottom: 24px;
+}
+
+.ss-card {
+  background-color: #FFFFFF;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.ss-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.ss-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #172B4D;
+}
+
+.ss-card-icon {
+  font-size: 20px;
+  color: #2684FF;
+}
+
+.ss-card-body {
+  font-size: 14px;
+}
+
+.ss-card-footer {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #5E6C84;
+}
+
+.kpi-card {
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.kpi-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
+}
+
+.kpi-card-title {
+  font-size: 14px;
+  color: #5E6C84;
+}
+
+.kpi-card-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: #172B4D;
+  margin-top: 4px;
+}
+
+.kpi-card-support {
+  font-size: 12px;
+  color: #5E6C84;
+  margin-top: 4px;
+}
+
+.kpi-card-trend {
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.kpi-card-trend-positive {
+  color: #36B37E;
+}
+
+.kpi-card-trend-negative {
+  color: #DE350B;
+}
+
+.chart-card {
+  min-height: 260px;
+}
+
+.chart-container {
+  position: relative;
+  width: 100%;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(244,246,249,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.loading-text {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #5E6C84;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.empty-state-icon {
+  font-size: 32px;
+  color: #5E6C84;
+  margin-bottom: 8px;
+}
+
+.empty-state-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #172B4D;
+}
+
+.empty-state-message {
+  font-size: 13px;
+  color: #5E6C84;
+  margin-top: 4px;
+}
+
+.error-panel {
+  border-left: 4px solid #DE350B;
+  background-color: #FFFFFF;
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.error-panel-icon {
+  font-size: 18px;
+  color: #DE350B;
+  margin-right: 8px;
+}
+
+.error-panel-message {
+  font-size: 14px;
+  color: #172B4D;
+}
+
+.error-panel-details {
+  font-size: 12px;
+  color: #5E6C84;
+  margin-top: 4px;
+}
+
+.footer-bar {
+  margin-top: 24px;
+  padding: 12px 0;
+  font-size: 12px;
+  color: #5E6C84;
+}
+
+.footer-bar .refresh-timestamp-label {
+  font-weight: 500;
+}
+
+.btn-primary-custom {
+  background-color: #0052CC;
+  border-color: #0052CC;
+}
+
+.btn-primary-custom:hover,
+.btn-primary-custom:focus {
+  background-color: #2684FF;
+  border-color: #2684FF;
+}
+
+.btn-secondary-custom {
+  background-color: #FFFFFF;
+  border-color: #E5E7EB;
+  color: #172B4D;
+}
+
+.btn-secondary-custom:hover,
+.btn-secondary-custom:focus {
+  background-color: #F4F6F9;
+}
+
+@media (max-width: 767px) {
+  .dashboard-title {
+    font-size: 24px;
+  }
+
+  .filter-panel {
+    padding: 16px;
+  }
+}

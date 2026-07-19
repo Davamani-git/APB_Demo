@@ -1,0 +1,25 @@
+{
+  "delayMs": 300,
+  "success": {
+    "currencyCode": "INR",
+    "trendChartType": "line",
+    "summaryChartType": "bar",
+    "colorPalette": ["#4CAF50", "#2196F3", "#FFC107"],
+    "highSpendThreshold": 50000,
+    "featureFlags": {
+      "showCategoryBreakdown": true,
+      "showAverageSpend": true
+    }
+  },
+  "error": {
+    "error": {
+      "code": "500",
+      "message": "Internal server error while retrieving configuration.",
+      "correlationId": "mock-config-error-001"
+    }
+  },
+  "timeout": {
+    "timeout": true,
+    "delayMs": 10000
+  }
+}

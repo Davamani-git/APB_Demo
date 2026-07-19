@@ -1,0 +1,20 @@
+<div class="ss-card kpi-card">
+  <div class="ss-card-header">
+    <div>
+      <div class="kpi-card-title">{{ vm.title }}</div>
+      <div class="kpi-card-support" ng-if="vm.supportLabel">{{ vm.supportLabel }}</div>
+    </div>
+    <div>
+      <i class="ss-card-icon" ng-class="vm.iconClass"></i>
+    </div>
+  </div>
+  <div class="ss-card-body">
+    <div class="kpi-card-value" ng-bind="vm.value"></div>
+    <div class="kpi-card-trend" ng-if="vm.trendIndicator">
+      <span ng-class="{'kpi-card-trend-positive': vm.trendIndicator.direction === 'up', 'kpi-card-trend-negative': vm.trendIndicator.direction === 'down'}">
+        <i class="fa" ng-class="{'fa-arrow-up': vm.trendIndicator.direction === 'up', 'fa-arrow-down': vm.trendIndicator.direction === 'down'}"></i>
+        {{ vm.trendIndicator.label }}
+      </span>
+    </div>
+  </div>
+</div>

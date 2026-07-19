@@ -1,0 +1,132 @@
+<div class="dashboard-header">
+  <div class="dashboard-breadcrumb">Home / Spending Summary Dashboard</div>
+  <div class="dashboard-title">Spending Summary Dashboard</div>
+  <div class="dashboard-subtitle">Review your aggregated credit card spending insights without exposing individual transaction details.</div>
+</div>
+
+<ul class="nav nav-tabs nav-tabs-custom" role="tablist">
+  <li class="active" role="presentation"><a href="" aria-selected="true">Summary</a></li>
+  <li role="presentation" class="disabled"><a href="" aria-disabled="true">Trend Analysis</a></li>
+</ul>
+
+<div class="filter-panel" aria-label="Spending filter panel">
+  <div class="filter-panel-title">Filters</div>
+  <div class="row filter-row">
+    <div class="col-sm-4">
+      <label class="filter-label" for="monthSelector">Reporting month</label>
+      <select id="monthSelector"
+              class="form-control"
+              ng-model="vm.selectedMonth"
+              ng-options="month for month in vm.availableMonths"
+              ng-change="vm.onMonthChange(vm.selectedMonth)"
+              aria-label="Select reporting month">
+      </select>
+      <div class="text-danger" ng-if="vm.monthValidationError" style="margin-top:4px; font-size:12px;">
+        {{ vm.monthValidationError }}
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <label class="filter-label">Actions</label>
+      <div>
+        <button type="button" class="btn btn-primary btn-primary-custom" ng-click="vm.refreshAll()">
+          <i class="fa fa-refresh"></i> Refresh
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row kpi-card-container" ng-if="!vm.summaryError">
+  <div class="col-md-4 col-sm-6">
+    <ss-kpi-card
+      title="Total Spend"
+      support-label="Aggregated credit card spend for the selected month"
+      value="vm.summary.getFormattedTotalSpend()"
+      icon-class="fa fa-credit-card">
+    </ss-kpi-card>
+  </div>
+  <div class="col-md-4 col-sm-6">
+    <ss-kpi-card
+      title="Number of Transactions"
+      support-label="Count of credit card transactions for the selected month"
+      value="vm.summary.transactionCount"
+      icon-class="fa fa-list-ul">
+    </ss-kpi-card>
+  </div>
+  <div class="col-md-4 col-sm-6" ng-if="vm.config && vm.config.featureFlags && vm.config.featureFlags.showAverageSpend">
+    <ss-kpi-card
+      title="Average Spend per Transaction"
+      support-label="Average amount per credit card transaction"
+      value="vm.summary.getFormattedAverageSpend()"
+      icon-class="fa fa-line-chart">
+    </ss-kpi-card>
+  </div>
+</div>
+
+<div class="row" ng-if="vm.summaryError">
+  <div class="col-md-12">
+    <div class="error-panel" role="alert">
+      <span class="error-panel-icon"><i class="fa fa-exclamation-triangle"></i></span>
+      <span class="error-panel-message">{{ vm.summaryError.message }}</span>
+      <div class="error-panel-details" ng-if="vm.summaryError.code">
+        Error code: {{ vm.summaryError.code }}
+      </div>
+      <button type="button" class="btn btn-secondary-custom btn-sm" ng-click="vm.retrySummary()" style="margin-top:8px;">
+        <i class="fa fa-refresh"></i> Retry
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="row" ng-if="vm.summary && vm.summary.isEmpty && !vm.summaryError">
+  <div class="col-md-12">
+    <div class="ss-card">
+      <div class="ss-card-body">
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <i class="fa fa-info-circle"></i>
+          </div>
+          <div class="empty-state-title">No spending data for {{ vm.selectedMonth }}</div>
+          <div class="empty-state-message">
+            There is no aggregated credit card spending available for the selected month. Summary cards and charts reflect a no-data state.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row" ng-if="!vm.summary.isEmpty && !vm.summaryError">
+  <div class="col-md-6">
+    <ss-summary-chart
+      chart-data="vm.summary.chartData"
+      chart-options="vm.summary.chartOptions">
+    </ss-summary-chart>
+  </div>
+  <div class="col-md-6">
+    <ss-trends-chart
+      chart-data="vm.trends.chartData"
+      chart-options="vm.trends.chartOptions">
+    </ss-trends-chart>
+  </div>
+</div>
+
+<div class="row" ng-if="vm.trendsError">
+  <div class="col-md-12">
+    <div class="error-panel" role="alert">
+      <span class="error-panel-icon"><i class="fa fa-exclamation-triangle"></i></span>
+      <span class="error-panel-message">{{ vm.trendsError.message }}</span>
+      <div class="error-panel-details" ng-if="vm.trendsError.code">
+        Error code: {{ vm.trendsError.code }}
+      </div>
+      <button type="button" class="btn btn-secondary-custom btn-sm" ng-click="vm.retryTrends()" style="margin-top:8px;">
+        <i class="fa fa-refresh"></i> Retry
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="footer-bar" aria-label="Data refresh information">
+  <span class="refresh-timestamp-label">Data as of:</span>
+  <span ng-bind="vm.refreshTimestamp"></span>
+</div>
