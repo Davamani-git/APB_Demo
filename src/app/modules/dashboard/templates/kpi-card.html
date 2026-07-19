@@ -1,0 +1,24 @@
+<div class="kpi-card-wrapper">
+  <div class="kpi-card-header">
+    <div class="media">
+      <div class="media-left">
+        <div class="kpi-icon-container">
+          <i class="fa" ng-class="vm.iconClass" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div class="media-body">
+        <div class="kpi-title">{{ vm.title }}</div>
+      </div>
+    </div>
+    <div class="kpi-trend" ng-if="vm.trendIndicator && vm.trendIndicator.value">
+      <span ng-class="vm.getTrendClass()">
+        <i class="fa" ng-class="vm.getTrendIcon()" aria-hidden="true"></i>
+        {{ vm.trendIndicator.value }}
+      </span>
+    </div>
+  </div>
+  <div class="kpi-card-body">
+    <div class="kpi-value">{{ vm.value }}</div>
+    <div class="kpi-label">{{ vm.label }}</div>
+  </div>
+</div>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+  <meta charset="UTF-8">
+  <title>Spending Summary Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- Application Styles -->
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <div ng-view></div>
+
+  <!-- AngularJS and external libraries -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-sanitize.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.6/ui-bootstrap-tpls.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+
+  <!-- Angular root module -->
+  <script src="src/app/app.module.js"></script>
+
+  <!-- Configuration -->
+  <script src="src/app/config/config.constants.js"></script>
+  <script src="src/app/config/routes.config.js"></script>
+
+  <!-- Models -->
+  <script src="src/app/modules/dashboard/models/monthly-summary.model.js"></script>
+  <script src="src/app/modules/dashboard/models/monthly-trend-point.model.js"></script>
+  <script src="src/app/modules/dashboard/models/six-month-trend.model.js"></script>
+  <script src="src/app/modules/dashboard/models/error.model.js"></script>
+  <script src="src/app/modules/dashboard/models/config.model.js"></script>
+
+  <!-- Filters -->
+  <script src="src/app/modules/dashboard/filters/currency-format.filter.js"></script>
+  <script src="src/app/modules/dashboard/filters/date-format.filter.js"></script>
+  <script src="src/app/modules/dashboard/filters/percentage.filter.js"></script>
+
+  <!-- Mock Data (runtime JS objects) -->
+  <script src="assets/js/monthly-summary.mock-data.js"></script>
+  <script src="assets/js/six-month-trend.mock-data.js"></script>
+  <script src="assets/js/config.mock-data.js"></script>
+
+  <!-- Services -->
+  <script src="src/app/modules/dashboard/services/logging.service.js"></script>
+  <script src="src/app/modules/dashboard/services/summary.service.js"></script>
+  <script src="src/app/modules/dashboard/services/trends.service.js"></script>
+  <script src="src/app/modules/dashboard/services/config.service.js"></script>
+
+  <!-- Mock Services -->
+  <script src="mock/summary.mock.service.js"></script>
+  <script src="mock/trends.mock.service.js"></script>
+  <script src="mock/config.mock.service.js"></script>
+
+  <!-- Controllers -->
+  <script src="src/app/modules/dashboard/controllers/dashboard.controller.js"></script>
+
+  <!-- Directives -->
+  <script src="src/app/modules/dashboard/directives/kpi-card.directive.js"></script>
+  <script src="src/app/modules/dashboard/directives/summary-chart.directive.js"></script>
+  <script src="src/app/modules/dashboard/directives/trends-chart.directive.js"></script>
+</body>
+</html>

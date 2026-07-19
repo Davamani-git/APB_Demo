@@ -1,0 +1,271 @@
+<div class="app-header-bar">
+  <div class="app-header-left">
+    <i class="fa fa-line-chart app-header-icon" aria-hidden="true"></i>
+    <span class="app-header-title">Digital Assist &mdash; Spending Summary</span>
+  </div>
+  <div class="app-header-right">
+    <span>Secure credit card insights</span>
+  </div>
+</div>
+
+<div class="container-fluid dashboard-container" ng-controller="DashboardController as vm">
+  <div class="dashboard-header">
+    <div class="dashboard-breadcrumb">
+      Home / Dashboards / Spending Summary
+    </div>
+    <h1 class="dashboard-header-title">Spending Summary Dashboard</h1>
+    <p class="dashboard-header-subtitle">
+      Aggregated credit card spending indicators for quick awareness and budgeting &mdash; no transaction-level or sensitive details displayed.
+    </p>
+  </div>
+
+  <ul class="nav nav-tabs nav-tabs-custom" role="tablist">
+    <li role="presentation" class="active"><a href="" aria-controls="overview" role="tab">Overview</a></li>
+  </ul>
+
+  <div class="filter-panel-card" aria-label="Spending filters">
+    <div class="filter-panel-header">
+      <div>
+        <i class="fa fa-filter filter-panel-icon" aria-hidden="true"></i>
+        <span class="filter-panel-title">Filters</span>
+      </div>
+      <div class="text-muted small">Only credit card spend is included</div>
+    </div>
+    <div class="filter-panel-body">
+      <div class="filter-group">
+        <label class="filter-label" for="monthSelector">Reporting month</label>
+        <select id="monthSelector"
+                class="form-control"
+                ng-model="vm.selectedMonth"
+                ng-options="m as (m | dateFormat) for m in vm.availableMonths"
+                ng-change="vm.onMonthChange()">
+        </select>
+        <div class="text-danger small" ng-if="vm.validationError">{{ vm.validationError }}</div>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Context</label>
+        <p class="form-control-static small text-muted">
+          Month selection and insights are based on aggregated credit card spend only.
+        </p>
+      </div>
+      <div class="filter-actions">
+        <button type="button" class="btn btn-primary-custom btn-sm" ng-click="vm.refreshAll()">
+          <i class="fa fa-refresh" aria-hidden="true"></i> Refresh
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-3 col-sm-6" ng-if="vm.summary">
+      <div class="kpi-card">
+        <ss-kpi-card
+          title="Total Spend"
+          value="vm.summary.totalSpend | currencyFormat"
+          label="Selected month"
+          icon-class="fa fa-credit-card">
+        </ss-kpi-card>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6" ng-if="vm.summary">
+      <div class="kpi-card">
+        <ss-kpi-card
+          title="Number of Transactions"
+          value="vm.summary.transactionCount || 0"
+          label="Selected month"
+          icon-class="fa fa-list-ul">
+        </ss-kpi-card>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6" ng-if="vm.summary && vm.config && vm.config.featureFlags.showAverageSpend">
+      <div class="kpi-card">
+        <ss-kpi-card
+          title="Average Spend per Transaction"
+          value="vm.summary.transactionCount ? (vm.summary.averageSpend | currencyFormat) : 'Not available'"
+          label="Calculated for the month"
+          icon-class="fa fa-calculator">
+        </ss-kpi-card>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6" ng-if="vm.trends && vm.trends.points.length">
+      <div class="kpi-card">
+        <ss-kpi-card
+          title="6-Month Average Spend"
+          value="(vm.trends.points | sumBy:'totalSpend' | divideBy: (vm.trends.points.length || 1) ) | currencyFormat"
+          label="Across last 6 months"
+          icon-class="fa fa-line-chart">
+        </ss-kpi-card>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="chart-card">
+        <div class="card-header">
+          <div>
+            <i class="fa fa-pie-chart card-title-icon" aria-hidden="true"></i>
+            <span class="card-title">Monthly Spend Breakdown</span>
+          </div>
+        </div>
+        <div class="chart-card-body">
+          <div class="loading-overlay" ng-if="vm.isLoadingSummary">
+            <div class="text-center">
+              <div class="spinner" aria-hidden="true"></div>
+              <div class="loading-message">Loading monthly summary&hellip;</div>
+            </div>
+          </div>
+
+          <div ng-if="vm.summaryError" class="error-card">
+            <div class="media">
+              <div class="media-left">
+                <i class="fa fa-exclamation-triangle error-icon" aria-hidden="true"></i>
+              </div>
+              <div class="media-body">
+                <div class="error-message-title">We couldn&apos;t load your monthly summary.</div>
+                <div class="error-message-text">{{ vm.summaryError.message }}</div>
+                <button type="button" class="btn btn-primary-custom btn-xs" ng-click="vm.retrySummary()">
+                  Retry
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div ng-if="!vm.isLoadingSummary && !vm.summaryError && vm.summary && vm.summary.isEmpty" class="empty-card">
+            <i class="fa fa-folder-open-o empty-icon" aria-hidden="true"></i>
+            <div class="empty-title">No spending data for this month</div>
+            <div class="empty-text">Select another month to compare spending or review your overall 6-month trends.</div>
+          </div>
+
+          <div ng-if="!vm.isLoadingSummary && !vm.summaryError && vm.summary && !vm.summary.isEmpty">
+            <ss-summary-chart
+              chart-data="vm.summary.chartData"
+              chart-options="vm.summary.chartOptions"
+              title="Spend by category">
+            </ss-summary-chart>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="chart-card">
+        <div class="card-header">
+          <div>
+            <i class="fa fa-area-chart card-title-icon" aria-hidden="true"></i>
+            <span class="card-title">Six-Month Spend Trend</span>
+          </div>
+        </div>
+        <div class="chart-card-body">
+          <div class="loading-overlay" ng-if="vm.isLoadingTrends">
+            <div class="text-center">
+              <div class="spinner" aria-hidden="true"></div>
+              <div class="loading-message">Loading 6-month trends&hellip;</div>
+            </div>
+          </div>
+
+          <div ng-if="vm.trendsError" class="error-card">
+            <div class="media">
+              <div class="media-left">
+                <i class="fa fa-exclamation-triangle error-icon" aria-hidden="true"></i>
+              </div>
+              <div class="media-body">
+                <div class="error-message-title">We couldn&apos;t load your trend analysis.</div>
+                <div class="error-message-text">{{ vm.trendsError.message }}</div>
+                <button type="button" class="btn btn-primary-custom btn-xs" ng-click="vm.retryTrends()">
+                  Retry
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div ng-if="!vm.isLoadingTrends && !vm.trendsError && vm.trends && vm.trends.points.length === 0" class="empty-card">
+            <i class="fa fa-line-chart empty-icon" aria-hidden="true"></i>
+            <div class="empty-title">No 6-month trend data</div>
+            <div class="empty-text">We couldn&apos;t find spending activity for the last 6 months. Trend analysis can&apos;t be displayed.</div>
+          </div>
+
+          <div ng-if="!vm.isLoadingTrends && !vm.trendsError && vm.trends && vm.trends.points.length">
+            <ss-trends-chart
+              chart-data="vm.trends.chartData"
+              chart-options="vm.trends.chartOptions"
+              title="Total monthly spend over time">
+            </ss-trends-chart>
+            <div class="chart-legend small text-muted">
+              Higher bars or peaks indicate months where spending was higher than recent averages. No transaction details are shown.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="section-header">
+      <div>
+        <i class="fa fa-table card-title-icon" aria-hidden="true"></i>
+        <span class="section-title">Month-wise Spend Snapshot (Last 6 Months)</span>
+      </div>
+    </div>
+    <div ng-if="vm.trends && vm.trends.points.length">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th class="table-number">Total Spend</th>
+              <th class="table-number">Number of Transactions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="p in vm.trends.points">
+              <td>{{ p.month | dateFormat }}</td>
+              <td class="table-number">{{ p.totalSpend | currencyFormat }}</td>
+              <td class="table-number">{{ p.transactionCount }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div ng-if="vm.trends && vm.trends.points.length === 0" class="empty-card">
+      <i class="fa fa-folder-open-o empty-icon" aria-hidden="true"></i>
+      <div class="empty-title">No historical data</div>
+      <div class="empty-text">We&apos;ll start showing 6-month comparisons once there is activity on your card.</div>
+    </div>
+  </div>
+
+  <div class="insights-card">
+    <div class="section-header">
+      <div>
+        <i class="fa fa-lightbulb-o card-title-icon" aria-hidden="true"></i>
+        <span class="section-title">Spending Insights</span>
+      </div>
+    </div>
+    <ul class="insights-list">
+      <li ng-if="vm.summary && !vm.summary.isEmpty">
+        <i class="fa fa-circle insights-icon" aria-hidden="true"></i>
+        For {{ vm.summary.month | dateFormat }}, your total credit card spend was
+        <strong>{{ vm.summary.totalSpend | currencyFormat }}</strong> across
+        <strong>{{ vm.summary.transactionCount }}</strong> transactions.
+      </li>
+      <li ng-if="vm.trends && vm.trends.points.length">
+        <i class="fa fa-circle insights-icon" aria-hidden="true"></i>
+        Use the 6-month trend chart to spot months where your spend is noticeably higher or lower than recent levels.
+      </li>
+      <li>
+        <i class="fa fa-circle insights-icon" aria-hidden="true"></i>
+        All information shown here is aggregated. No merchant names, card numbers or sensitive personal details are displayed.
+      </li>
+    </ul>
+  </div>
+
+  <div class="footer-bar">
+    <div>
+      <span ng-if="vm.lastRefreshedAt">Data refreshed: {{ vm.lastRefreshedAt | date:'MMM d, y, h:mm a' }}</span>
+      <span ng-if="!vm.lastRefreshedAt">Data refreshed when page loaded</span>
+    </div>
+    <div>
+      <a href="javascript:void(0)" class="footer-link">Spending insights help</a>
+    </div>
+  </div>
+</div>
