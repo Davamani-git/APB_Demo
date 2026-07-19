@@ -1,0 +1,115 @@
+<div class="spending-summary-dashboard" aria-label="Spending Summary Dashboard">
+  <div class="row">
+    <div class="col-xs-12">
+      <ol class="breadcrumb">
+        <li class="active">Spending Summary Dashboard</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="javascript:void(0)">Monthly View</a></li>
+        <li><a href="javascript:void(0)">Trend Analysis</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="card filter-panel">
+        <div class="card-header">
+          <i class="fa fa-filter"></i> <span>Filters</span>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-sm-4 col-xs-12">
+              <label for="monthSelect" class="control-label">Select Month</label>
+              <select
+                id="monthSelect"
+                class="form-control"
+                ng-model="vm.selectedMonth"
+                ng-options="month for month in vm.monthOptions"
+                ng-change="vm.onMonthChange()">
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="card kpi-container" ng-if="vm.monthlySummary">
+        <div class="card-header">
+          <i class="fa fa-credit-card"></i> <span>Key Metrics</span>
+        </div>
+        <div class="card-body">
+          <div class="row kpi-section">
+            <div class="col-sm-3 col-xs-12">
+              <kpi-card
+                title="Total Spend"
+                value="{{ vm.monthlySummary.totalSpend | currencyFormat }}"
+                icon-class="fa fa-line-chart">
+              </kpi-card>
+            </div>
+            <div class="col-sm-3 col-xs-12">
+              <kpi-card
+                title="Transactions"
+                value="{{ vm.monthlySummary.transactionCount }}"
+                icon-class="fa fa-list-ul">
+              </kpi-card>
+            </div>
+            <div class="col-sm-3 col-xs-12">
+              <kpi-card
+                title="Average Spend"
+                value="{{ vm.monthlySummary.averageSpend | currencyFormat }}"
+                icon-class="fa fa-bar-chart">
+              </kpi-card>
+            </div>
+            <div class="col-sm-3 col-xs-12" ng-if="vm.monthlySummary.categories && vm.monthlySummary.categories.length">
+              <kpi-card
+                title="Top Category"
+                value="{{ vm.monthlySummary.categories[0].name }}"
+                icon-class="fa fa-star">
+              </kpi-card>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <loading-state loading="vm.summaryLoading" message="Loading monthly summary..."></loading-state>
+      <error-state error="vm.summaryError" on-retry="vm.retrySummary()"></error-state>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="card trend-card">
+        <div class="card-header">
+          <i class="fa fa-area-chart"></i> <span>6-Month Spending Trend</span>
+        </div>
+        <div class="card-body">
+          <spending-trend-chart
+            chart-data="vm.trendChartData"
+            loading="vm.trendLoading"
+            error="vm.trendError">
+          </spending-trend-chart>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <loading-state loading="vm.trendLoading" message="Loading 6-month trend..."></loading-state>
+      <error-state error="vm.trendError" on-retry="vm.retryTrend()"></error-state>
+    </div>
+  </div>
+</div>
