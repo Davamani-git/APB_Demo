@@ -1,0 +1,9 @@
+<div class="month-selector-inline">
+    <span class="month-selector-inline-label">Select Month</span>
+    <select class="form-control month-selector-inline-control"
+            ng-model="vm.selectedMonth"
+            ng-options="month.month as (month.month | dateFormat) for month in vm.months"
+            ng-change="vm.handleChange()">
+        <option value="" disabled>Select a month</option>
+    </select>
+</div>

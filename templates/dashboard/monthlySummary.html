@@ -1,0 +1,185 @@
+<div class="dashboard-container">
+    <div class="row dashboard-header-row">
+        <div class="col-xs-12">
+            <ol class="breadcrumb dashboard-breadcrumb">
+                <li><i class="fa fa-home"></i> Home</li>
+                <li class="active">Monthly Spending Summary</li>
+            </ol>
+            <h2 class="page-title">Monthly Spending Summary</h2>
+            <p class="page-subtitle">At-a-glance view of your monthly credit card spending, KPIs, and breakdown for financial awareness and budgeting.</p>
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs nav-tabs-custom" role="tablist">
+        <li class="active"><a href="javascript:void(0)">Month View</a></li>
+        <li><a href="javascript:void(0)">Overall (Coming Soon)</a></li>
+    </ul>
+
+    <div class="dashboard-tab-context">
+        Summary dashboard for the selected month and linked credit card accounts. No transaction-level details or PII are displayed.
+    </div>
+
+    <div class="card filter-panel">
+        <div class="filter-panel-title">
+            <i class="fa fa-filter"></i> Filters
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="filter-group">
+                    <label class="filter-label">Month</label>
+                    <month-selector
+                        months="vm.availableMonths"
+                        selected-month="vm.selectedMonth"
+                        on-change="vm.changeMonth(month)">
+                    </month-selector>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div class="dashboard-summary-meta">
+                    <span class="dashboard-summary-meta-item">
+                        <span class="dashboard-summary-meta-item-label">Selected Month:</span>
+                        <span class="dashboard-summary-meta-item-value">{{ vm.selectedMonth | dateFormat }}</span>
+                    </span>
+                    <span class="dashboard-summary-meta-item" ng-if="vm.summary">
+                        <span class="dashboard-summary-meta-item-label">Currency:</span>
+                        <span class="dashboard-summary-meta-item-value">{{ vm.summary.currency }}</span>
+                    </span>
+                    <span class="dashboard-summary-meta-item" ng-if="vm.summary && vm.summary.isPartial">
+                        <span class="dashboard-summary-meta-item-label"><i class="fa fa-exclamation-circle text-warning"></i> Partial Data:</span>
+                        <span class="dashboard-summary-meta-item-value">Some insights are temporarily unavailable. Basic totals are shown.</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div ng-if="vm.isLoading" class="loading-state card">
+        <div class="loading-state-icon">
+            <i class="fa fa-spinner fa-spin"></i>
+        </div>
+        <div class="loading-state-message">
+            Loading your monthly spending summary...
+        </div>
+    </div>
+
+    <div ng-if="vm.hasError && !vm.isLoading" class="error-card">
+        <div class="error-card-header">
+            <div class="error-card-icon"><i class="fa fa-exclamation-triangle"></i></div>
+            <div class="error-card-title">We couldn't load your spending summary</div>
+        </div>
+        <div class="error-card-message">{{ vm.error.message }}</div>
+        <div class="error-card-actions">
+            <button type="button" class="btn btn-primary-custom" ng-click="vm.retry()" ng-if="vm.error.retryable">
+                <i class="fa fa-refresh"></i> Retry
+            </button>
+            <button type="button" class="btn btn-secondary-custom" ng-click="vm.navigateTo()">
+                Back to dashboard
+            </button>
+        </div>
+    </div>
+
+    <div ng-if="!vm.isLoading && !vm.hasError">
+        <div class="row dashboard-kpi-row">
+            <div class="col-xs-12 col-sm-6 col-md-4" ng-repeat="kpi in vm.kpis">
+                <kpi-card
+                    label="{{ kpi.label }}"
+                    value="kpi.value"
+                    icon="{{ kpi.iconUrl }}"
+                    supporting-label="{{ kpi.supportingLabel }}"
+                    trend-indicator="{{ kpi.trendIndicator }}"
+                    currency-code="{{ vm.summary.currency }}">
+                </kpi-card>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <div class="card-header">
+                <div>
+                    <span class="card-header-icon"><i class="fa fa-pie-chart"></i></span>
+                    <span class="card-header-title">Spend Breakdown</span>
+                    <div class="card-header-subtitle">High-level breakdown of your monthly spending. Click a segment to explore deeper analysis paths.</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div ng-if="vm.breakdown && vm.breakdown.segments.length" class="chart-container">
+                    <breakdown-chart data="vm.breakdown" on-segment-click="vm.onSegmentClick(segment)"></breakdown-chart>
+                    <div class="chart-legend">
+                        Total spend represented: {{ vm.breakdown.totalSpend | currencyFormat:vm.summary.currency }}
+                    </div>
+                </div>
+                <div ng-if="vm.summary && (!vm.breakdown or !vm.breakdown.segments.length)" class="empty-state">
+                    <div class="empty-state-icon"><i class="fa fa-info-circle"></i></div>
+                    <div class="empty-state-title">Breakdown not available</div>
+                    <div class="empty-state-description">
+                        We couldn't compute a category breakdown for this month. Your total spend and KPIs are still displayed correctly.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-card" ng-if="vm.breakdown && vm.breakdown.segments.length">
+            <div class="card-header">
+                <div>
+                    <span class="card-header-icon"><i class="fa fa-table"></i></span>
+                    <span class="card-header-title">Breakdown Details</span>
+                    <div class="card-header-subtitle">High-level segments of your spending without exposing individual transactions.</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th class="table-text-left">Segment</th>
+                                <th class="table-text-right">Amount</th>
+                                <th class="table-text-right">Share of Spend</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="segment in vm.breakdown.segments">
+                                <td class="table-text-left">{{ segment.label }}</td>
+                                <td class="table-text-right">{{ segment.value | currencyFormat:vm.summary.currency }}</td>
+                                <td class="table-text-right">{{ segment.percentage | percentage:1 }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="empty-state" ng-if="!vm.breakdown.segments.length">
+                    <div class="empty-state-icon"><i class="fa fa-info-circle"></i></div>
+                    <div class="empty-state-title">No breakdown segments</div>
+                    <div class="empty-state-description">There are no transactions or we cannot group transactions into a breakdown for the selected month.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-insights-card">
+            <div class="card-header">
+                <div>
+                    <span class="card-header-icon"><i class="fa fa-lightbulb-o"></i></span>
+                    <span class="card-header-title">Insights & Next Steps</span>
+                    <div class="card-header-subtitle">Use this summary as an entry point into deeper analyses and budgeting decisions.</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <ul class="dashboard-insights-list">
+                    <li ng-if="vm.summary && vm.summary.transactionCount > 0">
+                        <i class="fa fa-check-circle"></i>
+                        Review your month-on-month changes in total spend and number of transactions to understand your usage patterns.
+                    </li>
+                    <li>
+                        <i class="fa fa-check-circle"></i>
+                        Use the month selection to compare different months and spot trends in your spending behaviour.
+                    </li>
+                    <li>
+                        <i class="fa fa-check-circle"></i>
+                        Click breakdown segments in the chart to navigate to deeper analysis views when they become available.
+                    </li>
+                    <li>
+                        <i class="fa fa-check-circle"></i>
+                        This dashboard intentionally avoids showing individual transactions or personally identifiable information.
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

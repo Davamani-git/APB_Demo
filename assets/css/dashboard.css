@@ -1,0 +1,77 @@
+/* Dashboard-Specific Styles */
+.dashboard-header-row {
+    margin-bottom: 16px;
+}
+
+.dashboard-breadcrumb {
+    margin-bottom: 8px;
+}
+
+.dashboard-kpi-row {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.dashboard-insights-card {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.dashboard-insights-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+.dashboard-insights-list li {
+    font-size: 13px;
+    color: #172B4D;
+    margin-bottom: 6px;
+}
+
+.dashboard-insights-list li i {
+    color: #36B37E;
+    margin-right: 6px;
+}
+
+.dashboard-summary-meta {
+    font-size: 13px;
+    color: #5E6C84;
+}
+
+.dashboard-summary-meta-item {
+    margin-right: 16px;
+}
+
+.dashboard-summary-meta-item-label {
+    font-weight: 500;
+}
+
+.dashboard-summary-meta-item-value {
+    margin-left: 4px;
+}
+
+.month-selector-inline {
+    display: flex;
+    align-items: center;
+}
+
+.month-selector-inline-label {
+    font-size: 13px;
+    font-weight: 500;
+    margin-right: 8px;
+}
+
+.month-selector-inline-control {
+    min-width: 180px;
+}
+
+.dashboard-tab-context {
+    font-size: 13px;
+    color: #5E6C84;
+    margin-top: 4px;
+}

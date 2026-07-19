@@ -1,0 +1,20 @@
+<div class="kpi-card" uib-tooltip="{{ vm.tooltip }}" tooltip-enable="vm.tooltip">
+    <div class="kpi-card-header">
+        <div class="kpi-card-icon">
+            <i class="fa" ng-class="vm.icon"></i>
+        </div>
+        <div class="kpi-card-title">{{ vm.label }}</div>
+    </div>
+    <div class="kpi-card-value" ng-if="vm.currencyCode">
+        {{ vm.value | currencyFormat:vm.currencyCode }}
+    </div>
+    <div class="kpi-card-value" ng-if="!vm.currencyCode">
+        {{ vm.value | number:0 }}
+    </div>
+    <div class="kpi-card-label">{{ vm.supportingLabel }}</div>
+    <div class="kpi-card-trend" ng-class="vm.getTrendClass()" ng-if="vm.trendIndicator">
+        <span ng-if="vm.trendIndicator === 'up'"><i class="fa fa-arrow-up"></i> Higher than previous month</span>
+        <span ng-if="vm.trendIndicator === 'down'"><i class="fa fa-arrow-down"></i> Lower than previous month</span>
+        <span ng-if="vm.trendIndicator === 'neutral'"><i class="fa fa-minus"></i> Stable</span>
+    </div>
+</div>
