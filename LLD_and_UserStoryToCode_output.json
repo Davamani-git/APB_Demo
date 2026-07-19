@@ -1,0 +1,1 @@
+{"error":"LLD folder could not be read from GitHub for repo 'APB_Demo' and branch 'DavDashboard' (404 from git_hub_script_reader). The approved Epic LLD is mandatory and currently unavailable, so implementation cannot proceed without violating the standards that forbid guessing or inventing missing LLD details."}
