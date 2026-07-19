@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+    <meta charset="UTF-8">
+    <title>Monthly Spending Summary Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- External CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/css/app.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+<body>
+    <div class="dashboard-app">
+        <div ng-include="'templates/layout/header.html'"></div>
+        <div ng-include="'templates/layout/navigation.html'"></div>
+        <div class="container-fluid main-container">
+            <div ng-view></div>
+        </div>
+        <div ng-include="'templates/layout/footer.html'"></div>
+    </div>
+
+    <!-- AngularJS and external libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-sanitize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.6/ui-bootstrap-tpls.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+    <script src="assets/js/vendor.js"></script>
+
+    <!-- Angular module & configuration -->
+    <script src="src/app/config/app.module.js"></script>
+    <script src="src/app/config/env.config.js"></script>
+    <script src="src/app/config/app.config.js"></script>
+    <script src="src/app/config/app.routes.js"></script>
+    <script src="src/app/routes/route.constants.js"></script>
+
+    <!-- Models -->
+    <script src="src/app/models/config.model.js"></script>
+    <script src="src/app/models/monthlySummary.model.js"></script>
+    <script src="src/app/models/kpi.model.js"></script>
+    <script src="src/app/models/breakdown.model.js"></script>
+    <script src="src/app/models/monthAvailability.model.js"></script>
+    <script src="src/app/models/error.model.js"></script>
+
+    <!-- Filters -->
+    <script src="src/app/filters/currencyFormat.filter.js"></script>
+    <script src="src/app/filters/dateFormat.filter.js"></script>
+    <script src="src/app/filters/percentage.filter.js"></script>
+
+    <!-- Mock data (runtime JS objects) -->
+    <script src="mock/data/monthlySummary.mock.data.js"></script>
+    <script src="mock/data/breakdown.mock.data.js"></script>
+    <script src="mock/data/kpi.mock.data.js"></script>
+    <script src="mock/data/monthAvailability.mock.data.js"></script>
+    <script src="mock/data/error.mock.data.js"></script>
+
+    <!-- Services, factories, interceptors -->
+    <script src="src/app/factories/apiClient.factory.js"></script>
+    <script src="src/app/services/logging.service.js"></script>
+    <script src="src/app/services/httpInterceptor.service.js"></script>
+    <script src="src/app/services/monthlySummary.service.js"></script>
+    <script src="src/app/services/monthSelection.service.js"></script>
+    <script src="src/app/services/breakdown.service.js"></script>
+    <script src="src/app/services/kpi.service.js"></script>
+
+    <!-- Mock services -->
+    <script src="mock/services/monthlySummary.mock.service.js"></script>
+    <script src="mock/services/breakdown.mock.service.js"></script>
+    <script src="mock/services/kpi.mock.service.js"></script>
+    <script src="mock/services/monthSelection.mock.service.js"></script>
+
+    <!-- Directives -->
+    <script src="src/app/directives/kpiCard.directive.js"></script>
+    <script src="src/app/directives/breakdownChart.directive.js"></script>
+    <script src="src/app/directives/monthSelector.directive.js"></script>
+
+    <!-- Controllers -->
+    <script src="src/app/controllers/monthlySummary.controller.js"></script>
+</body>
+</html>

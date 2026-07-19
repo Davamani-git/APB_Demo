@@ -1,0 +1,17 @@
+<div class="breakdown-chart">
+    <div class="chart-header">
+        <span class="chart-title">Spend breakdown for {{vm.data.month | dateFormat}}</span>
+    </div>
+    <div class="chart-body" ng-if="vm.hasData">
+        <canvas id="breakdownChartCanvas" aria-label="Monthly spend breakdown chart" role="img"></canvas>
+    </div>
+    <div class="empty-state" ng-if="!vm.hasData">
+        <div class="empty-icon">
+            <i class="fa fa-pie-chart"></i>
+        </div>
+        <div class="empty-title">No breakdown data available</div>
+        <div class="empty-description">
+            We were unable to derive a breakdown for this month. Your total spend and KPIs are still available above.
+        </div>
+    </div>
+</div>
