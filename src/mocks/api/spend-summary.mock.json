@@ -1,0 +1,40 @@
+{
+  "summaries": [
+    {
+      "cardId": "CARD-12345",
+      "month": "2025-01",
+      "currency": "USD",
+      "metrics": {
+        "totalSpend": 1234.56,
+        "transactionCount": 42,
+        "averageTransactionAmount": 29.39,
+        "activeDaysCount": 18
+      },
+      "breakdown": {
+        "Groceries": 300.0,
+        "Restaurants": 250.5,
+        "Online Shopping": 400.0,
+        "Utilities": 284.06
+      },
+      "lastUpdated": "2025-02-01T12:00:00Z"
+    },
+    {
+      "cardId": "CARD-12345",
+      "month": "2025-02",
+      "currency": "USD",
+      "metrics": {
+        "totalSpend": 980.1,
+        "transactionCount": 35,
+        "averageTransactionAmount": 28.0,
+        "activeDaysCount": 17
+      },
+      "breakdown": {
+        "Groceries": 250.0,
+        "Restaurants": 220.1,
+        "Online Shopping": 300.0,
+        "Utilities": 210.0
+      },
+      "lastUpdated": "2025-03-01T12:00:00Z"
+    }
+  ]
+}

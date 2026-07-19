@@ -1,0 +1,124 @@
+/* Theming for Monthly Spending Summary Dashboard */
+
+/* Color palette */
+:root {
+  --primary-blue: #0055a4;
+  --success-green: #00897b;
+  --warning-orange: #f9a825;
+  --danger-red: #c62828;
+  --neutral-grey: #607d8b;
+}
+
+.app-navbar {
+  background-color: var(--primary-blue);
+}
+
+.app-navbar .navbar-brand,
+.app-navbar .navbar-brand:focus,
+.app-navbar .navbar-brand:hover {
+  color: #ffffff;
+}
+
+.app-navbar .navbar-brand {
+  font-size: 16px;
+}
+
+/* KPI cards */
+.kpi-card.panel {
+  border-radius: 8px;
+  border-color: #e0e4ea;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.kpi-card .panel-heading {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e4ea;
+}
+
+.kpi-card-total .kpi-card-value {
+  color: var(--success-green);
+}
+
+.kpi-card-count .kpi-card-value {
+  color: var(--primary-blue);
+}
+
+.kpi-card-average .kpi-card-value {
+  color: var(--neutral-grey);
+}
+
+.kpi-icon-total {
+  background-image: url('../img/kpi-spend.svg');
+}
+
+.kpi-icon-count {
+  background-image: url('../img/kpi-tx-count.svg');
+}
+
+.kpi-icon-average {
+  background-image: url('../img/kpi-avg-tx.svg');
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--primary-blue);
+  border-color: var(--primary-blue);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: #00427f;
+  border-color: #00427f;
+}
+
+.btn-link-disabled {
+  color: #b0bec5;
+  cursor: not-allowed;
+}
+
+/* Breakdown chart */
+.chart-card.panel {
+  border-radius: 8px;
+  border-color: #e0e4ea;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Status panels */
+.status-panel {
+  padding: 24px 16px;
+}
+
+.status-panel.loading .status-message-main {
+  color: var(--primary-blue);
+}
+
+.status-panel.empty .status-message-main {
+  color: var(--neutral-grey);
+}
+
+.status-panel.error .status-message-main {
+  color: var(--danger-red);
+}
+
+/* Tables */
+.table-breakdown {
+  background-color: #ffffff;
+  border-radius: 8px;
+}
+
+.table-breakdown thead {
+  background-color: #f1f4f8;
+}
+
+/* Accessibility and focus */
+.btn:focus,
+.btn:active:focus,
+.btn.active:focus {
+  outline: 2px solid #ffca28;
+  outline-offset: 2px;
+}
+
+select:focus,
+button:focus {
+  outline: 2px solid #ffca28;
+}

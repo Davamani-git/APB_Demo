@@ -1,0 +1,221 @@
+/* Base application styles */
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  padding-top: 60px; /* space for fixed navbar */
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  background-color: #f5f7fa;
+}
+
+.app-navbar {
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.app-logo {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  background-image: url('../img/logo.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.app-title {
+  font-weight: 600;
+}
+
+.app-container {
+  padding-top: 24px;
+  padding-bottom: 40px;
+}
+
+.app-footer {
+  padding: 16px 0;
+  border-top: 1px solid #e0e4ea;
+  background-color: #ffffff;
+}
+
+.app-footer p {
+  margin: 0;
+  font-size: 12px;
+}
+
+.kpi-row {
+  margin-top: 24px;
+}
+
+.kpi-card .panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kpi-card-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.kpi-card-icon {
+  width: 24px;
+  height: 24px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.kpi-card-value {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.kpi-card-subtitle {
+  font-size: 12px;
+  color: #777;
+}
+
+.section-header {
+  margin-top: 16px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.section-actions {
+  text-align: right;
+}
+
+.month-selector-label {
+  font-weight: 600;
+}
+
+.status-panel {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.status-illustration {
+  width: 120px;
+  height: auto;
+  margin-bottom: 16px;
+}
+
+.status-message-main {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.status-message-detail {
+  font-size: 13px;
+  color: #666;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  background-image: url('../img/loading-spinner.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+.empty-state-icon {
+  background-image: url('../img/empty-state.svg');
+}
+
+.error-state-icon {
+  background-image: url('../img/error-state.svg');
+}
+
+.table-breakdown {
+  margin-top: 16px;
+}
+
+.table-breakdown thead th {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.table-breakdown tbody td {
+  font-size: 13px;
+}
+
+.chart-container {
+  position: relative;
+  min-height: 240px;
+}
+
+.chart-canvas {
+  width: 100% !important;
+  height: auto !important;
+}
+
+/* Utility spacing */
+.mt-8 {
+  margin-top: 8px;
+}
+
+.mt-16 {
+  margin-top: 16px;
+}
+
+.mt-24 {
+  margin-top: 24px;
+}
+
+.mt-32 {
+  margin-top: 32px;
+}
+
+.mb-8 {
+  margin-bottom: 8px;
+}
+
+.mb-16 {
+  margin-bottom: 16px;
+}
+
+.mb-24 {
+  margin-bottom: 24px;
+}
+
+.mb-32 {
+  margin-bottom: 32px;
+}
+
+/* Responsive behavior */
+@media (max-width: 991px) {
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .section-actions {
+    margin-top: 8px;
+    width: 100%;
+    text-align: left;
+  }
+}
+
+@media (max-width: 767px) {
+  .kpi-card-value {
+    font-size: 20px;
+  }
+
+  .app-container {
+    padding-top: 16px;
+  }
+}
