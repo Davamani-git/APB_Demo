@@ -1,0 +1,254 @@
+/* Dashboard specific styles */
+.kpi-row {
+    margin-bottom: 24px;
+}
+
+.kpi-card-container {
+    margin-bottom: 24px;
+}
+
+.kpi-card {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: all 0.2s ease;
+}
+
+.kpi-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+}
+
+.kpi-card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.kpi-card-icon {
+    font-size: 24px;
+    color: #2684FF;
+    margin-right: 12px;
+}
+
+.kpi-card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #172B4D;
+}
+
+.kpi-card-body {
+    flex: 1 0 auto;
+}
+
+.kpi-card-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #172B4D;
+}
+
+.kpi-card-label {
+    font-size: 13px;
+    color: #5E6C84;
+    margin-top: 4px;
+}
+
+.kpi-card-trend {
+    margin-top: 8px;
+    font-size: 12px;
+}
+
+.kpi-card-trend-up {
+    color: #36B37E;
+}
+
+.kpi-card-trend-down {
+    color: #DE350B;
+}
+
+.kpi-card-trend-neutral {
+    color: #5E6C84;
+}
+
+.breakdown-card {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.breakdown-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.breakdown-card-title {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.breakdown-card-legend {
+    font-size: 12px;
+    color: #5E6C84;
+}
+
+.breakdown-card-body {
+    position: relative;
+}
+
+.breakdown-detail-table-card {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.breakdown-table-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.table-breakdown {
+    width: 100%;
+}
+
+.table-breakdown > thead > tr > th {
+    background-color: #F4F6F9;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.table-breakdown > tbody > tr:nth-child(odd) {
+    background-color: #FFFFFF;
+}
+
+.table-breakdown > tbody > tr:nth-child(even) {
+    background-color: #F9FAFB;
+}
+
+.table-breakdown > tbody > tr:hover {
+    background-color: #E6F2FF;
+}
+
+.table-breakdown .text-right {
+    text-align: right;
+}
+
+.table-breakdown .text-left {
+    text-align: left;
+}
+
+.month-selector-card {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.month-selector-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.month-selector-select {
+    width: 100%;
+}
+
+.month-selector-help {
+    font-size: 12px;
+    color: #5E6C84;
+    margin-top: 8px;
+}
+
+.error-panel-card {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    border: 1px solid #DE350B;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.error-panel-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.error-panel-icon {
+    font-size: 22px;
+    color: #DE350B;
+    margin-right: 8px;
+}
+
+.error-panel-title {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.error-panel-message {
+    font-size: 14px;
+    color: #5E6C84;
+    margin-bottom: 12px;
+}
+
+.error-panel-actions {
+    text-align: right;
+}
+
+.partial-data-banner {
+    background-color: #FFFAE6;
+    border-radius: 4px;
+    border: 1px solid #FFAB00;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: #7A4F01;
+    margin-bottom: 12px;
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+}
+
+.chart-canvas-wrapper {
+    position: relative;
+    height: 260px;
+}
+
+.loading-spinner-icon {
+    font-size: 32px;
+    color: #2684FF;
+}
+
+@media (min-width: 992px) {
+    .kpi-card-container {
+        display: flex;
+    }
+}
+
+@media (max-width: 991px) and (min-width: 768px) {
+    .kpi-card-container {
+        display: flex;
+    }
+}
+
+@media (max-width: 767px) {
+    .kpi-card {
+        margin-bottom: 16px;
+    }
+}

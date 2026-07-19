@@ -1,0 +1,175 @@
+<div class="monthly-summary-view" ng-cloak>
+    <div class="row page-title-row">
+        <div class="col-xs-12">
+            <h2 class="page-title">Monthly Spending Summary</h2>
+            <div class="page-breadcrumb">
+                Home / Digital Analytics / Monthly Spending Summary
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter & Month Selector -->
+    <div class="row">
+        <div class="col-xs-12 col-md-4">
+            <div class="month-selector-card">
+                <div class="month-selector-title">
+                    <i class="fa fa-calendar"></i> Month Selection
+                </div>
+                <month-selector
+                    months="vm.availableMonths"
+                    selected-month="vm.selectedMonth"
+                    on-change="vm.changeMonth(month)"></month-selector>
+                <div class="month-selector-help">
+                    Select a month to compare your spending patterns across time.
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-8">
+            <div class="filter-panel">
+                <div class="filter-panel-title">
+                    <i class="fa fa-filter"></i> Filters
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <label class="filter-panel-label">Selected Month</label>
+                            <p><strong>{{ vm.selectedMonth | dateFormat }}</strong></p>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <label class="filter-panel-label">Account Coverage</label>
+                            <p>All linked credit card accounts</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 text-right">
+                        <button type="button" class="btn btn-secondary" ng-click="vm.loadMonthlySummary(vm.selectedMonth)" ng-disabled="vm.isLoading">
+                            <i class="fa fa-refresh"></i> Refresh Summary
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div ng-if="vm.isLoading" class="loading-overlay">
+        <div class="text-center">
+            <i class="fa fa-spinner fa-spin loading-spinner-icon" aria-hidden="true"></i>
+            <div class="loading-message">Loading your monthly spending summary...</div>
+        </div>
+    </div>
+
+    <!-- Error Panel -->
+    <div ng-if="vm.hasError" class="row">
+        <div class="col-xs-12">
+            <div class="error-panel-card">
+                <div class="error-panel-header">
+                    <i class="fa fa-exclamation-triangle error-panel-icon" aria-hidden="true"></i>
+                    <div class="error-panel-title">We couldn't load your summary</div>
+                </div>
+                <div class="error-panel-message">{{ vm.error.message }}</div>
+                <div class="error-panel-actions">
+                    <button type="button" class="btn btn-primary" ng-if="vm.error.retryable" ng-click="vm.retry()">
+                        <i class="fa fa-refresh"></i> Retry
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty State (no transactions) -->
+    <div ng-if="!vm.hasError && !vm.isLoading && vm.summary && vm.summary.transactionCount === 0" class="row">
+        <div class="col-xs-12">
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fa fa-file-o" aria-hidden="true"></i>
+                </div>
+                <div class="empty-state-title">No spending activity for {{ vm.selectedMonth | dateFormat }}</div>
+                <div class="empty-state-description">
+                    There are no posted credit card transactions for this month. Your KPIs and total spend are displayed as zero.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div ng-if="!vm.hasError && !vm.isLoading && vm.summary" class="row kpi-row">
+        <div class="col-xs-12" ng-if="vm.isPartial">
+            <div class="partial-data-banner">
+                Some insights are temporarily unavailable. Basic totals are shown based on posted transactions.
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-3" ng-repeat="kpi in vm.kpis" class="kpi-card-container">
+            <kpi-card kpi="kpi"></kpi-card>
+        </div>
+    </div>
+
+    <!-- Breakdown Chart -->
+    <div ng-if="!vm.hasError && !vm.isLoading && vm.summary && vm.breakdown" class="row">
+        <div class="col-xs-12">
+            <breakdown-chart data="vm.breakdown" on-segment-click="vm.handleSegmentClick(segment)"></breakdown-chart>
+        </div>
+    </div>
+
+    <!-- Breakdown Detail Table -->
+    <div ng-if="!vm.hasError && !vm.isLoading && vm.summary && vm.breakdown" class="row">
+        <div class="col-xs-12">
+            <div class="breakdown-detail-table-card">
+                <div class="breakdown-table-title">
+                    Breakdown Details
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-breakdown">
+                        <thead>
+                            <tr>
+                                <th class="text-left">Segment</th>
+                                <th class="text-right">Spend</th>
+                                <th class="text-right">Share</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="segment in vm.breakdown.segments">
+                                <td class="text-left">{{ segment.label }}</td>
+                                <td class="text-right">{{ segment.value | currencyFormat:vm.summary.currency }}</td>
+                                <td class="text-right">{{ segment.percentage | percentage }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breakdown Empty State -->
+    <div ng-if="!vm.hasError && !vm.isLoading && vm.summary && !vm.breakdown && !vm.isPartial" class="row">
+        <div class="col-xs-12">
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fa fa-pie-chart" aria-hidden="true"></i>
+                </div>
+                <div class="empty-state-title">Breakdown not available</div>
+                <div class="empty-state-description">
+                    We couldn't group your transactions into a breakdown for this month. Your total spend and KPIs are still displayed correctly.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Insights Section -->
+    <div ng-if="!vm.hasError && !vm.isLoading && vm.summary" class="row">
+        <div class="col-xs-12">
+            <div class="breakdown-detail-table-card">
+                <div class="breakdown-table-title">
+                    Insights & Next Steps
+                </div>
+                <p>
+                    Use this summary as an entry point into deeper analysis. Navigate to detailed views from your main analytics menu to explore category-level patterns,
+                    multi-month comparisons, and more, all aligned with your selected month context.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,21 @@
+<div class="kpi-card">
+    <div class="kpi-card-header">
+        <div class="kpi-card-icon">
+            <i class="fa" ng-class="vm.iconClass" aria-hidden="true"></i>
+        </div>
+        <div class="kpi-card-title" ng-bind="vm.label"></div>
+    </div>
+    <div class="kpi-card-body">
+        <div class="kpi-card-value" ng-bind="vm.formattedValue"></div>
+        <div class="kpi-card-label" ng-bind="vm.supportingLabel"></div>
+        <div class="kpi-card-trend" ng-if="vm.trendIndicator" ng-class="{
+            'kpi-card-trend-up': vm.trendIndicator === 'up',
+            'kpi-card-trend-down': vm.trendIndicator === 'down',
+            'kpi-card-trend-neutral': vm.trendIndicator === 'neutral'
+        }">
+            <span ng-if="vm.trendIndicator === 'up'"><i class="fa fa-arrow-up"></i> {{ vm.trendLabel }}</span>
+            <span ng-if="vm.trendIndicator === 'down'"><i class="fa fa-arrow-down"></i> {{ vm.trendLabel }}</span>
+            <span ng-if="vm.trendIndicator === 'neutral'"><i class="fa fa-minus"></i> {{ vm.trendLabel }}</span>
+        </div>
+    </div>
+</div>

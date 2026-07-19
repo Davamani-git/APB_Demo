@@ -1,0 +1,9 @@
+<div class="form-group">
+    <label class="filter-panel-label" for="monthSelector">Month</label>
+    <select id="monthSelector"
+            class="form-control month-selector-select"
+            ng-model="vm.internalSelectedMonth"
+            ng-change="vm.onInternalChange()"
+            ng-options="month.month as (month.month | dateFormat) for month in vm.months">
+    </select>
+</div>
