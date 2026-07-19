@@ -1,0 +1,15 @@
+{
+  "currencyCode": "INR",
+  "trendChartType": "line",
+  "summaryChartType": "bar",
+  "colorPalette": ["#4CAF50", "#2196F3", "#FFC107"],
+  "highSpendThreshold": 50000,
+  "featureFlags": {
+    "showCategoryBreakdown": true,
+    "showAverageSpend": true,
+    "simulateSummaryError": false,
+    "simulateTrendsError": false,
+    "simulateSummaryTimeout": false,
+    "simulateTrendsTimeout": false
+  }
+}

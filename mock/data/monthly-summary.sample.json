@@ -1,0 +1,60 @@
+{
+  "2026-07": {
+    "month": "2026-07",
+    "totalSpend": 45872,
+    "transactionCount": 92,
+    "averageSpend": 498,
+    "currency": "INR",
+    "kpiMetrics": {
+      "highestCategory": "Dining",
+      "lowestCategory": "Fuel",
+      "trend": {
+        "direction": "up",
+        "change": 0.12
+      }
+    },
+    "chartData": {
+      "labels": ["Dining", "Groceries", "Fuel"],
+      "datasets": [
+        {
+          "label": "Spend by Category",
+          "data": [20500, 18000, 7372],
+          "backgroundColor": ["#4CAF50", "#2196F3", "#FFC107"]
+        }
+      ]
+    },
+    "chartOptions": {
+      "responsive": true,
+      "legend": {"position": "bottom"}
+    }
+  },
+  "2026-06": {
+    "month": "2026-06",
+    "totalSpend": 38000,
+    "transactionCount": 80,
+    "averageSpend": 475,
+    "currency": "INR",
+    "kpiMetrics": {
+      "highestCategory": "Groceries",
+      "lowestCategory": "Fuel",
+      "trend": {
+        "direction": "down",
+        "change": 0.08
+      }
+    },
+    "chartData": {
+      "labels": ["Dining", "Groceries", "Fuel"],
+      "datasets": [
+        {
+          "label": "Spend by Category",
+          "data": [15000, 16000, 7000],
+          "backgroundColor": ["#4CAF50", "#2196F3", "#FFC107"]
+        }
+      ]
+    },
+    "chartOptions": {
+      "responsive": true,
+      "legend": {"position": "bottom"}
+    }
+  }
+}

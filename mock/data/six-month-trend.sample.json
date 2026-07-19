@@ -1,0 +1,56 @@
+{
+  "default": {
+    "range": "6m",
+    "points": [
+      {
+        "month": "2026-02",
+        "totalSpend": 32000,
+        "transactionCount": 70
+      },
+      {
+        "month": "2026-03",
+        "totalSpend": 41000,
+        "transactionCount": 85
+      },
+      {
+        "month": "2026-04",
+        "totalSpend": 39000,
+        "transactionCount": 82
+      },
+      {
+        "month": "2026-05",
+        "totalSpend": 36000,
+        "transactionCount": 78
+      },
+      {
+        "month": "2026-06",
+        "totalSpend": 38000,
+        "transactionCount": 80
+      },
+      {
+        "month": "2026-07",
+        "totalSpend": 45872,
+        "transactionCount": 92
+      }
+    ],
+    "chartData": {
+      "labels": ["2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07"],
+      "datasets": [
+        {
+          "label": "Monthly Spend",
+          "data": [32000, 41000, 39000, 36000, 38000, 45872],
+          "borderColor": "#2196F3",
+          "backgroundColor": "rgba(33, 150, 243, 0.2)",
+          "fill": false
+        }
+      ]
+    },
+    "chartOptions": {
+      "responsive": true,
+      "legend": {"position": "bottom"},
+      "scales": {
+        "yAxes": [{"ticks": {"beginAtZero": true}}]
+      }
+    }
+  }
+}

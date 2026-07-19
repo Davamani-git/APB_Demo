@@ -1,0 +1,18 @@
+<div class="card card-kpi">
+    <div class="card-header">
+        <div class="card-header-icon"><i class="{{vm.iconClass}}"></i></div>
+        <div class="card-header-title">{{vm.title}}</div>
+    </div>
+    <div class="card-body">
+        <div class="kpi-value">{{vm.value}}</div>
+        <div class="kpi-supporting-label" ng-if="vm.supportingLabel">{{vm.supportingLabel}}</div>
+        <div class="kpi-trend" ng-if="vm.trendIndicator">
+            <span ng-if="vm.trendIndicator.direction === 'up'" class="text-success">
+                <i class="fa fa-arrow-up"></i> {{vm.trendIndicator.change | percentage}}
+            </span>
+            <span ng-if="vm.trendIndicator.direction === 'down'" class="text-danger">
+                <i class="fa fa-arrow-down"></i> {{vm.trendIndicator.change | percentage}}
+            </span>
+        </div>
+    </div>
+</div>

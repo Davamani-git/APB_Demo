@@ -1,0 +1,225 @@
+<div class="dashboard-page">
+    <header class="app-header">
+        <div class="app-header-title">Spending Summary Dashboard</div>
+        <div class="app-header-subtitle">Aggregated credit card spending insights</div>
+    </header>
+
+    <section class="dashboard-breadcrumb">
+        <span class="breadcrumb-item">Home</span>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-item active">Spending Summary Dashboard</span>
+    </section>
+
+    <section class="dashboard-tabs">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="">Summary</a></li>
+            <li><a href="">Trend Analysis</a></li>
+        </ul>
+    </section>
+
+    <section class="dashboard-filters card card-filter">
+        <div class="card-header">
+            <div class="card-header-icon"><i class="fa fa-filter"></i></div>
+            <div class="card-header-title">Filters</div>
+        </div>
+        <div class="card-body">
+            <form class="form-horizontal">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="monthSelector" class="control-label">Month</label>
+                            <select id="monthSelector" class="form-control" ng-model="vm.selectedMonth" ng-options="m as (m | dateFormat) for m in vm.availableMonths" ng-change="vm.onMonthChange(vm.selectedMonth)"></select>
+                            <div class="validation-message" ng-if="vm.validationErrors.month">
+                                <span class="text-danger">{{vm.validationErrors.month}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="control-label">Selected Period</label>
+                            <div class="form-control-static">
+                                {{vm.selectedMonth | dateFormat}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="control-label">Actions</label>
+                            <div class="form-control-static">
+                                <button type="button" class="btn btn-primary btn-sm" ng-click="vm.refreshAll()">
+                                    <i class="fa fa-refresh"></i> Refresh
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="dashboard-kpis">
+        <div class="row">
+            <div class="col-md-3 col-sm-6" ng-if="vm.summary">
+                <ss-kpi-card
+                    title="Total Spend"
+                    value="vm.summary.totalSpendFormatted | currencyFormat"
+                    icon-class="fa fa-credit-card"
+                    supporting-label="Aggregated credit card spend"
+                    trend-indicator="vm.summary.trend">
+                </ss-kpi-card>
+            </div>
+            <div class="col-md-3 col-sm-6" ng-if="vm.summary">
+                <ss-kpi-card
+                    title="Number of Transactions"
+                    value="vm.summary.transactionCount"
+                    icon-class="fa fa-list-alt"
+                    supporting-label="Total transactions (aggregated)">
+                </ss-kpi-card>
+            </div>
+            <div class="col-md-3 col-sm-6" ng-if="vm.summary && vm.config && vm.config.featureFlags.showAverageSpend">
+                <ss-kpi-card
+                    title="Average Spend per Transaction"
+                    value="vm.summary.averageSpendFormatted | currencyFormat"
+                    icon-class="fa fa-line-chart"
+                    supporting-label="Average across the selected month">
+                </ss-kpi-card>
+            </div>
+        </div>
+        <div class="row" ng-if="!vm.summary && vm.summaryError">
+            <div class="col-md-12">
+                <div class="card card-error">
+                    <div class="card-header">
+                        <div class="card-header-icon text-danger"><i class="fa fa-exclamation-triangle"></i></div>
+                        <div class="card-header-title">Unable to load monthly summary</div>
+                    </div>
+                    <div class="card-body">
+                        <p>{{vm.summaryError.message}}</p>
+                        <button type="button" class="btn btn-danger btn-sm" ng-click="vm.retrySummary()">
+                            <i class="fa fa-refresh"></i> Retry
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" ng-if="vm.summary && vm.summary.isEmpty && !vm.summaryError">
+            <div class="col-md-12">
+                <div class="card card-empty">
+                    <div class="card-header">
+                        <div class="card-header-icon"><i class="fa fa-info-circle"></i></div>
+                        <div class="card-header-title">No spending data</div>
+                    </div>
+                    <div class="card-body">
+                        <p>No spending data available for the selected month. Spending trends cannot be displayed due to lack of data.</p>
+                        <button type="button" class="btn btn-default btn-sm" ng-click="vm.refreshAll()">
+                            Try another month
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="dashboard-charts">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card card-chart">
+                    <div class="card-header">
+                        <div class="card-header-icon"><i class="fa fa-bar-chart"></i></div>
+                        <div class="card-header-title">Monthly Spend Summary</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="loading-overlay" ng-if="vm.isLoadingSummary">
+                            <div class="spinner">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                            <div class="loading-text">Loading monthly summary...</div>
+                        </div>
+                        <div ng-if="vm.summary && !vm.summary.isEmpty">
+                            <ss-summary-chart
+                                chart-data="vm.summary.chartData"
+                                chart-options="vm.summary.chartOptions"
+                                chart-title="Monthly Spend Summary">
+                            </ss-summary-chart>
+                        </div>
+                        <div class="empty-state" ng-if="vm.summary && vm.summary.isEmpty && !vm.isLoadingSummary">
+                            <div class="empty-icon"><i class="fa fa-pie-chart"></i></div>
+                            <div class="empty-title">No chart data available</div>
+                            <div class="empty-description">There are no spending records for the selected month.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card card-chart">
+                    <div class="card-header">
+                        <div class="card-header-icon"><i class="fa fa-line-chart"></i></div>
+                        <div class="card-header-title">Six-Month Spending Trend</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="loading-overlay" ng-if="vm.isLoadingTrends">
+                            <div class="spinner">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                            <div class="loading-text">Loading spending trends...</div>
+                        </div>
+                        <div ng-if="vm.trends && vm.trends.points.length > 0">
+                            <ss-trends-chart
+                                chart-data="vm.trends.chartData"
+                                chart-options="vm.trends.chartOptions"
+                                chart-title="Six-Month Spending Trend">
+                            </ss-trends-chart>
+                        </div>
+                        <div class="empty-state" ng-if="vm.trends && vm.trends.points.length === 0 && !vm.isLoadingTrends">
+                            <div class="empty-icon"><i class="fa fa-line-chart"></i></div>
+                            <div class="empty-title">No trend data available</div>
+                            <div class="empty-description">No transactions found in the last six months. Spending trends cannot be displayed due to lack of data.</div>
+                        </div>
+                        <div class="card-error" ng-if="vm.trendsError && !vm.isLoadingTrends">
+                            <div class="card-header">
+                                <div class="card-header-icon text-danger"><i class="fa fa-exclamation-circle"></i></div>
+                                <div class="card-header-title">Unable to load spending trends</div>
+                            </div>
+                            <div class="card-body">
+                                <p>{{vm.trendsError.message}}</p>
+                                <button type="button" class="btn btn-danger btn-sm" ng-click="vm.retryTrends()">
+                                    <i class="fa fa-refresh"></i> Retry
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="dashboard-insights">
+        <div class="card card-insights" ng-if="vm.summary && !vm.summary.isEmpty">
+            <div class="card-header">
+                <div class="card-header-icon"><i class="fa fa-lightbulb-o"></i></div>
+                <div class="card-header-title">Spending Insights</div>
+            </div>
+            <div class="card-body">
+                <p>
+                    Your aggregated credit card spend for {{vm.summary.month | dateFormat}} is
+                    <strong>{{vm.summary.totalSpend | currencyFormat}}</strong> across
+                    <strong>{{vm.summary.transactionCount}}</strong> transactions.
+                </p>
+                <p>
+                    Use the six-month trend chart to identify months where your spending is higher or lower than your recent average.
+                    Visual indicators make it easy to understand differences without additional calculations, and insights avoid referencing specific merchant names or individual transactions.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="dashboard-footer">
+        <div class="row">
+            <div class="col-sm-6">
+                <span class="footer-text">Data shown is aggregated credit card spend only. No personally identifiable information or payment card details are displayed.</span>
+            </div>
+            <div class="col-sm-6 text-right" ng-if="vm.dataRefreshTimestamp">
+                <span class="footer-text">Last refreshed: {{vm.dataRefreshTimestamp | date:'medium'}}</span>
+            </div>
+        </div>
+    </footer>
+</div>
