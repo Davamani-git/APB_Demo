@@ -1,0 +1,16 @@
+<div class="panel panel-default spend-summary-kpi-card">
+  <div class="panel-body">
+    <div class="media">
+      <div class="media-left">
+        <img ng-src="{{vm.iconPath}}" alt="KPI Icon" class="kpi-icon">
+      </div>
+      <div class="media-body">
+        <h4 class="media-heading">{{vm.label}}</h4>
+        <p class="kpi-value">
+          <span ng-if="vm.currencyCode">{{vm.value | currencyAbbrev}} {{vm.currencyCode}}</span>
+          <span ng-if="!vm.currencyCode">{{vm.value | currencyAbbrev}}</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

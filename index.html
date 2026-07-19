@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Monthly Spending Summary Dashboard</title>
+
+  <!-- Bootstrap CSS (CDN) -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+  <!-- Application Stylesheets (local) -->
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/spend-summary.css">
+</head>
+<body>
+  <div class="container-fluid" ng-controller="RootLayoutController as layoutVm">
+    <!-- Header -->
+    <div ng-include="'src/shared/templates/layout/header.template.html'"></div>
+
+    <!-- Main Content -->
+    <div class="row">
+      <div class="col-xs-12">
+        <div ng-view></div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div ng-include="'src/shared/templates/layout/footer.template.html'"></div>
+  </div>
+
+  <!-- AngularJS Core (CDN) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+
+  <!-- Angular Route (CDN) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+
+  <!-- Angular Animate (CDN) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-animate.min.js"></script>
+
+  <!-- Angular Sanitize (CDN) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-sanitize.min.js"></script>
+
+  <!-- Angular UI Bootstrap (CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.6/ui-bootstrap-tpls.min.js"></script>
+
+  <!-- Chart.js (CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+
+  <!-- Application Scripts (local) -->
+  <!-- Root Module & Bootstrap -->
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/app.config.js"></script>
+  <script src="src/app/app.run.js"></script>
+
+  <!-- Core Models -->
+  <script src="src/app/core/models/spend-summary.models.js"></script>
+
+  <!-- Core Services -->
+  <script src="src/app/core/services/env-config.service.js"></script>
+  <script src="src/app/core/services/logging.service.js"></script>
+  <script src="src/app/core/services/spend-summary.api.service.js"></script>
+  <script src="src/app/core/services/spend-summary.mock.service.js"></script>
+  <script src="src/app/core/services/spend-summary.service.js"></script>
+
+  <!-- Interceptors -->
+  <script src="src/app/core/interceptors/http-error.interceptor.js"></script>
+  <script src="src/app/core/services/http-interceptor.service.js"></script>
+
+  <!-- Shared -->
+  <script src="src/app/shared/directives/loading-spinner.directive.js"></script>
+  <script src="src/app/shared/filters/currency-abbrev.filter.js"></script>
+
+  <!-- Feature: Spend Summary -->
+  <script src="src/app/features/spend-summary/spend-summary.routes.js"></script>
+  <script src="src/app/features/spend-summary/spend-summary.controller.js"></script>
+  <script src="src/app/features/spend-summary/spend-summary.directive.js"></script>
+  <script src="src/app/features/spend-summary/spend-summary-kpi-card.directive.js"></script>
+  <script src="src/app/features/spend-summary/spend-summary-chart.directive.js"></script>
+  <script src="src/app/features/spend-summary/spend-summary-table.directive.js"></script>
+
+  <!-- Root Layout Controller (defined in app.run.js) -->
+</body>
+</html>

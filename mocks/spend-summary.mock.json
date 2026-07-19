@@ -1,0 +1,54 @@
+{
+  "month": "2025-03",
+  "customerId": "MOCK-CUST",
+  "cardSummaries": [
+    {
+      "cardId": "CARD-MOCK-1",
+      "cardDisplayName": "Mock Platinum Card",
+      "totalAmount": 1234.56,
+      "transactionCount": 40,
+      "averageTransactionAmount": 30.86,
+      "breakdown": [
+        {
+          "segmentCode": "NEC",
+          "segmentLabel": "Necessities",
+          "amount": 600.0,
+          "transactionCount": 18,
+          "percentageOfTotal": 48.6
+        },
+        {
+          "segmentCode": "DISC",
+          "segmentLabel": "Discretionary",
+          "amount": 634.56,
+          "transactionCount": 22,
+          "percentageOfTotal": 51.4
+        }
+      ]
+    }
+  ],
+  "consolidatedTotals": {
+    "totalAmount": 1234.56,
+    "transactionCount": 40,
+    "averageTransactionAmount": 30.86
+  },
+  "breakdown": [
+    {
+      "segmentCode": "NEC",
+      "segmentLabel": "Necessities",
+      "amount": 600.0,
+      "transactionCount": 18,
+      "percentageOfTotal": 48.6
+    },
+    {
+      "segmentCode": "DISC",
+      "segmentLabel": "Discretionary",
+      "amount": 634.56,
+      "transactionCount": 22,
+      "percentageOfTotal": 51.4
+    }
+  ],
+  "metadata": {
+    "currencyCode": "USD",
+    "lastUpdatedUtc": "2025-03-31T23:59:59Z"
+  }
+}

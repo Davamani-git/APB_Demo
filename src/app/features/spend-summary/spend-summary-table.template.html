@@ -1,0 +1,21 @@
+<table class="table table-striped table-bordered spend-summary-table" ng-if="vm.cardSummaries && vm.cardSummaries.length">
+  <thead>
+    <tr>
+      <th>Card</th>
+      <th>Total Spend</th>
+      <th>Transactions</th>
+      <th>Average Transaction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="card in vm.cardSummaries">
+      <td>{{card.cardDisplayName}}</td>
+      <td>{{card.totalAmount | currencyAbbrev}} {{vm.currencyCode}}</td>
+      <td>{{card.transactionCount}}</td>
+      <td>{{card.averageTransactionAmount | currencyAbbrev}} {{vm.currencyCode}}</td>
+    </tr>
+  </tbody>
+</table>
+<div ng-if="!vm.cardSummaries || !vm.cardSummaries.length" class="alert alert-info">
+  <p>No credit card accounts to display.</p>
+</div>

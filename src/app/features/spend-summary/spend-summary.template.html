@@ -1,0 +1,99 @@
+<div class="spend-summary-dashboard">
+  <!-- Month Selector -->
+  <div class="row">
+    <div class="col-xs-12 col-sm-6">
+      <label for="monthSelect">Select Month</label>
+      <select id="monthSelect" class="form-control" ng-model="vm.selectedMonth" ng-options="month for month in vm.availableMonths" ng-change="vm.onMonthChange({})">
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="row" ng-if="vm.isLoading">
+    <div class="col-xs-12 text-center">
+      <loading-spinner is-loading="vm.isLoading"></loading-spinner>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div class="row" ng-if="vm.hasError">
+    <div class="col-xs-12">
+      <div class="alert alert-danger">
+        <p>{{vm.errorMessage}}</p>
+        <button type="button" class="btn btn-default" ng-click="vm.onRetry({})">Retry</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="row" ng-if="!vm.isLoading && !vm.hasError && vm.summary && vm.summary.consolidatedTotals.transactionCount === 0">
+    <div class="col-xs-12">
+      <div class="alert alert-info">
+        <p>No transactions found for the selected month.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="row" ng-if="!vm.isLoading && !vm.hasError && vm.summary && vm.summary.consolidatedTotals.transactionCount > 0">
+    <!-- KPI Cards -->
+    <div class="col-xs-12">
+      <div class="row">
+        <div class="col-xs-12 col-sm-4">
+          <spend-summary-kpi-card
+            icon-path="assets/img/icons/kpi-total.png"
+            label="Total Spend"
+            value="vm.summary.consolidatedTotals.totalAmount"
+            currency-code="{{vm.summary.metadata.currencyCode}}">
+          </spend-summary-kpi-card>
+        </div>
+        <div class="col-xs-12 col-sm-4">
+          <spend-summary-kpi-card
+            icon-path="assets/img/icons/kpi-count.png"
+            label="Transactions"
+            value="vm.summary.consolidatedTotals.transactionCount"
+            currency-code="">
+          </spend-summary-kpi-card>
+        </div>
+        <div class="col-xs-12 col-sm-4">
+          <spend-summary-kpi-card
+            icon-path="assets/img/icons/kpi-avg.png"
+            label="Average Transaction"
+            value="vm.summary.consolidatedTotals.averageTransactionAmount"
+            currency-code="{{vm.summary.metadata.currencyCode}}">
+          </spend-summary-kpi-card>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="col-xs-12 col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Spend Breakdown</h3>
+        </div>
+        <div class="panel-body">
+          <spend-summary-chart
+            breakdown="vm.summary.breakdown"
+            currency-code="{{vm.summary.metadata.currencyCode}}">
+          </spend-summary-chart>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="col-xs-12 col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Per Card Summary</h3>
+        </div>
+        <div class="panel-body">
+          <spend-summary-table
+            card-summaries="vm.summary.cardSummaries"
+            currency-code="{{vm.summary.metadata.currencyCode}}">
+          </spend-summary-table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

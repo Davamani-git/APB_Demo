@@ -1,0 +1,10 @@
+{
+  "code": "MOCK_ERROR",
+  "message": "Simulated mock error for testing.",
+  "httpStatus": 500,
+  "correlationId": "mock-error-9999",
+  "details": {
+    "endpoint": "/spend-summary",
+    "timeoutMs": 10000
+  }
+}

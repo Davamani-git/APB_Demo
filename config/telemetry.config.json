@@ -1,0 +1,5 @@
+{
+  "enabled": true,
+  "endpoint": "https://telemetry.examplebank.com/events",
+  "samplingRate": 0.5
+}
