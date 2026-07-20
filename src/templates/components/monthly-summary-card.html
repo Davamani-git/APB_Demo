@@ -1,0 +1,28 @@
+<div class="card monthly-summary-card" aria-label="Monthly Spend Summary Card">
+  <div class="card-header">
+    <div class="card-header-left">
+      <i class="fa fa-calendar card-header-icon" aria-hidden="true"></i>
+      <span class="card-header-title">Summary for {{vm.summary.month | dateFormat}}</span>
+    </div>
+    <div class="card-header-right">
+      <span class="summary-flag" ng-if="vm.summary.isCurrent">Current Month</span>
+      <span class="summary-flag" ng-if="vm.summary.isFinal">Final Statement</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="summary-metric-label">Total Spend</div>
+        <div class="summary-metric-value">{{vm.summary.totalSpend | currencyFormat:vm.summary.currency}}</div>
+      </div>
+      <div class="col-sm-6">
+        <div class="summary-metric-label">Number of Transactions</div>
+        <div class="summary-metric-value">{{vm.summary.transactionCount}}</div>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer">
+    <div class="summary-footer-text" ng-if="vm.summary.breakdownAvailable">Category breakdown is available for this month.</div>
+    <div class="summary-footer-text" ng-if="!vm.summary.breakdownAvailable">Category breakdown is not available for this month.</div>
+  </div>
+</div>

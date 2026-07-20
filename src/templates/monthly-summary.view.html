@@ -1,0 +1,141 @@
+<div class="monthly-summary-dashboard" aria-label="Monthly Spending Summary Dashboard">
+  <section class="filter-panel" aria-label="Month Selection Filters">
+    <div class="panel-header">
+      <i class="fa fa-filter panel-header-icon" aria-hidden="true"></i>
+      <span class="panel-header-title">Filters</span>
+    </div>
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-sm-4">
+          <label for="monthSelect" class="filter-label">Select Month</label>
+          <select id="monthSelect"
+                  class="form-control"
+                  ng-model="vm.selectedMonth"
+                  ng-options="month.month as month.label for month in vm.monthContext.months"
+                  ng-change="vm.onMonthChange(vm.selectedMonth)">
+            <option value="">Select a month</option>
+          </select>
+        </div>
+        <div class="col-sm-4">
+          <label class="filter-label">Actions</label>
+          <div>
+            <button type="button" class="btn btn-primary btn-sm" ng-click="vm.refresh()">
+              <i class="fa fa-refresh" aria-hidden="true"></i> Refresh
+            </button>
+            <button type="button" class="btn btn-default btn-sm" ng-click="vm.navigateToAnalytics()">
+              <i class="fa fa-area-chart" aria-hidden="true"></i> View deeper insights
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="kpi-section" aria-label="Monthly KPIs">
+    <div class="section-header">
+      <i class="fa fa-dashboard section-header-icon" aria-hidden="true"></i>
+      <span class="section-header-title">Monthly KPIs</span>
+    </div>
+
+    <div class="loading-spinner" ng-if="vm.isLoadingKpis">
+      <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+      <span class="loading-message">Loading KPIs for the selected month...</span>
+    </div>
+
+    <div class="error-panel" ng-if="vm.kpiError">
+      <i class="fa fa-exclamation-triangle error-icon" aria-hidden="true"></i>
+      <div class="error-content">
+        <div class="error-message">{{vm.kpiError.message}}</div>
+        <div class="error-details">Correlation ID: {{vm.kpiError.correlationId}}</div>
+        <button type="button" class="btn btn-primary btn-sm" ng-click="vm.retryKpis()">Retry</button>
+      </div>
+    </div>
+
+    <div class="row" ng-if="!vm.isLoadingKpis && !vm.kpiError">
+      <div class="col-md-4 col-sm-6 col-xs-12" ng-repeat="kpi in vm.kpis">
+        <kpi-card kpi="kpi"></kpi-card>
+      </div>
+    </div>
+
+    <div class="empty-state" ng-if="!vm.isLoadingKpis && !vm.kpiError && vm.kpis.length === 0">
+      <i class="fa fa-info-circle empty-icon" aria-hidden="true"></i>
+      <div class="empty-message">No KPI data available for the selected month.</div>
+      <div class="empty-description">Try selecting a different month to view activity.</div>
+    </div>
+  </section>
+
+  <section class="summary-section" aria-label="Monthly Spend Summary">
+    <div class="section-header">
+      <i class="fa fa-credit-card section-header-icon" aria-hidden="true"></i>
+      <span class="section-header-title">Monthly Spend Summary</span>
+    </div>
+
+    <div class="loading-spinner" ng-if="vm.isLoadingSummary">
+      <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+      <span class="loading-message">Loading monthly summary...</span>
+    </div>
+
+    <div class="error-panel" ng-if="vm.summaryError">
+      <i class="fa fa-exclamation-triangle error-icon" aria-hidden="true"></i>
+      <div class="error-content">
+        <div class="error-message">{{vm.summaryError.message}}</div>
+        <div class="error-details">Correlation ID: {{vm.summaryError.correlationId}}</div>
+        <button type="button" class="btn btn-primary btn-sm" ng-click="vm.retrySummary()">Retry</button>
+      </div>
+    </div>
+
+    <div ng-if="!vm.isLoadingSummary && !vm.summaryError && vm.summary">
+      <monthly-summary-card summary="vm.summary"></monthly-summary-card>
+    </div>
+
+    <div class="empty-state" ng-if="!vm.isLoadingSummary && !vm.summaryError && !vm.summary">
+      <i class="fa fa-info-circle empty-icon" aria-hidden="true"></i>
+      <div class="empty-message">No spending data available for the selected month.</div>
+      <div class="empty-description">There are no transactions recorded for this billing cycle.</div>
+    </div>
+  </section>
+
+  <section class="breakdown-section" aria-label="Category Breakdown">
+    <div class="section-header">
+      <i class="fa fa-pie-chart section-header-icon" aria-hidden="true"></i>
+      <span class="section-header-title">Spend by Category</span>
+    </div>
+
+    <div class="loading-spinner" ng-if="vm.isLoadingBreakdown">
+      <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+      <span class="loading-message">Loading category breakdown...</span>
+    </div>
+
+    <div class="error-panel" ng-if="vm.breakdownError">
+      <i class="fa fa-exclamation-triangle error-icon" aria-hidden="true"></i>
+      <div class="error-content">
+        <div class="error-message">{{vm.breakdownError.message}}</div>
+        <div class="error-details">Correlation ID: {{vm.breakdownError.correlationId}}</div>
+        <button type="button" class="btn btn-primary btn-sm" ng-click="vm.retryBreakdown()">Retry</button>
+      </div>
+    </div>
+
+    <div ng-if="!vm.isLoadingBreakdown && !vm.breakdownError && vm.breakdown && vm.breakdown.categories && vm.breakdown.categories.length > 0">
+      <breakdown-chart data="vm.breakdown"></breakdown-chart>
+    </div>
+
+    <div class="empty-state" ng-if="!vm.isLoadingBreakdown && !vm.breakdownError && vm.breakdown && vm.breakdown.categories && vm.breakdown.categories.length === 0">
+      <i class="fa fa-info-circle empty-icon" aria-hidden="true"></i>
+      <div class="empty-message">No breakdown data available.</div>
+      <div class="empty-description">There is no category-level spend to display for this month.</div>
+    </div>
+  </section>
+
+  <section class="insights-section" aria-label="Insights">
+    <div class="section-header">
+      <i class="fa fa-lightbulb-o section-header-icon" aria-hidden="true"></i>
+      <span class="section-header-title">Insights</span>
+    </div>
+    <div class="card insights-card">
+      <div class="card-body">
+        <p class="insights-text">Use the month selector to review how your spending evolves over time. The KPI cards and category chart provide a high-level view without exposing individual transaction details.</p>
+        <p class="insights-text">For deeper analysis, advanced insights may be available depending on your profile and configuration.</p>
+      </div>
+    </div>
+  </section>
+</div>

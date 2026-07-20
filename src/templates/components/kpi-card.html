@@ -1,0 +1,17 @@
+<div class="card kpi-card" aria-label="KPI Card">
+  <div class="card-header">
+    <div class="card-header-left">
+      <i class="fa fa-line-chart card-header-icon" aria-hidden="true" ng-if="vm.kpi.id === 'totalSpend'"></i>
+      <i class="fa fa-list-ul card-header-icon" aria-hidden="true" ng-if="vm.kpi.id === 'transactionCount'"></i>
+      <i class="fa fa-calculator card-header-icon" aria-hidden="true" ng-if="vm.kpi.id === 'averageTransactionValue'"></i>
+      <span class="card-header-title">{{vm.kpi.label}}</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="kpi-value">{{vm.kpi.formattedValue || vm.kpi.value}}</div>
+    <div class="kpi-label">{{vm.kpi.unit}}</div>
+  </div>
+  <div class="card-footer">
+    <span class="kpi-trend-label">Trend information may be available in advanced insights.</span>
+  </div>
+</div>
