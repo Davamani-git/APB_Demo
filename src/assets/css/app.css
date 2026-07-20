@@ -1,0 +1,254 @@
+/* Enterprise UI Specification Styles */
+
+/* 1. Core & Typography */
+body {
+    background-color: #F4F6F9; /* App Background */
+    color: #172B4D; /* Text Primary */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.main-content {
+    padding-top: 80px; /* Space for fixed header */
+    padding-bottom: 60px; /* Space for fixed footer */
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: 600;
+    color: #091E42; /* Heading Text */
+    margin-bottom: 24px;
+}
+
+/* 2. Header & Footer */
+#app-header {
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #E5E7EB;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030;
+    height: 60px;
+    display: flex;
+    align-items: center;
+}
+
+#app-header .navbar-brand {
+    color: #0052CC; /* Primary */
+    font-weight: 600;
+    font-size: 20px;
+}
+
+#app-header .nav > li > a {
+    color: #42526E; /* Text Secondary */
+    font-weight: 500;
+}
+
+#app-header .nav > li > a:hover, 
+#app-header .nav > li.active > a {
+    color: #0052CC;
+    background-color: transparent;
+}
+
+#app-footer {
+    background-color: #FFFFFF;
+    border-top: 1px solid #E5E7EB;
+    color: #6B778C; /* Text Tertiary */
+    padding: 15px 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 12px;
+}
+
+/* 3. Card Component */
+.app-card {
+    background-color: #FFFFFF;
+    border: 1px solid #E5E7EB; /* Border */
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.05);
+    transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.app-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+}
+
+.app-card-header {
+    font-size: 18px;
+    font-weight: 600;
+    color: #091E42;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+/* 4. KPI Card Directive */
+.kpi-card-component {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.kpi-card-component .kpi-icon {
+    font-size: 24px;
+    color: #0052CC; /* Primary */
+    margin-bottom: 12px;
+}
+
+.kpi-card-component .kpi-title {
+    font-size: 14px;
+    color: #6B778C; /* Text Tertiary */
+    margin-bottom: 8px;
+}
+
+.kpi-card-component .kpi-value {
+    font-size: 28px;
+    font-weight: 600;
+    color: #091E42;
+    line-height: 1.2;
+}
+
+/* 5. Table Component */
+.table-responsive {
+    border: none;
+}
+
+.table > thead > tr > th {
+    background-color: #F4F6F9;
+    color: #42526E;
+    font-weight: 600;
+    border-bottom: 2px solid #E5E7EB;
+    text-align: left;
+}
+
+.table > tbody > tr:nth-of-type(odd) {
+    background-color: #FAFBFC;
+}
+
+.table > tbody > tr:hover {
+    background-color: #EBECF0;
+}
+
+.table > tbody > tr > td {
+    vertical-align: middle;
+    border-top: 1px solid #E5E7EB;
+}
+
+.table .text-right, .table .text-numeric {
+    text-align: right;
+}
+
+/* 6. Chart & State Components */
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.loading-overlay .fa-spinner {
+    font-size: 40px;
+    color: #0052CC;
+}
+
+.loading-overlay .loading-message {
+    margin-top: 15px;
+    font-size: 16px;
+    color: #42526E;
+}
+
+.error-panel-component, .empty-state-component {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.error-panel-component .fa, .empty-state-component .fa {
+    font-size: 48px;
+    color: #DE350B; /* Red */
+    margin-bottom: 16px;
+}
+
+.empty-state-component .fa {
+    color: #42526E;
+}
+
+.error-panel-component h4, .empty-state-component h4 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #091E42;
+}
+
+.error-panel-component p, .empty-state-component p {
+    color: #6B778C;
+}
+
+/* 7. Card Tile Directive */
+.card-tile-component {
+    padding: 15px;
+    border: 1px solid #DFE1E6;
+    border-radius: 4px;
+}
+
+.card-tile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.card-tile-header .card-name {
+    font-weight: 600;
+}
+
+.card-tile-header .card-bank {
+    font-size: 12px;
+    color: #6B778C;
+}
+
+.card-tile-body .card-number {
+    font-family: monospace;
+    font-size: 16px;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+}
+
+.card-tile-footer .details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.details-grid > div > span {
+    display: block;
+    color: #6B778C;
+}
+
+/* 8. Budget Progress Directive */
+.budget-progress-component .budget-details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.progress {
+    height: 12px;
+    border-radius: 6px;
+}

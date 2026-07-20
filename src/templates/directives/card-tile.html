@@ -1,0 +1,27 @@
+<div class="card-tile-component">
+    <div class="card-tile-header">
+        <span class="card-name">{{ vm.card.cardName }}</span>
+        <span class="card-bank">{{ vm.card.issuingBank }}</span>
+    </div>
+    <div class="card-tile-body">
+        <div class="card-number">{{ vm.card.maskedCardNumber }}</div>
+        <div class="details-grid">
+            <div>
+                <span>Credit Limit</span>
+                <strong>{{ vm.card.creditLimit | currencyFormat }}</strong>
+            </div>
+            <div>
+                <span>Available Credit</span>
+                <strong>{{ vm.card.availableCredit | currencyFormat }}</strong>
+            </div>
+            <div>
+                <span>Outstanding</span>
+                <strong>{{ vm.card.currentOutstanding | currencyFormat }}</strong>
+            </div>
+            <div>
+                <span>Due Date</span>
+                <strong>{{ vm.card.dueDate | dateFormat }}</strong>
+            </div>
+        </div>
+    </div>
+</div>

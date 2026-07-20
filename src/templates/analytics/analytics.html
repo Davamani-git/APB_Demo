@@ -1,0 +1,58 @@
+<div class="page-title">Spending Analytics</div>
+
+<error-panel error="vm.error" retry-action="vm.refreshAnalytics()"></error-panel>
+<loading-spinner is-loading="vm.isLoading"></loading-spinner>
+
+<div ng-if="!vm.isLoading && !vm.error">
+    <!-- Filter Panel -->
+    <div class="app-card">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Date Range</label>
+                    <div class="input-group">
+                        <input type="date" class="form-control" ng-model="vm.params.dateFrom">
+                        <span class="input-group-addon">to</span>
+                        <input type="date" class="form-control" ng-model="vm.params.dateTo">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label>&nbsp;</label>
+                <button class="btn btn-primary btn-block" ng-click="vm.refreshAnalytics()">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="app-card">
+                <div class="app-card-header">Spending by Category</div>
+                <spending-chart chart-data="vm.analyticsData.categoryWise"></spending-chart>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="app-card">
+                <div class="app-card-header">Spending by Card</div>
+                <spending-chart chart-data="vm.analyticsData.cardDistribution"></spending-chart>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="app-card">
+                <div class="app-card-header">Monthly Spending Trend</div>
+                <spending-chart chart-data="vm.analyticsData.monthlyTrend"></spending-chart>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="app-card">
+                <div class="app-card-header">Category Breakdown</div>
+                <spending-chart chart-data="vm.analyticsData.categoryBreakdown"></spending-chart>
+            </div>
+        </div>
+    </div>
+</div>

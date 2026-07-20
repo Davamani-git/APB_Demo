@@ -1,0 +1,10 @@
+<div class="budget-progress-component" ng-if="vm.budget">
+    <div class="budget-details">
+        <span>{{ vm.budget.currentSpend | currencyFormat }} of {{ vm.budget.monthlyBudget | currencyFormat }}</span>
+        <strong>{{ vm.budget.remainingBudget | currencyFormat }} Left</strong>
+    </div>
+    <uib-progressbar class="progress-striped active" max="100" value="vm.budget.utilizationPercentage" type="{{vm.getBarType()}}">
+        <i>{{ vm.budget.utilizationPercentage | percentageFormat:0 }}</i>
+    </uib-progressbar>
+</div>
+<empty-state ng-if="!vm.budget" message="No Budget Set" description="Set a monthly budget to start tracking your spending."></empty-state>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Spending Summary</title>
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.9/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.9/angular-route.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.9/angular-animate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.9/angular-sanitize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.6/ui-bootstrap-tpls.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+
+    <!-- Application CSS -->
+    <link rel="stylesheet" href="src/assets/css/app.css">
+
+</head>
+<body ng-class="{'app-loading': $root.isLoading}">
+
+    <div id="app-header">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#!">Enterprise Spending Dashboard</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#!/dashboard">Dashboard</a></li>
+                <li><a href="#!/transactions">Transactions</a></li>
+                <li><a href="#!/analytics">Analytics</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="main-content container-fluid">
+        <div ng-view></div>
+    </div>
+
+    <div id="app-footer">
+        <div class="container-fluid">
+            <p>&copy; 2024 Enterprise Financial Group. All Rights Reserved.</p>
+        </div>
+    </div>
+
+    <!-- Application Scripts -->
+    <!-- 1. Angular Module -->
+    <script src="src/app/app.module.js"></script>
+
+    <!-- 2. Configuration -->
+    <script src="src/app/config/config.constants.js"></script>
+    <script src="src/app/services/env-config.service.js"></script>
+    <script src="src/app/app.config.js"></script>
+    <script src="src/app/app.routes.js"></script>
+
+    <!-- 3. Models -->
+    <script src="src/app/models/models.js"></script>
+
+    <!-- 4. Filters -->
+    <script src="src/app/filters/app.filters.js"></script>
+
+    <!-- 5. Mock Data -->
+    <script src="src/mock/dashboard.mock-data.js"></script>
+    <script src="src/mock/transactions.mock-data.js"></script>
+    <script src="src/mock/analytics.mock-data.js"></script>
+    <script src="src/mock/budget.mock-data.js"></script>
+
+    <!-- 6. Services -->
+    <script src="src/app/services/logging.service.js"></script>
+    <script src="src/app/services/error-handler.service.js"></script>
+    <script src="src/app/services/rest-api.service.js"></script>
+    <script src="src/app/services/dashboard.service.js"></script>
+    <script src="src/app/services/transactions.service.js"></script>
+    <script src="src/app/services/analytics.service.js"></script>
+    <script src="src/app/services/budget.service.js"></script>
+
+    <!-- 7. Controllers -->
+    <script src="src/app/controllers/dashboard.controller.js"></script>
+    <script src="src/app/controllers/transactions.controller.js"></script>
+    <script src="src/app/controllers/analytics.controller.js"></script>
+
+    <!-- 8. Directives -->
+    <script src="src/app/directives/kpi-card.directive.js"></script>
+    <script src="src/app/directives/card-tile.directive.js"></script>
+    <script src="src/app/directives/transactions-table.directive.js"></script>
+    <script src="src/app/directives/budget-progress.directive.js"></script>
+    <script src="src/app/directives/spending-chart.directive.js"></script>
+    <script src="src/app/directives/loading-spinner.directive.js"></script>
+    <script src="src/app/directives/error-panel.directive.js"></script>
+    <script src="src/app/directives/empty-state.directive.js"></script>
+
+</body>
+</html>

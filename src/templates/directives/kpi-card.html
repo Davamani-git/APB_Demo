@@ -1,0 +1,10 @@
+<div class="app-card kpi-card-component" title="{{ vm.tooltip }}">
+    <div class="kpi-icon"><i class="fa {{ vm.icon }}"></i></div>
+    <div class="kpi-title">{{ vm.title }}</div>
+    <div class="kpi-value">
+        <span ng-if="vm.format === 'currency'">{{ vm.value | currencyFormat }}</span>
+        <span ng-if="vm.format === 'percentage'">{{ vm.value | percentageFormat }}</span>
+        <span ng-if="vm.format === 'number'">{{ vm.value | numberFormat }}</span>
+        <span ng-if="!vm.format">{{ vm.value }}</span>
+    </div>
+</div>

@@ -1,0 +1,48 @@
+<div class="page-title">Dashboard</div>
+
+<error-panel error="vm.error"></error-panel>
+
+<div ng-if="!vm.error">
+    <!-- KPI Cards -->
+    <div class="row">
+        <div class="col-lg-3 col-md-6">
+            <kpi-card title="Total Monthly Spend" icon="fa-money" value="vm.summary.totalMonthlySpend" format="currency"></kpi-card>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <kpi-card title="Credit Utilization" icon="fa-pie-chart" value="vm.summary.utilizationPercentage" format="percentage"></kpi-card>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <kpi-card title="Available Credit" icon="fa-credit-card-alt" value="vm.summary.availableCredit" format="currency"></kpi-card>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <kpi-card title="Transactions this Month" icon="fa-exchange" value="vm.summary.transactionCount" format="number"></kpi-card>
+        </div>
+    </div>
+
+    <!-- Card Tiles -->
+    <div class="app-card">
+        <div class="app-card-header">My Cards</div>
+        <div class="row">
+            <div class="col-md-6" ng-repeat="card in vm.cards">
+                <card-tile card="card"></card-tile>
+            </div>
+        </div>
+    </div>
+
+    <!-- Budget & Recent Transactions -->
+    <div class="row">
+        <div class="col-md-5">
+            <div class="app-card">
+                <div class="app-card-header">Budget Tracking</div>
+                <budget-progress budget="vm.budget"></budget-progress>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="app-card">
+                <div class="app-card-header">Recent Transactions</div>
+                <transactions-table transactions="vm.recentTransactions" is-compact="true"></transactions-table>
+                <a href="#!/transactions" class="btn btn-link pull-right">View All</a>
+            </div>
+        </div>
+    </div>
+</div>

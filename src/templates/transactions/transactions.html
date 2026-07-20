@@ -1,0 +1,50 @@
+<div class="page-title">Transaction History</div>
+
+<error-panel error="vm.error" retry-action="vm.search()"></error-panel>
+<loading-spinner is-loading="vm.isLoading"></loading-spinner>
+
+<div ng-if="!vm.isLoading">
+    <!-- Filter Panel -->
+    <div class="app-card">
+        <div class="row">
+            <div class="col-md-3 form-group">
+                <label>Merchant</label>
+                <input type="text" class="form-control" ng-model="vm.filters.merchant" placeholder="e.g., Office Supplies Inc.">
+            </div>
+            <div class="col-md-3 form-group">
+                <label>Category</label>
+                <select class="form-control" ng-model="vm.filters.category">
+                    <option value="">All Categories</option>
+                    <option>Food & Dining</option>
+                    <option>Shopping</option>
+                    <option>Travel</option>
+                    <option>Fuel</option>
+                    <option>Utilities</option>
+                </select>
+            </div>
+            <div class="col-md-4 form-group">
+                <label>Date Range</label>
+                <div class="input-group">
+                    <input type="date" class="form-control" ng-model="vm.filters.dateFrom">
+                    <span class="input-group-addon">to</span>
+                    <input type="date" class="form-control" ng-model="vm.filters.dateTo">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label>&nbsp;</label>
+                <button class="btn btn-primary btn-block" ng-click="vm.search()">Search</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="app-card">
+        <transactions-table 
+            transactions="vm.transactions" 
+            total-count="vm.totalCount"
+            filters="vm.filters"
+            on-page-change="vm.changePage(page)"
+            on-sort-change="vm.sortBy(field)">
+        </transactions-table>
+    </div>
+</div>

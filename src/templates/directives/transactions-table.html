@@ -1,0 +1,32 @@
+<div class="transactions-table-component">
+    <div class="table-responsive" ng-if="vm.transactions.length > 0">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th ng-click="vm.handleSort('transactionDate')">Date <i class="fa" ng-class="{'fa-sort-desc': vm.filters.sortBy === 'date' && vm.filters.sortDirection === 'desc', 'fa-sort-asc': vm.filters.sortBy === 'date' && vm.filters.sortDirection === 'asc'}"></i></th>
+                    <th>Merchant</th>
+                    <th>Category</th>
+                    <th ng-if="!vm.isCompact">Card</th>
+                    <th class="text-right" ng-click="vm.handleSort('amount')">Amount <i class="fa" ng-class="{'fa-sort-desc': vm.filters.sortBy === 'amount' && vm.filters.sortDirection === 'desc', 'fa-sort-asc': vm.filters.sortBy === 'amount' && vm.filters.sortDirection === 'asc'}"></i></th>
+                    <th ng-if="!vm.isCompact">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="tx in vm.transactions">
+                    <td>{{ tx.transactionDate | dateFormat }}</td>
+                    <td>{{ tx.merchantName }}</td>
+                    <td>{{ tx.category }}</td>
+                    <td ng-if="!vm.isCompact">{{ tx.cardName }}</td>
+                    <td class="text-right text-numeric">{{ tx.amount | currencyFormat }}</td>
+                    <td ng-if="!vm.isCompact">{{ tx.paymentStatus }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div ng-if="!vm.isCompact && vm.totalCount > vm.filters.pageSize">
+        <uib-pagination total-items="vm.totalCount" ng-model="vm.filters.page" items-per-page="vm.filters.pageSize" ng-change="vm.handlePageChange()" class="pagination-sm" boundary-links="true"></uib-pagination>
+    </div>
+
+    <empty-state ng-if="vm.transactions.length === 0" message="No Transactions Found" description="There are no transactions matching your criteria."></empty-state>
+</div>

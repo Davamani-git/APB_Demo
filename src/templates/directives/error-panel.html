@@ -1,0 +1,6 @@
+<div class="error-panel-component alert alert-danger" ng-if="error">
+    <i class="fa fa-exclamation-triangle"></i>
+    <h4>Error</h4>
+    <p>{{ error.message }}</p>
+    <button ng-if="retryAction" class="btn btn-danger" ng-click="retryAction()">Retry</button>
+</div>
