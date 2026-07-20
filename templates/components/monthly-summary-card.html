@@ -1,0 +1,32 @@
+<div class="monthly-summary-card kpi-card">
+  <div class="kpi-card-header">
+    <div class="kpi-card-icon">
+      <span class="fa fa-calendar-check-o"></span>
+    </div>
+    <div class="kpi-card-title-group">
+      <h3 class="kpi-card-title">Summary for {{vm.summary.month | dateFormat}}</h3>
+      <p class="kpi-card-subtitle">
+        <span ng-if="vm.summary.isFinal">Final billing cycle</span>
+        <span ng-if="vm.summary.isCurrent">Current month in progress</span>
+      </p>
+    </div>
+  </div>
+  <div class="kpi-card-body">
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="metric">
+          <div class="metric-label">Total monthly spend</div>
+          <div class="metric-value">{{vm.summary.totalSpend | currencyFormat: vm.summary.currency}}</div>
+          <div class="metric-helper">Aggregated across eligible credit card accounts.</div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="metric">
+          <div class="metric-label">Number of transactions</div>
+          <div class="metric-value">{{vm.summary.transactionCount}}</div>
+          <div class="metric-helper">Without exposing individual transaction details.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,27 @@
+<div class="kpi-card">
+  <div class="kpi-card-header">
+    <div class="kpi-card-icon">
+      <span class="fa" ng-class="{
+        'fa-money': vm.kpi.id === 'totalSpend',
+        'fa-list-ul': vm.kpi.id === 'transactionCount',
+        'fa-calculator': vm.kpi.id === 'averageTransactionValue',
+        'fa-bar-chart': vm.kpi.id !== 'totalSpend' && vm.kpi.id !== 'transactionCount' && vm.kpi.id !== 'averageTransactionValue'
+      }"></span>
+    </div>
+    <div class="kpi-card-title-group">
+      <h3 class="kpi-card-title">{{vm.kpi.label}}</h3>
+      <p class="kpi-card-subtitle">{{vm.kpi.unit}}</p>
+    </div>
+  </div>
+  <div class="kpi-card-body">
+    <div class="kpi-card-value">
+      <span ng-if="vm.kpi.id === 'totalSpend'">{{vm.kpi.value | currencyFormat: 'INR'}}</span>
+      <span ng-if="vm.kpi.id === 'transactionCount'">{{vm.kpi.value}}</span>
+      <span ng-if="vm.kpi.id === 'averageTransactionValue'">{{vm.kpi.value | currencyFormat: 'INR'}}</span>
+      <span ng-if="vm.kpi.id !== 'totalSpend' && vm.kpi.id !== 'transactionCount' && vm.kpi.id !== 'averageTransactionValue'">{{vm.kpi.formattedValue || vm.kpi.value}}</span>
+    </div>
+    <div class="kpi-card-footer">
+      <span class="kpi-helper-text">Summary metric for the selected month.</span>
+    </div>
+  </div>
+</div>

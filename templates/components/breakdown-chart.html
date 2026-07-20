@@ -1,0 +1,20 @@
+<div class="chart-card">
+  <div class="chart-header">
+    <div class="chart-title-group">
+      <h3 class="chart-title">Category-wise Spend Distribution</h3>
+      <p class="chart-subtitle">Hover over segments to see spend by category.</p>
+    </div>
+  </div>
+  <div class="chart-body">
+    <div ng-if="!vm.data || !vm.data.categories || vm.data.categories.length === 0" class="empty-state">
+      <span class="empty-icon fa fa-info-circle"></span>
+      <div class="empty-content">
+        <h3 class="empty-title">No data to visualize.</h3>
+        <p class="empty-message">There is no spend breakdown data for the selected month. When you have transactions, you will see category-wise spend here.</p>
+      </div>
+    </div>
+    <div ng-if="vm.data && vm.data.categories && vm.data.categories.length > 0" class="chart-container">
+      <canvas id="breakdownChartCanvas"></canvas>
+    </div>
+  </div>
+</div>
