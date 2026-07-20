@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="apbDemo">
+<head>
+  <meta charset="UTF-8">
+  <title>APB Demo - Monthly Spending Summary Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- External Libraries -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <!-- Application CSS -->
+  <link rel="stylesheet" href="src/assets/css/app.css">
+</head>
+<body>
+  <div class="container-fluid app-shell">
+    <div ng-view></div>
+  </div>
+
+  <!-- AngularJS and Libraries -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-animate.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-sanitize.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.6/ui-bootstrap-tpls.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.bundle.min.js"></script>
+
+  <!-- Angular Module -->
+  <script src="src/app/app.module.js"></script>
+
+  <!-- Configuration -->
+  <script src="src/app/config/config.constants.js"></script>
+  <script src="src/app/config/env.config.service.js"></script>
+  <script src="src/app/routes/monthly-summary.routes.js"></script>
+
+  <!-- Models -->
+  <script src="src/app/models/monthly-summary.model.js"></script>
+  <script src="src/app/models/kpi.model.js"></script>
+  <script src="src/app/models/breakdown.model.js"></script>
+  <script src="src/app/models/error.model.js"></script>
+
+  <!-- Filters -->
+  <script src="src/app/filters/currency-format.filter.js"></script>
+  <script src="src/app/filters/date-format.filter.js"></script>
+  <script src="src/app/filters/percentage.filter.js"></script>
+
+  <!-- Mock Data (JS so they are runtime-available) -->
+  <script src="src/mock/monthly-summary.mock-data.js"></script>
+  <script src="src/mock/kpi.mock-data.js"></script>
+  <script src="src/mock/breakdown.mock-data.js"></script>
+  <script src="src/mock/month-context.mock-data.js"></script>
+
+  <!-- Factories -->
+  <script src="src/app/factories/model-factory.js"></script>
+
+  <!-- Services -->
+  <script src="src/app/services/logging.service.js"></script>
+  <script src="src/app/services/error-handling.service.js"></script>
+  <script src="src/app/services/monthly-summary.service.js"></script>
+  <script src="src/app/services/kpi.service.js"></script>
+  <script src="src/app/services/breakdown.service.js"></script>
+  <script src="src/app/services/month-context.service.js"></script>
+  <script src="src/app/services/http-interceptor.service.js"></script>
+
+  <!-- Controllers -->
+  <script src="src/app/controllers/monthly-summary.controller.js"></script>
+
+  <!-- Directives -->
+  <script src="src/app/directives/monthly-summary-card.directive.js"></script>
+  <script src="src/app/directives/kpi-card.directive.js"></script>
+  <script src="src/app/directives/breakdown-chart.directive.js"></script>
+
+  <!-- Assets JS -->
+  <script src="src/assets/js/chart-config.js"></script>
+</body>
+</html>

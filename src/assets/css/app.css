@@ -1,0 +1,270 @@
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background-color: #F4F6F9;
+  color: #172B4D;
+}
+
+.app-shell {
+  padding: 20px;
+}
+
+.dashboard-page .card {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.dashboard-header-left .app-title {
+  font-size: 32px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.dashboard-header-left .app-subtitle {
+  font-size: 14px;
+  color: #5E6C84;
+  margin-top: 4px;
+}
+
+.dashboard-breadcrumb {
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+}
+
+.section-title .fa {
+  margin-right: 8px;
+}
+
+.filter-panel .filter-panel-body {
+  margin-top: 8px;
+}
+
+.filter-panel .control-label {
+  font-size: 13px;
+  color: #5E6C84;
+}
+
+.kpi-card,
+.summary-card,
+.breakdown-card,
+.table-card,
+.navigation-card,
+.insights-section {
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.kpi-card:hover,
+.summary-card:hover,
+.breakdown-card:hover,
+.table-card:hover,
+.navigation-card:hover,
+.insights-section:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.card-header-left {
+  display: flex;
+  align-items: center;
+}
+
+.card-header-left .fa {
+  font-size: 20px;
+  color: #0052CC;
+  margin-right: 12px;
+}
+
+.card-title-group .card-title {
+  font-size: 18px;
+  margin: 0;
+}
+
+.card-title-group .card-subtitle {
+  font-size: 13px;
+  color: #5E6C84;
+}
+
+.summary-metric {
+  margin-bottom: 12px;
+}
+
+.summary-label {
+  font-size: 13px;
+  color: #5E6C84;
+}
+
+.summary-value {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.summary-empty {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #5E6C84;
+}
+
+.summary-empty .fa {
+  margin-right: 6px;
+}
+
+.kpi-value {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.kpi-trend {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #5E6C84;
+}
+
+.kpi-trend .fa {
+  margin-right: 4px;
+}
+
+.loading-state,
+.error-state,
+.empty-state {
+  display: flex;
+  align-items: center;
+}
+
+.loading-state-icon,
+.error-state-icon,
+.empty-state-icon {
+  font-size: 24px;
+  margin-right: 12px;
+}
+
+.loading-state-icon {
+  color: #2684FF;
+}
+
+.error-state-icon {
+  color: #DE350B;
+}
+
+.empty-state-icon {
+  color: #5E6C84;
+}
+
+.loading-state-text,
+.error-state-text h3,
+.empty-state-text h3 {
+  margin: 0;
+}
+
+.error-state-text h3 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.empty-state-text h3 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.empty-state-text p {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  color: #5E6C84;
+}
+
+.chart-container {
+  position: relative;
+  min-height: 240px;
+}
+
+.mo-summary-table th {
+  font-size: 13px;
+  color: #5E6C84;
+}
+
+.mo-summary-table td {
+  font-size: 13px;
+}
+
+.insights-text {
+  font-size: 14px;
+  color: #172B4D;
+}
+
+.navigation-card .navigation-card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navigation-card.unavailable {
+  border-style: dashed;
+  border-color: #E5E7EB;
+}
+
+.dashboard-footer {
+  margin-top: 16px;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #5E6C84;
+}
+
+.btn-primary {
+  background-color: #0052CC;
+  border-color: #0052CC;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: #2684FF;
+  border-color: #2684FF;
+}
+
+.text-success {
+  color: #36B37E;
+}
+
+.text-danger {
+  color: #DE350B;
+}
+
+@media (max-width: 767px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .navigation-card .navigation-card-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .navigation-card .navigation-card-actions {
+    margin-top: 12px;
+  }
+}
