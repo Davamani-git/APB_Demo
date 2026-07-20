@@ -1,0 +1,64 @@
+<div class="monthly-dashboard" ng-class="{ 'loading': vm.isLoading() }">
+  <div class="row">
+    <div class="col-sm-8">
+      <h2>Monthly Spending Summary</h2>
+    </div>
+    <div class="col-sm-4 text-right">
+      <div class="form-inline">
+        <label for="monthSelect">Month:</label>
+        <input id="monthSelect"
+               type="month"
+               class="form-control"
+               ng-model="vm.selectedMonth"
+               ng-change="vm.onMonthChange(vm.selectedMonth)" />
+      </div>
+    </div>
+  </div>
+
+  <div class="row" ng-if="vm.isLoading()">
+    <div class="col-xs-12 text-center">
+      <span class="loading-spinner"></span>
+      <p>Loading monthly summary...</p>
+    </div>
+  </div>
+
+  <div class="row" ng-if="vm.hasError()">
+    <div class="col-xs-12">
+      <div class="alert alert-danger">
+        <strong>Error:</strong> {{ vm.error.message }}
+        <div ng-if="vm.error.retryable" class="m-top">
+          <button type="button" class="btn btn-danger" ng-click="vm.reload()">Try Again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" ng-if="!vm.isLoading() && !vm.hasError() && !vm.hasData()">
+    <div class="col-xs-12">
+      <div class="alert alert-info">
+        No spending data available for the selected month.
+      </div>
+    </div>
+  </div>
+
+  <div class="row" ng-if="vm.hasData()">
+    <div class="col-xs-12">
+      <dashboard-kpi-cards kpis="vm.kpis"></dashboard-kpi-cards>
+    </div>
+  </div>
+
+  <div class="row" ng-if="vm.hasData()">
+    <div class="col-sm-6">
+      <dashboard-summary summary="vm.summary"></dashboard-summary>
+    </div>
+    <div class="col-sm-6">
+      <dashboard-chart breakdown="vm.breakdown"></dashboard-chart>
+    </div>
+  </div>
+
+  <div class="row" ng-if="vm.hasData()">
+    <div class="col-xs-12">
+      <dashboard-breakdown breakdown="vm.breakdown"></dashboard-breakdown>
+    </div>
+  </div>
+</div>

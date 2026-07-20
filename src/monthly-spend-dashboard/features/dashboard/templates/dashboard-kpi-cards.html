@@ -1,0 +1,13 @@
+<div class="row kpi-cards">
+  <div class="col-sm-3 col-xs-12" ng-repeat="kpi in vm.getKpiList()">
+    <div class="panel" ng-class="kpi.cssClass">
+      <div class="panel-heading">
+        <h3 class="panel-title">{{ kpi.label }}</h3>
+      </div>
+      <div class="panel-body text-center">
+        <img ng-src="{{ kpi.iconPath }}" alt="{{ kpi.label }} icon" class="kpi-icon" />
+        <p class="kpi-value">{{ kpi.value | number:2 }}</p>
+      </div>
+    </div>
+  </div>
+</div>

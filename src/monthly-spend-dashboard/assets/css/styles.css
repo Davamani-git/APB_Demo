@@ -1,0 +1,25 @@
+body {
+  background-color: #f5f5f5;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
+
+.page-header {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.footer {
+  margin-top: 40px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-top: 1px solid #ddd;
+  color: #777;
+}
+
+.m-top {
+  margin-top: 10px;
+}
+
+.m-bottom {
+  margin-bottom: 10px;
+}

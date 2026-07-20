@@ -1,0 +1,11 @@
+<div class="panel panel-default chart-panel" ng-if="vm.getChartConfig()">
+  <div class="panel-heading">
+    <h3 class="panel-title">Spend Breakdown Chart</h3>
+  </div>
+  <div class="panel-body">
+    <canvas id="spendBreakdownChart"></canvas>
+  </div>
+</div>
+<div class="alert alert-info" ng-if="!vm.getChartConfig()">
+  No chart data available.
+</div>

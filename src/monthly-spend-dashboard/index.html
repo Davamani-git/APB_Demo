@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Monthly Spending Summary Dashboard</title>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <!-- Global styles -->
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <!-- Dashboard styles -->
+  <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+<body>
+  <div class="container-fluid">
+    <header class="page-header">
+      <h1>Monthly Spending Summary</h1>
+      <p class="text-muted">View an at-a-glance monthly spending summary and key insights.</p>
+    </header>
+
+    <div ng-view></div>
+
+    <footer class="footer text-center">
+      <small>&copy; 2026 Credit Card Services - Monthly Spending Summary Dashboard</small>
+    </footer>
+  </div>
+
+  <!-- Vendor Scripts -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-sanitize.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.6/ui-bootstrap-tpls.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+
+  <!-- Application Scripts -->
+  <script src="app/app.module.js"></script>
+  <script src="app/app.config.js"></script>
+  <script src="app/app.routes.js"></script>
+  <script src="app/app.run.js"></script>
+
+  <script src="core/models/spend-summary.model.js"></script>
+  <script src="core/models/spend-breakdown.model.js"></script>
+  <script src="core/models/kpi-summary.model.js"></script>
+  <script src="core/models/error.model.js"></script>
+
+  <script src="core/services/env-config.service.js"></script>
+  <script src="core/services/logging.service.js"></script>
+  <script src="core/services/http-config.interceptor.js"></script>
+  <script src="core/services/spend-summary.api.service.js"></script>
+  <script src="core/services/spend-summary.mock.service.js"></script>
+  <script src="core/services/spend-summary.service.js"></script>
+
+  <script src="features/dashboard/dashboard.module.js"></script>
+  <script src="features/dashboard/dashboard.controller.js"></script>
+  <script src="features/dashboard/dashboard-summary.directive.js"></script>
+  <script src="features/dashboard/dashboard-breakdown.directive.js"></script>
+  <script src="features/dashboard/dashboard-kpi-cards.directive.js"></script>
+  <script src="features/dashboard/dashboard-chart.directive.js"></script>
+</body>
+</html>

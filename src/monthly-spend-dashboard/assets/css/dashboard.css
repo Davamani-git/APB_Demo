@@ -1,0 +1,49 @@
+.monthly-dashboard {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.monthly-dashboard.loading {
+  opacity: 0.6;
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  border: 4px solid #ccc;
+  border-top-color: #337ab7;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.summary-amount {
+  font-size: 2.0em;
+  font-weight: bold;
+}
+
+.kpi-icon {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 10px;
+}
+
+.kpi-value {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.chart-panel {
+  min-height: 260px;
+}
+
+.breakdown-panel table {
+  margin-bottom: 0;
+}
