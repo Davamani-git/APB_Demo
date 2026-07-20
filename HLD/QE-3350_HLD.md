@@ -2,519 +2,513 @@
 
 ## 1. Architecture Overview
 
-### 1.1 Objectives
-Design an enterprise-grade, responsive dashboard solution that provides users with:
-- Monthly credit card spending visibility
-- Card-level credit utilization insights
-- Detailed transaction exploration with rich filtering/search
-- Spending analytics and budgeting views
-- Recent transaction highlights
+The "Monthly Spending Summary Dashboard" is a responsive, multi-channel web experience that exposes credit-card spending insights, card-level metrics, transaction analytics, filters, and basic budgeting views. It is built as a secure, scalable, enterprise-grade solution with:
 
-The solution must support multiple credit cards per user and provide mobile, tablet, and desktop-friendly UX.
+- **Client Layer**: Browser-based SPA (and responsive layouts for mobile/tablet/desktop) consuming REST/GraphQL APIs.
+- **Edge/API Layer**: API Gateway and Web/API services offering endpoints for dashboard summary, cards, transactions, filters, and analytics.
+- **Domain Services Layer**: Business services for card management, transaction management, analytics & reporting, and budgeting.
+- **Data Layer**: Card, transaction, and budget stores optimized for analytical queries and secure retrieval; plus a read-optimized reporting store.
+- **Integration Layer**: Interfaces to upstream systems (e.g., core card systems, statement feeds, categorization engines) via asynchronous ingestion.
+- **Cross-Cutting Concerns**: Authentication, authorization, observability, audit logging, input validation, secrets management, configuration, and resiliency patterns.
 
-### 1.2 Logical Architecture
-The system is organized into the following layers:
-- Client Layer (Web & Mobile Web UI)
-- API / Edge Layer (API Gateway + Authentication)
-- Domain Services Layer (Card, Transaction, Analytics, Budget, User Profile)
-- Data Stores Layer (Operational Database, Analytics Store, Configuration Store)
-- Integration Layer (External Card/Bank Data Providers)
-- Cross-Cutting Concerns (Security, Compliance, Observability, Resiliency)
+All dashboard calculations (monthly spend, utilization, budgets) are computed in the domain services and exposed via read-only APIs. No PII/PCI sample values are exposed in logs or documentation; fields are described abstractly.
 
-### 1.3 Mermaid Component Diagram
+
+## 2. Logical Component Diagram
+
 ```mermaid
 flowchart LR
-    subgraph Client_Layer [Client Layer]
-        WEB_UI[Responsive Web UI]
+    subgraph Client_Layer[Client Layer]
+        WEB_UI[Responsive Web UI (SPA)]
     end
 
-    subgraph Edge_Layer [API / Edge Layer]
-        APIGW[API Gateway]
-        AUTH[Authentication & Session Service]
+    subgraph Edge_Layer[Edge / API Layer]
+        API_GW[API Gateway]
+        DASH_API[Dashboard API Service]
     end
 
-    subgraph Domain_Layer [Domain Services Layer]
-        UMSVC[User Management Service]
-        CARDSVC[Card Management Service]
-        TXNSVC[Transaction Service]
-        ANASVC[Spending Analytics Service]
-        BUDFVC[Budget Service]
-        CFGSVC[Configuration & Category Service]
+    subgraph Domain_Layer[Domain Services]
+        CARD_SVC[Card Management Service]
+        TXN_SVC[Transaction Management Service]
+        ANALYTICS_SVC[Spending Analytics Service]
+        BUDGET_SVC[Budget Tracking Service]
+        SUMMARY_SVC[Dashboard Summary Aggregator]
     end
 
-    subgraph Data_Layer [Data Stores Layer]
-        USERDB[(User & Profile DB)]
-        CARDDB[(Card & Limit DB)]
-        TXNDB[(Transaction DB)]
-        ANALYTICSDB[(Analytics & Aggregates Store)]
-        CFGDB[(Configuration & Category DB)]
+    subgraph Data_Layer[Data & Storage]
+        CARD_DB[(Card Store)]
+        TXN_DB[(Transaction Store)]
+        BUDGET_DB[(Budget Store)]
+        ANALYTICS_DB[(Reporting & Analytics Store)]
     end
 
-    subgraph Integration_Layer [Integration Layer]
-        BANKINT[Bank/Card Network Integration Adapter]
+    subgraph Integration_Layer[Integration Layer]
+        CORE_CARD_SYS[(Core Card & Billing System)]
+        TXN_FEEDS[(Transaction Feed Ingestion)]
+        CATEGORY_ENGINE[(Categorization Engine)]
     end
 
-    subgraph Cross_Cutting [Cross-Cutting Services]
-        LOGSVC[Audit & Observability Service]
-        SECSVC[Secrets Management]
-        POLICYSVC[RBAC Policy Engine]
+    subgraph Cross_Cutting[Cross-cutting Services]
+        AUTH_SVC[Authentication & Session Service]
+        RBAC_SVC[RBAC/ABAC Authorization]
+        AUDIT_SVC[Audit Logging Service]
+        OBS_SVC[Monitoring & Observability]
+        CONFIG_SVC[Config & Secrets Vault]
     end
 
-    WEB_UI --> APIGW
-    APIGW --> AUTH
-    APIGW --> CARDSVC
-    APIGW --> TXNSVC
-    APIGW --> ANASVC
-    APIGW --> BUDFVC
-    APIGW --> CFGSVC
-    APIGW --> UMSVC
+    WEB_UI --> API_GW
+    API_GW --> AUTH_SVC
+    API_GW --> DASH_API
 
-    UMSVC --> USERDB
-    CARDSVC --> CARDDB
-    TXNSVC --> TXNDB
-    ANASVC --> ANALYTICSDB
-    BUDFVC --> ANALYTICSDB
-    CFGSVC --> CFGDB
+    DASH_API --> SUMMARY_SVC
+    DASH_API --> CARD_SVC
+    DASH_API --> TXN_SVC
+    DASH_API --> ANALYTICS_SVC
+    DASH_API --> BUDGET_SVC
+    DASH_API --> RBAC_SVC
+    DASH_API --> AUDIT_SVC
 
-    CARDSVC --> BANKINT
-    TXNSVC --> BANKINT
+    CARD_SVC --> CARD_DB
+    TXN_SVC --> TXN_DB
+    BUDGET_SVC --> BUDGET_DB
+    ANALYTICS_SVC --> ANALYTICS_DB
 
-    APIGW --> LOGSVC
-    Domain_Layer --> LOGSVC
-    APIGW --> POLICYSVC
-    APIGW --> SECSVC
-    Domain_Layer --> SECSVC
+    SUMMARY_SVC --> CARD_DB
+    SUMMARY_SVC --> TXN_DB
+    SUMMARY_SVC --> BUDGET_DB
+    SUMMARY_SVC --> ANALYTICS_DB
+
+    TXN_FEEDS --> TXN_DB
+    CORE_CARD_SYS --> CARD_DB
+    CORE_CARD_SYS --> BUDGET_DB
+    CATEGORY_ENGINE --> TXN_DB
+
+    DASH_API --> OBS_SVC
+    TXN_SVC --> OBS_SVC
+    ANALYTICS_SVC --> OBS_SVC
+    BUDGET_SVC --> OBS_SVC
+
+    CONFIG_SVC --> DASH_API
+    CONFIG_SVC --> DOMAIN_Layer
 ```
 
-## 2. Component Descriptions
 
-### 2.1 Client Layer
+## 3. Component Descriptions
 
-**Responsive Web UI**
-- Single-page application (SPA) or modular web frontend.
-- Provides:
-  - Dashboard summary (total monthly spend, total credit limit, available credit, outstanding amount, utilization percentage, number of transactions).
-  - Card management views for multiple cards per user (card name, issuing institution, masked card number, limits, outstanding, billing/due dates).
-  - Transaction table with paging, sorting, searching, filtering (merchant, category, bank, card, date range, amount, date).
-  - Spending analytics visualizations (category-wise spending, monthly trend, card-wise distribution, category breakdown by standard categories like dining, fuel, shopping, etc.).
-  - Budget tracking views (monthly budget, current spend, remaining budget, utilization, progress bar).
-  - Recent transactions widget showing latest five transactions.
-- Implements responsive layout via CSS frameworks (e.g., Flexbox/Grid, media queries) and/or responsive UI library.
-- Communicates only through the API Gateway using secure HTTPS.
+### 3.1 Client Layer
 
-### 2.2 API / Edge Layer
+**Responsive Web UI (SPA)**
+- Provides the monthly spending summary dashboard in a single-page application.
+- Implements responsive layout for mobile, tablet, and desktop, including reflow of cards, tables, and charts.
+- Presents widgets for:
+  - Monthly summary metrics (spend, limit, available credit, outstanding amount, utilization percentage, number of transactions).
+  - Multi-card view (per card details with masked card number and billing/due dates).
+  - Transaction table with columns for date, merchant, category, card used, amount, payment status, remarks.
+  - Filters and search controls (merchant, category, bank, card, date range, sort by amount/date).
+  - Analytics visualizations (category-wise spending, monthly trend, card-wise distribution, category breakdown).
+  - Budget tracking metrics (monthly budget, current spend, remaining budget, budget utilization percentage, progress bar).
+  - Recent transactions widget showing most recent entries.
+- Handles only presentation; does not store sensitive data beyond the user session. Masking/encryption handled by backend.
+
+### 3.2 Edge / API Layer
 
 **API Gateway**
-- Single entry point for all client requests.
-- Performs request routing to domain services, rate limiting, preliminary input validation (schema, size, type), and response shaping.
-- Handles CORS, content negotiation (JSON), and versioning of APIs.
-- Enforces authentication and authorization by delegating to the Authentication & Session Service and RBAC Policy Engine.
+- Single-entry point for client requests (HTTPS).
+- Performs request routing to Dashboard API service based on URL and method.
+- Enforces global security policies: TLS termination, rate limiting, API keys/tenant headers, basic WAF rules.
+- Integrates with Authentication & Session Service to validate tokens.
 
-**Authentication & Session Service**
-- Manages user authentication (e.g., OIDC/OAuth2, SSO) and session tokens.
-- Issues short-lived access tokens; supports refresh tokens via controlled endpoints.
-- Associates authenticated identities with user profiles in User & Profile DB.
+**Dashboard API Service**
+- Exposes REST/GraphQL endpoints for dashboard features:
+  - GET /dashboard/summary – total monthly spend, total credit limit, available credit, outstanding amount, utilization %, number of transactions.
+  - GET /cards – list of credit cards with card metadata (masked card number) and limits.
+  - GET /transactions – paginated list of transactions with filters and sorting.
+  - GET /analytics/category – category-wise spending.
+  - GET /analytics/monthly-trend – monthly spending trend.
+  - GET /analytics/card-distribution – card-wise spending distribution.
+  - GET /budget – budget metrics for the selected month.
+  - GET /transactions/recent – latest 5 transactions.
+- Orchestrates calls into domain services and prepares response DTOs tailored to UI needs.
+- Applies validation, authorization, and audit logging for all protected endpoints.
 
-### 2.3 Domain Services Layer
-
-**User Management Service**
-- Manages user profile metadata required to operate the dashboard (e.g., profile identifiers, preferences, default date ranges, preferred categories display order).
-- Provides identity-to-user mapping for RBAC and personalization.
+### 3.3 Domain Services Layer
 
 **Card Management Service**
-- Manages logical representation of credit cards in the system.
-- Stores non-sensitive card attributes: card name, issuer, masked number (no full card number), credit limit, available credit, current outstanding, billing and due dates.
-- Computes per-card utilization percentage and aggregates across cards.
-- Supports retrieval of cards for an authenticated user and summary metrics required by the dashboard.
-- Integrates with Bank/Card Network Integration Adapter to synchronize card limits, outstanding amounts, and billing cycles when integrated data sources exist. Where real-time external integration is out of scope, fields are populated using batch processes or upstream services; this is treated as an integration boundary.
+- Maintains card portfolio for the authenticated user within allowed scope.
+- Provides card summary: card name, issuing bank, masked card number, credit limit, available credit, current outstanding, billing date, due date.
+- Computes per-card metrics from card store and transaction store where required.
+- Enforces card-level permissions (only cards belonging to current user context).
 
-**Transaction Service**
-- Manages transaction records per card and user.
-- Stores transaction attributes: transaction date/time, merchant name (normalized), category, card used, amount, payment status, remarks.
-- Exposes endpoints for:
-  - Listing transactions with pagination.
-  - Filtering by merchant, category, bank/issuer, card, date range.
-  - Sorting by amount and date.
-- Ensures transaction data is retrieved only for the authenticated user according to RBAC rules.
+**Transaction Management Service**
+- Manages retrieval and filtering of transaction data.
+- Applies filters: merchant search, category, bank, card, date range; sorts by amount and date.
+- Returns page-oriented response suitable for responsive table rendering.
+- Integrates with categorization engine to ensure each transaction has a category.
 
 **Spending Analytics Service**
-- Computes and persists aggregated spending metrics.
-- Supports:
-  - Category-wise spending summaries per time window (e.g., current month).
-  - Monthly spending trend series over configured historical periods.
-  - Card-wise spending distribution and utilization.
-  - Category breakdown by fixed category taxonomy (food & dining, fuel, shopping, travel, entertainment, utilities, healthcare, education, miscellaneous).
-- Generates pre-aggregated views stored in Analytics & Aggregates Store for efficient querying.
+- Aggregates transaction data to produce analytical views:
+  - Category-wise spending for a selected period.
+  - Monthly spending trends over configurable time windows.
+  - Card-wise spending distribution (e.g., pie chart per card).
+  - Category breakdown across the defined categories (Food & Dining, Fuel, Shopping, Travel, Entertainment, Utilities, Healthcare, Education, Miscellaneous).
+- Writes summarized results to analytics store to allow efficient reads.
 
-**Budget Service**
-- Tracks budgets per user and time period (e.g., monthly budgets).
-- Stores user-configurable budget amounts and links them to transaction and analytics data.
-- Computes current spend, remaining budget, and budget utilization percentage.
-- Provides progress bar metrics and threshold-based indicators (e.g., warning when utilization exceeds configured threshold).
+**Budget Tracking Service**
+- Maintains and exposes monthly budget settings and utilization metrics.
+- Computes current spend, remaining budget, and budget utilization percentage from transaction data.
+- Provides progress-bar friendly outputs (e.g., percentage, status: under/near/over).
 
-**Configuration & Category Service**
-- Maintains category taxonomy and mapping rules for transactions to categories.
-- Stores configuration such as default filters, category colors for charts, budget thresholds.
-- Provides APIs for the UI to retrieve category and configuration metadata.
+**Dashboard Summary Aggregator**
+- Composes high-level dashboard metrics:
+  - Total monthly spend (across cards in scope).
+  - Total credit limit and available credit (per portfolio).
+  - Outstanding amount.
+  - Utilization percentage (spend vs. total credit or defined limit).
+  - Number of transactions for the period.
+- Coordinates with Card, Transaction, Analytics, and Budget services, then returns consolidated summary.
 
-### 2.4 Data Stores Layer
+### 3.4 Data Layer
 
-**User & Profile DB**
-- Relational or document store containing user profiles and settings.
-- Keyed by tenant/user identifiers.
+**Card Store**
+- Holds non-sensitive card metadata used by the dashboard (card identifiers, masked card reference, issuing institution, limit, billing and due dates).
+- Does not store full card numbers or CVV values; only safe identifiers required for display.
+- Indexed by user/account context and card ID.
 
-**Card & Limit DB**
-- Stores card metadata and computed limits, outstanding balances, and billing-related fields.
-- Indexed by user ID and card ID for efficient aggregation and retrieval.
+**Transaction Store**
+- Stores normalized transaction records:
+  - Transaction identifiers, timestamps, merchant descriptors, category identifiers, card references, amounts, payment status, remarks.
+- Indexed by user, card, category, merchant, and date to support filters.
+- Designed for high-volume writes from ingestion and optimized reads for analytics.
 
-**Transaction DB**
-- High-volume transactional store optimized for querying by user, card, category, date, and merchant.
-- Supports secondary indices and partitioning by user/tenant and time.
+**Budget Store**
+- Holds per-user/per-period budget configuration and state (e.g., monthly budget amount and metadata).
+- Stores aggregated budget states (current spend, remaining budget) when precomputed.
 
-**Analytics & Aggregates Store**
-- Columnar or OLAP store used to persist pre-computed aggregates and time series (category spending, monthly trend, card distribution, budget metrics).
-- Supports efficient group-by and time-series queries.
+**Reporting & Analytics Store**
+- Holds precomputed aggregates for category-wise spending, monthly trends, card-wise distributions.
+- Enables performant queries for chart generation without scanning full transaction history each request.
 
-**Configuration & Category DB**
-- Stores configuration entities, category definitions, mapping rules.
+### 3.5 Integration Layer
 
-### 2.5 Integration Layer
+**Core Card & Billing System Integration**
+- Ingests card and billing data from upstream card management systems.
+- Updates card store with credit limits, available credit, current outstanding, billing and due dates.
+- Uses batch or streaming interfaces; sensitive data is reduced to masked references before persistence.
 
-**Bank/Card Network Integration Adapter**
-- Abstracts communication with external card providers and bank systems.
-- Responsible for ingesting:
-  - Card limits and outstanding balances.
-  - Transaction feeds (e.g., batch file ingestion, webhooks, message queues).
-- Normalizes incoming data to internal schemas and writes into Card & Limit DB and Transaction DB.
-- Handles idempotent processing of external transaction events and reconciliation.
-- If real-time authorization or payment processing is out of scope, this adapter is restricted to read-only synchronization and does not initiate financial transactions.
+**Transaction Feed Ingestion**
+- Receives transaction feeds from payment networks or card processors.
+- Normalizes transactions and persists them into transaction store.
+- Associates categories via categorization engine and handles idempotency to avoid duplicate records.
 
-### 2.6 Cross-Cutting Services
+**Categorization Engine**
+- Assigns categories (Food & Dining, Fuel, etc.) to transactions based on merchant code, descriptors, rules, or models.
+- Can be an internal service or third-party integration; results written into transaction store.
 
-**Audit & Observability Service**
-- Centralized logging and metrics collection.
-- Captures:
-  - API gateway requests and responses (excluding sensitive data).
-  - Domain service operations, including dashboard load, filter changes, chart data queries, budget updates.
-  - Errors, timeouts, and retry events.
-- Provides dashboards and alerts for operations.
+### 3.6 Cross-Cutting Services
 
-**Secrets Management Service**
-- Stores and rotates:
-  - API keys and credentials for bank integrations.
-  - Database connection strings.
-  - Encryption keys used for data-at-rest.
-- Integrates with enterprise secrets vault.
+**Authentication & Session Service**
+- Handles login, token issuance, and session management.
+- Exposes user identity and tenant context to the API Gateway and Dashboard API.
 
-**RBAC Policy Engine**
-- Evaluates access policies based on user identity and roles.
-- Enforces:
-  - User-to-card ownership constraints.
-  - Access to analytics and budget data only for permitted users.
+**RBAC/ABAC Authorization Service**
+- Evaluates access policies based on roles (e.g., consumer, support analyst) and attributes (e.g., tenant, portfolio ownership).
+- Ensures dashboard data is restricted to authorized context.
 
-## 3. Integration Points & Data Flow
+**Audit Logging Service**
+- Captures significant actions (dashboard access, filter changes that export data, budget updates if enabled later).
+- Logs are structured and avoid storing raw card numbers or other PCI data.
 
-### Flow 1: Authentication & Session Establishment
-1. User accesses the responsive web UI from a browser on mobile, tablet, or desktop.
-2. WEB_UI redirects or calls AUTH via APIGW for login using enterprise identity provider.
-3. AUTH validates credentials and issues an access token.
-4. WEB_UI stores the token in a secure mechanism (e.g., HTTP-only cookie or secure storage) and uses it for subsequent API calls.
-5. APIGW validates tokens on each request and queries POLICYSVC to evaluate RBAC for requested resources.
+**Monitoring & Observability Service**
+- Centralized collection of metrics, traces, and logs for all services.
+- Provides dashboards and alerts for performance, error rates, and availability.
 
-Scope Coverage:
-- Supports secure access required for all dashboard, card, transaction, analytics, and budget features.
+**Config & Secrets Vault**
+- Stores connection strings, API keys for upstream systems, and encryption keys.
+- Provides runtime configuration to API and domain services via secure APIs.
 
-### Flow 2: Dashboard Summary Load
-1. WEB_UI calls `/dashboard/summary` on APIGW.
-2. APIGW authenticates and authorizes the request.
-3. APIGW orchestrates:
-   - Calls CARDSVC to retrieve card data and limits for the user.
-   - Calls TXNSVC to compute or retrieve counts of monthly transactions.
-   - Calls ANASVC to retrieve aggregated monthly spend, utilization, and outstanding totals.
-4. CARDSVC reads from CARDDB; TXNSVC reads from TXNDB; ANASVC reads from ANALYTICSDB.
-5. APIGW composes a summary response containing:
-   - Total monthly spend
-   - Total credit limit
-   - Available credit
-   - Outstanding amount
-   - Utilization percentage
-   - Number of transactions
-6. WEB_UI renders dashboard summary cards and KPIs.
 
-Scope Coverage:
-- Total Monthly Spend
-- Total Credit Limit
-- Available Credit
-- Outstanding Amount
-- Utilization Percentage
-- Number of Transactions
+## 4. Integration Points & Data Flows
 
-### Flow 3: Card Management View
-1. WEB_UI calls `/cards` on APIGW to retrieve card list.
-2. APIGW validates token and authorizes access.
-3. CARDSVC queries CARDDB for all cards associated with the user.
-4. CARDSVC returns card attributes including:
-   - Card name
-   - Issuing institution
-   - Masked card number (tokenized/masked only)
-   - Credit limit
-   - Available credit
-   - Current outstanding
-   - Billing date
-   - Due date
-5. WEB_UI displays multiple cards and allows card-level selection.
+### Flow 1 – Authentication & Session Establishment
+1. User accesses the dashboard via browser; WEB_UI triggers authentication if no session exists.
+2. WEB_UI redirects to Authentication & Session Service (via API Gateway or IdP UI) and performs login.
+3. Authentication service issues a secure token (e.g., JWT or opaque session token).
+4. WEB_UI stores token in secure browser storage and includes it in Authorization header for subsequent calls.
+5. API Gateway validates token with Authentication & Session Service and forwards authorized requests to Dashboard API.
 
-Scope Coverage:
-- Display multiple credit cards (name, bank, masked number, credit limit, available credit, outstanding, billing date, due date).
+**Scope coverage**: Enables secure access for dashboard summary, card management, transaction display, filters, analytics, budget, and recent transactions.
 
-### Flow 4: Transaction Listing, Filtering & Search
-1. WEB_UI calls `/transactions` on APIGW with query parameters (search text, category filter, bank filter, card filter, date range, sort options).
-2. APIGW performs validation of query parameters (type, allowed ranges) and authorization.
-3. TXNSVC queries TXNDB with filters and sort criteria.
-4. TXNSVC returns a paginated list of transactions including:
-   - Transaction date/time
-   - Merchant name
-   - Category
-   - Card used
-   - Amount
-   - Payment status
-   - Remarks
-5. WEB_UI displays results in a responsive table supporting:
-   - Horizontal and vertical layout adaptation for devices.
-   - Sorting UI state and filter badges.
+### Flow 2 – Dashboard Summary Retrieval
+1. WEB_UI calls GET /dashboard/summary through API Gateway with user token and selected month.
+2. API Gateway validates token and forwards to Dashboard API.
+3. Dashboard API invokes Dashboard Summary Aggregator with user context and period.
+4. Summary Aggregator obtains card portfolio from Card Management Service (which reads from Card Store).
+5. Summary Aggregator queries Transaction Management Service for transactions in the period from Transaction Store.
+6. Summary Aggregator (optionally) consults Spending Analytics Service for precalculated metrics from Analytics Store.
+7. Summary Aggregator computes:
+   - Total monthly spend.
+   - Total credit limit.
+   - Available credit.
+   - Outstanding amount.
+   - Utilization percentage.
+   - Number of transactions.
+8. Dashboard API returns summary DTO to WEB_UI.
+9. WEB_UI renders summary section.
 
-Scope Coverage:
-- Transaction management fields.
-- Search by Merchant.
-- Filter by Category, Bank, Card, Date Range.
-- Sort by Amount and Date.
+**Scope coverage**: Dashboard Summary, Total Monthly Spend, Total Credit Limit, Available Credit, Outstanding Amount, Utilization Percentage, Number of Transactions.
 
-### Flow 5: Spending Analytics Visualization
-1. WEB_UI calls `/analytics/spending` endpoints via APIGW for:
-   - Category-wise spending for current month.
-   - Monthly spending trend over configured months.
+### Flow 3 – Multi-Card Management View
+1. WEB_UI calls GET /cards via API Gateway.
+2. Dashboard API invokes Card Management Service with user context.
+3. Card Management Service queries Card Store for all cards associated with the user.
+4. Card Management Service enriches results with real-time balances if required (from Core Card & Billing System or cached).
+5. Dashboard API masks card identifiers (e.g., last 4 digits only) and returns card DTOs.
+6. WEB_UI renders card tiles/list showing card name, issuing bank, masked card reference, credit limit, available credit, current outstanding, billing dates, and due dates.
+
+**Scope coverage**: Credit Card Management; display multiple credit cards with card details.
+
+### Flow 4 – Transaction Table with Filters & Search
+1. WEB_UI calls GET /transactions with query parameters (merchant search, category, bank, card, date range, sorting options).
+2. API Gateway validates token and forwards to Dashboard API.
+3. Dashboard API validates request parameters (e.g., allowed categories, date ranges) and invokes Transaction Management Service.
+4. Transaction Management Service builds query against Transaction Store using filters and sorting.
+5. Transaction Management Service retrieves results, including columns: transaction date, merchant, category, card, amount, payment status, remarks.
+6. Dashboard API returns paginated transaction DTOs.
+7. WEB_UI renders a responsive table with the results and pagination controls.
+
+**Scope coverage**: Transaction Management; display transactions table; search and filter by merchant, category, bank, card, date range; sort by amount and date.
+
+### Flow 5 – Spending Analytics (Charts)
+1. WEB_UI calls GET /analytics/category, /analytics/monthly-trend, /analytics/card-distribution as needed.
+2. API Gateway forwards authorized calls to Dashboard API.
+3. Dashboard API invokes Spending Analytics Service for each requested analytic.
+4. Spending Analytics Service queries Analytics Store and/or Transaction Store to compute aggregations for:
+   - Category-wise spending.
+   - Monthly spending trend.
    - Card-wise spending distribution.
-   - Category breakdown.
-2. ANASVC queries ANALYTICSDB for the required aggregates.
-3. CFGSVC provides category metadata (names, display labels, colors).
-4. ANASVC returns structured datasets optimized for charting (e.g., label-value pairs, time series).
-5. WEB_UI renders charts using a charting library, mapped to categories such as dining, fuel, shopping, travel, entertainment, utilities, healthcare, education, miscellaneous.
+   - Category breakdown across defined categories.
+5. Analytics results returned to Dashboard API, then to WEB_UI.
+6. WEB_UI renders charts (e.g., bar charts, line graphs, pie charts) per analytic.
 
-Scope Coverage:
-- Category-wise Spending.
-- Monthly Spending Trend.
-- Card-wise Spending Distribution.
-- Category Breakdown with predefined categories.
+**Scope coverage**: Spending Analytics; category-wise spending, monthly trend, card-wise distribution, category breakdown.
 
-### Flow 6: Budget Tracking & Progress Bar
-1. WEB_UI calls `/budget/summary` via APIGW for the current month.
-2. BUDFVC queries Analytics & Aggregates Store for current spend and remaining budget based on configured monthly budget.
-3. BUDFVC computes:
-   - Monthly budget
-   - Current spend
-   - Remaining budget
-   - Budget utilization percentage.
-4. BUDFVC returns metrics and threshold flags.
-5. WEB_UI renders progress bar and budget utilization indicators.
+### Flow 6 – Budget Tracking & Progress Bar
+1. WEB_UI calls GET /budget for a selected month.
+2. API Gateway forwards to Dashboard API after auth validation.
+3. Dashboard API invokes Budget Tracking Service.
+4. Budget Tracking Service reads budget configuration from Budget Store.
+5. Budget Tracking Service queries Transaction Store for spending in the period.
+6. Budget Tracking Service computes current spend, remaining budget, and utilization percentage; updates Budget Store if persistence of computed values is required.
+7. Dashboard API returns budget DTO including numeric values and statuses.
+8. WEB_UI renders budget section and progress bar.
 
-Scope Coverage:
-- Monthly Budget, Current Spend, Remaining Budget, Budget Utilization %, Progress Bar.
+**Scope coverage**: Budget Tracking; monthly budget, current spend, remaining budget, budget utilization %, progress bar.
 
-### Flow 7: Recent Transactions Widget
-1. WEB_UI calls `/transactions/recent` on APIGW.
-2. TXNSVC queries TXNDB for the latest five transactions for the user.
-3. TXNSVC returns basic transaction details.
-4. WEB_UI displays the five most recent transactions in a compact widget.
+### Flow 7 – Recent Transactions Widget
+1. WEB_UI calls GET /transactions/recent with a limit (e.g., 5).
+2. Dashboard API routes to Transaction Management Service.
+3. Transaction Management Service queries Transaction Store for most recent transactions by date for the user.
+4. Results returned as compact DTO set to Dashboard API.
+5. Dashboard API sends response to WEB_UI.
+6. WEB_UI displays latest 5 transactions in the dedicated widget.
 
-Scope Coverage:
-- Recent Transactions Widget showing latest five transactions.
+**Scope coverage**: Recent Transactions Widget; show latest 5 transactions.
 
-### Flow 8: Integration Data Synchronization (Boundary)
-1. BANKINT receives transaction or card data from external sources (e.g., secure file drop, message queue, or API call), according to upstream contracts.
-2. BANKINT validates and normalizes incoming records.
-3. BANKINT writes card and transaction data into CARDDB and TXNDB.
-4. Scheduled jobs in ANASVC and BUDFVC recompute analytics and budget metrics.
+### Flow 8 – Observability & Audit
+1. For each incoming request, Dashboard API emits structured logs (request ID, user ID/tenant ID, endpoint, status) to Monitoring & Observability Service.
+2. Domain services emit metrics (latency, throughput, error counts) and traces for internal calls.
+3. Audit Logging Service records security-sensitive events (access to dashboard, filter operations that may trigger exports, etc.).
+4. Observability platform correlates logs and metrics for centralized dashboards.
 
-Scope Coverage:
-- Enables up-to-date card and transaction data, necessary for accurate dashboard and analytics behavior.
-- Real-time payment authorization or card servicing is not handled; this is out of scope and explicitly excluded from domain services.
+**Scope coverage**: Observability for dashboard behavior and traceability of access and usage.
 
-## 4. Security & Compliance Features
 
-### 4.1 Transport Security
-- All client-to-APIGW communication is over HTTPS/TLS with modern cipher suites.
-- API Gateway enforces TLS 1.2+ and HSTS.
+## 5. Security & Compliance Features
 
-### 4.2 Data Encryption
-- At-rest encryption for CARDDB, TXNDB, ANALYTICSDB, USERDB via database-level encryption.
-- Application-level encryption for selected sensitive attributes (e.g., card identifiers) and storage only of masked card representations.
-- Encryption keys managed by Secrets Management Service.
+### 5.1 Transport Security
+- All client-to-server communication secured with TLS 1.2+.
+- API Gateway acts as TLS termination point; internal service calls can use mutual TLS where required.
 
-### 4.3 Input Validation
-- APIGW validates all request payloads and query parameters:
-  - Type, size limits, allowed ranges, whitelists for sort fields.
-  - Sanitization of search text to prevent injection attacks.
-- Domain services perform business-level validation (e.g., allowed date ranges, card ownership).
+### 5.2 Data Encryption
+- Sensitive fields in Card Store and Transaction Store encrypted at rest using strong encryption (e.g., AES-256) where applicable.
+- Configuration and secrets (e.g., connection strings, external API keys) stored encrypted in Config & Secrets Vault.
 
-### 4.4 Output Filtering
-- Responses avoid exposing full card numbers or sensitive identifiers; only masked card details are returned.
-- Error messages are generic, without internal identifiers or stack traces.
+### 5.3 Input Validation
+- API Gateway and Dashboard API validate all query parameters and request bodies:
+  - Enforce strict type and length constraints for merchant search, categories, banks, cards, date ranges.
+  - Reject malformed or out-of-range dates and numeric values.
+  - Sanitize user-supplied text (e.g., remarks) to prevent injection attacks.
 
-### 4.5 RBAC/ABAC
-- RBAC Policy Engine enforces that users can only view cards and transactions associated with their profile.
-- Potential extension to ABAC patterns (e.g., limiting access by device trust level or time-of-day), but this may be implemented in later epics.
+### 5.4 Output Filtering & Data Minimization
+- Card identifiers displayed only in masked form (e.g., last 4 digits, masked prefix).
+- Response payloads constrained to required fields for dashboard display; no unnecessary PII/PCI fields returned.
+- Audit logs and observability events avoid storing raw transaction amounts tied to personally identifiable details; use identifiers and aggregates where possible.
 
-### 4.6 Audit Logging
-- Audit & Observability Service logs:
-  - Login events and token issuance.
-  - Access to dashboard summary, card lists, transaction queries, analytics views, budget views.
-  - Changes to budget configurations.
-- Logs are immutable and centralized, with retention per enterprise policy.
+### 5.5 RBAC/ABAC
+- Access control enforced at Dashboard API and domain services using RBAC/ABAC policies.
+- Policies ensure:
+  - Users see only their own card and transaction data within their tenant context.
+  - Support roles only access aggregated or anonymized views (if enabled in future epics; out of scope here for implementation but acknowledged as a boundary).
 
-### 4.7 Secrets Management
-- Integration credentials for BANKINT, database passwords, and encryption keys stored in Secrets Management Service.
-- Automated rotation and access controls enforced via enterprise IAM.
+### 5.6 Audit Logging
+- Audit Logging Service records:
+  - Successful/failed dashboard access events.
+  - Data-access actions that may be sensitive (e.g., exporting transactions via filters).
+- Logs include timestamp, user identifier, operation type, outcome; no sensitive card numbers or personal identifiers.
 
-### 4.8 Compliance Mapping
-- The system handles financial transaction and card-related information, but stores only masked card identifiers and summary financial metrics.
-- Compliance alignment:
-  - PCI-like considerations: limiting storage of card data, masking card numbers, protecting transaction data with encryption, access control, and logging.
-  - General data protection and privacy: user identifiers and profile data protected via RBAC, encryption, and strict access controls.
-- Detailed certification and external regulatory integrations (e.g., dispute resolution workflows, chargeback handling) are treated as out-of-scope boundaries.
+### 5.7 Secrets Management
+- All service credentials, encryption keys, and external integration secrets stored in Config & Secrets Vault.
+- Services obtain secrets at runtime via secure channels; secrets are not stored in application config files or code.
 
-## 5. Resiliency & Error Handling
+### 5.8 Compliance Mapping
+- The design avoids exposure of full card numbers or CVV values and masks card references, aligning with secure handling expectations for card-related data.
+- For regulatory and enterprise policy compliance (e.g., internal security baselines), encryption and access control patterns are enforced.
+- Specific external standards (e.g., PCI-DSS) are not explicitly designed here unless mandated in a separate epic; this design remains compatible with future hardening.
 
-### 5.1 Retry Mechanisms
-- APIGW has bounded retries for transient domain service errors.
-- BANKINT uses idempotent write operations and retry with backoff when external bank endpoints are temporarily unavailable.
 
-### 5.2 Circuit Breakers
-- Circuit breakers configured around BANKINT and non-critical analytics computations to prevent cascading failures.
-- When integration endpoints are down, dashboard reads from most recent synchronized data without blocking UI.
+## 6. Resiliency & Error Handling
 
-### 5.3 Timeouts
-- Request timeouts enforced at APIGW and per-service level.
-- Read operations for dashboard and analytics bounded to prevent long-running queries; UI shows graceful fallback messages when timeouts occur.
+### 6.1 Retry Mechanisms
+- Internal service-to-service calls (Dashboard API to domain services) use bounded retries with exponential backoff for transient errors.
+- Ingestion interfaces to upstream card and transaction feeds also use retry on network/transient failures.
 
-### 5.4 Graceful Degradation
-- If analytics service is unavailable, basic transactional views and card summaries remain available; charts may show “Data temporarily unavailable.”
-- If BANKINT synchronization is delayed, dashboards use last-known values and clearly indicate data freshness when necessary.
+### 6.2 Circuit Breakers
+- Circuit breakers applied on calls to external integrations (Core Card & Billing System, Transaction Feeds, Categorization Engine).
+- When a downstream system is unhealthy, calls are short-circuited and fallback data (cached or last-known-good values) may be returned when compatible with accuracy requirements.
 
-### 5.5 Error Handling Semantics
-- Representative HTTP status codes:
-  - 200/201: Success (data retrieved or updated).
-  - 400: Invalid filters, date ranges, or malformed requests (user-facing message: “Please review your filters and try again.”).
-  - 401: Authentication required or token invalid (user redirected to login).
-  - 403: Access to requested resource not allowed (masked message: “You do not have permission to view this data.”).
-  - 404: Resource not found (e.g., card ID not associated with user).
-  - 429: Rate limit exceeded.
-  - 500: Internal error (generic user message; detailed info only in logs).
-- No stack traces or internal IDs are exposed in responses; detailed diagnostics go to observability systems.
+### 6.3 Timeouts
+- All HTTP and DB calls have explicit, reasonable timeouts to prevent hanging requests.
+- Dashboard API enforces max response time budgets; slow sub-calls are aborted and surfaced as controlled errors.
 
-### 5.6 Observability
-- Metrics collected for:
-  - Request latency and error rates per endpoint.
-  - Dashboard load times.
-  - Analytics computation duration.
-  - Integration success/failure counts.
-- Distributed tracing across APIGW, domain services, and BANKINT.
+### 6.4 Graceful Degradation
+- If analytics service or store is unavailable, dashboard still serves core summary and transaction lists, with analytics sections marked as temporarily unavailable.
+- If budget service is unavailable, dashboard can omit budget section or show a clear message without failing the whole page.
 
-## 6. Validation Report
+### 6.5 Error Handling Strategy
+- Common error types and responses:
+  - 400 Bad Request – malformed parameters (e.g., invalid date range, unknown categories); message indicates which field is invalid without exposing stack traces.
+  - 401 Unauthorized – missing/invalid token; message instructs user to log in.
+  - 403 Forbidden – token valid but no rights to requested resource; message states access is not permitted.
+  - 404 Not Found – requested resource not found (e.g., card reference not in portfolio); message avoids revealing whether a card exists for other users.
+  - 429 Too Many Requests – rate limits exceeded; response suggests user retry later.
+  - 500 Internal Server Error – unexpected failure; message is generic, detailed context logged internally.
+- Error payloads are sanitized and standardized, exposing only correlation IDs and high-level messages.
 
-### 6.1 Requirements Coverage
-- Dashboard Summary:
-  - Components: Responsive Web UI, API Gateway, Card Management Service, Transaction Service, Spending Analytics Service.
-  - Flows: Flow 2 (Dashboard Summary Load).
-- Total Monthly Spend:
-  - Components: Spending Analytics Service, Analytics & Aggregates Store.
-  - Flows: Flow 2.
-- Total Credit Limit:
-  - Components: Card Management Service, Card & Limit DB.
-  - Flows: Flow 2.
-- Available Credit:
-  - Components: Card Management Service, Card & Limit DB.
-  - Flows: Flow 2.
-- Outstanding Amount:
-  - Components: Card Management Service, Card & Limit DB, Analytics Service (for aggregates).
-  - Flows: Flow 2.
-- Utilization Percentage:
-  - Components: Card Management Service, Spending Analytics Service.
-  - Flows: Flow 2.
-- Number of Transactions:
-  - Components: Transaction Service, Transaction DB.
-  - Flows: Flow 2.
-- Credit Card Management (display multiple credit cards):
-  - Components: Card Management Service, Card & Limit DB, Responsive Web UI.
-  - Flows: Flow 3.
-- Card Attributes (name, issuer, masked number, limit, available, outstanding, billing/due dates):
-  - Components: Card Management Service, Card & Limit DB.
-  - Flows: Flow 3.
-- Transaction Management (table with date, merchant, category, card used, amount, payment status, remarks):
-  - Components: Transaction Service, Transaction DB, Responsive Web UI.
-  - Flows: Flow 4.
-- Search & Filters (merchant, category, bank, card, date range):
-  - Components: Transaction Service, Configuration & Category Service, Transaction DB.
-  - Flows: Flow 4.
-- Sorting (amount, date):
-  - Components: Transaction Service, Transaction DB.
-  - Flows: Flow 4.
-- Spending Analytics (category-wise, monthly trend, card-wise distribution, category breakdown):
-  - Components: Spending Analytics Service, Analytics & Aggregates Store, Configuration & Category Service.
-  - Flows: Flow 5.
-- Category Taxonomy (food & dining, fuel, shopping, travel, entertainment, utilities, healthcare, education, miscellaneous):
-  - Components: Configuration & Category Service, Configuration & Category DB.
-  - Flows: Flow 5.
-- Budget Tracking (monthly budget, current spend, remaining budget, budget utilization %, progress bar):
-  - Components: Budget Service, Spending Analytics Service, Analytics & Aggregates Store.
-  - Flows: Flow 6.
-- Recent Transactions Widget (latest 5 transactions):
-  - Components: Transaction Service, Transaction DB, Responsive Web UI.
-  - Flows: Flow 7.
-- Responsive Design (mobile, tablet, desktop):
-  - Components: Responsive Web UI.
-  - Flows: Flow 1 (Authentication) + each data flow where UI adapts layout.
+### 6.6 Observability
+- Services emit:
+  - Metrics: request count, latency, error rates, utilization metrics by endpoint.
+  - Logs: structured with correlation IDs for each request and internal call.
+  - Traces: distributed tracing for chains of calls (Gateway → API → Domain Services → DB).
+- Dashboards and alerts created for:
+  - API latency and availability.
+  - DB performance.
+  - Error spikes in domain services.
 
-### 6.2 Compliance Status
-- Transport Security:
-  - Status: Pass.
-  - Justification: HTTPS/TLS enforced between client and API Gateway.
-- Data Encryption (at-rest and in-transit):
-  - Status: Pass.
-  - Justification: Encrypted databases and secure transport; card identifiers protected via masking and encryption.
-- RBAC and Access Control:
-  - Status: Pass.
-  - Justification: RBAC Policy Engine ensures user-specific data isolation.
-- Audit Logging:
-  - Status: Pass.
-  - Justification: Centralized logging of authentication and data access events.
-- Secrets Management:
-  - Status: Pass.
-  - Justification: Dedicated Secrets Management Service, key rotation.
-- Privacy & Financial Data Protection:
-  - Status: Pass-with-conditions.
-  - Justification: Design restricts card data exposure and protects transaction info, but detailed regulatory mapping (e.g., confirmed PCI scope assessment, jurisdiction-specific financial regulations) must be confirmed by compliance teams.
 
-### 6.3 Identified Ambiguities & Risks
-- Ambiguity/Risk: Source and timeliness of card and transaction data from external providers.
-  - Consequence: If synchronization is delayed or inconsistent, dashboard metrics and analytics may be inaccurate or stale.
-  - Mitigation: Define strict SLAs with upstream systems, include data freshness indicators in the UI, and implement reconciliation and alerting when data lag exceeds thresholds.
+## 7. Validation Report
 
-- Ambiguity/Risk: Exact regulatory scope for card and financial data (e.g., PCI boundaries, regional financial privacy laws).
-  - Consequence: Misalignment could result in compliance gaps and increased audit findings.
-  - Mitigation: Conduct formal compliance review, classify data elements, and adjust storage, masking, and logging rules accordingly.
+### 7.1 Requirements Coverage (Scope Mapping)
 
-- Ambiguity/Risk: Budget configuration semantics (per card vs. total portfolio, per category budgets).
-  - Consequence: Users may misinterpret budget metrics if configuration semantics are unclear.
-  - Mitigation: Define and document budget configuration model, extend Budget Service to support multiple budget dimensions in future epics if required.
+For the Epic QE-3350, the following "Scope (High Level)" items inferred from the description are covered:
 
-- Ambiguity/Risk: Real-time card servicing and payments.
-  - Consequence: Users might expect capabilities like payments or disputes from the dashboard, which are not supported by this design.
-  - Mitigation: Clearly mark these capabilities as out of scope in UI copy, and provide navigation to other systems where such features exist.
+1. **Dashboard Summary (Total Monthly Spend, Total Credit Limit, Available Credit, Outstanding Amount, Utilization Percentage, Number of Transactions)**
+   - Components: Dashboard API Service, Dashboard Summary Aggregator, Card Management Service, Transaction Management Service, Card Store, Transaction Store.
+   - Flows: Flow 2 – Dashboard Summary Retrieval.
 
-## 7. Explicit Out-of-Scope Acknowledgements
-- Real-time payment processing, authorization, or card servicing actions.
-- Dispute management, chargeback workflows, or regulatory reporting beyond basic analytics.
-- Cross-tenant analytics and benchmarking.
-- Storage of full card numbers or sensitive authentication data.
+2. **Credit Card Management – Display Multiple Credit Cards with Card Details**
+   - Components: Dashboard API Service, Card Management Service, Card Store, Core Card & Billing System Integration.
+   - Flows: Flow 3 – Multi-Card Management View.
 
-These boundaries are accounted for in component design and risk analysis; any future epic that introduces such capabilities will require extended design of integration, security, and compliance controls.
+3. **Transaction Management – Responsive Table with Transaction Date, Merchant, Category, Card Used, Amount, Payment Status, Remarks**
+   - Components: Dashboard API Service, Transaction Management Service, Transaction Store, Categorization Engine.
+   - Flows: Flow 4 – Transaction Table with Filters & Search.
+
+4. **Filters and Search – Search by Merchant; Filter by Category, Bank, Card, Date Range; Sort by Amount and Date**
+   - Components: Dashboard API Service, Transaction Management Service, Transaction Store.
+   - Flows: Flow 4 – Transaction Table with Filters & Search.
+
+5. **Spending Analytics – Category-wise Spending, Monthly Spending Trend, Card-wise Spending Distribution, Category Breakdown**
+   - Components: Dashboard API Service, Spending Analytics Service, Reporting & Analytics Store, Transaction Store.
+   - Flows: Flow 5 – Spending Analytics (Charts).
+
+6. **Defined Spending Categories (Food & Dining, Fuel, Shopping, Travel, Entertainment, Utilities, Healthcare, Education, Miscellaneous)**
+   - Components: Categorization Engine, Transaction Management Service, Transaction Store, Spending Analytics Service.
+   - Flows: Flow 5 – Spending Analytics (Charts) and Flow 4 – Transaction Table with Filters & Search.
+
+7. **Budget Tracking – Monthly Budget, Current Spend, Remaining Budget, Budget Utilization %, Progress Bar**
+   - Components: Dashboard API Service, Budget Tracking Service, Budget Store, Transaction Store.
+   - Flows: Flow 6 – Budget Tracking & Progress Bar.
+
+8. **Recent Transactions Widget – Show Latest 5 Transactions**
+   - Components: Dashboard API Service, Transaction Management Service, Transaction Store.
+   - Flows: Flow 7 – Recent Transactions Widget.
+
+9. **Responsive Design – Mobile Friendly, Tablet Friendly, Desktop Friendly**
+   - Components: Responsive Web UI (SPA).
+   - Flows: Flow 1 – Authentication & Session Establishment (for initial access); subsequent flows utilize responsive layout for all endpoints.
+
+10. **Observability & Audit (Implied enterprise requirement)**
+    - Components: Monitoring & Observability Service, Audit Logging Service, Dashboard API, Domain Services.
+    - Flows: Flow 8 – Observability & Audit.
+
+### 7.2 Compliance Status
+
+- **Transport Security**: **Pass**
+  - TLS enforced at API Gateway; secure communication designed end-to-end.
+
+- **Data Encryption at Rest and in Transit**: **Pass-with-conditions**
+  - Design specifies encryption for sensitive data and secrets; actual key management policies and crypto algorithms depend on enterprise security standards and must be configured.
+
+- **Input Validation & Output Filtering**: **Pass**
+  - Strong validation on filters and search parameters; response payloads constrained and masked.
+
+- **RBAC/ABAC Enforcement**: **Pass-with-conditions**
+  - Authorization model and enforcement points defined; role and attribute taxonomy must be finalized by security/governance teams.
+
+- **Audit Logging**: **Pass-with-conditions**
+  - Audit events and structure defined; retention periods and access controls for logs must align with organizational policies.
+
+- **Secrets Management**: **Pass**
+  - All secrets managed via Config & Secrets Vault; no secrets in code or configs.
+
+- **Regulatory Compliance (e.g., PCI-Related Constraints)**: **Pass-with-conditions**
+  - Design avoids storing or exposing full card numbers and CVV and supports masking; formal certification against external standards, if required, must be handled by separate compliance processes.
+
+### 7.3 Identified Ambiguities / Risks
+
+1. **Ambiguity: Exact Definition of "Monthly" Period**
+   - Consequence: Inconsistent calculation of monthly spend, budget utilization, and trends across systems (calendar month vs. billing cycle).
+   - Mitigation: Define a canonical period (e.g., billing cycle vs. calendar month) in requirements and configure Dashboard Summary Aggregator and Budget Tracking Service to use that definition. Expose configuration in Config & Secrets Vault.
+
+2. **Ambiguity: Scope of Budget Modification Capabilities**
+   - Consequence: Risk of misalignment if UI is expected to allow users to modify budgets while this epic is focused on read-only tracking, or vice versa.
+   - Mitigation: Clarify whether users can create/update budgets within this epic or in future epics. If out of scope, ensure APIs expose only read operations and UI controls for editing are not implemented yet.
+
+3. **Ambiguity: Support/User Roles Beyond End-User Access**
+   - Consequence: RBAC/ABAC policies may be incomplete, affecting security posture for non-consumer roles.
+   - Mitigation: Define role model separately (e.g., consumer vs. operations vs. support) and update authorization service policies. Treat advanced support views as out of scope for this epic.
+
+4. **Risk: Dependency on External Systems (Card & Transaction Feeds)**
+   - Consequence: Dashboard accuracy depends on timely ingestion of card balances and transactions; outages in upstream systems degrade data freshness.
+   - Mitigation: Implement data freshness indicators in the UI, retries and circuit breakers in integration layer, and alerts on ingestion lag. Consider caching last-known-good data with clear labeling.
+
+5. **Risk: Performance Under High Transaction Volume**
+   - Consequence: Filters and analytics queries may degrade in performance for large histories.
+   - Mitigation: Optimize Transaction Store indexes; employ Analytics Store for pre-aggregations; implement pagination and query limits; load-test key endpoints.
+
+6. **Risk: Category Assignment Quality from Categorization Engine**
+   - Consequence: Misclassified transactions may lead to misleading charts and budget utilization views.
+   - Mitigation: Add reconciliation mechanisms and correction workflows in future epics; for this epic, display categories as provided by engine and consider flagging "uncategorized" as Miscellaneous.
+
+
+## 8. Out-of-Scope Acknowledgements
+
+Although the Epic description focuses on dashboard and analytics, certain related aspects are explicitly treated as out of scope for this design:
+
+- **Payment execution flows** (e.g., paying outstanding balances) and associated APIs.
+- **Detailed card application or lifecycle management** (card issuance, closure, limit change self-service).
+- **Support/admin consoles for monitoring user portfolios** beyond aggregated observability.
+- **Manual transaction categorization workflows** (user-driven recategorization and training of categorization engine).
+- **Regulatory certification processes** for specific standards (e.g., PCI-DSS certification), though design remains compatible with future compliance work.
+
+These boundaries are explicitly recognized to avoid architectural coupling; integration points can be extended in future epics without refactoring core dashboard services.
