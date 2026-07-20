@@ -1,6 +1,10 @@
 /**
  * Dashboard Controller
- * Handles all the logic for the main dashboard view.
+ * @controller DashboardController
+ * 
+ * This controller manages the main dashboard view. It acts as the ViewModel (VM) in an MVVM pattern.
+ * It fetches data from the dataService, prepares it for the view, and handles all user interactions
+ * like filtering, sorting, and toggling UI modes.
  */
 (function() {
     'use strict';
@@ -9,239 +13,189 @@
         .module('creditCardDashboardApp')
         .controller('DashboardController', DashboardController);
 
-    // Inject dependencies
-    DashboardController.$inject = ['$scope', 'dataService', '$filter', '$timeout', 'ChartJsProvider'];
+    // Dependency Injection: $scope for view binding, $timeout for simulating load, dataService for data access
+    DashboardController.$inject = ['$scope', '$timeout', 'dataService'];
 
-    function DashboardController($scope, dataService, $filter, $timeout, ChartJsProvider) {
-        // ViewModel
-        var vm = $scope;
+    function DashboardController($scope, $timeout, dataService) {
+        var vm = this; // Using 'controller as' syntax (vm for ViewModel)
 
-        // --- SCOPE VARIABLE INITIALIZATION ---
+        // --- ViewModel Properties ---
         vm.loading = true;
-        vm.darkMode = false;
+        vm.isDarkMode = false;
         vm.cards = [];
         vm.transactions = [];
+        vm.filteredTransactions = [];
         vm.summary = {};
-        vm.filters = { searchText: '', category: '', cardId: '' };
-        vm.sortKey = 'date';
-        vm.reverse = true;
+        vm.filters = {
+            merchant: '',
+            category: '',
+            cardId: '',
+            startDate: null,
+            endDate: null
+        };
+        vm.filterOptions = {};
+        vm.sortColumn = 'date';
+        vm.sortReverse = true;
         vm.selectedTransaction = null;
 
         // Chart data models
         vm.categoryChart = {};
         vm.monthlyTrendChart = {};
 
-        // --- FUNCTION BINDINGS ---
+        // --- ViewModel Functions ---
         vm.init = init;
-        vm.toggleDarkMode = toggleDarkMode;
-        vm.calculateDashboardMetrics = calculateDashboardMetrics;
-        vm.prepareCategorySpendChart = prepareCategorySpendChart;
-        vm.prepareMonthlyTrendChart = prepareMonthlyTrendChart;
-        vm.sort = sort;
-        vm.showTransactionDetails = showTransactionDetails;
-        vm.getCardName = getCardName;
+        vm.applyFilters = applyFilters;
+        vm.getCardById = getCardById;
+        vm.sortData = sortData;
+        vm.getSortIcon = getSortIcon;
         vm.exportToCSV = exportToCSV;
-        vm.getCategoryClass = getCategoryClass;
+        vm.toggleDarkMode = toggleDarkMode;
+        vm.showTransactionDetails = showTransactionDetails;
 
-        // --- INITIALIZATION ---
+        // --- Initialization ---
         vm.init();
 
-        // --- FUNCTION DEFINITIONS ---
+        // --- Function Implementations ---
 
         /**
-         * Initializes the controller, fetches data, and sets up the dashboard.
+         * Initializes the controller, fetches all necessary data, and sets up the dashboard.
          */
         function init() {
             vm.loading = true;
-            // Fetch data from the service
-            var cardPromise = dataService.getCards();
-            var transactionPromise = dataService.getTransactions();
-
-            // Use Promise.all to wait for both data sets
-            Promise.all([cardPromise, transactionPromise]).then(function(results) {
-                vm.cards = results[0];
-                vm.transactions = results[1];
-
-                // Process data once fetched
-                vm.calculateDashboardMetrics();
-                vm.prepareCategorySpendChart();
-                vm.prepareMonthlyTrendChart();
+            // Simulate a network request delay for a better UX demonstration
+            $timeout(function() {
+                vm.cards = dataService.getCards();
+                vm.transactions = dataService.getTransactions();
+                vm.filterOptions.categories = dataService.getUniqueCategories();
                 
-                // Extract unique categories for the filter dropdown
-                vm.uniqueCategories = [...new Set(vm.transactions.map(tx => tx.category))].sort();
+                // Set initial date filters to the last 30 days
+                var today = new Date();
+                var lastMonth = new Date();
+                lastMonth.setDate(today.getDate() - 30);
+                vm.filters.startDate = lastMonth;
+                vm.filters.endDate = today;
 
-                // Use $timeout to ensure the digest cycle runs after promise resolution
-                $timeout(function() {
-                    vm.loading = false;
-                }, 500); // Simulate a slight delay for a smoother transition
-            });
+                vm.applyFilters(); // Apply initial filters and calculate all metrics
+                vm.loading = false;
+            }, 1000); // 1-second loading simulation
         }
 
         /**
-         * Calculates all summary metrics for the top dashboard cards.
+         * Applies all active filters to the transaction list and recalculates all dashboard metrics and charts.
+         */
+        function applyFilters() {
+            vm.filteredTransactions = dataService.getFilteredTransactions(vm.filters);
+            calculateDashboardMetrics();
+            prepareChartData();
+        }
+
+        /**
+         * Calculates all summary metrics based on the currently filtered transactions.
          */
         function calculateDashboardMetrics() {
-            // Card-related summaries
-            vm.summary.totalCreditLimit = vm.cards.reduce((sum, card) => sum + card.creditLimit, 0);
-            vm.summary.totalAvailableCredit = vm.cards.reduce((sum, card) => sum + card.availableCredit, 0);
-            vm.summary.totalOutstanding = vm.cards.reduce((sum, card) => sum + card.outstanding, 0);
-            vm.summary.overallUtilization = (vm.summary.totalOutstanding / vm.summary.totalCreditLimit) * 100 || 0;
-
-            // Transaction-related summaries for the current month
-            const now = new Date();
-            const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-            const monthlyTransactions = vm.transactions.filter(tx => new Date(tx.date) >= firstDayOfMonth);
-
-            vm.summary.totalMonthlySpend = monthlyTransactions.reduce((sum, tx) => sum + tx.amount, 0);
-            vm.summary.monthlyTransactionsCount = monthlyTransactions.length;
-            
-            // Monthly Spend Forecast (simple linear projection)
-            const dayOfMonth = now.getDate();
-            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-            vm.summary.forecastedSpend = (vm.summary.totalMonthlySpend / dayOfMonth) * daysInMonth || 0;
+            vm.summary = dataService.getDashboardSummary(vm.cards, vm.filteredTransactions);
+            vm.monthlyForecast = dataService.getMonthlySpendForecast(vm.transactions);
+            vm.topCategories = dataService.getTopSpendingGroups(vm.filteredTransactions, 'category', 5);
+            vm.topMerchants = dataService.getTopSpendingGroups(vm.filteredTransactions, 'merchant', 5);
         }
 
         /**
-         * Aggregates transaction data by category for the doughnut chart.
+         * Prepares data for all charts based on filtered transactions.
          */
-        function prepareCategorySpendChart() {
-            const categorySpend = {};
-            vm.transactions.forEach(tx => {
-                categorySpend[tx.category] = (categorySpend[tx.category] || 0) + tx.amount;
-            });
+        function prepareChartData() {
+            // Category-wise Spending (Doughnut Chart)
+            var categoryData = dataService.getCategorySpending(vm.filteredTransactions);
+            vm.categoryChart.labels = categoryData.labels;
+            vm.categoryChart.data = categoryData.data;
+            vm.categoryChart.options = { legend: { display: true, position: 'right' } };
+            vm.categoryChart.colors = ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796', '#5a5c69'];
 
-            const sortedCategories = Object.keys(categorySpend).sort((a, b) => categorySpend[b] - categorySpend[a]);
-
-            vm.categoryChart.labels = sortedCategories;
-            vm.categoryChart.data = sortedCategories.map(cat => categorySpend[cat]);
-            vm.categoryChart.options = { legend: { display: false } }; // Hide legend for a cleaner look
-            
-            // For Top 5 Categories list
-            vm.topCategories = sortedCategories.map(cat => ({ category: cat, amount: categorySpend[cat] }));
-        }
-
-        /**
-         * Aggregates transaction data by month for the bar chart.
-         */
-        function prepareMonthlyTrendChart() {
-            const monthlySpend = {};
-            const monthLabels = [];
-            const now = new Date();
-
-            // Initialize last 12 months
-            for (let i = 11; i >= 0; i--) {
-                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-                const monthKey = d.toLocaleString('default', { month: 'short' }) + ' ' + d.getFullYear().toString().slice(-2);
-                monthLabels.push(monthKey);
-                monthlySpend[monthKey] = 0;
-            }
-
-            vm.transactions.forEach(tx => {
-                const txDate = new Date(tx.date);
-                const monthKey = txDate.toLocaleString('default', { month: 'short' }) + ' ' + txDate.getFullYear().toString().slice(-2);
-                if (monthlySpend.hasOwnProperty(monthKey)) {
-                    monthlySpend[monthKey] += tx.amount;
-                }
-            });
-
-            vm.monthlyTrendChart.labels = monthLabels;
-            vm.monthlyTrendChart.series = ['Spend'];
-            vm.monthlyTrendChart.data = [monthLabels.map(label => monthlySpend[label])];
-            vm.monthlyTrendChart.options = { scales: { yAxes: [{ ticks: { beginAtZero: true } }] } };
-            
-            // For Top 5 Merchants list
-            const merchantSpend = {};
-            vm.transactions.forEach(tx => {
-                merchantSpend[tx.merchant] = (merchantSpend[tx.merchant] || 0) + tx.amount;
-            });
-            vm.topMerchants = Object.keys(merchantSpend)
-                .map(merch => ({ merchant: merch, amount: merchantSpend[merch] }))
-                .sort((a, b) => b.amount - a.amount);
-        }
-
-        /**
-         * Toggles dark mode and updates chart colors.
-         */
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode', vm.darkMode);
-            const newColor = vm.darkMode ? '#dee2e6' : '#6c757d';
-            ChartJsProvider.setOptions({
-                legend: { labels: { fontColor: newColor } },
+            // Monthly Spending Trend (Line Chart)
+            var monthlyData = dataService.getMonthlySpendingTrend(vm.transactions);
+            vm.monthlyTrendChart.labels = monthlyData.labels;
+            vm.monthlyTrendChart.data = [monthlyData.data]; // data must be an array of arrays
+            vm.monthlyTrendChart.series = ['Monthly Spend'];
+            vm.monthlyTrendChart.options = {
                 scales: {
-                    yAxes: [{ ticks: { fontColor: newColor }, gridLines: { color: 'rgba(255, 255, 255, 0.1)' } }],
-                    xAxes: [{ ticks: { fontColor: newColor }, gridLines: { color: 'rgba(255, 255, 255, 0.1)' } }]
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            callback: function(value) { return '₹' + value / 1000 + 'k'; }
+                        }
+                    }]
                 }
-            });
+            };
         }
 
         /**
-         * Sets the sorting key and direction for the transaction table.
-         * @param {string} key - The key to sort by (e.g., 'date', 'amount').
+         * Retrieves a card object by its ID.
+         * @param {number} cardId - The ID of the card to find.
+         * @returns {object} The card object or an empty object if not found.
          */
-        function sort(key) {
-            vm.sortKey = key;
-            vm.reverse = !vm.reverse;
+        function getCardById(cardId) {
+            return vm.cards.find(function(card) { return card.id === cardId; }) || {};
         }
 
         /**
-         * Sets the selected transaction for the modal view.
-         * @param {object} transaction - The transaction object to display.
+         * Toggles the sort order for a given table column.
+         * @param {string} column - The name of the column to sort by.
          */
-        function showTransactionDetails(transaction) {
-            vm.selectedTransaction = transaction;
+        function sortData(column) {
+            vm.sortReverse = (vm.sortColumn === column) ? !vm.sortReverse : false;
+            vm.sortColumn = column;
         }
 
         /**
-         * Retrieves the card name from its ID.
-         * @param {number} cardId - The ID of the card.
-         * @returns {string} The name of the card.
+         * Determines which sort icon to display next to table headers.
+         * @param {string} column - The name of the column.
+         * @returns {string} The Font Awesome icon class.
          */
-        function getCardName(cardId) {
-            const card = vm.cards.find(c => c.id === cardId);
-            return card ? card.cardName : 'Unknown Card';
-        }
-        
-        /**
-         * Returns a dynamic CSS class for category badges.
-         * @param {string} category - The category name.
-         * @returns {string} The CSS class name.
-         */
-        function getCategoryClass(category) {
-            const sanitizedCategory = category.split(' ')[0].toLowerCase();
-            return `bg-category-${sanitizedCategory}`;
+        function getSortIcon(column) {
+            if (vm.sortColumn === column) {
+                return vm.sortReverse ? 'fa-sort-down' : 'fa-sort-up';
+            }
+            return 'fa-sort';
         }
 
         /**
          * Exports the currently filtered transactions to a CSV file.
          */
         function exportToCSV() {
-            const headers = ['Date', 'Merchant', 'Category', 'Amount', 'Card'];
-            const filteredData = $filter('orderBy')( 
-                                $filter('filter')(vm.transactions, {merchant: vm.filters.searchText}), 
-                                vm.sortKey, 
-                                vm.reverse
-                               );
+            var csvContent = 'data:text/csv;charset=utf-8,';
+            // Headers
+            csvContent += 'Date,Merchant,Category,Amount,Card Name,Status\r\n';
 
-            let csvContent = 'data:text/csv;charset=utf-8,' + headers.join(',') + '\n';
-
-            filteredData.forEach(function(tx) {
-                const row = [
-                    $filter('date')(tx.date, 'yyyy-MM-dd'),
-                    `"${tx.merchant}"`, // Enclose in quotes to handle commas
-                    tx.category,
-                    tx.amount,
-                    getCardName(tx.cardId)
-                ];
-                csvContent += row.join(',') + '\n';
+            vm.filteredTransactions.forEach(function(tx) {
+                var cardName = vm.getCardById(tx.cardId).cardName;
+                var row = [tx.date.toISOString().split('T')[0], tx.merchant, tx.category, tx.amount, cardName, tx.status].join(',');
+                csvContent += row + '\r\n';
             });
 
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement('a');
+            var encodedUri = encodeURI(csvContent);
+            var link = document.createElement('a');
             link.setAttribute('href', encodedUri);
             link.setAttribute('download', 'transactions.csv');
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        }
+
+        /**
+         * Toggles the dark mode theme for the application.
+         */
+        function toggleDarkMode() {
+            vm.isDarkMode = !vm.isDarkMode;
+            // In a real app, this preference might be saved to localStorage or a user profile.
+        }
+
+        /**
+         * Sets the selected transaction and opens the detail modal.
+         * @param {object} transaction - The transaction object to display.
+         */
+        function showTransactionDetails(transaction) {
+            vm.selectedTransaction = transaction;
+            var modal = new bootstrap.Modal(document.getElementById('transactionDetailModal'));
+            modal.show();
         }
     }
 })();
