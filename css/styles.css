@@ -1,0 +1,68 @@
+/* General Styles */
+body {
+    background-color: #f8f9fa;
+    color: #212529;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Dark Mode */
+body.darkMode {
+    background-color: #212529;
+    color: #f8f9fa;
+}
+
+body.darkMode .card {
+    background-color: #343a40;
+    color: #f8f9fa;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5);
+}
+
+body.darkMode .table {
+    color: #f8f9fa;
+}
+
+body.darkMode .list-group-item {
+    background-color: #343a40;
+    border-color: #495057;
+}
+
+body.darkMode .form-control,
+body.darkMode .form-select {
+    background-color: #495057;
+    color: #f8f9fa;
+    border-color: #6c757d;
+}
+
+body.darkMode .modal-content {
+    background-color: #343a40;
+}
+
+/* Navbar */
+.navbar-brand {
+    font-weight: bold;
+}
+
+/* Dashboard Summary */
+.summary-card {
+    text-align: center;
+}
+
+/* Transaction Table */
+.table th {
+    cursor: pointer;
+}
+
+.table th .fa-sort {
+    margin-left: 5px;
+}
+
+/* Charts */
+canvas {
+    max-width: 100%;
+    height: auto;
+}
