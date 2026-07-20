@@ -1,0 +1,14 @@
+{
+  "key": "QE-3398",
+  "summary": "Application Data Management",
+  "description": "Vision\nEnable efficient, accurate, and secure management of financing application data as the foundation for all review and approval workflows.\nRisks and Dependencies\nRisks include incomplete data validation, UI inconsistencies, and potential for mock data to not represent real-world edge cases. Dependencies include the need for a robust data model and reusable UI components.\nEpic Goals\n- Allow users to view, search, and filter financing applications\n- Support creation and editing of application records\n- Ensure data integrity and validation at all stages\n- Provide a responsive, modern UI for data exploration\n- Enable mock data generation for demonstration purposes\nSuccess Metrics\n- 100% of application records are valid and complete\n- Application list loads in <2 seconds for up to 100 records\n- No data loss or corruption during navigation or editing\n- User can locate a specific application in <10 seconds\n- All demo data covers at least 5 unique business scenarios",
+  "status": "In Progress",
+  "priority": "Medium",
+  "assignee": "Unassigned",
+  "labels": [
+    "APBADM01"
+  ],
+  "work_item_type": "Epic",
+  "story_points": null,
+  "acceptance_criteria": null
+}

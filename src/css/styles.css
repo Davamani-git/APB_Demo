@@ -1,146 +1,96 @@
-/*
- * Custom Styles for Credit Card Expenditure Dashboard
- * Author: Senior UI Engineer
- * Date: 2024-05-21
- */
-
-/* --- General & Light Mode --- */
+/* General Body Styles */
 body {
-    background-color: #f8f9fc;
-    color: #5a5c69;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.3s, color 0.3s;
 }
 
-.card {
-    border: 1px solid #e3e6f0;
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-}
-
-.card .card-header {
-    background-color: #f8f9fc;
-    border-bottom: 1px solid #e3e6f0;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.text-gray-300 { color: #dddfeb !important; }
-.text-gray-800 { color: #5a5c69 !important; }
-
-.border-left-primary { border-left: .25rem solid #4e73df !important; }
-.border-left-success { border-left: .25rem solid #1cc88a !important; }
-.border-left-info { border-left: .25rem solid #36b9cc !important; }
-.border-left-warning { border-left: .25rem solid #f6c23e !important; }
-.border-left-danger { border-left: .25rem solid #e74a3b !important; }
-
-.progress-sm { height: .5rem; }
-
-.chart-area, .chart-pie {
-    position: relative;
-}
-
-.table-hover tbody tr:hover {
-    background-color: #f1f3f8;
-    cursor: pointer;
-}
-
-.badge.bg-electronics { background-color: #fd7e14 !important; color: white; }
-.badge.bg-groceries { background-color: #20c997 !important; color: white; }
-.badge.bg-food-delivery { background-color: #dc3545 !important; color: white; }
-.badge.bg-transport { background-color: #ffc107 !important; color: black; }
-.badge.bg-entertainment { background-color: #6f42c1 !important; color: white; }
-.badge.bg-travel { background-color: #0d6efd !important; color: white; }
-.badge.bg-health { background-color: #198754 !important; color: white; }
-.badge.bg-home-goods { background-color: #0dcaf0 !important; color: white; }
-.badge.bg-other { background-color: #6c757d !important; color: white; }
-
-/* --- Loading Overlay --- */
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    flex-direction: column;
-    font-size: 1.2rem;
-    color: #4e73df;
-}
-
-/* --- Dark Mode --- */
-body.dark-mode {
-    background-color: #1a1a1a;
-    color: #c7c7c7;
-}
-
-.dark-mode .navbar {
-    background-color: #2c2c2c !important;
+/* Dark Mode Theme */
+.dark-mode {
+    background-color: #212529;
+    color: #f8f9fa;
 }
 
 .dark-mode .card {
-    background-color: #2c2c2c;
-    border-color: #444;
+    background-color: #343a40;
+    border-color: #495057;
+    color: #f8f9fa;
 }
 
-.dark-mode .card .card-header {
-    background-color: #333;
-    border-color: #444;
-}
-
-.dark-mode .text-gray-800 {
-    color: #f8f9fa !important;
+.dark-mode .card-header,
+.dark-mode .card-footer {
+    background-color: #495057;
+    border-bottom: 1px solid #343a40;
 }
 
 .dark-mode .table {
-    color: #c7c7c7;
+    color: #f8f9fa;
 }
 
-.dark-mode .table-hover tbody tr:hover {
-    background-color: #3a3b45;
-    color: #fff;
-}
-
-.dark-mode .list-group-item {
-    background-color: #2c2c2c;
-    border-color: #444;
+.dark-mode .table-striped>tbody>tr:nth-of-type(odd)>* {
+    --bs-table-accent-bg: rgba(255, 255, 255, 0.05);
 }
 
 .dark-mode .modal-content {
-    background-color: #2c2c2c;
-    color: #c7c7c7;
-    border: 1px solid #444;
-}
-
-.dark-mode .modal-header, .dark-mode .modal-footer {
-    border-color: #444;
+    background-color: #343a40;
+    color: #f8f9fa;
 }
 
 .dark-mode .btn-close {
     filter: invert(1) grayscale(100%) brightness(200%);
 }
 
-.dark-mode .loading-overlay {
-    background-color: rgba(26, 26, 26, 0.8);
-    color: #879ff1;
+.dark-mode .form-control,
+.dark-mode .form-select {
+    background-color: #495057;
+    color: #f8f9fa;
+    border-color: #6c757d;
 }
 
-.dark-mode .form-control {
-    background-color: #3a3b45;
-    color: #fff;
-    border-color: #555;
+.dark-mode .form-control::placeholder {
+    color: #adb5bd;
 }
 
-.dark-mode .form-control:focus {
-    background-color: #3a3b45;
-    color: #fff;
-    border-color: #879ff1;
-    box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.5);
+/* Loading Overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
 }
 
-.dark-mode .alert-secondary {
-    background-color: #3a3b45;
-    border-color: #555;
-    color: #c7c7c7;
+.loading-overlay .spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Clickable Table Rows */
+.clickable-row {
+    cursor: pointer;
+}
+
+/* Chart.js responsiveness */
+.chart-container {
+    position: relative;
+    height: 40vh;
+    width: 100%;
+}
+
+/* Category Badges */
+.badge.bg-category-food { background-color: #ff6384; }
+.badge.bg-category-shopping { background-color: #36a2eb; }
+.badge.bg-category-transport { background-color: #ffce56; }
+.badge.bg-category-entertainment { background-color: #9966ff; }
+.badge.bg-category-travel { background-color: #4bc0c0; }
+.badge.bg-category-health { background-color: #ff9f40; }
+.badge.bg-category-groceries { background-color: #8ac926; }
+.badge.bg-category-default { background-color: #c9c9c9; }
+
+/* ng-cloak to prevent flickering */
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
 }
