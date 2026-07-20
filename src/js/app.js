@@ -1,35 +1,50 @@
 /**
- * Main Application Module for the Credit Card Expenditure Dashboard.
- * As a Senior UI Engineer, I'm defining the core module and its dependencies.
- * This structure promotes modularity and separation of concerns, crucial for maintaining
- * large-scale financial applications.
- *
- * @module creditCardDashboardApp
- * @dependencies ng, chart.js
+ * Main AngularJS Application Module
+ * 
+ * This file defines the main application module, 'creditCardDashboardApp'.
+ * It also configures the dependencies for the application, such as 'chart.js' for data visualizations.
+ * The module acts as a container for the different parts of the application (controllers, services, etc.).
  */
 
 (function() {
     'use strict';
 
     // Define the main application module
-    var app = angular.module('creditCardDashboardApp', ['chart.js']);
+    var app = angular.module('creditCardDashboardApp', [
+        'chart.js' // Dependency for creating charts
+    ]);
 
-    // --- Configuration Block ---
-    app.config(['ChartJsProvider', function(ChartJsProvider) {
-        // Configure all charts
+    // Configuration for Chart.js to disable animations and set responsive behavior for dark mode
+    app.config(['ChartJsProvider', function (ChartJsProvider) {
         ChartJsProvider.setOptions({
+            animation: {
+                duration: 0 // Disable animations for faster rendering
+            },
             responsive: true,
             maintainAspectRatio: false,
-            // In a real-world scenario, we'd define global color schemes,
-            // tooltips, and other elements here to ensure brand consistency.
-            tooltips: {
-                callbacks: {
-                    label: function(tooltipItem, data) {
-                        var dataset = data.datasets[tooltipItem.datasetIndex];
-                        var value = dataset.data[tooltipItem.index];
-                        return ' ' + value.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' });
-                    }
+            legend: {
+                labels: {
+                    // This function will be called to generate the legend text color
+                    fontColor: '#666' 
                 }
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        fontColor: '#666'
+                    },
+                    gridLines: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                }],
+                xAxes: [{
+                    ticks: {
+                        fontColor: '#666'
+                    },
+                    gridLines: {
+                        display: false
+                    }
+                }]
             }
         });
     }]);

@@ -1,146 +1,113 @@
-/*
- * Custom Styles for Credit Card Expenditure Dashboard
- * Author: Senior UI Engineer
- * Date: 2024-05-21
- */
-
-/* --- General & Light Mode --- */
+/* General Styles */
 body {
-    background-color: #f8f9fc;
-    color: #5a5c69;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.3s, color 0.3s;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 .card {
-    border: 1px solid #e3e6f0;
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-}
-
-.card .card-header {
-    background-color: #f8f9fc;
-    border-bottom: 1px solid #e3e6f0;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.text-gray-300 { color: #dddfeb !important; }
-.text-gray-800 { color: #5a5c69 !important; }
-
-.border-left-primary { border-left: .25rem solid #4e73df !important; }
-.border-left-success { border-left: .25rem solid #1cc88a !important; }
-.border-left-info { border-left: .25rem solid #36b9cc !important; }
-.border-left-warning { border-left: .25rem solid #f6c23e !important; }
-.border-left-danger { border-left: .25rem solid #e74a3b !important; }
-
-.progress-sm { height: .5rem; }
-
-.chart-area, .chart-pie {
-    position: relative;
+    border: none;
+    border-radius: 0.75rem;
 }
 
 .table-hover tbody tr:hover {
-    background-color: #f1f3f8;
-    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.05);
 }
 
-.badge.bg-electronics { background-color: #fd7e14 !important; color: white; }
-.badge.bg-groceries { background-color: #20c997 !important; color: white; }
-.badge.bg-food-delivery { background-color: #dc3545 !important; color: white; }
-.badge.bg-transport { background-color: #ffc107 !important; color: black; }
-.badge.bg-entertainment { background-color: #6f42c1 !important; color: white; }
-.badge.bg-travel { background-color: #0d6efd !important; color: white; }
-.badge.bg-health { background-color: #198754 !important; color: white; }
-.badge.bg-home-goods { background-color: #0dcaf0 !important; color: white; }
-.badge.bg-other { background-color: #6c757d !important; color: white; }
-
-/* --- Loading Overlay --- */
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    flex-direction: column;
-    font-size: 1.2rem;
-    color: #4e73df;
+.progress {
+    height: 10px;
 }
 
-/* --- Dark Mode --- */
+.badge {
+    font-size: 0.8rem;
+    padding: 0.4em 0.7em;
+}
+
+/* Light Mode (Default) */
+body {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+.card {
+    background-color: #ffffff;
+}
+
+.table {
+    color: #212529;
+}
+
+.modal-content {
+    background-color: #ffffff;
+    color: #212529;
+}
+
+/* Dark Mode */
 body.dark-mode {
     background-color: #1a1a1a;
-    color: #c7c7c7;
-}
-
-.dark-mode .navbar {
-    background-color: #2c2c2c !important;
+    color: #e0e0e0;
 }
 
 .dark-mode .card {
     background-color: #2c2c2c;
-    border-color: #444;
+    border: 1px solid #444;
 }
 
-.dark-mode .card .card-header {
-    background-color: #333;
-    border-color: #444;
+.dark-mode .card-title, .dark-mode .card-text, .dark-mode h1, .dark-mode h2, .dark-mode h5 {
+    color: #f5f5f5;
 }
 
-.dark-mode .text-gray-800 {
-    color: #f8f9fa !important;
+.dark-mode .text-muted {
+    color: #a0a0a0 !important;
 }
 
 .dark-mode .table {
-    color: #c7c7c7;
+    color: #e0e0e0;
 }
 
 .dark-mode .table-hover tbody tr:hover {
-    background-color: #3a3b45;
-    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
-.dark-mode .list-group-item {
-    background-color: #2c2c2c;
-    border-color: #444;
+.dark-mode .table-striped > tbody > tr:nth-of-type(odd) > * {
+    --bs-table-accent-bg: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .form-control, .dark-mode .form-select {
+    background-color: #333;
+    color: #fff;
+    border-color: #555;
+}
+
+.dark-mode .form-control::placeholder {
+    color: #888;
 }
 
 .dark-mode .modal-content {
     background-color: #2c2c2c;
-    color: #c7c7c7;
-    border: 1px solid #444;
+    color: #e0e0e0;
+    border: 1px solid #555;
 }
 
 .dark-mode .modal-header, .dark-mode .modal-footer {
-    border-color: #444;
+    border-bottom-color: #555;
+    border-top-color: #555;
 }
 
 .dark-mode .btn-close {
-    filter: invert(1) grayscale(100%) brightness(200%);
+    filter: invert(1);
 }
 
-.dark-mode .loading-overlay {
-    background-color: rgba(26, 26, 26, 0.8);
-    color: #879ff1;
+.dark-mode .list-group-item {
+    background-color: transparent;
+    border-color: #444;
 }
 
-.dark-mode .form-control {
-    background-color: #3a3b45;
-    color: #fff;
-    border-color: #555;
-}
-
-.dark-mode .form-control:focus {
-    background-color: #3a3b45;
-    color: #fff;
-    border-color: #879ff1;
-    box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.5);
-}
-
-.dark-mode .alert-secondary {
-    background-color: #3a3b45;
-    border-color: #555;
-    color: #c7c7c7;
-}
+/* Category Badge Colors */
+.bg-groceries { background-color: #28a745 !important; color: white; }
+.bg-transport { background-color: #17a2b8 !important; color: white; }
+.bg-entertainment { background-color: #fd7e14 !important; color: white; }
+.bg-shopping { background-color: #6f42c1 !important; color: white; }
+.bg-bills { background-color: #dc3545 !important; color: white; }
+.bg-food-delivery { background-color: #ffc107 !important; color: black; }
+.bg-health { background-color: #20c997 !important; color: white; }
+.bg-travel { background-color: #0d6efd !important; color: white; }

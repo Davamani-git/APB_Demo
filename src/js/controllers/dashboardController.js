@@ -1,248 +1,223 @@
 /**
- * Controller for the main dashboard view.
- * This controller handles all the logic for data processing, metric calculation,
- * chart generation, and user interactions.
- * Adhering to the 'fat service, skinny controller' principle, complex business logic
- * should ideally be in services, but for this self-contained dashboard, some processing is done here.
+ * Dashboard Controller
+ * 
+ * This controller is responsible for the logic of the main dashboard.
+ * It fetches data from the dataService, processes it for display, and handles user interactions.
  */
 (function() {
     'use strict';
 
     angular
         .module('creditCardDashboardApp')
-        .controller('DashboardController', DashboardController);
+        .controller('dashboardController', dashboardController);
 
-    DashboardController.$inject = ['$scope', 'dataService', '$q', '$filter'];
+    // Inject dependencies: $scope for data binding, dataService for data access, $timeout for simulating loading
+    dashboardController.$inject = ['$scope', 'dataService', '$timeout', 'ChartJsProvider'];
 
-    function DashboardController($scope, dataService, $q, $filter) {
-        var vm = this;
+    function dashboardController($scope, dataService, $timeout, ChartJsProvider) {
 
-        // --- ViewModel Initialization ---
-        vm.isLoading = true;
-        vm.isDarkMode = false;
-        vm.cards = [];
-        vm.transactions = [];
-        vm.searchQuery = { text: '' };
-        vm.metrics = {};
-        vm.monthlySpend = {};
-        vm.categorySpend = {};
-        vm.topCategories = [];
-        vm.topMerchants = [];
-        vm.spendForecast = 0;
-        vm.selectedTransaction = null;
+        // --- Scope Variable Initialization ---
+        $scope.loading = true;
+        $scope.darkMode = false;
+        $scope.creditCards = [];
+        $scope.transactions = [];
+        $scope.sortKey = 'date';
+        $scope.reverse = true;
+        $scope.search = { merchant: '', cardId: '' };
+        $scope.selectedTransaction = null;
 
-        // --- Function bindings ---
-        vm.toggleDarkMode = toggleDarkMode;
-        vm.exportToCSV = exportToCSV;
-        vm.showTransactionDetails = showTransactionDetails;
-        vm.getCategoryClass = getCategoryClass;
-        vm.getBootstrapColor = getBootstrapColor;
+        // Chart data models
+        $scope.monthlySpend = { data: [], labels: [], series: ['Spend'] };
+        $scope.categorySpend = { data: [], labels: [] };
+        $scope.topMerchants = [];
+        $scope.monthlySpendForecast = 0;
 
-        // --- Modal instance ---
-        var transactionModal = null;
+        // Chart.js options
+        $scope.chartOptions = ChartJsProvider.getOptions();
 
-        // --- Initialization Function ---
-        activate();
+        // --- Controller Initialization ---
+        init();
 
         /**
-         * The activation function to initialize the controller.
-         * Fetches all necessary data and then processes it.
+         * Initialize the controller, fetch data, and process it.
          */
-        function activate() {
-            // Using $q.all to wait for all data promises to resolve.
-            // This is a robust pattern for handling multiple async startup operations.
-            var promises = [dataService.getCards(), dataService.getTransactions()];
+        function init() {
+            // Simulate a network request delay
+            $timeout(function() {
+                $scope.creditCards = dataService.getCreditCards();
+                $scope.transactions = dataService.getTransactions();
+                
+                // Process data for dashboard metrics and charts
+                processDashboardData();
 
-            $q.all(promises).then(function(results) {
-                vm.cards = results[0];
-                vm.transactions = results[1];
-
-                // Once data is loaded, process it for the dashboard.
-                calculateMetrics();
-                processMonthlySpend();
-                processCategorySpend();
-                processTopSpendingCategories();
-                processTopMerchants();
-                calculateSpendForecast();
-
-                // Initialize the Bootstrap modal instance after the DOM is ready
-                var modalEl = document.getElementById('transactionDetailModal');
-                if (modalEl) {
-                    transactionModal = new bootstrap.Modal(modalEl);
-                }
-
-                vm.isLoading = false;
-            });
+                $scope.loading = false;
+            }, 1000);
         }
 
         // --- Data Processing Functions ---
 
-        function calculateMetrics() {
-            vm.metrics.totalOutstanding = vm.cards.reduce((sum, card) => sum + card.outstanding, 0);
-            vm.metrics.totalAvailableCredit = vm.cards.reduce((sum, card) => sum + card.availableCredit, 0);
-            vm.metrics.totalCreditLimit = vm.cards.reduce((sum, card) => sum + card.creditLimit, 0);
-            vm.metrics.creditUtilization = (vm.metrics.totalOutstanding / vm.metrics.totalCreditLimit) * 100;
+        /**
+         * Orchestrates the calculation of all dashboard metrics.
+         */
+        function processDashboardData() {
+            calculateMonthlySpend();
+            calculateCategorySpend();
+            calculateTopMerchants();
+            calculateMonthlySpendForecast();
         }
 
-        function processMonthlySpend() {
-            var monthlyData = {};
-            var today = new Date();
-            var twelveMonthsAgo = new Date(today.getFullYear() - 1, today.getMonth(), 1);
-
-            vm.transactions.forEach(tx => {
-                var txDate = new Date(tx.date);
-                if (txDate >= twelveMonthsAgo) {
-                    var monthKey = txDate.getFullYear() + '-' + ('0' + (txDate.getMonth() + 1)).slice(-2);
-                    if (!monthlyData[monthKey]) {
-                        monthlyData[monthKey] = 0;
-                    }
-                    monthlyData[monthKey] += tx.amount;
-                }
-            });
-
-            var sortedKeys = Object.keys(monthlyData).sort();
-            vm.monthlySpend.labels = sortedKeys.map(key => {
-                var parts = key.split('-');
-                return new Date(parts[0], parts[1] - 1).toLocaleString('default', { month: 'short', year: '2-digit' });
-            });
-            vm.monthlySpend.data = [sortedKeys.map(key => monthlyData[key].toFixed(2))];
-            vm.monthlySpend.series = ['Expenditure'];
-            vm.monthlySpend.options = {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true,
-                            callback: function(value) { return '€' + value; }
-                        }
-                    }]
-                },
-                elements: {
-                    line: { tension: 0.4 }
-                }
-            };
-        }
-
-        function processCategorySpend() {
-            var categoryData = {};
-            vm.transactions.forEach(tx => {
-                if (!categoryData[tx.category]) {
-                    categoryData[tx.category] = 0;
-                }
-                categoryData[tx.category] += tx.amount;
-            });
-
-            vm.categorySpend.labels = Object.keys(categoryData);
-            vm.categorySpend.data = Object.values(categoryData).map(v => v.toFixed(2));
-            vm.categorySpend.colors = ['#fd7e14', '#20c997', '#dc3545', '#ffc107', '#6f42c1', '#0d6efd', '#198754', '#0dcaf0'];
-            vm.categorySpend.options = {
-                cutoutPercentage: 70,
-                legend: { display: false }
-            };
-        }
-
-        function processTopSpendingCategories() {
-            var categoryData = {};
-            vm.transactions.forEach(tx => {
-                categoryData[tx.category] = (categoryData[tx.category] || 0) + tx.amount;
-            });
-            vm.topCategories = Object.keys(categoryData).map(key => ({
-                category: key,
-                amount: categoryData[key]
-            })).sort((a, b) => b.amount - a.amount);
-        }
-
-        function processTopMerchants() {
-            var merchantData = {};
-            vm.transactions.forEach(tx => {
-                merchantData[tx.merchant] = (merchantData[tx.merchant] || 0) + tx.amount;
-            });
-            vm.topMerchants = Object.keys(merchantData).map(key => ({
-                merchant: key,
-                amount: merchantData[key]
-            })).sort((a, b) => b.amount - a.amount);
-        }
-
-        function calculateSpendForecast() {
-            var lastThreeMonthsSpend = 0;
-            var count = 0;
-            var today = new Date();
-            for (var i = 1; i <= 3; i++) {
-                var month = today.getMonth() - i;
-                var year = today.getFullYear();
-                if (month < 0) {
-                    month += 12;
-                    year -= 1;
-                }
-                var monthKey = year + '-' + ('0' + (month + 1)).slice(-2);
-                var monthlyTotal = vm.monthlySpend.labels.reduce((total, label, index) => {
-                    var labelDate = new Date(label.split(' ')[1], new Date(Date.parse(label.split(' ')[0] +" 1, 2012")).getMonth());
-                    var labelKey = labelDate.getFullYear() + '-' + ('0' + (labelDate.getMonth() + 1)).slice(-2);
-                    if (labelKey === monthKey) {
-                        return total + parseFloat(vm.monthlySpend.data[0][index]);
-                    }
-                    return total;
-                }, 0);
-
-                if (monthlyTotal > 0) {
-                    lastThreeMonthsSpend += monthlyTotal;
-                    count++;
+        /**
+         * Calculates total spend for each of the last 12 months for the bar chart.
+         */
+        function calculateMonthlySpend() {
+            const monthlyData = {};
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            
+            // Initialize last 12 months
+            for (let i = 11; i >= 0; i--) {
+                let d = new Date();
+                d.setMonth(d.getMonth() - i);
+                let monthKey = d.getFullYear() + '-' + (d.getMonth());
+                let monthLabel = monthNames[d.getMonth()] + ' ' + d.getFullYear().toString().slice(-2);
+                if (!monthlyData[monthKey]) {
+                    monthlyData[monthKey] = { total: 0, label: monthLabel };
                 }
             }
-            vm.spendForecast = count > 0 ? lastThreeMonthsSpend / count : 0;
-        }
 
-        // --- UI Interaction Functions ---
-
-        function toggleDarkMode() {
-            // The ng-class on the body handles the CSS switching.
-            // This function could be used to save the preference to localStorage.
-            console.log('Dark Mode Toggled:', vm.isDarkMode);
-        }
-
-        function exportToCSV() {
-            var filteredData = $filter('filter')(vm.transactions, vm.searchQuery.text);
-            var csvContent = 'data:text/csv;charset=utf-8,';
-            csvContent += 'Date,Merchant,Category,Amount,Card Name,Card Number\r\n';
-
-            filteredData.forEach(function(tx) {
-                var row = [
-                    $filter('date')(tx.date, 'yyyy-MM-dd'),
-                    '"' + tx.merchant + '"',
-                    tx.category,
-                    tx.amount,
-                    tx.card.cardName,
-                    tx.card.cardNumber // Masked number
-                ].join(',');
-                csvContent += row + '\r\n';
+            $scope.transactions.forEach(tx => {
+                const txDate = new Date(tx.date);
+                const monthKey = txDate.getFullYear() + '-' + txDate.getMonth();
+                if (monthlyData[monthKey]) {
+                    monthlyData[monthKey].total += tx.amount;
+                }
             });
 
-            var encodedUri = encodeURI(csvContent);
-            var link = document.createElement('a');
-            link.setAttribute('href', encodedUri);
-            link.setAttribute('download', 'transactions_export.csv');
+            const sortedMonths = Object.keys(monthlyData).sort((a, b) => new Date(a.split('-')[0], a.split('-')[1]) - new Date(b.split('-')[0], b.split('-')[1]));
+
+            $scope.monthlySpend.labels = sortedMonths.map(key => monthlyData[key].label);
+            $scope.monthlySpend.data = [sortedMonths.map(key => monthlyData[key].total.toFixed(2))];
+        }
+
+        /**
+         * Aggregates transaction amounts by category for the doughnut chart.
+         */
+        function calculateCategorySpend() {
+            const categoryData = {};
+            $scope.transactions.forEach(tx => {
+                categoryData[tx.category] = (categoryData[tx.category] || 0) + tx.amount;
+            });
+
+            const sortedCategories = Object.keys(categoryData).sort((a, b) => categoryData[b] - categoryData[a]);
+            
+            $scope.categorySpend.labels = sortedCategories;
+            $scope.categorySpend.data = sortedCategories.map(cat => categoryData[cat].toFixed(2));
+        }
+
+        /**
+         * Calculates the top 5 merchants by spending.
+         */
+        function calculateTopMerchants() {
+            const merchantData = {};
+            $scope.transactions.forEach(tx => {
+                merchantData[tx.merchant] = (merchantData[tx.merchant] || 0) + tx.amount;
+            });
+
+            $scope.topMerchants = Object.keys(merchantData)
+                .map(name => ({ name: name, amount: merchantData[name] }))
+                .sort((a, b) => b.amount - a.amount)
+                .slice(0, 5);
+        }
+
+        /**
+         * Calculates a simple spend forecast for the current month.
+         */
+        function calculateMonthlySpendForecast() {
+            const lastThreeMonths = $scope.monthlySpend.data[0].slice(-4, -1); // Get spend from M-3, M-2, M-1
+            if (lastThreeMonths.length < 3) {
+                $scope.monthlySpendForecast = 0;
+                return;
+            }
+            const average = lastThreeMonths.reduce((acc, val) => acc + parseFloat(val), 0) / 3;
+            $scope.monthlySpendForecast = average;
+        }
+
+        // --- Scope Functions (for View interaction) ---
+
+        /**
+         * Toggles between light and dark mode.
+         */
+        $scope.toggleDarkMode = function() {
+            $scope.darkMode = !$scope.darkMode;
+            const fontColor = $scope.darkMode ? '#e0e0e0' : '#666';
+            const gridColor = $scope.darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
+            
+            // Update chart options for the new theme
+            ChartJsProvider.setOptions({
+                legend: { labels: { fontColor: fontColor } },
+                scales: {
+                    yAxes: [{ ticks: { fontColor: fontColor }, gridLines: { color: gridColor } }],
+                    xAxes: [{ ticks: { fontColor: fontColor }, gridLines: { display: false } }]
+                }
+            });
+            $scope.chartOptions = ChartJsProvider.getOptions();
+        };
+
+        /**
+         * Sorts the transaction table by a given key.
+         * @param {string} key - The key to sort by (e.g., 'date', 'amount').
+         */
+        $scope.sort = function(key) {
+            $scope.sortKey = key;
+            $scope.reverse = !$scope.reverse;
+        };
+
+        /**
+         * Exports the currently filtered transactions to a CSV file.
+         */
+        $scope.exportToCsv = function() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Date,Merchant,Category,Amount,Card\n";
+
+            const filteredTxs = $scope.$eval("transactions | filter:search | orderBy:sortKey:reverse");
+
+            filteredTxs.forEach(function(tx) {
+                let row = [tx.date.substring(0, 10), tx.merchant, tx.category, tx.amount, $scope.getCardName(tx.cardId)].join(",");
+                csvContent += row + "\r\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "transactions.csv");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        }
+        };
 
-        function showTransactionDetails(transaction) {
-            vm.selectedTransaction = transaction;
-            if (transactionModal) {
-                transactionModal.show();
-            }
-        }
+        /**
+         * Sets the selected transaction and shows the detail modal.
+         * @param {object} tx - The transaction object to display.
+         */
+        $scope.showTransactionDetails = function(tx) {
+            $scope.selectedTransaction = tx;
+            var transactionModal = new bootstrap.Modal(document.getElementById('transactionModal'));
+            transactionModal.show();
+        };
 
         // --- Utility Functions ---
 
-        function getCategoryClass(category) {
-            if (!category) return 'bg-other';
-            var className = 'bg-' + category.toLowerCase().replace(/ /g, '-');
-            return className;
-        }
+        $scope.getCardName = function(cardId) {
+            const card = $scope.creditCards.find(c => c.id === cardId);
+            return card ? card.cardName : 'N/A';
+        };
 
-        function getBootstrapColor(index) {
-            var colors = ['primary', 'success', 'info', 'warning', 'danger'];
-            return colors[index % colors.length];
-        }
+        $scope.getCardNumber = function(cardId) {
+            const card = $scope.creditCards.find(c => c.id === cardId);
+            return card ? card.cardNumber : 'N/A';
+        };
+
+        $scope.getCategoryClass = function(category) {
+            return category.toLowerCase().replace(' ', '-');
+        };
     }
 })();

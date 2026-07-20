@@ -1,12 +1,9 @@
 /**
- * Data Service for the Credit Card Dashboard.
- * This service is the single source of truth for all application data.
- * It simulates fetching data from a backend API.
- *
- * PCI-DSS Compliance Note: In a production environment, this service would communicate
- * over HTTPS with a secure, authenticated, and tokenized API. Raw Primary Account Numbers (PANs)
- * would NEVER be transmitted to or stored on the client-side. The card numbers here are
- * masked and for display purposes only.
+ * Data Service
+ * 
+ * This service is responsible for providing all the mock data for the application.
+ * In a real-world application, this service would make HTTP requests to a backend API to fetch the data.
+ * Encapsulating data access in a service makes the application more modular and easier to maintain.
  */
 (function() {
     'use strict';
@@ -15,16 +12,14 @@
         .module('creditCardDashboardApp')
         .factory('dataService', dataService);
 
-    dataService.$inject = ['$q', '$timeout'];
-
-    function dataService($q, $timeout) {
+    function dataService() {
 
         // --- Mock Data --- //
 
-        var creditCards = [
+        const creditCards = [
             {
                 "id": 1,
-                "cardName": "Platinum Rewards",
+                "cardName": "Credit Card 1",
                 "bank": "Europe Bank",
                 "cardNumber": "XXXX-XXXX-XXXX-4567",
                 "creditLimit": 50000,
@@ -35,7 +30,7 @@
             },
             {
                 "id": 2,
-                "cardName": "Traveler's Choice",
+                "cardName": "Credit Card 2",
                 "bank": "Europe Bank",
                 "cardNumber": "XXXX-XXXX-XXXX-6789",
                 "creditLimit": 30000,
@@ -46,7 +41,7 @@
             },
             {
                 "id": 3,
-                "cardName": "Everyday Cashback",
+                "cardName": "Credit Card 3",
                 "bank": "Europe Bank",
                 "cardNumber": "XXXX-XXXX-XXXX-9876",
                 "creditLimit": 2000,
@@ -57,92 +52,74 @@
             }
         ];
 
-        // Function to generate realistic mock transactions
+        // Function to generate mock transactions
         function generateTransactions() {
-            var transactions = [];
-            var merchants = [
-                { name: 'Amazon Spain', category: 'Electronics' },
-                { name: 'PcComponentes', category: 'Electronics' },
+            const transactions = [];
+            const merchants = [
+                { name: 'Amazon Spain', category: 'Shopping' },
+                { name: 'PcComponentes', category: 'Shopping' },
                 { name: 'Glovo', category: 'Food Delivery' },
                 { name: 'Just Eat Spain', category: 'Food Delivery' },
                 { name: 'Uber', category: 'Transport' },
                 { name: 'Cabify', category: 'Transport' },
-                { name: 'MediaMarkt Digital', category: 'Electronics' },
+                { name: 'MediaMarkt Digital', category: 'Shopping' },
                 { name: 'Mercadona Online', category: 'Groceries' },
                 { name: 'Entradas', category: 'Entertainment' },
                 { name: 'eDreams', category: 'Travel' },
                 { name: 'PromoFarma', category: 'Health' },
-                { name: 'Worten', category: 'Home Goods' }
+                { name: 'Worten', category: 'Shopping' },
+                { name: 'Repsol', category: 'Transport' },
+                { name: 'El Corte Inglés', category: 'Shopping' },
+                { name: 'Netflix', category: 'Bills' },
+                { name: 'Spotify', category: 'Bills' }
             ];
 
-            for (var i = 1; i <= 100; i++) {
-                var randomMerchant = merchants[Math.floor(Math.random() * merchants.length)];
-                var randomCard = creditCards[Math.floor(Math.random() * creditCards.length)];
-                var randomDate = new Date();
-                randomDate.setDate(randomDate.getDate() - Math.floor(Math.random() * 365));
-
-                var amount = 0;
-                switch (randomMerchant.category) {
-                    case 'Travel': amount = Math.random() * 800 + 200; break;
-                    case 'Electronics': amount = Math.random() * 500 + 50; break;
-                    case 'Groceries': amount = Math.random() * 100 + 20; break;
-                    case 'Food Delivery': amount = Math.random() * 30 + 10; break;
-                    default: amount = Math.random() * 70 + 5;
-                }
+            for (let i = 1; i <= 100; i++) {
+                const randomMerchant = merchants[Math.floor(Math.random() * merchants.length)];
+                const randomCardId = Math.floor(Math.random() * 3) + 1;
+                
+                // Generate a date in the last 12 months
+                const date = new Date();
+                date.setDate(date.getDate() - Math.floor(Math.random() * 365));
 
                 transactions.push({
-                    id: 'TX' + (1000 + i),
-                    date: randomDate.toISOString(),
+                    id: i,
+                    date: date.toISOString(),
                     merchant: randomMerchant.name,
-                    amount: parseFloat(amount.toFixed(2)),
+                    amount: parseFloat((Math.random() * (250 - 5) + 5).toFixed(2)),
                     category: randomMerchant.category,
-                    cardId: randomCard.id
+                    cardId: randomCardId,
+                    reference: 'REF' + Date.now().toString().slice(-6) + i
                 });
             }
             return transactions;
         }
 
-        var transactions = generateTransactions();
+        const transactions = generateTransactions();
 
         // --- Service API --- //
 
-        var service = {
-            getCards: getCards,
+        const service = {
+            getCreditCards: getCreditCards,
             getTransactions: getTransactions
         };
 
         return service;
 
+        // --- Function Definitions --- //
+
         /**
-         * Simulates an API call to fetch credit card data.
-         * @returns {Promise} A promise that resolves with the credit card array.
+         * @returns {Array} The list of credit cards.
          */
-        function getCards() {
-            var deferred = $q.defer();
-            // Simulate network latency
-            $timeout(function() {
-                deferred.resolve(creditCards);
-            }, 500);
-            return deferred.promise;
+        function getCreditCards() {
+            return creditCards;
         }
 
         /**
-         * Simulates an API call to fetch transaction data.
-         * @returns {Promise} A promise that resolves with the transaction array.
+         * @returns {Array} The list of generated transactions.
          */
         function getTransactions() {
-            var deferred = $q.defer();
-            // Simulate network latency
-            $timeout(function() {
-                // In a real app, we'd join card data on the backend.
-                // Here, we do it client-side for demonstration.
-                var populatedTransactions = transactions.map(function(tx) {
-                    tx.card = creditCards.find(function(c) { return c.id === tx.cardId; });
-                    return tx;
-                });
-                deferred.resolve(populatedTransactions);
-            }, 800);
-            return deferred.promise;
+            return transactions;
         }
     }
 })();
