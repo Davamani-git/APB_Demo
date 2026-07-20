@@ -1,0 +1,123 @@
+/*
+ * styles.css
+ * Custom styles for the Credit Card Expenditure Dashboard.
+ * Author: Senior UI Engineer
+ * Date: 2024-05-21
+ */
+
+/* --- General & Layout --- */
+body {
+    padding-top: 56px; /* Adjust for fixed navbar */
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.section-title {
+    margin-bottom: 1.5rem;
+    font-weight: 300;
+}
+
+[ng-cloak] {
+    display: none !important;
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* --- Dark Mode --- */
+.dark-mode {
+    background-color: #212529;
+    color: #dee2e6;
+}
+
+.dark-mode .card,
+.dark-mode .modal-content,
+.dark-mode .list-group-item {
+    background-color: #343a40;
+    color: #f8f9fa;
+    border-color: #495057;
+}
+
+.dark-mode .table {
+    color: #dee2e6;
+}
+
+.dark-mode .table-hover > tbody > tr:hover > * {
+    color: #f8f9fa;
+    background-color: #495057;
+}
+
+.dark-mode .text-muted {
+    color: #adb5bd !important;
+}
+
+.dark-mode .loading-overlay {
+    background-color: rgba(33, 37, 41, 0.8);
+}
+
+.dark-mode .form-control,
+.dark-mode .form-select {
+    background-color: #495057;
+    color: #f8f9fa;
+    border-color: #6c757d;
+}
+
+.dark-mode .form-control::placeholder {
+    color: #adb5bd;
+}
+
+/* --- Component Styling --- */
+
+.navbar {
+    border-bottom: 1px solid rgba(0,0,0,.1);
+}
+
+.dark-mode .navbar {
+    border-bottom-color: #495057;
+}
+
+.summary-card .card-title {
+    font-weight: 600;
+}
+
+.card-f-item {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card-f-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.dark-mode .card-f-item:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.4);
+}
+
+.table th {
+    cursor: pointer;
+}
+
+.fa-sort, .fa-sort-up, .fa-sort-down {
+    margin-left: 5px;
+}
+
+/* Category Badges */
+.badge.bg-shopping { background-color: #0d6efd; }
+.badge.bg-food-dining { background-color: #198754; }
+.badge.bg-transport { background-color: #ffc107; color: #000 !important; }
+.badge.bg-entertainment { background-color: #dc3545; }
+.badge.bg-health-wellness { background-color: #fd7e14; }
+.badge.bg-e-commerce { background-color: #6f42c1; }
+.badge.bg-groceries { background-color: #20c997; }
+.badge.bg-travel { background-color: #0dcaf0; color: #000 !important; }
+.badge.bg-miscellaneous { background-color: #6c757d; }
