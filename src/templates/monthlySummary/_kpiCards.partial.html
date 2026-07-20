@@ -1,0 +1,17 @@
+<div class="kpi-card card">
+    <div class="card-body kpi-card-body">
+        <div class="kpi-icon-wrapper">
+            <span class="kpi-icon" ng-class="vm.kpi.icon"></span>
+        </div>
+        <div class="kpi-content-wrapper">
+            <div class="kpi-title">{{ vm.kpi.label }}</div>
+            <div class="kpi-value" ng-if="vm.kpi.id === 'totalSpend'">
+                {{ vm.kpi.value | currencyFormat : 'USD' }}
+            </div>
+            <div class="kpi-value" ng-if="vm.kpi.id !== 'totalSpend'">
+                {{ vm.kpi.value | number:0 }}
+            </div>
+            <div class="kpi-supporting-label">{{ vm.kpi.supportingLabel }}</div>
+        </div>
+    </div>
+</div>

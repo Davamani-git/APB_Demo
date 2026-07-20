@@ -1,0 +1,27 @@
+<div class="breakdown-table-container" ng-if="!vm.isEmpty">
+    <div class="table-responsive">
+        <table class="table table-striped table-hover breakdown-table">
+            <thead>
+                <tr>
+                    <th class="col-category">Category</th>
+                    <th class="col-amount text-right">Amount</th>
+                    <th class="col-percentage text-right">% of Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in vm.items">
+                    <td class="col-category">{{ item.categoryName }}</td>
+                    <td class="col-amount text-right">{{ item.amount | currencyFormat : 'USD' }}</td>
+                    <td class="col-percentage text-right">{{ item.percentageOfTotal | percentageFormat }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="empty-state" ng-if="vm.isEmpty">
+    <div class="empty-state-content">
+        <span class="empty-state-icon fa fa-table"></span>
+        <h4 class="empty-state-title">No breakdown data</h4>
+        <p class="empty-state-description">There is no category breakdown available for the selected month.</p>
+    </div>
+</div>

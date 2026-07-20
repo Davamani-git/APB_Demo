@@ -1,0 +1,124 @@
+.filter-panel {
+    margin-top: 8px;
+}
+
+.filter-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #5E6C84;
+    margin-bottom: 4px;
+}
+
+.filter-value {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+}
+
+.filter-value .fa {
+    margin-right: 6px;
+    color: #2684FF;
+}
+
+.filter-card-id,
+.filter-month-label {
+    font-weight: 500;
+}
+
+.insights-footer .fa-lightbulb-o {
+    margin-right: 6px;
+    color: #FFAB00;
+}
+
+.kpi-row {
+    margin-top: 8px;
+}
+
+.kpi-card-body {
+    display: flex;
+    align-items: center;
+}
+
+.kpi-icon-wrapper {
+    margin-right: 12px;
+}
+
+.kpi-icon {
+    font-size: 24px;
+    color: #0052CC;
+}
+
+.kpi-content-wrapper {
+    flex: 1;
+}
+
+.kpi-title {
+    font-size: 13px;
+    color: #5E6C84;
+}
+
+.kpi-value {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.kpi-supporting-label {
+    font-size: 12px;
+    color: #5E6C84;
+}
+
+.chart-panel .chart-body {
+    height: 260px;
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 100%;
+}
+
+.breakdown-table-container {
+    margin-top: 4px;
+}
+
+.breakdown-table thead th {
+    font-size: 13px;
+    color: #5E6C84;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.breakdown-table tbody td {
+    font-size: 13px;
+}
+
+.breakdown-table tbody tr:hover {
+    background-color: #F4F6F9;
+}
+
+.insights-text {
+    font-size: 14px;
+    color: #5E6C84;
+}
+
+.month-selector .input-group-addon {
+    background-color: #FFFFFF;
+}
+
+.month-selector .form-control {
+    border-right: none;
+}
+
+.month-selector .btn-primary {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.loading-panel .loading-body {
+    padding: 20px;
+}
+
+@media (max-width: 991px) {
+    .chart-panel,
+    .table-panel {
+        margin-bottom: 16px;
+    }
+}

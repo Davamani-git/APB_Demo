@@ -1,0 +1,13 @@
+<div class="month-selector">
+    <div class="input-group">
+        <span class="input-group-addon"><span class="fa fa-calendar"></span></span>
+        <select class="form-control" ng-model="vm.internalSelectedMonth" ng-options="m.value as (m.value | dateFormat) for m in vm.availableMonths">
+            <option value="">Select month</option>
+        </select>
+        <span class="input-group-btn">
+            <button type="button" class="btn btn-primary" ng-click="vm.changeMonth()">
+                Apply
+            </button>
+        </span>
+    </div>
+</div>

@@ -1,0 +1,158 @@
+<div class="monthly-summary-page">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="card filter-panel">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <span class="card-header-icon fa fa-filter"></span>
+                        <h3 class="card-header-title">Filters</h3>
+                    </div>
+                    <div class="card-header-right">
+                        <span class="card-header-subtitle">Select month to review your spending</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-4 col-xs-12">
+                            <label class="filter-label">Month</label>
+                            <month-selector selected-month="vm.month" on-change="vm.onMonthSelected(month)"></month-selector>
+                        </div>
+                        <div class="col-sm-4 col-xs-12">
+                            <label class="filter-label">Card</label>
+                            <div class="filter-value">
+                                <span class="fa fa-credit-card"></span>
+                                <span class="filter-card-id">{{ vm.summary.cardId }}</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 col-xs-12">
+                            <label class="filter-label">Selected Period</label>
+                            <div class="filter-value">
+                                <span class="fa fa-calendar"></span>
+                                <span class="filter-month-label">{{ vm.summary.month | dateFormat }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer insights-footer">
+                    <span class="fa fa-lightbulb-o"></span>
+                    <span class="insight-text">Use the month selector to compare your monthly spending patterns.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="card kpi-panel">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <span class="card-header-icon fa fa-bar-chart"></span>
+                        <h3 class="card-header-title">Monthly Summary KPIs</h3>
+                    </div>
+                    <div class="card-header-right">
+                        <span class="card-header-subtitle">Key metrics for the selected month</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row kpi-row">
+                        <div class="col-md-3 col-sm-6 col-xs-12" ng-repeat="kpi in vm.kpis">
+                            <kpi-card kpi="kpi"></kpi-card>
+                        </div>
+                    </div>
+                    <div class="empty-state" ng-if="vm.isEmpty && !vm.isLoading && !vm.hasError">
+                        <div class="empty-state-content">
+                            <span class="empty-state-icon fa fa-folder-open-o"></span>
+                            <h4 class="empty-state-title">No spending data available</h4>
+                            <p class="empty-state-description">There is no credit card spending data for the selected month. Try another month to view activity.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 col-xs-12">
+            <div class="card chart-panel">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <span class="card-header-icon fa fa-pie-chart"></span>
+                        <h3 class="card-header-title">Category Breakdown</h3>
+                    </div>
+                    <div class="card-header-right">
+                        <span class="card-header-subtitle">High-level breakdown of monthly spend</span>
+                    </div>
+                </div>
+                <div class="card-body chart-body">
+                    <breakdownChart items="vm.breakdownItems" is-loading="vm.isLoading" is-empty="vm.isEmpty"></breakdownChart>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xs-12">
+            <div class="card table-panel">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <span class="card-header-icon fa fa-table"></span>
+                        <h3 class="card-header-title">Category Breakdown Table</h3>
+                    </div>
+                    <div class="card-header-right">
+                        <span class="card-header-subtitle">Detailed view of category spend</span>
+                    </div>
+                </div>
+                <div class="card-body table-body">
+                    <breakdownTable items="vm.breakdownItems" is-empty="vm.isEmpty"></breakdownTable>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="card insights-panel">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <span class="card-header-icon fa fa-lightbulb-o"></span>
+                        <h3 class="card-header-title">Insights</h3>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="insights-text">
+                        This dashboard provides a high-level summary of your monthly credit card spending.
+                        Select a category in the breakdown to consider deeper analysis experiences available in other modules.
+                        No personally identifiable information or individual transaction details are displayed here.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" ng-if="vm.isLoading">
+        <div class="col-xs-12">
+            <div class="card loading-panel">
+                <div class="card-body loading-body">
+                    <div class="loading-spinner-container">
+                        <img src="src/assets/images/loading-spinner.gif" alt="Loading" class="loading-spinner-image">
+                        <p class="loading-message">Loading monthly spending summary...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" ng-if="vm.hasError && !vm.isLoading">
+        <div class="col-xs-12">
+            <div class="card error-panel">
+                <div class="card-body error-body">
+                    <div class="error-icon-container">
+                        <span class="error-icon fa fa-exclamation-triangle"></span>
+                    </div>
+                    <h4 class="error-title">Unable to retrieve spending information</h4>
+                    <p class="error-message">{{ vm.error.message }}</p>
+                    <button type="button" class="btn btn-primary" ng-click="vm.retry()">
+                        <span class="fa fa-refresh"></span> Retry
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

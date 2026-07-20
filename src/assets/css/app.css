@@ -1,0 +1,261 @@
+body {
+    background-color: #F4F6F9;
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #172B4D;
+}
+
+.app-root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-header-bar {
+    background-color: #0052CC;
+    color: #FFFFFF;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.app-header-left {
+    display: flex;
+    align-items: center;
+}
+
+.app-header-logo {
+    font-size: 28px;
+    margin-right: 12px;
+}
+
+.app-header-titles h1.app-header-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.app-header-titles h2.app-header-subtitle {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 400;
+    opacity: 0.85;
+}
+
+.app-header-right {
+    font-size: 22px;
+}
+
+.page-title-bar {
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.page-title {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.page-subtitle {
+    margin: 4px 0 0;
+    font-size: 14px;
+    color: #5E6C84;
+}
+
+.app-breadcrumb {
+    margin: 0;
+    background-color: transparent;
+}
+
+.app-breadcrumb > li + li:before {
+    content: "/";
+    padding: 0 4px;
+    color: #5E6C84;
+}
+
+.app-nav-tabs {
+    padding: 0 24px 16px;
+    border-bottom: none;
+}
+
+.app-nav-tabs > li > a {
+    color: #172B4D;
+    font-weight: 500;
+}
+
+.app-nav-tabs > li.active > a,
+.app-nav-tabs > li.active > a:focus,
+.app-nav-tabs > li.active > a:hover {
+    color: #0052CC;
+    border: none;
+    border-bottom: 2px solid #0052CC;
+    background-color: transparent;
+}
+
+.app-nav-tabs > li > a:hover {
+    background-color: transparent;
+}
+
+.view-container {
+    padding: 0 24px 24px;
+}
+
+.card {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 24px;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+}
+
+.card-header {
+    padding: 16px 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-header-left {
+    display: flex;
+    align-items: center;
+}
+
+.card-header-icon {
+    font-size: 18px;
+    color: #2684FF;
+    margin-right: 8px;
+}
+
+.card-header-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.card-header-subtitle {
+    font-size: 13px;
+    color: #5E6C84;
+}
+
+.card-body {
+    padding: 16px 20px 20px;
+}
+
+.card-footer {
+    padding: 12px 20px 16px;
+    border-top: 1px solid #E5E7EB;
+    font-size: 13px;
+    color: #5E6C84;
+}
+
+.app-footer-bar {
+    margin-top: auto;
+    padding: 12px 24px;
+    background-color: #FFFFFF;
+    border-top: 1px solid #E5E7EB;
+}
+
+.footer-text {
+    font-size: 13px;
+    color: #5E6C84;
+}
+
+.footer-links {
+    font-size: 13px;
+    color: #0052CC;
+}
+
+.loading-spinner-container {
+    text-align: center;
+}
+
+.loading-spinner-image {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 12px;
+}
+
+.loading-message {
+    font-size: 14px;
+    color: #5E6C84;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 16px 0;
+}
+
+.empty-state-icon {
+    font-size: 32px;
+    color: #2684FF;
+    margin-bottom: 8px;
+}
+
+.empty-state-title {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.empty-state-description {
+    font-size: 14px;
+    color: #5E6C84;
+}
+
+.error-panel {
+    border-color: #DE350B;
+}
+
+.error-icon-container {
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.error-icon {
+    font-size: 32px;
+    color: #DE350B;
+}
+
+.error-title {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.error-message {
+    text-align: center;
+    font-size: 14px;
+    color: #5E6C84;
+    margin-bottom: 16px;
+}
+
+.btn-primary {
+    background-color: #0052CC;
+    border-color: #0052CC;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: #2684FF;
+    border-color: #2684FF;
+}
+
+@media (max-width: 767px) {
+    .page-title-bar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .app-footer-bar {
+        text-align: center;
+    }
+}

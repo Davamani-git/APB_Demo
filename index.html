@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+    <meta charset="UTF-8">
+    <title>Monthly Spending Summary Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="src/assets/css/app.css">
+    <link rel="stylesheet" href="src/assets/css/monthlySummary.css">
+</head>
+<body>
+    <div class="app-root">
+        <div class="dashboard-header">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <header class="app-header-bar">
+                            <div class="app-header-left">
+                                <span class="app-header-logo fa fa-credit-card"></span>
+                                <div class="app-header-titles">
+                                    <h1 class="app-header-title">Spending Insights</h1>
+                                    <h2 class="app-header-subtitle">Credit Card Analytics</h2>
+                                </div>
+                            </div>
+                            <div class="app-header-right">
+                                <span class="app-header-user fa fa-user-circle"></span>
+                            </div>
+                        </header>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="page-title-bar">
+                            <div class="page-title-left">
+                                <h1 class="page-title">Monthly Spending Summary</h1>
+                                <p class="page-subtitle">High-level monthly credit card spend overview</p>
+                            </div>
+                            <div class="page-title-right hidden-xs">
+                                <ol class="breadcrumb app-breadcrumb">
+                                    <li><span class="fa fa-home"></span> Home</li>
+                                    <li>Dashboards</li>
+                                    <li class="active">Monthly Spending Summary</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ul class="nav nav-tabs app-nav-tabs" role="tablist">
+                            <li role="presentation" class="active">
+                                <a href="#monthly-summary-tab" aria-controls="monthly-summary-tab" role="tab">
+                                    <span class="fa fa-bar-chart"></span> Summary
+                                </a>
+                            </li>
+                            <li role="presentation" class="disabled">
+                                <a href="javascript:void(0);">
+                                    <span class="fa fa-pie-chart"></span> Category Analysis (Coming Soon)
+                                </a>
+                            </li>
+                            <li role="presentation" class="disabled">
+                                <a href="javascript:void(0);">
+                                    <span class="fa fa-line-chart"></span> Multi-Month Trends (Coming Soon)
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div ng-view class="view-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="app-footer-bar">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <span class="footer-text">© 2026 Apex Bank Portal</span>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 text-right">
+                        <span class="footer-links">Dashboard · Analytics · Help Center</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- AngularJS and libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-sanitize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.6/ui-bootstrap-tpls.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+
+    <!-- Vendor bundle placeholder -->
+    <script src="src/assets/js/vendor.js"></script>
+
+    <!-- Angular module & core config -->
+    <script src="src/app/config/app.module.js"></script>
+    <script src="src/app/config/config.constants.js"></script>
+    <script src="src/app/config/env.config.loader.js"></script>
+    <script src="src/app/config/app.routes.js"></script>
+    <script src="src/app/routes/monthlySummary.route.js"></script>
+
+    <!-- Models -->
+    <script src="src/app/models/monthlySummary.model.js"></script>
+    <script src="src/app/models/kpiSummary.model.js"></script>
+    <script src="src/app/models/breakdownItem.model.js"></script>
+    <script src="src/app/models/error.model.js"></script>
+
+    <!-- Filters -->
+    <script src="src/app/filters/currencyFormat.filter.js"></script>
+    <script src="src/app/filters/dateFormat.filter.js"></script>
+    <script src="src/app/filters/percentageFormat.filter.js"></script>
+
+    <!-- Mock data (JavaScript-based for runtime availability) -->
+    <script src="src/mock/dashboard/monthlySummary.mock.data.js"></script>
+
+    <!-- Factories -->
+    <script src="src/app/factories/httpError.factory.js"></script>
+
+    <!-- Services -->
+    <script src="src/app/services/logging.service.js"></script>
+    <script src="src/app/services/notification.service.js"></script>
+    <script src="src/app/services/config.service.js"></script>
+    <script src="src/app/services/dashboardApi.service.js"></script>
+
+    <!-- Mock services -->
+    <script src="src/mock/dashboard/monthlySummary.mock.service.js"></script>
+
+    <!-- Controllers -->
+    <script src="src/app/controllers/monthlySummary.controller.js"></script>
+
+    <!-- Directives -->
+    <script src="src/app/directives/kpiCard.directive.js"></script>
+    <script src="src/app/directives/breakdownChart.directive.js"></script>
+    <script src="src/app/directives/breakdownTable.directive.js"></script>
+    <script src="src/app/directives/monthSelector.directive.js"></script>
+</body>
+</html>
