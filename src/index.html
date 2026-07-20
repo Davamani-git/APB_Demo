@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="creditCardDashboardApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit Card Expenditure Dashboard</title>
+
+    <!-- Frameworks & Libraries CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+
+</head>
+<body ng-controller="DashboardController as vm" ng-class="{'dark-mode': vm.isDarkMode}">
+
+    <!-- Main Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fa-solid fa-credit-card"></i>
+                Expenditure Dashboard
+            </a>
+            <div class="d-flex align-items-center">
+                <span class="navbar-text me-3 text-white">Dark Mode</span>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="darkModeSwitch" ng-model="vm.isDarkMode" ng-change="vm.toggleDarkMode()">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container-fluid mt-4">
+
+        <!-- Loading Spinner -->
+        <div ng-if="vm.isLoading" class="loading-overlay">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Loading Dashboard Data...</p>
+        </div>
+
+        <!-- Dashboard Content (hidden while loading) -->
+        <div ng-if="!vm.isLoading">
+
+            <!-- Section: Key Metrics -->
+            <section id="metrics" class="mb-4">
+                <div class="row">
+                    <!-- Total Outstanding -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-danger shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Total Outstanding</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ vm.metrics.totalOutstanding | currency:'€' }}</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-file-invoice-dollar fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Available Credit -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Available Credit</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ vm.metrics.totalAvailableCredit | currency:'€' }}</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-sack-dollar fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Credit Utilization -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-info shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Credit Utilization</div>
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col-auto">
+                                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ vm.metrics.creditUtilization | number:2 }}%</div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="progress progress-sm mr-2">
+                                                    <div class="progress-bar bg-info" role="progressbar" ng-style="{width: vm.metrics.creditUtilization + '%'}" aria-valuenow="{{vm.metrics.creditUtilization}}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-chart-pie fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Cards -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-warning shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Total Cards</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ vm.cards.length }}</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-layer-group fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Charts & Analysis -->
+            <section id="charts-analysis" class="mb-4">
+                <div class="row">
+                    <!-- Monthly Expenditure Chart -->
+                    <div class="col-xl-8 col-lg-7">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">Monthly Expenditure (Last 12 Months)</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-area">
+                                    <canvas id="monthlySpendChart" chart-line chart-data="vm.monthlySpend.data" chart-labels="vm.monthlySpend.labels" chart-series="vm.monthlySpend.series" chart-options="vm.monthlySpend.options" chart-dataset-override="vm.monthlySpend.datasetOverride" height="100"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Spend by Category Chart -->
+                    <div class="col-xl-4 col-lg-5">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">Spend by Category</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-pie pt-4 pb-2">
+                                    <canvas id="categorySpendChart" chart-doughnut chart-data="vm.categorySpend.data" chart-labels="vm.categorySpend.labels" chart-options="vm.categorySpend.options" height="200"></canvas>
+                                </div>
+                                <div class="mt-4 text-center small chart-legend-labels">
+                                    <span class="me-2" ng-repeat="label in vm.categorySpend.labels">
+                                        <i class="fas fa-circle" ng-style="{'color': vm.categorySpend.colors[$index]}"></i> {{ label }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Extra Analysis -->
+            <section id="extra-analysis" class="mb-4">
+                <div class="row">
+                    <!-- Top Spending Categories -->
+                    <div class="col-lg-4 mb-4">
+                        <div class="card shadow h-100">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Top Spending Categories</h6>
+                            </div>
+                            <div class="card-body">
+                                <div ng-repeat="category in vm.topCategories | limitTo:5">
+                                    <h4 class="small font-weight-bold">{{category.category}} <span class="float-end">{{category.amount | currency:'€'}}</span></h4>
+                                    <div class="progress mb-4">
+                                        <div class="progress-bar" ng-class="'bg-' + vm.getBootstrapColor($index)" role="progressbar" ng-style="{width: (category.amount / vm.topCategories[0].amount * 100) + '%'}" aria-valuenow="{{category.amount}}" aria-valuemin="0" aria-valuemax="{{vm.topCategories[0].amount}}"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Top Merchants -->
+                    <div class="col-lg-4 mb-4">
+                        <div class="card shadow h-100">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Top Merchants</h6>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center" ng-repeat="merchant in vm.topMerchants | limitTo:7">
+                                        {{merchant.merchant}}
+                                        <span class="badge bg-primary rounded-pill">{{merchant.amount | currency:'€'}}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Forecast -->
+                    <div class="col-lg-4 mb-4">
+                        <div class="card shadow h-100">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Spend Forecast</h6>
+                            </div>
+                            <div class="card-body text-center">
+                                <i class="fas fa-calendar-alt fa-3x text-gray-300 mb-3"></i>
+                                <p>Estimated spend for the current month:</p>
+                                <h3 class="font-weight-bold">{{ vm.spendForecast | currency:'€' }}</h3>
+                                <small class="text-muted">Based on the average of the last 3 months.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Transactions Table -->
+            <section id="transactions">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="m-0 font-weight-bold text-primary">Recent Transactions</h6>
+                            <div class="d-flex align-items-center">
+                                <input type="text" class="form-control form-control-sm me-2" placeholder="Search transactions..." ng-model="vm.searchQuery.text">
+                                <button class="btn btn-sm btn-success" ng-click="vm.exportToCSV()">
+                                    <i class="fas fa-download me-1"></i> Export CSV
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Merchant</th>
+                                        <th>Category</th>
+                                        <th>Amount</th>
+                                        <th>Card</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="tx in vm.transactions | filter:vm.searchQuery.text | orderBy:'-date'">
+                                        <td>{{ tx.date | date:'yyyy-MM-dd' }}</td>
+                                        <td>{{ tx.merchant }}</td>
+                                        <td><span class="badge rounded-pill" ng-class="vm.getCategoryClass(tx.category)">{{ tx.category }}</span></td>
+                                        <td>{{ tx.amount | currency:'€' }}</td>
+                                        <td>{{ tx.card.cardName }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" ng-click="vm.showTransactionDetails(tx)">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Transaction Detail Modal -->
+    <div class="modal fade" id="transactionDetailModal" tabindex="-1" aria-labelledby="transactionDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="transactionDetailModalLabel">Transaction Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" ng-if="vm.selectedTransaction">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Transaction ID:</strong> {{ vm.selectedTransaction.id }}</li>
+                        <li class="list-group-item"><strong>Date:</strong> {{ vm.selectedTransaction.date | date:'fullDate' }}</li>
+                        <li class="list-group-item"><strong>Merchant:</strong> {{ vm.selectedTransaction.merchant }}</li>
+                        <li class="list-group-item"><strong>Amount:</strong> <span class="text-danger fw-bold">{{ vm.selectedTransaction.amount | currency:'€' }}</span></li>
+                        <li class="list-group-item"><strong>Category:</strong> {{ vm.selectedTransaction.category }}</li>
+                        <li class="list-group-item"><strong>Card Used:</strong> {{ vm.selectedTransaction.card.cardName }} ({{ vm.selectedTransaction.card.cardNumber }})</li>
+                        <li class="list-group-item"><strong>Status:</strong> <span class="text-success">Completed</span></li>
+                    </ul>
+                    <div class="alert alert-secondary mt-3" role="alert">
+                        <i class="fa-solid fa-shield-halved"></i> For security, full transaction details are limited. In a PCI-DSS compliant system, sensitive data is handled with extreme care.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Frameworks & Libraries JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/angular-chart.js@1.1.1/dist/angular-chart.min.js"></script>
+
+    <!-- Application JS -->
+    <script src="js/app.js"></script>
+    <script src="js/services/dataService.js"></script>
+    <script src="js/controllers/dashboardController.js"></script>
+
+</body>
+</html>
