@@ -1,0 +1,170 @@
+/* General Body and Theming */
+body {
+    background-color: #f0f2f5;
+    color: #333;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark Mode */
+body.dark-mode {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+body.dark-mode .navbar {
+    background-color: #1f1f1f !important;
+    border-bottom: 1px solid #333;
+}
+
+body.dark-mode .card {
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    color: #e0e0e0;
+}
+
+body.dark-mode .card-header {
+    background-color: #2a2a2a;
+    border-bottom: 1px solid #333;
+}
+
+body.dark-mode .list-group-item {
+    background-color: #1e1e1e;
+    border-color: #333;
+}
+
+body.dark-mode .table {
+    color: #e0e0e0;
+}
+
+body.dark-mode .table-striped > tbody > tr:nth-of-type(odd) > * {
+    --bs-table-accent-bg: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .form-control, 
+body.dark-mode .form-select {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    border-color: #444;
+}
+
+body.dark-mode .form-control::placeholder {
+    color: #888;
+}
+
+body.dark-mode .modal-content {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    border: 1px solid #444;
+}
+
+body.dark-mode .modal-header, 
+body.dark-mode .modal-footer {
+    border-color: #333;
+}
+
+body.dark-mode .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Prevent unstyled content flash */
+[ng-cloak] {
+    display: none !important;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+body.dark-mode .loading-overlay {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.spinner {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+}
+
+.loading-overlay p {
+    margin-top: 20px;
+    font-size: 1.2rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Custom Styles */
+.section-title {
+    margin-bottom: 1.5rem;
+    font-weight: 300;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.card-credit {
+    background: linear-gradient(45deg, #4e54c8, #8f94fb);
+    color: white;
+    border-radius: 15px;
+}
+
+.card-credit .bank-name {
+    font-weight: 300;
+    opacity: 0.8;
+}
+
+.card-credit .card-number {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    margin-top: 1.5rem;
+}
+
+.progress-bar {
+    background-color: #f85d5d;
+}
+
+.table th {
+    cursor: pointer;
+}
+
+.table th:hover {
+    background-color: rgba(0,0,0,0.05);
+}
+
+body.dark-mode .table th:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.badge.bg-food-dining { background-color: #ff6384; }
+.badge.bg-shopping { background-color: #36a2eb; }
+.badge.bg-travel { background-color: #ffce56; }
+.badge.bg-entertainment { background-color: #9966ff; }
+.badge.bg-utilities { background-color: #4bc0c0; }
+.badge.bg-healthcare { background-color: #ff9f40; }
+.badge.bg-transport { background-color: #c9cbcf; }
+.badge.bg-miscellaneous { background-color: #8d6e63; }
