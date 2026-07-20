@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="apbDemo">
+<head>
+    <meta charset="UTF-8">
+    <title>Monthly Spending Summary Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- External CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+    <div class="container-fluid dashboard-container" ng-cloak>
+        <header class="dashboard-header">
+            <div class="dashboard-header-main">
+                <div class="dashboard-logo">
+                    <span class="logo-icon fa fa-credit-card"></span>
+                    <span class="logo-text">APB Credit Card Insights</span>
+                </div>
+                <div class="dashboard-user-info">
+                    <span class="user-greeting">Welcome back</span>
+                    <span class="user-role">Credit Card Customer</span>
+                </div>
+            </div>
+            <div class="dashboard-header-sub">
+                <h1 class="page-title">Monthly Spending Summary</h1>
+                <ol class="breadcrumb dashboard-breadcrumb">
+                    <li><a href="#/monthly-summary">Home</a></li>
+                    <li class="active">Monthly Spending Summary</li>
+                </ol>
+            </div>
+        </header>
+
+        <div ng-view></div>
+
+        <footer class="footer-bar">
+            <div class="footer-content">
+                <span class="footer-text">© 2026 APB Demo - Monthly Spending Summary Dashboard</span>
+                <span class="footer-links">
+                    <a href="javascript:void(0)" class="footer-link">Privacy</a>
+                    <a href="javascript:void(0)" class="footer-link">Terms</a>
+                </span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- External Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-sanitize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.6/ui-bootstrap-tpls.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+
+    <!-- Angular Module -->
+    <script src="app/app.module.js"></script>
+
+    <!-- Configuration -->
+    <script src="app/config/config.constants.js"></script>
+    <script src="app/config/env.config.service.js"></script>
+    <script src="app/app.routes.js"></script>
+
+    <!-- Models -->
+    <script src="app/models/monthly-summary.model.js"></script>
+    <script src="app/models/kpi.model.js"></script>
+    <script src="app/models/breakdown.model.js"></script>
+    <script src="app/models/error.model.js"></script>
+
+    <!-- Filters -->
+    <script src="app/filters/currency-format.filter.js"></script>
+    <script src="app/filters/date-format.filter.js"></script>
+    <script src="app/filters/percentage.filter.js"></script>
+
+    <!-- Chart Config -->
+    <script src="assets/js/chart-config.js"></script>
+
+    <!-- Mock Data Files -->
+    <script src="assets/js/monthly-summary.mock-data.js"></script>
+    <script src="assets/js/kpi.mock-data.js"></script>
+    <script src="assets/js/breakdown.mock-data.js"></script>
+    <script src="assets/js/month-context.mock-data.js"></script>
+
+    <!-- Services -->
+    <script src="app/factories/model-factory.js"></script>
+    <script src="app/services/logging.service.js"></script>
+    <script src="app/services/error-handling.service.js"></script>
+    <script src="app/services/http-interceptor.service.js"></script>
+    <script src="app/services/month-context.service.js"></script>
+    <script src="app/services/monthly-summary.service.js"></script>
+    <script src="app/services/kpi.service.js"></script>
+    <script src="app/services/breakdown.service.js"></script>
+
+    <!-- Controllers -->
+    <script src="app/controllers/monthly-summary.controller.js"></script>
+
+    <!-- Directives -->
+    <script src="app/directives/monthly-summary-card.directive.js"></script>
+    <script src="app/directives/kpi-card.directive.js"></script>
+    <script src="app/directives/breakdown-chart.directive.js"></script>
+</body>
+</html>

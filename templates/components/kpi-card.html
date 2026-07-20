@@ -1,0 +1,15 @@
+<div class="card kpi-card">
+    <div class="card-header">
+        <div class="card-header-left">
+            <i class="card-header-icon fa" ng-class="vm.getIconClass()"></i>
+            <span class="card-header-title">{{vm.kpi.label}}</span>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="kpi-primary-value">
+            <span ng-if="vm.kpi.unit === 'currency'">{{vm.kpi.value | currencyFormat}}</span>
+            <span ng-if="vm.kpi.unit !== 'currency'">{{vm.kpi.value}}</span>
+        </div>
+        <div class="kpi-supporting-label">{{vm.kpi.formattedValue}}</div>
+    </div>
+</div>
