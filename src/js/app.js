@@ -1,59 +1,57 @@
 /**
- * app.js
- * 
- * Main application module for the Credit Card Expenditure Dashboard.
- * This file defines the main AngularJS module and its dependencies.
- * 
- * As a Senior UI Engineer with a background in financial institutions, I've chosen
- * a modular structure. This 'app.js' acts as the central hub, declaring the 'creditCardDashboardApp'
- * module and its dependencies ('chart.js'). This approach promotes maintainability and scalability.
- * 
- * PCI-DSS Compliance Note: In a production environment, this application would not handle raw
- * cardholder data. All sensitive data would be managed by a secure, PCI-compliant backend.
- * The frontend would interact with tokenized data, ensuring no sensitive information is ever
- * exposed or stored in the browser.
+ * @file app.js
+ * @description Main AngularJS module definition and configuration for the Credit Card Dashboard.
+ * @author John Doe, Senior UI Engineer
+ * @date 2023-10-26
  */
 
 (function() {
     'use strict';
 
-    // Define the main application module
-    var app = angular.module('creditCardDashboardApp', [
-        'chart.js' // Dependency for data visualization
-    ]);
+    // 1. MODULE DEFINITION
+    // Defines the main application module 'creditCardDashboardApp'.
+    // Dependencies: 'chart.js' for data visualization.
+    var app = angular.module('creditCardDashboardApp', ['chart.js']);
 
-    // Configuration block for Chart.js
-    // Here we can set global options for all charts in the application.
-    app.config(['ChartJsProvider', function (ChartJsProvider) {
-        // Configure all charts
+    // 2. GLOBAL CONFIGURATION
+    // Configure Chart.js global options for consistency across all charts.
+    // This is a best practice to avoid repeating configuration in the controller.
+    app.config(['ChartJsProvider', function(ChartJsProvider) {
         ChartJsProvider.setOptions({
             responsive: true,
             maintainAspectRatio: false,
             legend: {
                 display: true,
+                position: 'bottom',
             },
-            // In a real-world scenario, we would enforce strict Content Security Policies (CSP)
-            // and ensure that any third-party library scripts are loaded from trusted sources
-            // with integrity checks, a key aspect of mitigating XSS risks under PCI-DSS.
-        });
-
-        // Configure specific chart types
-        ChartJsProvider.setOptions('doughnut', {
-            cutoutPercentage: 50
-        });
-        ChartJsProvider.setOptions('line', {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true,
-                        // Using a callback to format ticks as currency
-                        callback: function(value, index, values) {
-                            return '€' + value.toLocaleString('de-DE');
-                        }
+            tooltips: {
+                callbacks: {
+                    label: function(tooltipItem, data) {
+                        var dataset = data.datasets[tooltipItem.datasetIndex];
+                        var value = dataset.data[tooltipItem.index];
+                        // Format tooltip values as Euro currency
+                        return ' ' + new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(value);
                     }
-                }]
+                }
             }
         });
     }]);
+
+    // 3. CUSTOM FILTER
+    // Creates a custom currency filter for displaying amounts in Euro (€).
+    // This is more robust than the built-in currency filter as it uses the Intl.NumberFormat API.
+    app.filter('customCurrency', function() {
+        var currencyFormatter = new Intl.NumberFormat('de-DE', {
+            style: 'currency',
+            currency: 'EUR'
+        });
+
+        return function(input) {
+            if (isNaN(input)) {
+                return input;
+            }
+            return currencyFormatter.format(input);
+        };
+    });
 
 })();
