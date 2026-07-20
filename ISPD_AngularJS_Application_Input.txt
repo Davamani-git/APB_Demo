@@ -1,0 +1,193 @@
+# ISPD Input – AngularJS Application
+
+## 1. Project Overview
+Build a web-based Employee Leave Management application using AngularJS.
+
+The application should allow employees to apply for leave, view leave balances, track request status, and cancel pending requests. Managers should be able to review, approve, or reject leave requests.
+
+## 2. Business Objective
+Digitize and simplify the employee leave-management process by providing:
+- A self-service leave application portal
+- Manager approval workflow
+- Leave balance visibility
+- Request history and status tracking
+- Auditability of approvals and rejections
+
+## 3. Target Users
+### Employee
+- Log in to the application
+- View available leave balance
+- Apply for leave
+- View submitted leave requests
+- Cancel a pending leave request
+
+### Manager
+- View leave requests submitted by team members
+- Approve or reject leave requests
+- Add comments while approving or rejecting
+- View employee leave history
+
+## 4. Functional Requirements
+
+### FR-01: User Login
+- Users must log in using email address and password.
+- The system must display an error message for invalid credentials.
+- The system must redirect authenticated users to the dashboard.
+
+### FR-02: Employee Dashboard
+- Display employee name and role.
+- Display available leave balances by leave type.
+- Display recent leave requests and their status.
+- Provide an option to create a new leave request.
+
+### FR-03: Apply for Leave
+- Employee selects leave type.
+- Employee enters start date and end date.
+- Employee provides a reason.
+- The system calculates total leave days.
+- The system validates that sufficient leave balance is available.
+- The system prevents submission when end date is before start date.
+- The request is created with status `Pending`.
+
+### FR-04: View Leave Requests
+- Employees can view all leave requests.
+- The list must display:
+  - Leave type
+  - Start date
+  - End date
+  - Number of days
+  - Status
+  - Manager comments
+- Users can filter requests by status.
+
+### FR-05: Cancel Leave Request
+- Employees can cancel only requests with status `Pending`.
+- Cancelled requests must have status `Cancelled`.
+- Leave balance must not be reduced for cancelled requests.
+
+### FR-06: Manager Approval
+- Managers can view pending requests for their direct reports.
+- Managers can approve or reject a request.
+- Comments are mandatory when rejecting a request.
+- Approved requests must reduce the employee's leave balance.
+- The employee must see the updated request status.
+
+## 5. Non-Functional Requirements
+- The UI must be responsive for desktop and tablet.
+- The application must support Chrome, Edge, and Firefox.
+- Page response time should be less than 3 seconds under normal load.
+- All API errors must be displayed using user-friendly messages.
+- Authentication tokens must not be stored in plain text.
+- The application must log important user and approval actions.
+- Form fields must include client-side validation.
+- The application should follow reusable AngularJS component and service patterns.
+
+## 6. Suggested Technology Stack
+- Frontend: AngularJS 1.8.x
+- UI Framework: Bootstrap
+- Backend APIs: REST/JSON
+- Unit Testing: Jasmine and Karma
+- End-to-End Testing: Protractor or an approved alternative
+- Build Tool: npm and Grunt/Gulp
+- Source Control: Git
+
+## 7. API Assumptions
+
+### Login
+`POST /api/auth/login`
+
+Request:
+```json
+{
+  "email": "employee@example.com",
+  "password": "password"
+}
+```
+
+### Leave Balance
+`GET /api/employees/{employeeId}/leave-balances`
+
+### Create Leave Request
+`POST /api/leave-requests`
+
+Request:
+```json
+{
+  "employeeId": "EMP001",
+  "leaveType": "ANNUAL",
+  "startDate": "2026-08-10",
+  "endDate": "2026-08-12",
+  "reason": "Family function"
+}
+```
+
+### Get Leave Requests
+`GET /api/leave-requests?employeeId={employeeId}&status={status}`
+
+### Approve or Reject Request
+`PUT /api/leave-requests/{requestId}/decision`
+
+Request:
+```json
+{
+  "decision": "APPROVED",
+  "comments": "Approved"
+}
+```
+
+## 8. Data Model
+
+### Employee
+- employeeId
+- name
+- email
+- role
+- managerId
+
+### LeaveBalance
+- employeeId
+- leaveType
+- totalDays
+- usedDays
+- availableDays
+
+### LeaveRequest
+- requestId
+- employeeId
+- leaveType
+- startDate
+- endDate
+- totalDays
+- reason
+- status
+- managerComments
+- createdAt
+- updatedAt
+
+## 9. Business Rules
+- Leave requests cannot be submitted for past dates.
+- End date must be equal to or later than start date.
+- Employees cannot request more days than their available balance.
+- Only managers can approve or reject requests.
+- Rejected and cancelled requests must not reduce leave balance.
+- A manager cannot approve a request belonging to an employee outside the manager's team.
+
+## 10. Expected Deliverables
+Generate the following artifacts:
+1. Epics
+2. User stories
+3. Acceptance criteria
+4. High-Level Design (HLD)
+5. Low-Level Design (LLD)
+6. AngularJS source code
+7. Unit tests
+8. Test scenarios
+9. Detailed test cases
+10. Automation test scripts
+
+## 11. Acceptance Expectations
+- Use clear IDs for requirements, epics, user stories, and test cases.
+- Maintain traceability from requirements to user stories and test cases.
+- Include positive, negative, validation, authorization, and boundary scenarios.
+- Provide modular, maintainable, and documented code.
+- Clearly mention assumptions and dependencies.
