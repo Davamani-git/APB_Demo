@@ -1,248 +1,260 @@
-/**
- * Controller for the main dashboard view.
- * This controller handles all the logic for data processing, metric calculation,
- * chart generation, and user interactions.
- * Adhering to the 'fat service, skinny controller' principle, complex business logic
- * should ideally be in services, but for this self-contained dashboard, some processing is done here.
- */
+/*
+Senior UI Engineer With PCI-DSS Compliance Expertise
+Project: Credit Card Expenditure Dashboard
+File: js/controllers/dashboardController.js
+Description: Controller for the main dashboard view. Handles all business logic.
+*/
+
 (function() {
     'use strict';
 
-    angular
-        .module('creditCardDashboardApp')
-        .controller('DashboardController', DashboardController);
+    angular.module('creditCardDashboardApp').controller('DashboardController', DashboardController);
 
-    DashboardController.$inject = ['$scope', 'dataService', '$q', '$filter'];
+    // Dependency Injection
+    DashboardController.$inject = ['$scope', 'dataService', '$timeout'];
 
-    function DashboardController($scope, dataService, $q, $filter) {
-        var vm = this;
+    function DashboardController($scope, dataService, $timeout) {
 
-        // --- ViewModel Initialization ---
-        vm.isLoading = true;
-        vm.isDarkMode = false;
-        vm.cards = [];
-        vm.transactions = [];
-        vm.searchQuery = { text: '' };
-        vm.metrics = {};
-        vm.monthlySpend = {};
-        vm.categorySpend = {};
-        vm.topCategories = [];
-        vm.topMerchants = [];
-        vm.spendForecast = 0;
-        vm.selectedTransaction = null;
-
-        // --- Function bindings ---
-        vm.toggleDarkMode = toggleDarkMode;
-        vm.exportToCSV = exportToCSV;
-        vm.showTransactionDetails = showTransactionDetails;
-        vm.getCategoryClass = getCategoryClass;
-        vm.getBootstrapColor = getBootstrapColor;
-
-        // --- Modal instance ---
+        // --- Scope Variable Initialization ---
+        $scope.loading = true;
+        $scope.isDarkMode = false;
+        $scope.cards = [];
+        $scope.transactions = [];
+        $scope.totalMetrics = { outstanding: 0, availableCredit: 0, creditLimit: 0 };
+        $scope.monthlyForecast = 0;
+        $scope.selectedTransaction = null;
         var transactionModal = null;
 
-        // --- Initialization Function ---
-        activate();
+        // Chart data models
+        $scope.monthlySpend = { labels: [], data: [], series: ['Spend'] };
+        $scope.categorySpend = { labels: [], data: [] };
+        $scope.merchantSpend = { labels: [], data: [[]] };
+
+        // Chart.js v2.9.4 options
+        $scope.chartOptions = {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }],
+                 xAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        };
+
+        // --- Controller Functions ---
 
         /**
-         * The activation function to initialize the controller.
-         * Fetches all necessary data and then processes it.
+         * Initializes the controller, fetches data, and sets up the dashboard.
          */
-        function activate() {
-            // Using $q.all to wait for all data promises to resolve.
-            // This is a robust pattern for handling multiple async startup operations.
-            var promises = [dataService.getCards(), dataService.getTransactions()];
+        function init() {
+            // Simulate API call latency
+            $timeout(function() {
+                $scope.cards = dataService.getCreditCards();
+                $scope.transactions = dataService.getTransactions();
 
-            $q.all(promises).then(function(results) {
-                vm.cards = results[0];
-                vm.transactions = results[1];
+                calculateTotalMetrics();
+                prepareMonthlySpendChart();
+                prepareCategorySpendChart();
+                prepareMerchantSpendChart();
+                calculateMonthlyForecast();
 
-                // Once data is loaded, process it for the dashboard.
-                calculateMetrics();
-                processMonthlySpend();
-                processCategorySpend();
-                processTopSpendingCategories();
-                processTopMerchants();
-                calculateSpendForecast();
-
-                // Initialize the Bootstrap modal instance after the DOM is ready
-                var modalEl = document.getElementById('transactionDetailModal');
-                if (modalEl) {
-                    transactionModal = new bootstrap.Modal(modalEl);
-                }
-
-                vm.isLoading = false;
-            });
-        }
-
-        // --- Data Processing Functions ---
-
-        function calculateMetrics() {
-            vm.metrics.totalOutstanding = vm.cards.reduce((sum, card) => sum + card.outstanding, 0);
-            vm.metrics.totalAvailableCredit = vm.cards.reduce((sum, card) => sum + card.availableCredit, 0);
-            vm.metrics.totalCreditLimit = vm.cards.reduce((sum, card) => sum + card.creditLimit, 0);
-            vm.metrics.creditUtilization = (vm.metrics.totalOutstanding / vm.metrics.totalCreditLimit) * 100;
-        }
-
-        function processMonthlySpend() {
-            var monthlyData = {};
-            var today = new Date();
-            var twelveMonthsAgo = new Date(today.getFullYear() - 1, today.getMonth(), 1);
-
-            vm.transactions.forEach(tx => {
-                var txDate = new Date(tx.date);
-                if (txDate >= twelveMonthsAgo) {
-                    var monthKey = txDate.getFullYear() + '-' + ('0' + (txDate.getMonth() + 1)).slice(-2);
-                    if (!monthlyData[monthKey]) {
-                        monthlyData[monthKey] = 0;
+                $scope.loading = false;
+                // Initialize Bootstrap modal instance after view is loaded
+                $timeout(function() {
+                    var modalEl = document.getElementById('transactionModal');
+                    if (modalEl) {
+                       transactionModal = new bootstrap.Modal(modalEl);
                     }
-                    monthlyData[monthKey] += tx.amount;
-                }
-            });
-
-            var sortedKeys = Object.keys(monthlyData).sort();
-            vm.monthlySpend.labels = sortedKeys.map(key => {
-                var parts = key.split('-');
-                return new Date(parts[0], parts[1] - 1).toLocaleString('default', { month: 'short', year: '2-digit' });
-            });
-            vm.monthlySpend.data = [sortedKeys.map(key => monthlyData[key].toFixed(2))];
-            vm.monthlySpend.series = ['Expenditure'];
-            vm.monthlySpend.options = {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true,
-                            callback: function(value) { return '€' + value; }
-                        }
-                    }]
-                },
-                elements: {
-                    line: { tension: 0.4 }
-                }
-            };
+                });
+            }, 1500);
         }
 
-        function processCategorySpend() {
-            var categoryData = {};
-            vm.transactions.forEach(tx => {
-                if (!categoryData[tx.category]) {
-                    categoryData[tx.category] = 0;
-                }
-                categoryData[tx.category] += tx.amount;
-            });
-
-            vm.categorySpend.labels = Object.keys(categoryData);
-            vm.categorySpend.data = Object.values(categoryData).map(v => v.toFixed(2));
-            vm.categorySpend.colors = ['#fd7e14', '#20c997', '#dc3545', '#ffc107', '#6f42c1', '#0d6efd', '#198754', '#0dcaf0'];
-            vm.categorySpend.options = {
-                cutoutPercentage: 70,
-                legend: { display: false }
-            };
+        /**
+         * Calculates aggregate metrics across all credit cards.
+         */
+        function calculateTotalMetrics() {
+            $scope.totalMetrics = $scope.cards.reduce(function(acc, card) {
+                acc.outstanding += card.outstanding;
+                acc.availableCredit += card.availableCredit;
+                acc.creditLimit += card.creditLimit;
+                return acc;
+            }, { outstanding: 0, availableCredit: 0, creditLimit: 0 });
         }
 
-        function processTopSpendingCategories() {
-            var categoryData = {};
-            vm.transactions.forEach(tx => {
-                categoryData[tx.category] = (categoryData[tx.category] || 0) + tx.amount;
-            });
-            vm.topCategories = Object.keys(categoryData).map(key => ({
-                category: key,
-                amount: categoryData[key]
-            })).sort((a, b) => b.amount - a.amount);
-        }
+        /**
+         * Prepares data for the monthly spending bar chart.
+         */
+        function prepareMonthlySpendChart() {
+            var monthLabels = [];
+            var monthData = [];
+            var monthlyTotals = {};
 
-        function processTopMerchants() {
-            var merchantData = {};
-            vm.transactions.forEach(tx => {
-                merchantData[tx.merchant] = (merchantData[tx.merchant] || 0) + tx.amount;
-            });
-            vm.topMerchants = Object.keys(merchantData).map(key => ({
-                merchant: key,
-                amount: merchantData[key]
-            })).sort((a, b) => b.amount - a.amount);
-        }
-
-        function calculateSpendForecast() {
-            var lastThreeMonthsSpend = 0;
-            var count = 0;
-            var today = new Date();
-            for (var i = 1; i <= 3; i++) {
-                var month = today.getMonth() - i;
-                var year = today.getFullYear();
-                if (month < 0) {
-                    month += 12;
-                    year -= 1;
-                }
-                var monthKey = year + '-' + ('0' + (month + 1)).slice(-2);
-                var monthlyTotal = vm.monthlySpend.labels.reduce((total, label, index) => {
-                    var labelDate = new Date(label.split(' ')[1], new Date(Date.parse(label.split(' ')[0] +" 1, 2012")).getMonth());
-                    var labelKey = labelDate.getFullYear() + '-' + ('0' + (labelDate.getMonth() + 1)).slice(-2);
-                    if (labelKey === monthKey) {
-                        return total + parseFloat(vm.monthlySpend.data[0][index]);
-                    }
-                    return total;
-                }, 0);
-
-                if (monthlyTotal > 0) {
-                    lastThreeMonthsSpend += monthlyTotal;
-                    count++;
-                }
+            for (var i = 11; i >= 0; i--) {
+                var d = new Date();
+                d.setMonth(d.getMonth() - i);
+                var monthKey = d.getFullYear() + '-' + (d.getMonth() + 1).toString().padStart(2, '0');
+                monthLabels.push(d.toLocaleString('default', { month: 'short' }) + ' ' + d.getFullYear().toString().substr(-2));
+                monthlyTotals[monthKey] = 0;
             }
-            vm.spendForecast = count > 0 ? lastThreeMonthsSpend / count : 0;
+
+            $scope.transactions.forEach(function(tx) {
+                var txDate = new Date(tx.date);
+                var txMonthKey = txDate.getFullYear() + '-' + (txDate.getMonth() + 1).toString().padStart(2, '0');
+                if (monthlyTotals.hasOwnProperty(txMonthKey)) {
+                    monthlyTotals[txMonthKey] += tx.amount;
+                }
+            });
+
+            for (var key in monthlyTotals) {
+                monthData.push(monthlyTotals[key].toFixed(2));
+            }
+
+            $scope.monthlySpend.labels = monthLabels;
+            $scope.monthlySpend.data = [monthData];
         }
 
-        // --- UI Interaction Functions ---
+        /**
+         * Prepares data for the top spending categories doughnut chart.
+         */
+        function prepareCategorySpendChart() {
+            var categoryTotals = {};
+            $scope.transactions.forEach(function(tx) {
+                if (!categoryTotals[tx.category]) {
+                    categoryTotals[tx.category] = 0;
+                }
+                categoryTotals[tx.category] += tx.amount;
+            });
 
-        function toggleDarkMode() {
-            // The ng-class on the body handles the CSS switching.
-            // This function could be used to save the preference to localStorage.
-            console.log('Dark Mode Toggled:', vm.isDarkMode);
+            var sortedCategories = Object.keys(categoryTotals).sort(function(a, b) {
+                return categoryTotals[b] - categoryTotals[a];
+            });
+
+            $scope.categorySpend.labels = sortedCategories;
+            $scope.categorySpend.data = sortedCategories.map(function(cat) {
+                return categoryTotals[cat].toFixed(2);
+            });
         }
 
-        function exportToCSV() {
-            var filteredData = $filter('filter')(vm.transactions, vm.searchQuery.text);
+        /**
+         * Prepares data for the top merchants horizontal bar chart.
+         */
+        function prepareMerchantSpendChart() {
+            var merchantTotals = {};
+            $scope.transactions.forEach(function(tx) {
+                if (!merchantTotals[tx.merchant]) {
+                    merchantTotals[tx.merchant] = 0;
+                }
+                merchantTotals[tx.merchant] += tx.amount;
+            });
+
+            var sortedMerchants = Object.keys(merchantTotals).sort(function(a, b) {
+                return merchantTotals[b] - merchantTotals[a];
+            }).slice(0, 10); // Top 10
+
+            $scope.merchantSpend.labels = sortedMerchants.reverse(); // Reverse for horizontal bar chart
+            $scope.merchantSpend.data = [sortedMerchants.map(function(merch) {
+                return merchantTotals[merch].toFixed(2);
+            })];
+        }
+
+        /**
+         * Calculates a simple spending forecast for the current month.
+         */
+        function calculateMonthlyForecast() {
+            var today = new Date();
+            var currentMonth = today.getMonth();
+            var currentYear = today.getFullYear();
+            var daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            var dayOfMonth = today.getDate();
+
+            var spendThisMonth = 0;
+            $scope.transactions.forEach(function(tx) {
+                var txDate = new Date(tx.date);
+                if (txDate.getMonth() === currentMonth && txDate.getFullYear() === currentYear) {
+                    spendThisMonth += tx.amount;
+                }
+            });
+
+            if (dayOfMonth > 0) {
+                var avgDailySpend = spendThisMonth / dayOfMonth;
+                $scope.monthlyForecast = spendThisMonth + (avgDailySpend * (daysInMonth - dayOfMonth));
+            } else {
+                $scope.monthlyForecast = 0;
+            }
+        }
+
+        /**
+         * Toggles between light and dark mode.
+         */
+        $scope.toggleDarkMode = function() {
+            // This is handled by ng-class on the body tag.
+            // This function is here for the ng-change, but logic is in the view.
+        };
+
+        /**
+         * Exports the current transaction list to a CSV file.
+         */
+        $scope.exportToCSV = function() {
             var csvContent = 'data:text/csv;charset=utf-8,';
-            csvContent += 'Date,Merchant,Category,Amount,Card Name,Card Number\r\n';
+            csvContent += 'Transaction ID,Date,Merchant,Category,Amount,Card\n';
 
-            filteredData.forEach(function(tx) {
-                var row = [
-                    $filter('date')(tx.date, 'yyyy-MM-dd'),
-                    '"' + tx.merchant + '"',
-                    tx.category,
-                    tx.amount,
-                    tx.card.cardName,
-                    tx.card.cardNumber // Masked number
-                ].join(',');
-                csvContent += row + '\r\n';
+            $scope.transactions.forEach(function(tx) {
+                var cardName = $scope.getCardName(tx.cardId).replace(',', '');
+                var row = [tx.id, new Date(tx.date).toISOString(), tx.merchant, tx.category, tx.amount, cardName].join(',');
+                csvContent += row + '\n';
             });
 
             var encodedUri = encodeURI(csvContent);
             var link = document.createElement('a');
             link.setAttribute('href', encodedUri);
-            link.setAttribute('download', 'transactions_export.csv');
+            link.setAttribute('download', 'transactions.csv');
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        }
+        };
 
-        function showTransactionDetails(transaction) {
-            vm.selectedTransaction = transaction;
+        /**
+         * Displays the transaction detail modal.
+         * @param {object} transaction - The transaction to display.
+         */
+        $scope.showTransactionDetails = function(transaction) {
+            $scope.selectedTransaction = transaction;
             if (transactionModal) {
                 transactionModal.show();
             }
-        }
+        };
 
-        // --- Utility Functions ---
+        // --- Utility Functions for the View ---
+        $scope.getCardName = function(cardId) {
+            var card = $scope.cards.find(c => c.id === cardId);
+            return card ? card.cardName : 'N/A';
+        };
 
-        function getCategoryClass(category) {
-            if (!category) return 'bg-other';
-            var className = 'bg-' + category.toLowerCase().replace(/ /g, '-');
-            return className;
-        }
+        $scope.getCardNumber = function(cardId) {
+            var card = $scope.cards.find(c => c.id === cardId);
+            return card ? card.cardNumber : 'N/A';
+        };
 
-        function getBootstrapColor(index) {
-            var colors = ['primary', 'success', 'info', 'warning', 'danger'];
-            return colors[index % colors.length];
-        }
+        $scope.getCategoryClass = function(category) {
+            var colors = {
+                'Groceries': 'bg-success',
+                'Shopping': 'bg-primary',
+                'Food Delivery': 'bg-danger',
+                'Travel': 'bg-info',
+                'Electronics': 'bg-secondary',
+                'Entertainment': 'bg-warning',
+                'Health': 'bg-dark',
+                'Transport': 'bg-primary'
+            };
+            return colors[category] || 'bg-light text-dark';
+        };
+
+        // --- Run Initialization ---
+        init();
     }
 })();

@@ -1,146 +1,105 @@
 /*
- * Custom Styles for Credit Card Expenditure Dashboard
- * Author: Senior UI Engineer
- * Date: 2024-05-21
- */
+Senior UI Engineer With PCI-DSS Compliance Expertise
+Project: Credit Card Expenditure Dashboard
+File: css/styles.css
+*/
 
-/* --- General & Light Mode --- */
+/* General Styles */
 body {
-    background-color: #f8f9fc;
-    color: #5a5c69;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    padding-top: 70px; /* For fixed navbar */
+    transition: background-color 0.3s, color 0.3s;
 }
 
-.card {
-    border: 1px solid #e3e6f0;
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+.main-container {
+    padding-top: 20px;
 }
 
-.card .card-header {
-    background-color: #f8f9fc;
-    border-bottom: 1px solid #e3e6f0;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+[ng-cloak] {
+    display: none !important;
 }
 
-.text-gray-300 { color: #dddfeb !important; }
-.text-gray-800 { color: #5a5c69 !important; }
+.metric-card .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
 
-.border-left-primary { border-left: .25rem solid #4e73df !important; }
-.border-left-success { border-left: .25rem solid #1cc88a !important; }
-.border-left-info { border-left: .25rem solid #36b9cc !important; }
-.border-left-warning { border-left: .25rem solid #f6c23e !important; }
-.border-left-danger { border-left: .25rem solid #e74a3b !important; }
+.metric-card .card-title {
+    font-size: 1rem;
+    color: #6c757d;
+}
 
-.progress-sm { height: .5rem; }
+.metric-card .card-text {
+    margin-top: 0.5rem;
+}
 
-.chart-area, .chart-pie {
-    position: relative;
+.card-gradient {
+    background: linear-gradient(45deg, #007bff, #0056b3);
 }
 
 .table-hover tbody tr:hover {
-    background-color: #f1f3f8;
-    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.075);
 }
 
-.badge.bg-electronics { background-color: #fd7e14 !important; color: white; }
-.badge.bg-groceries { background-color: #20c997 !important; color: white; }
-.badge.bg-food-delivery { background-color: #dc3545 !important; color: white; }
-.badge.bg-transport { background-color: #ffc107 !important; color: black; }
-.badge.bg-entertainment { background-color: #6f42c1 !important; color: white; }
-.badge.bg-travel { background-color: #0d6efd !important; color: white; }
-.badge.bg-health { background-color: #198754 !important; color: white; }
-.badge.bg-home-goods { background-color: #0dcaf0 !important; color: white; }
-.badge.bg-other { background-color: #6c757d !important; color: white; }
-
-/* --- Loading Overlay --- */
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    flex-direction: column;
-    font-size: 1.2rem;
-    color: #4e73df;
+.badge {
+    font-size: 0.8rem;
 }
 
-/* --- Dark Mode --- */
+/* Dark Mode */
 body.dark-mode {
-    background-color: #1a1a1a;
-    color: #c7c7c7;
+    background-color: #121212;
+    color: #e0e0e0;
 }
 
-.dark-mode .navbar {
-    background-color: #2c2c2c !important;
+.dark-mode .bg-light {
+    background-color: #1e1e1e !important;
 }
 
 .dark-mode .card {
-    background-color: #2c2c2c;
-    border-color: #444;
+    background-color: #1e1e1e;
+    border-color: #333;
+    color: #e0e0e0;
 }
 
-.dark-mode .card .card-header {
-    background-color: #333;
-    border-color: #444;
+.dark-mode .card-header {
+    background-color: #2a2a2a;
+    border-bottom: 1px solid #333;
 }
 
-.dark-mode .text-gray-800 {
-    color: #f8f9fa !important;
+.dark-mode .metric-card .card-title {
+    color: #adb5bd;
 }
 
 .dark-mode .table {
-    color: #c7c7c7;
+    color: #e0e0e0;
 }
 
 .dark-mode .table-hover tbody tr:hover {
-    background-color: #3a3b45;
-    color: #fff;
-}
-
-.dark-mode .list-group-item {
-    background-color: #2c2c2c;
-    border-color: #444;
-}
-
-.dark-mode .modal-content {
-    background-color: #2c2c2c;
-    color: #c7c7c7;
-    border: 1px solid #444;
-}
-
-.dark-mode .modal-header, .dark-mode .modal-footer {
-    border-color: #444;
-}
-
-.dark-mode .btn-close {
-    filter: invert(1) grayscale(100%) brightness(200%);
-}
-
-.dark-mode .loading-overlay {
-    background-color: rgba(26, 26, 26, 0.8);
-    color: #879ff1;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .dark-mode .form-control {
-    background-color: #3a3b45;
-    color: #fff;
-    border-color: #555;
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    border-color: #333;
 }
 
 .dark-mode .form-control:focus {
-    background-color: #3a3b45;
-    color: #fff;
-    border-color: #879ff1;
-    box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.5);
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
-.dark-mode .alert-secondary {
-    background-color: #3a3b45;
-    border-color: #555;
-    color: #c7c7c7;
+.dark-mode .modal-content {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+}
+
+.dark-mode .modal-header, .dark-mode .modal-footer {
+    border-color: #333;
+}
+
+.dark-mode .btn-close-white {
+    filter: invert(1) grayscale(100%) brightness(200%);
 }
