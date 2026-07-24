@@ -1,248 +1,252 @@
-/**
- * Controller for the main dashboard view.
- * This controller handles all the logic for data processing, metric calculation,
- * chart generation, and user interactions.
- * Adhering to the 'fat service, skinny controller' principle, complex business logic
- * should ideally be in services, but for this self-contained dashboard, some processing is done here.
- */
-(function() {
-    'use strict';
+(function () {
+  'use strict';
 
-    angular
-        .module('creditCardDashboardApp')
-        .controller('DashboardController', DashboardController);
+  angular
+    .module('creditCardDashboardApp')
+    .controller('DashboardController', DashboardController);
 
-    DashboardController.$inject = ['$scope', 'dataService', '$q', '$filter'];
+  DashboardController.$inject = ['$timeout', '$filter', 'DataService'];
 
-    function DashboardController($scope, dataService, $q, $filter) {
-        var vm = this;
+  function DashboardController($timeout, $filter, DataService) {
+    var vm = this;
 
-        // --- ViewModel Initialization ---
-        vm.isLoading = true;
-        vm.isDarkMode = false;
-        vm.cards = [];
-        vm.transactions = [];
-        vm.searchQuery = { text: '' };
-        vm.metrics = {};
-        vm.monthlySpend = {};
-        vm.categorySpend = {};
-        vm.topCategories = [];
-        vm.topMerchants = [];
-        vm.spendForecast = 0;
-        vm.selectedTransaction = null;
+    vm.loading = true;
+    vm.isDarkMode = false;
+    vm.creditCards = [];
+    vm.transactions = [];
+    vm.availableCategories = [];
+    vm.selectedTransaction = null;
+    vm.modalInstance = null;
 
-        // --- Function bindings ---
-        vm.toggleDarkMode = toggleDarkMode;
-        vm.exportToCSV = exportToCSV;
-        vm.showTransactionDetails = showTransactionDetails;
-        vm.getCategoryClass = getCategoryClass;
-        vm.getBootstrapColor = getBootstrapColor;
+    vm.filters = {
+      searchText: '',
+      cardId: '',
+      category: '',
+      sortField: '-date'
+    };
 
-        // --- Modal instance ---
-        var transactionModal = null;
+    vm.metrics = {
+      totalCreditLimit: 0,
+      totalAvailableCredit: 0,
+      totalOutstanding: 0,
+      monthlyForecast: 0
+    };
 
-        // --- Initialization Function ---
-        activate();
+    vm.charts = {
+      monthlySpend: {},
+      categorySpend: {},
+      topMerchants: {}
+    };
 
-        /**
-         * The activation function to initialize the controller.
-         * Fetches all necessary data and then processes it.
-         */
-        function activate() {
-            // Using $q.all to wait for all data promises to resolve.
-            // This is a robust pattern for handling multiple async startup operations.
-            var promises = [dataService.getCards(), dataService.getTransactions()];
+    vm.toggleDarkMode = toggleDarkMode;
+    vm.getUtilizationPercent = getUtilizationPercent;
+    vm.transactionFilter = transactionFilter;
+    vm.resetFilters = resetFilters;
+    vm.exportTransactionsToCsv = exportTransactionsToCsv;
+    vm.openTransactionModal = openTransactionModal;
 
-            $q.all(promises).then(function(results) {
-                vm.cards = results[0];
-                vm.transactions = results[1];
+    activate();
 
-                // Once data is loaded, process it for the dashboard.
-                calculateMetrics();
-                processMonthlySpend();
-                processCategorySpend();
-                processTopSpendingCategories();
-                processTopMerchants();
-                calculateSpendForecast();
-
-                // Initialize the Bootstrap modal instance after the DOM is ready
-                var modalEl = document.getElementById('transactionDetailModal');
-                if (modalEl) {
-                    transactionModal = new bootstrap.Modal(modalEl);
-                }
-
-                vm.isLoading = false;
-            });
-        }
-
-        // --- Data Processing Functions ---
-
-        function calculateMetrics() {
-            vm.metrics.totalOutstanding = vm.cards.reduce((sum, card) => sum + card.outstanding, 0);
-            vm.metrics.totalAvailableCredit = vm.cards.reduce((sum, card) => sum + card.availableCredit, 0);
-            vm.metrics.totalCreditLimit = vm.cards.reduce((sum, card) => sum + card.creditLimit, 0);
-            vm.metrics.creditUtilization = (vm.metrics.totalOutstanding / vm.metrics.totalCreditLimit) * 100;
-        }
-
-        function processMonthlySpend() {
-            var monthlyData = {};
-            var today = new Date();
-            var twelveMonthsAgo = new Date(today.getFullYear() - 1, today.getMonth(), 1);
-
-            vm.transactions.forEach(tx => {
-                var txDate = new Date(tx.date);
-                if (txDate >= twelveMonthsAgo) {
-                    var monthKey = txDate.getFullYear() + '-' + ('0' + (txDate.getMonth() + 1)).slice(-2);
-                    if (!monthlyData[monthKey]) {
-                        monthlyData[monthKey] = 0;
-                    }
-                    monthlyData[monthKey] += tx.amount;
-                }
-            });
-
-            var sortedKeys = Object.keys(monthlyData).sort();
-            vm.monthlySpend.labels = sortedKeys.map(key => {
-                var parts = key.split('-');
-                return new Date(parts[0], parts[1] - 1).toLocaleString('default', { month: 'short', year: '2-digit' });
-            });
-            vm.monthlySpend.data = [sortedKeys.map(key => monthlyData[key].toFixed(2))];
-            vm.monthlySpend.series = ['Expenditure'];
-            vm.monthlySpend.options = {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true,
-                            callback: function(value) { return '€' + value; }
-                        }
-                    }]
-                },
-                elements: {
-                    line: { tension: 0.4 }
-                }
-            };
-        }
-
-        function processCategorySpend() {
-            var categoryData = {};
-            vm.transactions.forEach(tx => {
-                if (!categoryData[tx.category]) {
-                    categoryData[tx.category] = 0;
-                }
-                categoryData[tx.category] += tx.amount;
-            });
-
-            vm.categorySpend.labels = Object.keys(categoryData);
-            vm.categorySpend.data = Object.values(categoryData).map(v => v.toFixed(2));
-            vm.categorySpend.colors = ['#fd7e14', '#20c997', '#dc3545', '#ffc107', '#6f42c1', '#0d6efd', '#198754', '#0dcaf0'];
-            vm.categorySpend.options = {
-                cutoutPercentage: 70,
-                legend: { display: false }
-            };
-        }
-
-        function processTopSpendingCategories() {
-            var categoryData = {};
-            vm.transactions.forEach(tx => {
-                categoryData[tx.category] = (categoryData[tx.category] || 0) + tx.amount;
-            });
-            vm.topCategories = Object.keys(categoryData).map(key => ({
-                category: key,
-                amount: categoryData[key]
-            })).sort((a, b) => b.amount - a.amount);
-        }
-
-        function processTopMerchants() {
-            var merchantData = {};
-            vm.transactions.forEach(tx => {
-                merchantData[tx.merchant] = (merchantData[tx.merchant] || 0) + tx.amount;
-            });
-            vm.topMerchants = Object.keys(merchantData).map(key => ({
-                merchant: key,
-                amount: merchantData[key]
-            })).sort((a, b) => b.amount - a.amount);
-        }
-
-        function calculateSpendForecast() {
-            var lastThreeMonthsSpend = 0;
-            var count = 0;
-            var today = new Date();
-            for (var i = 1; i <= 3; i++) {
-                var month = today.getMonth() - i;
-                var year = today.getFullYear();
-                if (month < 0) {
-                    month += 12;
-                    year -= 1;
-                }
-                var monthKey = year + '-' + ('0' + (month + 1)).slice(-2);
-                var monthlyTotal = vm.monthlySpend.labels.reduce((total, label, index) => {
-                    var labelDate = new Date(label.split(' ')[1], new Date(Date.parse(label.split(' ')[0] +" 1, 2012")).getMonth());
-                    var labelKey = labelDate.getFullYear() + '-' + ('0' + (labelDate.getMonth() + 1)).slice(-2);
-                    if (labelKey === monthKey) {
-                        return total + parseFloat(vm.monthlySpend.data[0][index]);
-                    }
-                    return total;
-                }, 0);
-
-                if (monthlyTotal > 0) {
-                    lastThreeMonthsSpend += monthlyTotal;
-                    count++;
-                }
-            }
-            vm.spendForecast = count > 0 ? lastThreeMonthsSpend / count : 0;
-        }
-
-        // --- UI Interaction Functions ---
-
-        function toggleDarkMode() {
-            // The ng-class on the body handles the CSS switching.
-            // This function could be used to save the preference to localStorage.
-            console.log('Dark Mode Toggled:', vm.isDarkMode);
-        }
-
-        function exportToCSV() {
-            var filteredData = $filter('filter')(vm.transactions, vm.searchQuery.text);
-            var csvContent = 'data:text/csv;charset=utf-8,';
-            csvContent += 'Date,Merchant,Category,Amount,Card Name,Card Number\r\n';
-
-            filteredData.forEach(function(tx) {
-                var row = [
-                    $filter('date')(tx.date, 'yyyy-MM-dd'),
-                    '"' + tx.merchant + '"',
-                    tx.category,
-                    tx.amount,
-                    tx.card.cardName,
-                    tx.card.cardNumber // Masked number
-                ].join(',');
-                csvContent += row + '\r\n';
-            });
-
-            var encodedUri = encodeURI(csvContent);
-            var link = document.createElement('a');
-            link.setAttribute('href', encodedUri);
-            link.setAttribute('download', 'transactions_export.csv');
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function showTransactionDetails(transaction) {
-            vm.selectedTransaction = transaction;
-            if (transactionModal) {
-                transactionModal.show();
-            }
-        }
-
-        // --- Utility Functions ---
-
-        function getCategoryClass(category) {
-            if (!category) return 'bg-other';
-            var className = 'bg-' + category.toLowerCase().replace(/ /g, '-');
-            return className;
-        }
-
-        function getBootstrapColor(index) {
-            var colors = ['primary', 'success', 'info', 'warning', 'danger'];
-            return colors[index % colors.length];
-        }
+    function activate() {
+      $timeout(function () {
+        vm.creditCards = DataService.getCreditCards();
+        vm.transactions = DataService.getTransactions();
+        vm.availableCategories = DataService.getCategories();
+        calculateMetrics();
+        buildCharts();
+        initializeModal();
+        vm.loading = false;
+      }, 800);
     }
+
+    function initializeModal() {
+      var modalElement = document.getElementById('transactionModal');
+      if (modalElement && window.bootstrap) {
+        vm.modalInstance = new bootstrap.Modal(modalElement);
+      }
+    }
+
+    function calculateMetrics() {
+      vm.metrics.totalCreditLimit = vm.creditCards.reduce(function (sum, card) {
+        return sum + card.creditLimit;
+      }, 0);
+
+      vm.metrics.totalAvailableCredit = vm.creditCards.reduce(function (sum, card) {
+        return sum + card.availableCredit;
+      }, 0);
+
+      vm.metrics.totalOutstanding = vm.creditCards.reduce(function (sum, card) {
+        return sum + card.outstanding;
+      }, 0);
+
+      vm.metrics.monthlyForecast = DataService.getMonthlyForecast(vm.transactions);
+    }
+
+    function buildCharts() {
+      var monthlyData = DataService.getMonthlySpendSeries(vm.transactions);
+      vm.charts.monthlySpend = {
+        labels: monthlyData.labels,
+        series: ['Spend (€)'],
+        data: [monthlyData.values],
+        colors: [{
+          backgroundColor: 'rgba(13,110,253,0.12)',
+          borderColor: '#0d6efd',
+          pointBackgroundColor: '#0d6efd'
+        }],
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: true,
+                callback: function (value) { return '€' + value; }
+              },
+              gridLines: {
+                color: 'rgba(160,174,192,0.15)'
+              }
+            }],
+            xAxes: [{
+              gridLines: {
+                display: false
+              }
+            }]
+          }
+        }
+      };
+
+      var categoryData = DataService.getTopCategories(vm.transactions, 5);
+      vm.charts.categorySpend = {
+        labels: categoryData.labels,
+        data: categoryData.values,
+        colors: ['#0d6efd', '#198754', '#ffc107', '#dc3545', '#6f42c1'],
+        options: {
+          cutoutPercentage: 60,
+          tooltips: {
+            callbacks: {
+              label: function (tooltipItem, data) {
+                var label = data.labels[tooltipItem.index] || '';
+                var value = data.datasets[0].data[tooltipItem.index] || 0;
+                return label + ': €' + value.toFixed(2);
+              }
+            }
+          }
+        }
+      };
+
+      var merchantData = DataService.getTopMerchants(vm.transactions, 7);
+      vm.charts.topMerchants = {
+        labels: merchantData.labels,
+        series: ['Spend (€)'],
+        data: [merchantData.values],
+        colors: [{
+          backgroundColor: '#20c997',
+          borderColor: '#20c997'
+        }],
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: true,
+                callback: function (value) { return '€' + value; }
+              },
+              gridLines: {
+                color: 'rgba(160,174,192,0.15)'
+              }
+            }],
+            xAxes: [{
+              gridLines: {
+                display: false
+              }
+            }]
+          }
+        }
+      };
+    }
+
+    function toggleDarkMode() {
+      vm.isDarkMode = !vm.isDarkMode;
+    }
+
+    function getUtilizationPercent(card) {
+      if (!card || !card.creditLimit) {
+        return 0;
+      }
+      return Math.round((card.outstanding / card.creditLimit) * 100);
+    }
+
+    function transactionFilter(tx) {
+      var matchesSearch = true;
+      var matchesCard = true;
+      var matchesCategory = true;
+      var search = (vm.filters.searchText || '').toLowerCase();
+
+      if (search) {
+        matchesSearch = (tx.merchant && tx.merchant.toLowerCase().indexOf(search) !== -1) ||
+          (tx.category && tx.category.toLowerCase().indexOf(search) !== -1) ||
+          (tx.description && tx.description.toLowerCase().indexOf(search) !== -1);
+      }
+
+      if (vm.filters.cardId !== '') {
+        matchesCard = String(tx.cardId) === String(vm.filters.cardId);
+      }
+
+      if (vm.filters.category !== '') {
+        matchesCategory = tx.category === vm.filters.category;
+      }
+
+      return matchesSearch && matchesCard && matchesCategory;
+    }
+
+    function resetFilters() {
+      vm.filters = {
+        searchText: '',
+        cardId: '',
+        category: '',
+        sortField: '-date'
+      };
+    }
+
+    function exportTransactionsToCsv() {
+      var filteredTransactions = $filter('filter')(vm.transactions, vm.transactionFilter);
+      filteredTransactions = $filter('orderBy')(filteredTransactions, vm.filters.sortField);
+
+      var headers = ['ID', 'Date', 'Merchant', 'Description', 'Category', 'Card', 'Amount', 'Status', 'Reference'];
+      var rows = filteredTransactions.map(function (tx) {
+        return [
+          tx.id,
+          $filter('date')(tx.date, 'yyyy-MM-dd'),
+          tx.merchant,
+          tx.description,
+          tx.category,
+          tx.cardName,
+          tx.amount.toFixed(2),
+          tx.status,
+          tx.reference
+        ];
+      });
+
+      var csv = [headers].concat(rows).map(function (row) {
+        return row.map(function (value) {
+          var normalized = String(value).replace(/"/g, '""');
+          return '"' + normalized + '"';
+        }).join(',');
+      }).join('\n');
+
+      var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      var url = URL.createObjectURL(blob);
+      var link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'transactions_export.csv');
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function openTransactionModal(tx) {
+      vm.selectedTransaction = angular.copy(tx);
+      if (vm.modalInstance) {
+        vm.modalInstance.show();
+      }
+    }
+  }
 })();

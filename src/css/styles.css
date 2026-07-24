@@ -1,146 +1,166 @@
-/*
- * Custom Styles for Credit Card Expenditure Dashboard
- * Author: Senior UI Engineer
- * Date: 2024-05-21
- */
+:root {
+  --app-bg: #f5f7fb;
+  --app-card-bg: #ffffff;
+  --app-text: #1f2937;
+  --app-muted: #6b7280;
+  --app-border: #e5e7eb;
+  --app-navbar: #ffffff;
+  --app-accent: #0d6efd;
+}
 
-/* --- General & Light Mode --- */
 body {
-    background-color: #f8f9fc;
-    color: #5a5c69;
-    transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 0;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-.card {
-    border: 1px solid #e3e6f0;
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+.app-shell {
+  min-height: 100vh;
 }
 
-.card .card-header {
-    background-color: #f8f9fc;
-    border-bottom: 1px solid #e3e6f0;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+.app-navbar {
+  background: var(--app-navbar);
+  border-bottom: 1px solid var(--app-border);
 }
 
-.text-gray-300 { color: #dddfeb !important; }
-.text-gray-800 { color: #5a5c69 !important; }
-
-.border-left-primary { border-left: .25rem solid #4e73df !important; }
-.border-left-success { border-left: .25rem solid #1cc88a !important; }
-.border-left-info { border-left: .25rem solid #36b9cc !important; }
-.border-left-warning { border-left: .25rem solid #f6c23e !important; }
-.border-left-danger { border-left: .25rem solid #e74a3b !important; }
-
-.progress-sm { height: .5rem; }
-
-.chart-area, .chart-pie {
-    position: relative;
+.card,
+.modal-content,
+.form-control,
+.form-select,
+.table {
+  background-color: var(--app-card-bg);
+  color: var(--app-text);
 }
 
-.table-hover tbody tr:hover {
-    background-color: #f1f3f8;
-    cursor: pointer;
+.metric-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.badge.bg-electronics { background-color: #fd7e14 !important; color: white; }
-.badge.bg-groceries { background-color: #20c997 !important; color: white; }
-.badge.bg-food-delivery { background-color: #dc3545 !important; color: white; }
-.badge.bg-transport { background-color: #ffc107 !important; color: black; }
-.badge.bg-entertainment { background-color: #6f42c1 !important; color: white; }
-.badge.bg-travel { background-color: #0d6efd !important; color: white; }
-.badge.bg-health { background-color: #198754 !important; color: white; }
-.badge.bg-home-goods { background-color: #0dcaf0 !important; color: white; }
-.badge.bg-other { background-color: #6c757d !important; color: white; }
+.metric-card:hover {
+  transform: translateY(-2px);
+}
 
-/* --- Loading Overlay --- */
+.metric-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.metric-label {
+  color: var(--app-muted);
+  margin-bottom: 0.4rem;
+  font-size: 0.95rem;
+}
+
+.metric-value {
+  margin-bottom: 0;
+  font-weight: 700;
+}
+
+.card-list-item {
+  padding: 1rem;
+  border: 1px solid var(--app-border);
+  border-radius: 14px;
+  margin-bottom: 1rem;
+}
+
+.card-list-item:last-child {
+  margin-bottom: 0;
+}
+
+.progress-thin {
+  height: 8px;
+  border-radius: 999px;
+  background: #e9ecef;
+}
+
+.progress-thin .progress-bar {
+  background: linear-gradient(90deg, #0d6efd, #3b82f6);
+}
+
+.app-table thead th {
+  color: var(--app-muted);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.app-table tbody td {
+  border-color: var(--app-border);
+}
+
 .loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    flex-direction: column;
-    font-size: 1.2rem;
-    color: #4e73df;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* --- Dark Mode --- */
-body.dark-mode {
-    background-color: #1a1a1a;
-    color: #c7c7c7;
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--app-border);
 }
 
-.dark-mode .navbar {
-    background-color: #2c2c2c !important;
+.detail-row:last-child {
+  border-bottom: 0;
 }
 
-.dark-mode .card {
-    background-color: #2c2c2c;
-    border-color: #444;
+.dark-mode {
+  --app-bg: #111827;
+  --app-card-bg: #1f2937;
+  --app-text: #f9fafb;
+  --app-muted: #9ca3af;
+  --app-border: #374151;
+  --app-navbar: #0f172a;
 }
 
-.dark-mode .card .card-header {
-    background-color: #333;
-    border-color: #444;
+.dark-mode .navbar-brand,
+.dark-mode .card-header h5,
+.dark-mode .card-body,
+.dark-mode .modal-title,
+.dark-mode .form-label,
+.dark-mode .table,
+.dark-mode .btn-outline-secondary,
+.dark-mode .btn-outline-primary {
+  color: var(--app-text);
 }
 
-.dark-mode .text-gray-800 {
-    color: #f8f9fa !important;
+.dark-mode .text-body-secondary,
+.dark-mode small,
+.dark-mode .metric-label,
+.dark-mode .app-table thead th {
+  color: var(--app-muted) !important;
 }
 
 .dark-mode .table {
-    color: #c7c7c7;
+  --bs-table-bg: transparent;
+  --bs-table-color: var(--app-text);
+  --bs-table-border-color: var(--app-border);
 }
 
-.dark-mode .table-hover tbody tr:hover {
-    background-color: #3a3b45;
-    color: #fff;
+.dark-mode .badge.text-bg-light {
+  background-color: #374151 !important;
+  color: #f9fafb !important;
 }
 
-.dark-mode .list-group-item {
-    background-color: #2c2c2c;
-    border-color: #444;
-}
-
+.dark-mode .form-control,
+.dark-mode .form-select,
 .dark-mode .modal-content {
-    background-color: #2c2c2c;
-    color: #c7c7c7;
-    border: 1px solid #444;
+  border-color: var(--app-border);
 }
 
-.dark-mode .modal-header, .dark-mode .modal-footer {
-    border-color: #444;
-}
-
-.dark-mode .btn-close {
-    filter: invert(1) grayscale(100%) brightness(200%);
-}
-
-.dark-mode .loading-overlay {
-    background-color: rgba(26, 26, 26, 0.8);
-    color: #879ff1;
-}
-
-.dark-mode .form-control {
-    background-color: #3a3b45;
-    color: #fff;
-    border-color: #555;
-}
-
-.dark-mode .form-control:focus {
-    background-color: #3a3b45;
-    color: #fff;
-    border-color: #879ff1;
-    box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.5);
-}
-
-.dark-mode .alert-secondary {
-    background-color: #3a3b45;
-    border-color: #555;
-    color: #c7c7c7;
+@media (max-width: 767.98px) {
+  .metric-value {
+    font-size: 1.4rem;
+  }
 }
