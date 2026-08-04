@@ -105,13 +105,3 @@ Relationships:
 
 ---
 
-**GithubCommitterTool INT Input:**
-```json
-{
-  "repo": "APB_Demo",
-  "files": {
-    "HLD/portfolio_HLD.md": "[Insert complete output above here]"
-  },
-  "branch_name": "portfolio"
-}
-```
