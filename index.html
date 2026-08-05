@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="timerApp">
+<head>
+  <meta charset="UTF-8">
+  <title>Timer App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="src/app/assets/css/styles.css">
+</head>
+<body class="bg-light">
+  <div class="container mt-5">
+    <timer-display></timer-display>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-animate.js"></script>
+  <script src="src/app/app/app.module.js"></script>
+  <script src="src/app/app/app.config.js"></script>
+  <script src="src/app/core/constants.config.js"></script>
+  <script src="src/app/core/exception-handler.factory.js"></script>
+  <script src="src/app/services/audit-logger.service.js"></script>
+  <script src="src/app/services/storage.service.js"></script>
+  <script src="src/app/timer/timer.module.js"></script>
+  <script src="src/app/timer/timer.state-guard.service.js"></script>
+  <script src="src/app/timer/timer.service.js"></script>
+  <script src="src/app/timer/timer.controller.js"></script>
+  <script src="src/app/timer/timer.directive.js"></script>
+</body>
+</html>

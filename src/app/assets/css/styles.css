@@ -1,0 +1,12 @@
+.timer-container {
+  background-color: #ffffff;
+}
+
+.timer-display {
+  font-family: monospace;
+}
+
+button:focus {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}

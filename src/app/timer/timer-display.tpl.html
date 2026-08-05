@@ -1,0 +1,33 @@
+<div class="container-fluid timer-container bg-white text-center py-5">
+  <div class="row justify-content-center">
+    <div class="col-12">
+      <h1 class="display-4" aria-label="Timer">Timer</h1>
+    </div>
+    <div class="col-12 my-4">
+      <span class="timer-display h2" aria-live="polite" aria-atomic="true">{{ vm.displayTime }}</span>
+    </div>
+    <div class="col-12">
+      <button type="button"
+              class="btn btn-success mx-2"
+              ng-click="vm.start()"
+              ng-disabled="!vm.canStart"
+              aria-label="Start timer">
+        Start
+      </button>
+      <button type="button"
+              class="btn btn-warning mx-2"
+              ng-click="vm.pause()"
+              ng-disabled="!vm.canPause"
+              aria-label="Pause timer">
+        Pause
+      </button>
+      <button type="button"
+              class="btn btn-danger mx-2"
+              ng-click="vm.stop()"
+              ng-disabled="!vm.canStop"
+              aria-label="Stop timer">
+        Stop
+      </button>
+    </div>
+  </div>
+</div>
