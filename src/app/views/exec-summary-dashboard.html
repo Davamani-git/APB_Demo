@@ -1,0 +1,12 @@
+<div class="exec-summary-dashboard">
+  <div class="row mb-3">
+    <div class="col-12">
+      <kpi-summary kpi-data="vm.kpis"></kpi-summary>
+    </div>
+  </div>
+  <div class="row" ng-repeat="group in vm.readinessGroups">
+    <div class="col-12">
+      <readiness-group group-name="group.status | statusLabel" scopes="group.scopes"></readiness-group>
+    </div>
+  </div>
+</div>

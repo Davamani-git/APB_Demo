@@ -1,0 +1,9 @@
+<div class="notification-banner" ng-if="notifications && notifications.length">
+  <div class="alert" ng-repeat="note in notifications" ng-class="{
+    'alert-danger': note.type === 'error',
+    'alert-warning': note.type === 'warning',
+    'alert-info': note.type === 'info'
+  }">
+    {{ note.text }}
+  </div>
+</div>

@@ -1,0 +1,28 @@
+<div class="card scope-tile mb-3">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span>{{ scope.scopeData.name }}</span>
+    <button class="btn btn-sm btn-outline-primary" ng-if="scope.canEdit()" ng-click="scope.edit()">Edit</button>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <p>Total: {{ scope.scopeData.totalUseCases }}</p>
+        <p>Completed: {{ scope.scopeData.completedUseCases }}</p>
+        <p>Pending: {{ scope.scopeData.pendingUseCases }}</p>
+      </div>
+      <div class="col-md-6">
+        <p>Agentification: {{ scope.scopeData.agentificationPercent | percentage }}</p>
+        <p>Status: {{ scope.scopeData.readinessStatus | statusLabel }}</p>
+        <progress-bar value="scope.scopeData.completedUseCases / (scope.scopeData.totalUseCases || 1) * 100"
+                      label="Completion"
+                      status="{{ scope.scopeData.readinessStatus }}"></progress-bar>
+      </div>
+    </div>
+    <div class="row mt-2" ng-if="scope.scopeData.notes">
+      <div class="col-12">
+        <strong>Notes:</strong>
+        <p ng-bind="scope.scopeData.notes"></p>
+      </div>
+    </div>
+  </div>
+</div>

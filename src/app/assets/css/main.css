@@ -1,0 +1,26 @@
+.exec-summary-dashboard {
+  padding-top: 20px;
+}
+
+.kpi-summary .kpi-item {
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.scope-tile {
+  border-radius: 4px;
+}
+
+.notification-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1050;
+}
+
+.theme-preview-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+}

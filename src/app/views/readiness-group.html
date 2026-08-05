@@ -1,0 +1,8 @@
+<div class="readiness-group mb-4">
+  <h5 class="mb-3">{{ groupName }}</h5>
+  <div class="row">
+    <div class="col-md-4" ng-repeat="scopeItem in scopes">
+      <scope-tile scope-data="scopeItem" on-edit="vm.openEditor(scopeId)" readonly="vm.role === 'VIEWER'"></scope-tile>
+    </div>
+  </div>
+</div>

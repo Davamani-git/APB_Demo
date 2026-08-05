@@ -1,0 +1,13 @@
+<div class="theme-settings">
+  <h5>Theme Settings</h5>
+  <div class="list-group">
+    <button type="button"
+            class="list-group-item list-group-item-action"
+            ng-repeat="theme in vm.themes"
+            ng-class="{active: vm.selectedThemeId === theme.id}"
+            ng-click="vm.selectTheme(theme.id)">
+      <theme-preview theme="theme"></theme-preview>
+      <span>{{ theme.name }}</span>
+    </button>
+  </div>
+</div>

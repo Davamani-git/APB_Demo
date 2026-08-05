@@ -1,0 +1,36 @@
+<div class="card kpi-summary">
+  <div class="card-body">
+    <div class="row text-center">
+      <div class="col-md-2 col-6 mb-2">
+        <div class="kpi-item">
+          <div class="kpi-label">Total Use Cases</div>
+          <div class="kpi-value">{{ kpiData.totalUseCases }}</div>
+        </div>
+      </div>
+      <div class="col-md-2 col-6 mb-2">
+        <div class="kpi-item">
+          <div class="kpi-label">Completed</div>
+          <div class="kpi-value">{{ kpiData.totalCompletedUseCases }}</div>
+        </div>
+      </div>
+      <div class="col-md-2 col-6 mb-2">
+        <div class="kpi-item">
+          <div class="kpi-label">Pending</div>
+          <div class="kpi-value">{{ kpiData.totalPendingUseCases }}</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6 mb-2">
+        <div class="kpi-item">
+          <div class="kpi-label">Overall Completion</div>
+          <div class="kpi-value">{{ kpiData.overallCompletionPercent | percentage }}</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-12 mb-2">
+        <div class="kpi-item">
+          <div class="kpi-label">Avg Agentification</div>
+          <div class="kpi-value">{{ kpiData.avgAgentificationPercent | percentage }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="execSummaryApp">
+<head>
+  <meta charset="UTF-8">
+  <title>Executive Testing Summary Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="src/app/assets/css/main.css">
+  <link rel="stylesheet" href="src/app/assets/css/theme.css">
+</head>
+<body>
+  <div class="container-fluid" ng-controller="ExecSummaryDashboardController as vm">
+    <notification-banner notifications="vm.notifications"></notification-banner>
+    <div class="row mb-3">
+      <div class="col-12">
+        <kpi-summary kpi-data="vm.kpis"></kpi-summary>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-12 text-right">
+        <button class="btn btn-sm btn-secondary" ng-click="vm.resetDashboard()">Reset Dashboard</button>
+        <button class="btn btn-sm btn-primary" ng-click="vm.openThemeSettings()">Theme Settings</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12" ng-repeat="group in vm.readinessGroups">
+        <readiness-group group-name="group.label" scopes="group.scopes"></readiness-group>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-animate.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
+
+  <script src="src/app/app/app.module.js"></script>
+  <script src="src/app/app/app.config.js"></script>
+
+  <script src="src/app/config/env.config.js"></script>
+  <script src="src/app/config/featureFlags.config.js"></script>
+  <script src="src/app/config/logging.config.js"></script>
+
+  <script src="src/app/models/scope.model.js"></script>
+
+  <script src="src/app/services/storage.service.js"></script>
+  <script src="src/app/services/logging.service.js"></script>
+  <script src="src/app/services/errorHandling.service.js"></script>
+  <script src="src/app/services/validation.service.js"></script>
+  <script src="src/app/services/accessControl.service.js"></script>
+  <script src="src/app/services/theme.service.js"></script>
+  <script src="src/app/services/scopeData.service.js"></script>
+  <script src="src/app/services/kpiCalculation.service.js"></script>
+
+  <script src="src/app/filters/percentage.filter.js"></script>
+  <script src="src/app/filters/statusLabel.filter.js"></script>
+
+  <script src="src/app/controllers/execSummaryDashboard.controller.js"></script>
+  <script src="src/app/controllers/dataEditor.controller.js"></script>
+  <script src="src/app/controllers/theme.controller.js"></script>
+
+  <script src="src/app/directives/scopeTile.directive.js"></script>
+  <script src="src/app/directives/kpiSummary.directive.js"></script>
+  <script src="src/app/directives/progressBar.directive.js"></script>
+  <script src="src/app/directives/readinessGroup.directive.js"></script>
+  <script src="src/app/directives/notificationBanner.directive.js"></script>
+  <script src="src/app/directives/themePreview.directive.js"></script>
+</body>
+</html>

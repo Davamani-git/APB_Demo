@@ -1,0 +1,47 @@
+<div class="modal-header">
+  <h5 class="modal-title">Edit Scope: {{ vm.scope.name }}</h5>
+  <button type="button" class="close" ng-click="vm.cancel()" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <form novalidate>
+    <div class="form-group">
+      <label>Total Use Cases</label>
+      <input type="number" class="form-control" min="0" ng-model="vm.scope.totalUseCases" ng-change="vm.onFieldChange('totalUseCases')">
+      <div class="text-danger" ng-if="vm.errors.totalUseCases">{{ vm.errors.totalUseCases }}</div>
+    </div>
+    <div class="form-group">
+      <label>Completed Use Cases</label>
+      <input type="number" class="form-control" min="0" ng-model="vm.scope.completedUseCases" ng-change="vm.onFieldChange('completedUseCases')">
+      <div class="text-danger" ng-if="vm.errors.completedUseCases">{{ vm.errors.completedUseCases }}</div>
+    </div>
+    <div class="form-group">
+      <label>Pending Use Cases</label>
+      <input type="number" class="form-control" min="0" ng-model="vm.scope.pendingUseCases" ng-change="vm.onFieldChange('pendingUseCases')">
+      <div class="text-danger" ng-if="vm.errors.pendingUseCases">{{ vm.errors.pendingUseCases }}</div>
+    </div>
+    <div class="form-group">
+      <label>Agentification Percent</label>
+      <input type="number" class="form-control" min="0" max="100" ng-model="vm.scope.agentificationPercent" ng-change="vm.onFieldChange('agentificationPercent')">
+      <div class="text-danger" ng-if="vm.errors.agentificationPercent">{{ vm.errors.agentificationPercent }}</div>
+    </div>
+    <div class="form-group">
+      <label>Readiness Status</label>
+      <select class="form-control" ng-model="vm.scope.readinessStatus" ng-change="vm.onFieldChange('readinessStatus')">
+        <option value="IN_PROGRESS">In Progress</option>
+        <option value="DESIGN_IN_PROGRESS">Design In Progress</option>
+        <option value="COMPLETED">Completed</option>
+      </select>
+      <div class="text-danger" ng-if="vm.errors.readinessStatus">{{ vm.errors.readinessStatus }}</div>
+    </div>
+    <div class="form-group">
+      <label>Notes</label>
+      <textarea class="form-control" ng-model="vm.scope.notes" ng-change="vm.onFieldChange('notes')"></textarea>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" ng-click="vm.cancel()">Cancel</button>
+  <button type="button" class="btn btn-primary" ng-click="vm.save()">Save</button>
+</div>
