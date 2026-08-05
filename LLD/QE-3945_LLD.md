@@ -1,0 +1,3 @@
+# Low-Level Design (LLD) – Executive KPI Summary Dashboard (Epic QE-3945)
+
+...
