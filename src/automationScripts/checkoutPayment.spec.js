@@ -1,0 +1,61 @@
+const { test, expect } = require('@playwright/test');
+const { HomePage } = require('./pages/home.page');
+const { LoginPage } = require('./pages/login.page');
+const { ProductPage } = require('./pages/product.page');
+const { CartPage } = require('./pages/cart.page');
+const { CheckoutPage } = require('./pages/checkout.page');
+const logger = require('../utils/logger');
+
+test.describe('Online Shopping Platform Payment Flow', () => {
+  test('Test Case - QE-3852 TS001 TC-001: Successful order and payment', async ({ page }) => {
+    const homePage = new HomePage(page);
+    const loginPage = new LoginPage(page);
+    const productPage = new ProductPage(page);
+    const cartPage = new CartPage(page);
+    const checkoutPage = new CheckoutPage(page;
+    logger.info('Navigating to home page');
+    await homePage.goto('https://app.example.com');
+    await expect(homePage.homeBanner).toBeVisible();
+    logger.info('Logging in as testuser');
+    await homePage.gotoLogin();
+    await loginPage.login('testuser', 'Pass@123');
+    await expect(homePage.dashboard).toBeVisible();
+    logger.info('Adding product to cart');
+    await homePage.selectAnyProduct();
+    await productPage.addToCart();
+    await cartPage.proceedToCheckout();
+    await expect(checkoutPage.checkoutHeader).toBeVisible();
+    logger.info('Entering valid payment details');
+    await checkoutPage.enterPaymentDetails({ card: '4111111111111111', exp: '12/26', cvv: '123' });
+    await expect(checkoutPage.paymentAcceptedBanner).toBeVisible();
+    logger.info('Submitting payment');
+    await checkoutPage.submitPayment();
+    await expect(checkoutPage.orderConfirmation).toBeVisible();
+  });
+
+  test('Test Case - QE-3852 TS002 TC-001: Declined payment', async ({ page }) => {
+    const homePage = new HomePage(page);
+    const loginPage = new LoginPage(page);
+    const productPage = new ProductPage(page);
+    const cartPage = new CartPage(page);
+    const checkoutPage = new CheckoutPage(page);
+    logger.info('Navigating to home page');
+    await homePage.goto('https://app.example.com');
+    await expect(homePage.homeBanner).toBeVisible();
+    logger.info('Logging in as testuser');
+    await homePage.gotoLogin();
+    await loginPage.login('testuser', 'Pass@123');
+    await expect(homePage.dashboard).toBeVisible();
+    logger.info('Adding product to cart');
+    await homePage.selectAnyProduct();
+    await productPage.addToCart();
+    await cartPage.proceedToCheckout();
+    await expect(checkoutPage.checkoutHeader).toBeVisible();
+    logger.info('Entering invalid payment details');
+    await checkoutPage.enterPaymentDetails({ card: '4000000000000002', exp: '12/26', cvv: '123' });
+    await checkoutPage.submitPayment();
+    await expect(checkoutPage.paymentDeclinedBanner).toBeVisible();
+    await expect(checkoutPage.retryButton).toBeVisible();
+    await expect(checkoutPage.selectDifferentMethodButton).toBeVisible();
+  });
+});

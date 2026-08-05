@@ -1,0 +1,35 @@
+const { test, expect } = require('@playwright/test');
+const { HomePage } = require('./pages/home.page');
+const { LoginPage } = require('./pages/login.page');
+const { ProductPage } = require('./pages/product.page');
+const { CartPage } = require('./pages/cart.page');
+const { CheckoutPage } = require('./pages/checkout.page');
+const { EmailPage } = require('./pages/email.page');
+const { NotificationPage } = require('./pages/notification.page');
+const logger = require('../utils/logger');
+
+test('Test Case - QE-3852 TS003 TC-001: Order confirmation notifications', async ({ page, context }) => {
+  const homePage = new HomePage(page);
+  const loginPage = new LoginPage(page);
+  const productPage = new ProductPage(page);
+  const cartPage = new CartPage(page);
+  const checkoutPage = new CheckoutPage(page);
+  const emailPage = new EmailPage(context);
+  const notificationPage = new NotificationPage(page);
+  logger.info('Placing a successful order');
+  await homePage.goto('https://app.example.com');
+  await homePage.gotoLogin();
+  await loginPage.login('testuser', 'Pass@123');
+  await homePage.selectAnyProduct();
+  await productPage.addToCart();
+  await cartPage.proceedToCheckout();
+  await checkoutPage.enterPaymentDetails({ card: '4111111111111111', exp: '12/26', cvv: '123' });
+  await checkoutPage.submitPayment();
+  await expect(checkoutPage.orderConfirmation).toBeVisible();
+  logger.info('Checking user email for order confirmation');
+  await emailPage.openInbox('testuser@example.com');
+  await expect(emailPage.latestOrderConfirmation()).toBeVisible();
+  logger.info('Checking in-app notifications for order confirmation');
+  await notificationPage.open();
+  await expect(notificationPage.orderConfirmationNotification()).toBeVisible();
+});
