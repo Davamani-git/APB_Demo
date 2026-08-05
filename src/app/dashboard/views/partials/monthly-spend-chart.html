@@ -1,0 +1,5 @@
+<div class="monthly-spend-chart">
+  <h4>Monthly Spend</h4>
+  <p ng-if="!data">No data available.</p>
+  <p ng-if="data">{{data.monthlySpend | currencyLocale:data.currency}} for period ending {{data.asOfDate}}</p>
+</div>

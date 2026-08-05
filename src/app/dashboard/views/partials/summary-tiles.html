@@ -1,0 +1,28 @@
+<div class="summary-tiles" ng-if="summary">
+  <div class="row">
+    <div class="col-sm-3">
+      <div class="tile">
+        <div class="tile-title">Total Credit Limit</div>
+        <div class="tile-value">{{summary.totalCreditLimit | currencyLocale:summary.currency}}</div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="tile">
+        <div class="tile-title">Available Credit</div>
+        <div class="tile-value">{{summary.totalAvailableCredit | currencyLocale:summary.currency}}</div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="tile">
+        <div class="tile-title">Outstanding Amount</div>
+        <div class="tile-value">{{summary.totalOutstanding | currencyLocale:summary.currency}}</div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="tile">
+        <div class="tile-title">Monthly Spend</div>
+        <div class="tile-value">{{summary.monthlySpend | currencyLocale:summary.currency}}</div>
+      </div>
+    </div>
+  </div>
+</div>

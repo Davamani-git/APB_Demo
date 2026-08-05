@@ -1,0 +1,12 @@
+<div class="card-list" ng-if="vm.cards && vm.cards.length">
+  <ul class="list-group">
+    <li class="list-group-item" ng-repeat="card in vm.cards" ng-click="vm.selectCard(card)" ng-class="{'active': vm.selectedCard && vm.selectedCard.cardId === card.cardId}">
+      <div class="card-mask">{{card.maskedNumber}}</div>
+      <div class="card-product">{{card.productType}}</div>
+      <div class="card-limits">
+        <span>Limit: {{card.creditLimit | currencyLocale:card.currency}}</span>
+        <span>Available: {{card.availableCredit | currencyLocale:card.currency}}</span>
+      </div>
+    </li>
+  </ul>
+</div>

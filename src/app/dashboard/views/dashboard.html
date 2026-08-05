@@ -1,0 +1,24 @@
+<div class="dashboard-container" ng-class="{ 'loading': vm.isLoading }">
+  <ccd-error-banner ng-if="vm.error" message="{{vm.error}}"></ccd-error-banner>
+
+  <div class="row">
+    <div class="col-md-12">
+      <h2>Credit Card Analysis Dashboard</h2>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <ccd-summary-tiles summary="vm.summary"></ccd-summary-tiles>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <ccd-card-list cards="vm.cards"></ccd-card-list>
+    </div>
+    <div class="col-md-6">
+      <ccd-monthly-spend-chart data="vm.summary"></ccd-monthly-spend-chart>
+    </div>
+  </div>
+</div>

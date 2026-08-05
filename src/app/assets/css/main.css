@@ -1,0 +1,7 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+.dashboard-container.loading {
+  opacity: 0.5;
+}

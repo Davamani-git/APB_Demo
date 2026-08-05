@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" ng-app="creditCardDashboardApp">
+<head>
+  <meta charset="UTF-8">
+  <title>Credit Card Analysis Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="src/app/assets/css/main.css">
+  <link rel="stylesheet" href="src/app/assets/css/dashboard.css">
+</head>
+<body>
+  <div class="container" ng-view></div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-resource.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.6/ui-bootstrap-tpls.min.js"></script>
+
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/app.constants.js"></script>
+  <script src="src/app/app.config.js"></script>
+  <script src="src/app/app.routes.js"></script>
+
+  <script src="src/app/core/services/config.service.js"></script>
+  <script src="src/app/core/services/auth.interceptor.js"></script>
+  <script src="src/app/core/services/logging.service.js"></script>
+  <script src="src/app/core/services/user-context.service.js"></script>
+
+  <script src="src/app/core/models/card.model.js"></script>
+  <script src="src/app/core/models/transaction.model.js"></script>
+  <script src="src/app/core/models/dashboard-summary.model.js"></script>
+  <script src="src/app/core/models/user-profile.model.js"></script>
+
+  <script src="src/app/core/filters/currency-locale.filter.js"></script>
+  <script src="src/app/core/filters/date-range.filter.js"></script>
+
+  <script src="src/app/dashboard/dashboard.module.js"></script>
+  <script src="src/app/dashboard/controllers/dashboard.controller.js"></script>
+  <script src="src/app/dashboard/controllers/card-list.controller.js"></script>
+
+  <script src="src/app/dashboard/services/dashboard.service.js"></script>
+  <script src="src/app/dashboard/services/card-api.service.js"></script>
+  <script src="src/app/dashboard/services/transaction-api.service.js"></script>
+  <script src="src/app/dashboard/services/reporting-api.service.js"></script>
+  <script src="src/app/dashboard/services/user-profile-api.service.js"></script>
+
+  <script src="src/app/dashboard/directives/summary-tiles.directive.js"></script>
+  <script src="src/app/dashboard/directives/card-list.directive.js"></script>
+  <script src="src/app/dashboard/directives/monthly-spend-chart.directive.js"></script>
+  <script src="src/app/dashboard/directives/error-banner.directive.js"></script>
+</body>
+</html>
