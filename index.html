@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Credit Card Analysis Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <link rel="stylesheet" href="src/app/dashboard/dashboard.css">
+</head>
+<body ng-app="creditCardDashboard">
+  <div ng-controller="DashboardController as vm">
+    <header class="cc-header">
+      <h1>Credit Card Analysis Dashboard</h1>
+      <p class="cc-subtitle">Monitor multiple credit cards, spending, and insights from a single interface.</p>
+    </header>
+
+    <section class="cc-kpi-container">
+      <div class="cc-kpi">
+        <div class="cc-kpi-label">Monthly Spend</div>
+        <div class="cc-kpi-value">{{ vm.summary.monthlySpend | currency:vm.currencySymbol }}</div>
+      </div>
+      <div class="cc-kpi">
+        <div class="cc-kpi-label">Total Credit Limit</div>
+        <div class="cc-kpi-value">{{ vm.summary.totalCreditLimit | currency:vm.currencySymbol }}</div>
+      </div>
+      <div class="cc-kpi">
+        <div class="cc-kpi-label">Available Credit</div>
+        <div class="cc-kpi-value">{{ vm.summary.availableCredit | currency:vm.currencySymbol }}</div>
+      </div>
+      <div class="cc-kpi">
+        <div class="cc-kpi-label">Outstanding Amount</div>
+        <div class="cc-kpi-value cc-kpi-outstanding">{{ vm.summary.outstandingAmount | currency:vm.currencySymbol }}</div>
+      </div>
+    </section>
+
+    <section class="cc-layout">
+      <div class="cc-left-column">
+        <h2 class="cc-section-title">Cards</h2>
+        <div class="cc-card-list">
+          <div class="cc-card-item" ng-repeat="card in vm.cards" ng-class="{ 'cc-card-item--active': vm.selectedCard && vm.selectedCard.id === card.id }" ng-click="vm.selectCard(card)">
+            <div class="cc-card-header">
+              <div class="cc-card-name">{{ card.name }}</div>
+              <div class="cc-card-bank">{{ card.bank }}</div>
+            </div>
+            <div class="cc-card-body">
+              <div class="cc-card-meta">
+                <span class="cc-card-label">Limit</span>
+                <span class="cc-card-value">{{ card.creditLimit | currency:vm.currencySymbol }}</span>
+              </div>
+              <div class="cc-card-meta">
+                <span class="cc-card-label">Outstanding</span>
+                <span class="cc-card-value">{{ card.outstanding | currency:vm.currencySymbol }}</span>
+              </div>
+              <div class="cc-card-meta">
+                <span class="cc-card-label">Available</span>
+                <span class="cc-card-value">{{ card.available | currency:vm.currencySymbol }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cc-right-column" ng-if="vm.selectedCard">
+        <h2 class="cc-section-title">{{ vm.selectedCard.name }} - Monthly Spend Overview</h2>
+
+        <div class="cc-card-summary">
+          <div class="cc-card-summary-item">
+            <span class="cc-card-summary-label">Current Month Spend</span>
+            <span class="cc-card-summary-value">{{ vm.selectedCard.monthlySpend | currency:vm.currencySymbol }}</span>
+          </div>
+          <div class="cc-card-summary-item">
+            <span class="cc-card-summary-label">Billing Cycle</span>
+            <span class="cc-card-summary-value">{{ vm.selectedCard.billingCycle }}</span>
+          </div>
+        </div>
+
+        <div class="cc-charts-grid">
+          <div class="cc-chart-panel">
+            <h3 class="cc-chart-title">Monthly Spend Trend</h3>
+            <table class="cc-table cc-table--compact">
+              <thead>
+                <tr>
+                  <th>Month</th>
+                  <th class="cc-text-right">Spend</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="trend in vm.selectedCard.monthlyTrends">
+                  <td>{{ trend.month }}</td>
+                  <td class="cc-text-right">{{ trend.amount | currency:vm.currencySymbol }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="cc-chart-panel">
+            <h3 class="cc-chart-title">Category-wise Spend</h3>
+            <table class="cc-table cc-table--compact">
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th class="cc-text-right">Amount</th>
+                  <th class="cc-text-right">Share</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="category in vm.categorySpend">
+                  <td>{{ category.name }}</td>
+                  <td class="cc-text-right">{{ category.amount | currency:vm.currencySymbol }}</td>
+                  <td class="cc-text-right">{{ category.share }}%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="cc-transactions-panel">
+          <h3 class="cc-chart-title">Recent Transactions</h3>
+          <table class="cc-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th class="cc-text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="txn in vm.filteredTransactions">
+                <td>{{ txn.date | date:'yyyy-MM-dd' }}</td>
+                <td>{{ txn.description }}</td>
+                <td>{{ txn.category }}</td>
+                <td class="cc-text-right">{{ txn.amount | currency:vm.currencySymbol }}</td>
+              </tr>
+              <tr ng-if="vm.filteredTransactions.length === 0">
+                <td colspan="4" class="cc-empty-state">No transactions available for the selected card.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/dashboard/dashboard.controller.js"></script>
+</body>
+</html>
