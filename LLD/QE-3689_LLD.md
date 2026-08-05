@@ -3,11 +3,9 @@
 **Epic ID:** QE-3689  
 **Application Name:** CreditCardAnalysisDashboard  
 **Technology Stack:**
-- AngularJS 1.x (SPA, MVC pattern)
-- JavaScript ES6 (transpiled as needed for legacy browsers)
-- HTML5, CSS3, Bootstrap 4/5-compatible styling
-- REST APIs (JSON over HTTPS)
-- Backend services exposed via API Gateway / BFF
+- UI: AngularJS 1.x, JavaScript (ES6 syntax where compatible via build/transpilation), HTML5, CSS3, Bootstrap 3/4
+- Architecture: MVC (AngularJS), RESTful APIs
+- Integration: API Gateway, Dashboard Application Service, Card Service, Transaction Service, Analytics Service, IAM, Config/Feature Flag, Logging/Audit
 
 ---
 
@@ -15,750 +13,746 @@
 
 ### 1.1 AngularJS MVC Architecture Mapping
 
-The Credit Card Analysis Dashboard is implemented as a Single Page Application (SPA) using AngularJS 1.x. It follows AngularJS MVC/MVVM patterns:
+The SPA is implemented as a single AngularJS application `ccDashboardApp` following MVC:
 
-- **View (V):** HTML templates with Bootstrap-based responsive layouts for dashboard, cards list, and charts.
-- **Controller (C):** AngularJS controllers that mediate between views and services, manage scope/view-model, trigger API calls, and handle UI logic.
-- **Model (M):** JavaScript objects representing cards, users, analytics summaries, and charts. Models are populated by REST services.
-- **Services/Factories:** Encapsulate REST API communication and shared business logic (aggregation on client, caching). 
-- **Directives/Components:** Reusable UI widgets (cards list, metric tiles, charts) with isolated scopes.
-- **Filters:** Formatting helpers (currency, dates, percentage).
-- **Configuration:** AngularJS module configuration (routes, interceptors), environment settings, API base URLs.
+- **Model Layer (Data & State)**
+  - AngularJS services/factories:
+    - `CardService` – fetches card metadata and limits.
+    - `TransactionService` – fetches summarized transaction data for dashboard.
+    - `AnalyticsService` – fetches/prepares aggregated metrics (monthly spend, totals).
+    - `DashboardService` – orchestrates calls to above services and consolidates DTO.
+    - `AuthService` – manages user identity, tokens, roles.
+    - `ConfigService` – loads configuration and feature flags.
+    - `LoggingService` – client-side structured logging.
+    - `ErrorHandlingService` – maps errors to user-friendly messages and fallback flows.
+    - `CacheService` – in-memory cache for dashboard responses.
 
-### 1.2 High-Level Component Mapping
+- **View Layer (HTML + Directives)**
+  - Core templates:
+    - `index.html` – shell, layout, root ng-view container.
+    - `dashboard/dashboard.html` – main dashboard view with tiles and card list.
+    - `dashboard/card-list.html` – nested template for responsive card listing.
+    - `shared/error-banner.html` – reusable error and warning banner.
+  - AngularJS directives/components:
+    - `ccDashboardHeader` – header bar with user info and navigation.
+    - `ccSummaryTiles` – renders overall summary metrics.
+    - `ccCardList` – renders per-card details.
+    - `ccResponsiveMetric` – handles responsive layout for metric tiles.
+    - `ccLoadingSpinner` – standard loading indicator.
 
-Mapping HLD components to AngularJS artifacts:
+- **Controller Layer**
+  - `DashboardController` – coordinates dashboard view lifecycle, binds data models, triggers services, manages state and errors.
+  - `HeaderController` – handles header-level actions, logout, profile.
 
-- **Browser UI (SPA)**
-  - Angular module: `ccadApp`
-  - Entry point: `index.html`
-  - Routing: `ui-router` or `ngRoute` for dashboard and auxiliary views.
+### 1.2 AngularJS Modules and Files
 
-- **Dashboard Application Service (HLD)**
-  - **AngularJS services:**
-    - `DashboardService` – orchestrates retrieval of dashboard summary and aggregates client-side state.
-    - `CardService` – integrates with Card Service REST APIs.
-    - `TransactionAnalyticsService` – integrates with Transaction Analytics REST APIs.
-  - **Controllers:**
-    - `DashboardController` – binds aggregated metrics to the main dashboard view.
-    - `CardListController` – handles per-card details, filters.
+- Root module: `ccDashboardApp`
+  - Dependencies: `ngRoute`, `ngAnimate`, `ngSanitize`, `ui.bootstrap`
 
-- **Card Service (HLD backend)**
-  - Exposed via REST API; consumed by UI through `CardService` Angular service.
+- Feature modules:
+  - `ccDashboard.core` – bootstrap, routes, configuration.
+  - `ccDashboard.services` – shared services.
+  - `ccDashboard.dashboard` – controllers, directives, and templates for dashboard.
+  - `ccDashboard.shared` – shared directives, filters, components.
 
-- **Transaction Analytics Service (HLD backend)**
-  - Exposed via REST API; consumed by UI through `TransactionAnalyticsService` Angular service.
+### 1.3 Recommended Project Folder Structure
 
-- **Authentication & Authorization Service + IDP**
-  - Interacted with via browser redirection & JWT tokens.
-  - AngularJS:
-    - `AuthService` – manages token storage, login state, user roles.
-    - HTTP interceptor – attaches JWT to outgoing API requests, handles 401/403.
+```
+CreditCardAnalysisDashboard/
+  src/
+    index.html
+    app/
+      app.module.js
+      app.config.js
+      app.routes.js
+      app.constants.js
 
-- **Configuration / Feature Flags**
-  - AngularJS:
-    - `ConfigService` – fetches and caches configuration / feature flags.
+      core/
+        core.module.js
+        auth/
+          auth.service.js
+          auth.interceptor.js
+        config/
+          config.service.js
+        logging/
+          logging.service.js
+          error-handling.service.js
+        cache/
+          cache.service.js
 
-- **Audit Logging**
-  - AngularJS:
-    - `AuditService` – posts front-end audit events to a dedicated API endpoint.
+      dashboard/
+        dashboard.module.js
+        dashboard.controller.js
+        dashboard.service.js
+        dashboard.routes.js
+        templates/
+          dashboard.html
+          card-list.html
+          summary-tiles.html
 
-- **Monitoring & Error Handling**
-  - AngularJS:
-    - `ErrorHandlerService` – centralizes error processing.
-    - `$exceptionHandler` decorator – logs client-side exceptions.
+      services/
+        card.service.js
+        transaction.service.js
+        analytics.service.js
 
-### 1.3 Project Folder Structure
+      shared/
+        directives/
+          header/
+            header.directive.js
+            header.template.html
+          loading-spinner/
+            loading-spinner.directive.js
+            loading-spinner.template.html
+          summary-tiles/
+            summary-tiles.directive.js
+            summary-tiles.template.html
+          card-list/
+            card-list.directive.js
+            card-list.template.html
+        filters/
+          currency-compact.filter.js
+          date-range.filter.js
 
-```text
-credit-card-analysis-dashboard/
-├─ dist/                        # Build outputs
-├─ src/
-│  ├─ index.html                # SPA entry
-│  ├─ app/
-│  │  ├─ app.module.js          # root module
-│  │  ├─ app.config.js          # routing, interceptors, constants
-│  │  ├─ app.run.js             # run blocks, init logic
-│  │  ├─ core/
-│  │  │  ├─ services/
-│  │  │  │  ├─ auth.service.js
-│  │  │  │  ├─ dashboard.service.js
-│  │  │  │  ├─ card.service.js
-│  │  │  │  ├─ transaction-analytics.service.js
-│  │  │  │  ├─ config.service.js
-│  │  │  │  ├─ audit.service.js
-│  │  │  │  ├─ error-handler.service.js
-│  │  │  ├─ interceptors/
-│  │  │  │  ├─ auth.interceptor.js
-│  │  │  │  ├─ http-logger.interceptor.js
-│  │  │  ├─ models/
-│  │  │  │  ├─ card.model.js
-│  │  │  │  ├─ user.model.js
-│  │  │  │  ├─ dashboard-summary.model.js
-│  │  │  │  ├─ transaction-metric.model.js
-│  │  │  ├─ filters/
-│  │  │  │  ├─ currency-format.filter.js
-│  │  │  │  ├─ percentage.filter.js
-│  │  │  │  ├─ date-range.filter.js
-│  │  ├─ dashboard/
-│  │  │  ├─ dashboard.controller.js
-│  │  │  ├─ dashboard.state.js       # state / route config
-│  │  │  ├─ dashboard.html           # main dashboard view
-│  │  │  ├─ directives/
-│  │  │  │  ├─ metric-tile.directive.js
-│  │  │  │  ├─ card-list.directive.js
-│  │  │  │  ├─ spend-chart.directive.js
-│  │  │  │  ├─ loading-spinner.directive.js
-│  │  ├─ cards/
-│  │  │  ├─ card-list.controller.js
-│  │  │  ├─ card-list.html
-│  │  │  ├─ card-detail.controller.js
-│  │  │  ├─ card-detail.html
-│  │  ├─ auth/
-│  │  │  ├─ login.controller.js
-│  │  │  ├─ login.html
-│  │  ├─ common/
-│  │  │  ├─ directives/
-│  │  │  │  ├─ responsive-container.directive.js
-│  │  │  │  ├─ error-banner.directive.js
-│  │  │  ├─ components/
-│  │  │  │  ├─ navbar.directive.js
-│  │  │  │  ├─ footer.directive.js
-│  ├─ assets/
-│  │  ├─ css/
-│  │  │  ├─ main.css
-│  │  │  ├─ themes.css
-│  │  ├─ img/
-│  │  ├─ fonts/
-│  ├─ env/
-│  │  ├─ env.local.js
-│  │  ├─ env.dev.js
-│  │  ├─ env.qa.js
-│  │  ├─ env.prod.js
-├─ test/
-│  ├─ unit/
-│  ├─ e2e/
-├─ package.json
-├─ gulpfile.js / webpack.config.js
+    assets/
+      css/
+        main.css
+        dashboard.css
+      img/
+        ...
+
+  config/
+    environment.dev.json
+    environment.qa.json
+    environment.prod.json
+
+  test/
+    unit/
+    e2e/
+
+  build/
+    ... (build outputs)
 ```
 
 ---
 
 ## 2. Component Specifications
 
-### 2.1 Root Module – `ccadApp`
+### 2.1 AngularJS Modules
 
-- **Artifact Type:** AngularJS Module
-- **File:** `src/app/app.module.js`
+#### 2.1.1 Module: `ccDashboardApp`
+- **Type:** AngularJS module
+- **File:** `app/app.module.js`
+- **Responsibility:** Root module that wires all feature modules and third-party dependencies.
+- **Public API:** N/A (module declaration)
+- **Dependencies:** `ngRoute`, `ngAnimate`, `ngSanitize`, `ui.bootstrap`, `ccDashboard.core`, `ccDashboard.services`, `ccDashboard.dashboard`, `ccDashboard.shared`.
+
+```js
+// app/app.module.js
+(function() {
+  'use strict';
+
+  angular
+    .module('ccDashboardApp', [
+      'ngRoute',
+      'ngAnimate',
+      'ngSanitize',
+      'ui.bootstrap',
+      'ccDashboard.core',
+      'ccDashboard.services',
+      'ccDashboard.dashboard',
+      'ccDashboard.shared'
+    ]);
+})();
+```
+
+#### 2.1.2 Module: `ccDashboard.core`
+- **File:** `app/core/core.module.js`
+- **Responsibility:** Core cross-cutting concerns: auth, configuration, interceptors.
+- **Dependencies:** `ngRoute`.
+
+#### 2.1.3 Module: `ccDashboard.services`
+- **File:** `app/services/services.module.js`
+- **Responsibility:** Bundles all shared data-access services.
+
+#### 2.1.4 Module: `ccDashboard.dashboard`
+- **File:** `app/dashboard/dashboard.module.js`
+- **Responsibility:** Dashboard feature logic – controllers, feature-specific services, routes.
+
+#### 2.1.5 Module: `ccDashboard.shared`
+- **File:** `app/shared/shared.module.js`
+- **Responsibility:** Shared directives, filters, and UI components.
+
+---
+
+### 2.2 Controllers
+
+#### 2.2.1 `DashboardController`
+- **Type:** Controller
+- **File:** `app/dashboard/dashboard.controller.js`
 - **Responsibility:**
-  - Declare root Angular module `ccadApp`.
-  - Register core dependencies (e.g., `ui.router`, `ngAnimate`, `ngResource`).
-- **Public API:** N/A (module definition only).
-- **Dependencies:**
-  - Angular modules: `ui.router`, `ngMessages`, `ngResource`, custom feature modules (`ccad.dashboard`, `ccad.cards`, `ccad.auth`).
+  - Initialize dashboard view.
+  - Invoke `DashboardService` to load data.
+  - Manage UI state (loading, error, partial data flags).
+  - Expose metrics and card data to view.
+  - Handle filter changes (e.g., date range for monthly spend) and refresh.
 
-### 2.2 App Configuration – Routing & Interceptors
+- **Public Methods (bound to `$scope` or `vm`):**
+  - `init()` – triggers initial load.
+  - `reload()` – reloads dashboard data.
+  - `onDateRangeChange(range)` – updates selected period and reloads.
+  - `hasPartialData()` – returns boolean for UI warnings.
 
-#### 2.2.1 `app.config.js`
+- **Inputs:**
+  - Route resolve data (optional), e.g., preloaded config.
+  - User selections from view (date range, filters).
 
-- **Artifact Type:** Config block
-- **File:** `src/app/app.config.js`
-- **Responsibility:**
-  - Configure routing states using `ui-router`.
-  - Configure `$httpProvider` interceptors for auth and logging.
-  - Register constants for API base URLs, environment.
-- **Public Methods:**
-  - Angular config function: `configure($stateProvider, $urlRouterProvider, $httpProvider, API_CONFIG)`.
-- **Inputs:** N/A (execute at module config phase).
 - **Outputs:**
-  - Sets up route-to-controller/template mappings.
-- **Dependencies:** `$stateProvider`, `$urlRouterProvider`, `$httpProvider`, `API_CONFIG`.
+  - View models:
+    - `vm.summaryMetrics` – aggregated metrics object.
+    - `vm.cards` – list of cards with metrics.
+    - `vm.isLoading`, `vm.error`, `vm.partialDataWarning`.
 
-Key routes:
-- `/dashboard` → `DashboardController` + `dashboard.html`
-- `/cards` → `CardListController` + `card-list.html`
-- `/cards/:cardId` → `CardDetailController` + `card-detail.html`
-- `/login` → `LoginController` + `login.html`
+- **Dependencies (DI):**
+  - `DashboardService`, `ConfigService`, `LoggingService`, `ErrorHandlingService`, `$routeParams`.
 
-#### 2.2.2 Auth HTTP Interceptor – `auth.interceptor.js`
+```js
+// app/dashboard/dashboard.controller.js
+(function() {
+  'use strict';
 
-- **Artifact Type:** Factory (HTTP interceptor)
-- **File:** `src/app/core/interceptors/auth.interceptor.js`
+  angular
+    .module('ccDashboard.dashboard')
+    .controller('DashboardController', DashboardController);
+
+  DashboardController.$inject = [
+    'DashboardService',
+    'ConfigService',
+    'LoggingService',
+    'ErrorHandlingService',
+    '$routeParams'
+  ];
+
+  function DashboardController(DashboardService, ConfigService, LoggingService, ErrorHandlingService, $routeParams) {
+    const vm = this;
+
+    vm.summaryMetrics = null;
+    vm.cards = [];
+    vm.isLoading = false;
+    vm.error = null;
+    vm.partialDataWarning = null;
+    vm.dateRange = $routeParams.dateRange || 'CURRENT_MONTH';
+
+    vm.init = init;
+    vm.reload = reload;
+    vm.onDateRangeChange = onDateRangeChange;
+    vm.hasPartialData = hasPartialData;
+
+    init();
+
+    function init() {
+      vm.isLoading = true;
+      vm.error = null;
+
+      DashboardService
+        .loadDashboard(vm.dateRange)
+        .then(response => {
+          vm.summaryMetrics = response.summary;
+          vm.cards = response.cards;
+          vm.partialDataWarning = response.partialDataWarning || null;
+        })
+        .catch(err => {
+          vm.error = ErrorHandlingService.toUserMessage(err);
+          LoggingService.error('Dashboard load failed', { err });
+        })
+        .finally(() => {
+          vm.isLoading = false;
+        });
+    }
+
+    function reload() {
+      init();
+    }
+
+    function onDateRangeChange(range) {
+      vm.dateRange = range;
+      reload();
+    }
+
+    function hasPartialData() {
+      return !!vm.partialDataWarning;
+    }
+  }
+})();
+```
+
+#### 2.2.2 `HeaderController`
+- **Type:** Controller
+- **File:** `app/shared/directives/header/header.directive.js` (embedded or separated as `header.controller.js`)
+- **Responsibility:** Manage header actions (logout, navigating between sections, displaying user name).
+- **Dependencies:** `AuthService`, `LoggingService`.
+
+---
+
+### 2.3 Services / Factories
+
+#### 2.3.1 `DashboardService`
+- **Type:** Service
+- **File:** `app/dashboard/dashboard.service.js`
 - **Responsibility:**
-  - Attach JWT token to outgoing requests.
-  - Redirect to login on 401/403.
-  - Handle correlation IDs.
+  - Orchestrate REST call to Dashboard Application Service: `/dashboard/overview` via API Gateway.
+  - Transform response DTO into view-ready structures.
+  - Apply fallback logic when partial data is returned.
+
 - **Public Methods:**
-  - `request(config)` – add `Authorization` and `X-Correlation-Id` headers.
-  - `responseError(rejection)` – handle auth failures, pass to `ErrorHandlerService`.
+  - `loadDashboard(dateRange: String) : Promise<DashboardResponse>`
+
 - **Inputs:**
-  - `config` – HTTP config.
-  - `rejection` – HTTP error response.
+  - `dateRange` – e.g., `CURRENT_MONTH`, `BILLING_CYCLE`, custom.
+
 - **Outputs:**
-  - Modified `config` or rejected promise.
+  - Promise resolving to `DashboardResponse` model.
+
 - **Dependencies:**
-  - `AuthService`, `$q`, `$injector`, `ErrorHandlerService`.
+  - `$http`, `ConfigService`, `CacheService`, `ErrorHandlingService`, `LoggingService`.
 
-### 2.3 Services
+```js
+// app/dashboard/dashboard.service.js
+(function() {
+  'use strict';
 
-#### 2.3.1 `AuthService`
+  angular
+    .module('ccDashboard.dashboard')
+    .service('DashboardService', DashboardService);
 
-- **Artifact Type:** Service
-- **File:** `src/app/core/services/auth.service.js`
-- **Responsibility:**
-  - Manage user authentication state.
-  - Store and retrieve JWT tokens (via secure cookies / session storage wrappers).
-  - Provide user claims and roles.
+  DashboardService.$inject = ['$http', 'ConfigService', 'CacheService', 'ErrorHandlingService', 'LoggingService'];
+
+  function DashboardService($http, ConfigService, CacheService, ErrorHandlingService, LoggingService) {
+    const service = {
+      loadDashboard
+    };
+
+    return service;
+
+    function loadDashboard(dateRange) {
+      const cacheKey = `dashboard_${dateRange}`;
+      const cached = CacheService.get(cacheKey);
+
+      if (cached) {
+        LoggingService.debug('Serving dashboard from cache', { dateRange });
+        return Promise.resolve(cached);
+      }
+
+      const endpoint = `${ConfigService.getApiBaseUrl()}/dashboard/overview`;
+      const params = { dateRange };
+
+      return $http.get(endpoint, { params })
+        .then(response => {
+          const dto = response.data;
+          const mapped = mapDashboardDto(dto);
+          CacheService.put(cacheKey, mapped, 60); // cache 60s
+          return mapped;
+        })
+        .catch(err => {
+          const wrapped = ErrorHandlingService.wrapHttpError(err, 'DASHBOARD_LOAD_FAILED');
+          return Promise.reject(wrapped);
+        });
+    }
+
+    function mapDashboardDto(dto) {
+      return {
+        summary: {
+          totalCreditLimit: dto.summary.totalCreditLimit,
+          totalAvailableCredit: dto.summary.totalAvailableCredit,
+          totalOutstandingAmount: dto.summary.totalOutstandingAmount,
+          monthlySpend: dto.summary.monthlySpend,
+          periodLabel: dto.summary.periodLabel
+        },
+        cards: dto.cards.map(card => ({
+          cardId: card.cardId,
+          maskedCardNumber: card.maskedCardNumber,
+          productName: card.productName,
+          creditLimit: card.creditLimit,
+          availableCredit: card.availableCredit,
+          outstandingAmount: card.outstandingAmount,
+          lastUpdated: card.lastUpdated,
+          status: card.status
+        })),
+        partialDataWarning: dto.partialDataWarning || null
+      };
+    }
+  }
+})();
+```
+
+#### 2.3.2 `CardService`
+- **Type:** Service
+- **File:** `app/services/card.service.js`
+- **Responsibility:** Direct interaction with Card Service API where needed (e.g., rendering detailed card views, not just aggregated dashboard call).
+
 - **Public Methods:**
-  - `isAuthenticated()` → boolean.
-  - `getToken()` → JWT token string.
-  - `setToken(token)`.
-  - `clearSession()`.
-  - `getUser()` → `User` model.
-- **Inputs:** token, user payload.
-- **Outputs:** internal state updates, token storage.
-- **Dependencies:** `$window`, `$cookies` (optional), `UserModel`.
+  - `getUserCards() : Promise<Card[]>`
+  - `getCardById(cardId: String) : Promise<Card>`
 
-#### 2.3.2 `DashboardService`
+- **Dependencies:** `$http`, `ConfigService`, `ErrorHandlingService`.
 
-- **Artifact Type:** Service
-- **File:** `src/app/core/services/dashboard.service.js`
-- **Responsibility:**
-  - Orchestrate retrieval of dashboard summary data.
-  - Call Card and Transaction Analytics services, aggregate results.
-  - Provide consolidated summary to controllers.
+#### 2.3.3 `TransactionService`
+- **Type:** Service
+- **File:** `app/services/transaction.service.js`
+- **Responsibility:** Fetch transaction summaries used for analytics when required directly by UI (extended use cases).
+
 - **Public Methods:**
-  - `loadDashboardSummary(options)` → Promise resolving to `DashboardSummary`.
-  - `refresh()` → re-fetch with last options.
+  - `getMonthlySummary(cardId, dateRange)`
+
+- **Dependencies:** `$http`, `ConfigService`, `ErrorHandlingService`.
+
+#### 2.3.4 `AnalyticsService`
+- **Type:** Service
+- **File:** `app/services/analytics.service.js`
+- **Responsibility:** Provide additional client-side analytics (e.g., chart data preparation) on top of server metrics.
+
+- **Public Methods:**
+  - `buildChartSeries(summaryMetrics, cards)` – prepare chart series for UI components.
+
+#### 2.3.5 `AuthService`
+- **Type:** Service
+- **File:** `app/core/auth/auth.service.js`
+- **Responsibility:**
+  - Manage tokens (access, ID token) from IAM.
+  - Provide user identity and roles to UI.
+  - Trigger login/logout flows (delegate to IAM via redirect).
+
+- **Public Methods:**
+  - `getAccessToken()`
+  - `getUser()`
+  - `isAuthenticated()`
+  - `hasRole(role)`
+  - `login()`
+  - `logout()`
+
+#### 2.3.6 `ConfigService`
+- **Type:** Service
+- **File:** `app/core/config/config.service.js`
+- **Responsibility:**
+  - Load environment-specific configuration.
+  - Provide API base URLs, feature flags, supported devices, thresholds for warnings.
+
+- **Public Methods:**
+  - `loadConfig() : Promise<void>` (called during app init)
+  - `getApiBaseUrl()`
+  - `getFeatureFlag(flagName)`
+  - `getSupportedDevices()`
+  - `getThreshold(name)`
+
+#### 2.3.7 `LoggingService`
+- **Type:** Service
+- **File:** `app/core/logging/logging.service.js`
+- **Responsibility:**
+  - Standardized logging across the SPA.
+  - Forward logs to server-side logging endpoint when enabled.
+
+- **Public Methods:**
+  - `debug(message, context)`
+  - `info(message, context)`
+  - `warn(message, context)`
+  - `error(message, context)`
+
+#### 2.3.8 `ErrorHandlingService`
+- **Type:** Service
+- **File:** `app/core/logging/error-handling.service.js`
+- **Responsibility:**
+  - Wrap HTTP errors with standardized structure.
+  - Map technical errors to user-friendly error messages.
+
+- **Public Methods:**
+  - `wrapHttpError(err, code)`
+  - `toUserMessage(err)`
+
+#### 2.3.9 `CacheService`
+- **Type:** Service
+- **File:** `app/core/cache/cache.service.js`
+- **Responsibility:** Client-side cache for responses to improve perceived performance.
+
+- **Public Methods:**
+  - `get(key)`
+  - `put(key, value, ttlSeconds)`
+  - `remove(key)`
+
+---
+
+### 2.4 Directives / Components
+
+#### 2.4.1 `ccDashboardHeader`
+- **Type:** Directive (element)
+- **File:** `app/shared/directives/header/header.directive.js`
+- **Template:** `app/shared/directives/header/header.template.html`
+- **Responsibility:** Display application header with title, user info, and logout.
+
 - **Inputs:**
-  - `options` – date range, filters (e.g., `fromDate`, `toDate`, `includeClosedCards`).
+  - `user` – bound from parent.
+
 - **Outputs:**
-  - `DashboardSummary` model instance with metrics: total limit, total outstanding, available credit, monthly spend, trends, per-card metrics.
-- **Dependencies:**
-  - `CardService`, `TransactionAnalyticsService`, `$q`, `ConfigService`, `AuditService`.
+  - `onLogout` – callback for logout.
 
-Data aggregation rules:
-- `totalCreditLimit` = sum of `card.creditLimit` across active cards.
-- `totalOutstanding` = sum of `card.outstandingBalance` across cards.
-- `totalAvailableCredit` = sum of `card.availableCredit`.
-- `monthlySpend` = aggregated from transaction metrics for current month.
+- **Dependencies:** `AuthService`.
 
-#### 2.3.3 `CardService`
-
-- **Artifact Type:** Service
-- **File:** `src/app/core/services/card.service.js`
+#### 2.4.2 `ccSummaryTiles`
+- **Type:** Directive
+- **File:** `app/shared/directives/summary-tiles/summary-tiles.directive.js`
+- **Template:** `app/shared/directives/summary-tiles/summary-tiles.template.html`
 - **Responsibility:**
-  - Communicate with Card Service backend via REST.
-  - Provide card list and per-card metrics.
-- **Public Methods:**
-  - `getCards()` → Promise<Array<Card>>.
-  - `getCard(cardId)` → Promise<Card>.
-  - `getCardSummary()` → Promise<{ totalCreditLimit, totalOutstanding, totalAvailable }>` (if backend supports summary endpoint).
-- **Inputs:** `cardId`.
-- **Outputs:** Card model objects.
-- **Dependencies:** `$http`, `API_CONFIG`, `CardModel`, `ErrorHandlerService`.
+  - Render summary metrics as responsive tiles (total credit limit, available credit, outstanding amount, monthly spend).
 
-#### 2.3.4 `TransactionAnalyticsService`
-
-- **Artifact Type:** Service
-- **File:** `src/app/core/services/transaction-analytics.service.js`
-- **Responsibility:**
-  - Communicate with Transaction Analytics Service.
-  - Fetch monthly spend and trend data.
-- **Public Methods:**
-  - `getMonthlySpendSummary(options)` → Promise<TransactionMetric>.
-  - `getSpendTrends(options)` → Promise<Array<TransactionMetric>>.
 - **Inputs:**
-  - `options` – date range, granularity (monthly), card filters.
-- **Outputs:** transaction metrics models.
-- **Dependencies:** `$http`, `API_CONFIG`, `TransactionMetricModel`, `ErrorHandlerService`.
+  - `summary` – object with metrics.
 
-#### 2.3.5 `ConfigService`
-
-- **Artifact Type:** Service
-- **File:** `src/app/core/services/config.service.js`
+#### 2.4.3 `ccCardList`
+- **Type:** Directive
+- **File:** `app/shared/directives/card-list/card-list.directive.js`
+- **Template:** `app/shared/directives/card-list/card-list.template.html`
 - **Responsibility:**
-  - Load non-secret configuration and feature flags from Config service.
-  - Cache configuration for the session.
-- **Public Methods:**
-  - `load()` → Promise<Config>.
-  - `getFlag(flagName)` → boolean.
-  - `getConfig(key)` → any.
-- **Inputs:** none (initial load at app init).
-- **Outputs:** internal config cache.
-- **Dependencies:** `$http`, `API_CONFIG`.
+  - Render list of cards with key metrics in responsive layout.
+  - Show warnings for partial data.
 
-#### 2.3.6 `AuditService`
-
-- **Artifact Type:** Service
-- **File:** `src/app/core/services/audit.service.js`
-- **Responsibility:**
-  - Send front-end audit events to Audit Log Service endpoint.
-  - Include correlation ID, user, and action details.
-- **Public Methods:**
-  - `log(event)` where `event` includes `{ action, resource, metadata }`.
-- **Inputs:** audit event object.
-- **Outputs:** HTTP POST to audit API.
-- **Dependencies:** `$http`, `API_CONFIG`, `AuthService`.
-
-#### 2.3.7 `ErrorHandlerService`
-
-- **Artifact Type:** Service
-- **File:** `src/app/core/services/error-handler.service.js`
-- **Responsibility:**
-  - Normalize and handle errors from HTTP responses and client exceptions.
-  - Show user-friendly messages and propagate error metadata.
-- **Public Methods:**
-  - `handleHttpError(rejection)`.
-  - `handleClientError(error)`.
-  - `getErrorMessage(code)`.
-- **Inputs:** `rejection` or `error`.
-- **Outputs:** logs, UI error banners, optional rethrows.
-- **Dependencies:** `$log`, `AuditService`, `$rootScope` (for global events), `ConfigService`.
-
-### 2.4 Controllers
-
-#### 2.4.1 `DashboardController`
-
-- **Artifact Type:** Controller
-- **File:** `src/app/dashboard/dashboard.controller.js`
-- **Responsibility:**
-  - Initialize and manage dashboard view model.
-  - Trigger dashboard data load via `DashboardService`.
-  - Handle refresh and filters (date ranges, card filters).
-- **Public Methods (on `$scope` / `vm`):**
-  - `vm.init()` – called on view load.
-  - `vm.refresh()` – reload dashboard data.
-  - `vm.onDateRangeChange(range)`.
 - **Inputs:**
-  - User interactions, route parameters.
-- **Outputs:**
-  - View model fields: `vm.summary`, `vm.cards`, `vm.trends`, `vm.loading`, `vm.error`.
-- **Dependencies:**
-  - `DashboardService`, `ConfigService`, `$state`, `ErrorHandlerService`, `AuditService`.
+  - `cards` – array of card objects.
+  - `partialDataWarning` – optional string.
 
-#### 2.4.2 `CardListController`
+#### 2.4.4 `ccLoadingSpinner`
+- **Type:** Directive
+- **File:** `app/shared/directives/loading-spinner/loading-spinner.directive.js`
+- **Template:** `app/shared/directives/loading-spinner/loading-spinner.template.html`
+- **Responsibility:** Standard loading indicator for asynchronous operations.
 
-- **Artifact Type:** Controller
-- **File:** `src/app/cards/card-list.controller.js`
-- **Responsibility:**
-  - Retrieve and display list of cards.
-  - Support filtering, basic sorting.
-- **Public Methods:**
-  - `vm.init()`.
-  - `vm.selectCard(card)` – navigate to detail.
-- **Dependencies:** `CardService`, `$state`, `ErrorHandlerService`.
+---
 
-#### 2.4.3 `CardDetailController`
+### 2.5 Filters
 
-- **Artifact Type:** Controller
-- **File:** `src/app/cards/card-detail.controller.js`
-- **Responsibility:**
-  - Show per-card detail including limit, outstanding, available credit, and specific spend.
-- **Dependencies:** `CardService`, `TransactionAnalyticsService`, `$stateParams`, `ErrorHandlerService`.
+#### 2.5.1 `currencyCompact`
+- **Type:** Filter
+- **File:** `app/shared/filters/currency-compact.filter.js`
+- **Responsibility:** Convert large amounts to compact currency format (e.g., 1,500,000 → 1.5M).
 
-#### 2.4.4 `LoginController`
-
-- **Artifact Type:** Controller
-- **File:** `src/app/auth/login.controller.js`
-- **Responsibility:**
-  - Handle login initiation (redirect to IDP) and post-login state.
-- **Dependencies:** `AuthService`, `$window`, `$state`.
-
-### 2.5 Directives / Components
-
-#### 2.5.1 `metricTile` Directive
-
-- **Artifact Type:** Directive (component-style)
-- **File:** `src/app/dashboard/directives/metric-tile.directive.js`
-- **Responsibility:**
-  - Reusable tile to display a metric (e.g., total limit, outstanding, available credit, monthly spend).
-- **Scope Inputs:**
-  - `title` (string)
-  - `value` (number)
-  - `currency` (optional boolean)
-  - `tooltip` (string)
-- **Outputs:** none (pure display).
-- **Dependencies:** `currencyFormat` filter.
-
-#### 2.5.2 `cardList` Directive
-
-- **Artifact Type:** Directive
-- **File:** `src/app/dashboard/directives/card-list.directive.js`
-- **Responsibility:**
-  - Render list of cards with key metrics.
-- **Scope Inputs:**
-  - `cards` (array of Card models)
-  - `onSelect(card)` (callback).
-
-#### 2.5.3 `spendChart` Directive
-
-- **Artifact Type:** Directive
-- **File:** `src/app/dashboard/directives/spend-chart.directive.js`
-- **Responsibility:**
-  - Render monthly spend trend chart using a charting library (e.g., Chart.js, D3) wrapped for AngularJS.
-- **Scope Inputs:**
-  - `data` – array of `{ month, amount }`.
-  - `options` – chart configuration.
-
-#### 2.5.4 `loadingSpinner` Directive
-
-- **Artifact Type:** Directive
-- **File:** `src/app/dashboard/directives/loading-spinner.directive.js`
-- **Responsibility:**
-  - Display loading indicator during async operations.
-- **Inputs:**
-  - `isLoading`.
-
-#### 2.5.5 `errorBanner` Directive
-
-- **Artifact Type:** Directive
-- **File:** `src/app/common/directives/error-banner.directive.js`
-- **Responsibility:**
-  - Display application-level error messages.
-- **Scope Inputs:**
-  - `error` object or message.
-
-### 2.6 Filters
-
-- **`currencyFormat`** – wrap `$filter('currency')` to use localized settings.  
-- **`percentage`** – format decimal numbers as percentages.  
-- **`dateRange`** – format date range labels (e.g., `Jan 2025 - Jun 2025`).
+#### 2.5.2 `dateRangeLabel`
+- **Type:** Filter
+- **File:** `app/shared/filters/date-range.filter.js`
+- **Responsibility:** Format date range codes (`CURRENT_MONTH`, `BILLING_CYCLE`) into human-readable labels.
 
 ---
 
 ## 3. Component Responsibilities
 
-### 3.1 UI Components
+- **DashboardController:** Orchestrates UI state and user interactions, delegates business logic to services.
+- **DashboardService:** Owns business orchestration logic for dashboard data retrieval (including partial data handling and caching).
+- **CardService & TransactionService:** Isolated data access logic to respective backend microservices.
+- **AnalyticsService:** Client-side transformations for charts and additional aggregates.
+- **AuthService:** Authentication state, tokens, roles; no business metrics inside.
+- **ConfigService:** Environmental configs and feature flags. No business logic besides config interpretation.
+- **LoggingService & ErrorHandlingService:** Cross-cutting concerns; do not host business logic, only error/log wrappers.
+- **Directives (`ccSummaryTiles`, `ccCardList`, `ccDashboardHeader`, `ccLoadingSpinner`):** Purely presentational components; minimal logic restricted to UI composition.
 
-- **Dashboard View (`dashboard.html`)**
-  - Layout: Responsive grid with tiles for total limit, outstanding, available credit, monthly spend.
-  - Contains sections for:
-    - Summary metrics (metric tiles).
-    - List of cards.
-    - Monthly spend chart.
-  - Delegates all data logic to `DashboardController`.
-
-- **Cards Views (`card-list.html`, `card-detail.html`)**
-  - `card-list.html`: Displays user cards with basic metrics, uses `cardList` directive.
-  - `card-detail.html`: Detailed view for a single card including per-month spend breakdown.
-
-### 3.2 Controllers
-
-- **`DashboardController`**
-  - Owns page-level state: loading flags, errors, summary data, filters.
-  - No direct HTTP calls; uses `DashboardService` exclusively.
-  - Handles user actions: filter change, manual refresh.
-
-- **`CardListController`**
-  - Manages card list state independent of dashboard summary.
-  - Uses `CardService` for data; `DashboardService` not required.
-
-- **`CardDetailController`**
-  - Manages selected card details and card-specific spend trends.
-
-### 3.3 Services
-
-- **`DashboardService`**
-  - Primary orchestrator for HLD "Dashboard Application Service" behavior on client side.
-  - Responsible for combining responses from `CardService` and `TransactionAnalyticsService` consistently with backend semantics.
-  - Applies client-side ABAC checks if needed (e.g., verifying UI-level visibility flags from token/claims).
-
-- **`CardService`**
-  - Encapsulates all communication with card backend APIs.
-  - Ensures all requests are scoped to current user (user id from token, not from UI input).
-
-- **`TransactionAnalyticsService`**
-  - Encapsulates analytics API access.
-  - Shields controllers from API detail changes.
-
-- **`AuthService`**
-  - Manages tokens and user sessions; central authority for authentication state.
-
-- **`ConfigService`**
-  - Controls feature toggles (e.g., show/hide advanced analytics section if `analyticsEnabled` flag is off or user consents not given).
-
-- **`AuditService`**
-  - Records `VIEW_DASHBOARD` and other key actions (e.g., `VIEW_CARD_DETAIL`).
-
-- **`ErrorHandlerService`**
-  - Ensures consistent user messaging and logging for failures.
+This separation preserves MVC and single-responsibility principles.
 
 ---
 
 ## 4. Interface Specifications
 
-### 4.1 REST API Interfaces
+### 4.1 Controller–Service Interactions
 
-#### 4.1.1 Card Service API
+- `DashboardController` → `DashboardService.loadDashboard(dateRange)`
+- `DashboardService` → `$http` (REST)
+- `DashboardService` → `CacheService` for caching.
+- `DashboardService` → `ErrorHandlingService` for wrapping errors.
 
-Base URL: `${API_CONFIG.CARD_SERVICE_BASE_URL}` (e.g., `https://api.example.com/cards`)
+### 4.2 REST API Interfaces
 
-1. **List User Cards**
-   - **Endpoint:** `GET /v1/cards`
-   - **Description:** Returns all cards for authenticated user.
-   - **Request Headers:**
-     - `Authorization: Bearer <JWT>`
-     - `X-Correlation-Id: <uuid>`
-   - **Query Params:**
-     - `includeClosed` (optional, boolean)
-   - **Response 200 (application/json):**
-     ```json
-     {
-       "cards": [
-         {
-           "cardId": "CARD-123",
-           "maskedPan": "**** **** **** 1234",
-           "displayName": "Primary Card",
-           "creditLimit": 10000.0,
-           "outstandingBalance": 2500.0,
-           "availableCredit": 7500.0,
-           "currency": "USD",
-           "status": "ACTIVE"
-         }
-       ]
-     }
-     ```
-   - **Error Responses:**
-     - `401 Unauthorized` – invalid/expired token.
-     - `403 Forbidden` – user lacks entitlements.
-     - `500 Internal Server Error` – general failure.
+The SPA interacts only with the API Gateway. Downstream services (Dashboard Application Service, Card Service, Transaction Service, Analytics Service) are shielded behind it.
 
-2. **Get Card by ID**
-   - **Endpoint:** `GET /v1/cards/{cardId}`
-   - **Description:** Retrieve specific card details.
-   - **Response 200:** Same card object as above.
-   - **Error Responses:** `404 Not Found` (card not owned by user or does not exist).
+#### 4.2.1 `GET /dashboard/overview`
 
-3. **Get Card Summary (Optional)**
-   - **Endpoint:** `GET /v1/cards/summary`
-   - **Description:** Returns aggregated metrics per user.
-   - **Response 200:**
-     ```json
-     {
-       "totalCreditLimit": 20000.0,
-       "totalOutstanding": 4000.0,
-       "totalAvailableCredit": 16000.0,
-       "currency": "USD"
-     }
-     ```
+- **Endpoint:** `${API_BASE_URL}/dashboard/overview`
+- **Method:** GET
+- **Headers:**
+  - `Authorization: Bearer <access_token>`
+  - `Accept: application/json`
+- **Query Parameters:**
+  - `dateRange` (string) – e.g., `CURRENT_MONTH`, `BILLING_CYCLE`, or `YYYY-MM`.
 
-#### 4.1.2 Transaction Analytics Service API
+- **Request Example:**
 
-Base URL: `${API_CONFIG.TX_ANALYTICS_BASE_URL}` (e.g., `https://api.example.com/transactions`)
+```http
+GET /dashboard/overview?dateRange=CURRENT_MONTH HTTP/1.1
+Host: api.example.com
+Authorization: Bearer eyJhbGciOi...
+Accept: application/json
+```
 
-1. **Monthly Spend Summary**
-   - **Endpoint:** `GET /v1/analytics/monthly-spend`
-   - **Query Params:**
-     - `from` (ISO date)
-     - `to` (ISO date)
-     - `cardIds` (optional, comma-separated)
-   - **Response 200:**
-     ```json
-     {
-       "totalMonthlySpend": 1200.0,
-       "currency": "USD"
-     }
-     ```
+- **Response 200 (OK):**
 
-2. **Monthly Spend Trends**
-   - **Endpoint:** `GET /v1/analytics/monthly-spend/trend`
-   - **Query Params:** same as above, plus optional `months` for last N months.
-   - **Response 200:**
-     ```json
-     {
-       "trend": [
-         { "month": "2025-01", "amount": 800.0 },
-         { "month": "2025-02", "amount": 1200.0 }
-       ],
-       "currency": "USD"
-     }
-     ```
-
-#### 4.1.3 Dashboard Summary API (BFF)
-
-In some deployments, backend may expose a single dashboard endpoint that already aggregates Card + Analytics data.
-
-- **Endpoint:** `GET /v1/dashboard/summary`
-- **Response 200:**
-  ```json
-  {
-    "totalCreditLimit": 20000.0,
-    "totalOutstanding": 4000.0,
-    "totalAvailableCredit": 16000.0,
-    "monthlySpend": 1200.0,
-    "currency": "USD",
-    "cards": [
-      {
-        "cardId": "CARD-123",
-        "displayName": "Primary Card",
-        "creditLimit": 10000.0,
-        "outstandingBalance": 2500.0,
-        "availableCredit": 7500.0,
-        "status": "ACTIVE"
-      }
-    ],
-    "trend": [
-      { "month": "2025-01", "amount": 800.0 },
-      { "month": "2025-02", "amount": 1200.0 }
-    ]
-  }
-  ```
-
-AngularJS implementation must be configurable to either:
-- Call `/v1/dashboard/summary` directly, or
-- Independently call Card + Analytics services and aggregate.
-
-#### 4.1.4 Config & Feature Flags API
-
-- **Endpoint:** `GET /v1/config/dashboard`
-- **Response 200:**
-  ```json
-  {
-    "analyticsEnabled": true,
-    "maxTrendMonths": 12,
-    "defaultTrendMonths": 6
-  }
-  ```
-
-#### 4.1.5 Audit Log API
-
-- **Endpoint:** `POST /v1/audit/events`
-- **Payload:**
-  ```json
-  {
-    "userId": "USER-123",
-    "action": "VIEW_DASHBOARD",
-    "resource": "CREDIT_CARD_DASHBOARD",
-    "timestamp": "2025-02-01T10:00:00Z",
-    "outcome": "SUCCESS",
-    "correlationId": "...",
-    "details": {
-      "deviceType": "DESKTOP"
+```json
+{
+  "summary": {
+    "totalCreditLimit": 25000.0,
+    "totalAvailableCredit": 18000.0,
+    "totalOutstandingAmount": 7000.0,
+    "monthlySpend": 3500.0,
+    "periodLabel": "Current calendar month"
+  },
+  "cards": [
+    {
+      "cardId": "CARD123",
+      "maskedCardNumber": "**** **** **** 1234",
+      "productName": "Platinum Rewards",
+      "creditLimit": 10000.0,
+      "availableCredit": 7000.0,
+      "outstandingAmount": 3000.0,
+      "lastUpdated": "2025-06-15T10:30:00Z",
+      "status": "ACTIVE"
     }
+  ],
+  "partialDataWarning": null
+}
+```
+
+- **Error Responses:**
+  - `401 Unauthorized` – invalid or expired token.
+  - `403 Forbidden` – user not authorized (no `dashboard_viewer` role).
+  - `500 Internal Server Error` – unexpected backend error.
+  - `502/504` – downstream services issues.
+
+- **Error Payload Contract:**
+
+```json
+{
+  "errorCode": "DASHBOARD_SERVICE_UNAVAILABLE",
+  "message": "Dashboard temporarily unavailable.",
+  "correlationId": "c123-456-789"
+}
+```
+
+UI uses `correlationId` to reference logs.
+
+### 4.3 External System Interfaces
+
+- **IAM:**
+  - Implemented via browser redirects to IAM login page.
+  - SPA relies on existing session or tokens stored in secure cookies/localStorage.
+
+- **Config & Feature Flags:**
+  - `GET /config/ui` – environment configuration.
+
+```json
+{
+  "apiBaseUrl": "https://api.example.com",
+  "features": {
+    "showMonthlySpend": true,
+    "enablePartialDataWarnings": true
+  },
+  "thresholds": {
+    "highUtilizationPercentage": 0.8
   }
-  ```
-
-### 4.2 Controller-Service-Directive Interactions
-
-- `DashboardController` → `DashboardService` → `CardService` + `TransactionAnalyticsService` → REST APIs.
-- `CardListController` → `CardService` → Card API.
-- `CardDetailController` → `CardService` + `TransactionAnalyticsService` → REST.
-- `DashboardController` → view directives (`metricTile`, `cardList`, `spendChart`).
+}
+```
 
 ---
 
 ## 5. Data Model Design
 
-### 5.1 Card Model
+### 5.1 JavaScript Models
 
-- **File:** `src/app/core/models/card.model.js`
-- **Name:** `CardModel`
-- **Fields:**
-  - `cardId` (string, required)
-  - `maskedPan` (string, required)
-  - `displayName` (string, optional, default: `""`)
-  - `creditLimit` (number, required, default: 0.0)
-  - `outstandingBalance` (number, required, default: 0.0)
-  - `availableCredit` (number, required, default: `creditLimit - outstandingBalance` when absent)
-  - `currency` (string, default: `"USD"`)
-  - `status` (enum: `"ACTIVE" | "CLOSED" | "BLOCKED"`, default: `"ACTIVE"`)
+#### 5.1.1 `DashboardSummary`
 
-- **Validation Rules:**
-  - `creditLimit >= 0`.
-  - `outstandingBalance >= 0`.
-  - `availableCredit >= 0`.
-  - `outstandingBalance <= creditLimit` (soft validation; treat mismatches as data inconsistency, log via `ErrorHandlerService`).
-
-### 5.2 Dashboard Summary Model
-
-- **File:** `src/app/core/models/dashboard-summary.model.js`
-- **Name:** `DashboardSummaryModel`
-- **Fields:**
-  - `totalCreditLimit` (number, default: 0)
-  - `totalOutstanding` (number, default: 0)
-  - `totalAvailableCredit` (number, default: 0)
-  - `monthlySpend` (number, default: 0)
-  - `currency` (string, default: `"USD"`)
-  - `cards` (array of `CardModel`)
-  - `trend` (array of `TransactionMetricModel`)
+```js
+class DashboardSummary {
+  constructor() {
+    this.totalCreditLimit = 0.0;       // Number
+    this.totalAvailableCredit = 0.0;   // Number
+    this.totalOutstandingAmount = 0.0; // Number
+    this.monthlySpend = 0.0;           // Number
+    this.periodLabel = '';             // String
+  }
+}
+```
 
 - **Validation Rules:**
-  - Derived metrics should be consistent with card data; mismatches logged.
+  - All numeric fields must be ≥ 0.
+  - `periodLabel` must be non-empty.
 
-### 5.3 Transaction Metric Model
+#### 5.1.2 `Card` Model
 
-- **File:** `src/app/core/models/transaction-metric.model.js`
-- **Name:** `TransactionMetricModel`
-- **Fields:**
-  - `month` (string, `YYYY-MM`, required)
-  - `amount` (number, required)
-  - `currency` (string)
+```js
+class Card {
+  constructor() {
+    this.cardId = null;                // String, required
+    this.maskedCardNumber = null;      // String, masked only
+    this.productName = null;           // String
+    this.creditLimit = 0.0;            // Number ≥ 0
+    this.availableCredit = 0.0;        // Number ≥ 0
+    this.outstandingAmount = 0.0;      // Number ≥ 0
+    this.lastUpdated = null;           // ISO date string
+    this.status = 'ACTIVE';            // ENUM: ACTIVE, INACTIVE, CLOSED
+  }
+}
+```
 
-- **Validation Rules:**
-  - `amount >= 0`.
+- **State Transitions:**
+  - `status` transitions: `ACTIVE → INACTIVE → CLOSED` (no reverse transitions in UI).
 
-### 5.4 User Model
+#### 5.1.3 `DashboardResponse`
 
-- **File:** `src/app/core/models/user.model.js`
-- **Name:** `UserModel`
-- **Fields:**
-  - `userId` (string)
-  - `displayName` (string)
-  - `roles` (array of string)
-  - `consentFlags` (map, e.g., `{ analytics: true }`)
+```js
+class DashboardResponse {
+  constructor() {
+    this.summary = new DashboardSummary();
+    this.cards = [];                   // Array<Card>
+    this.partialDataWarning = null;    // String | null
+  }
+}
+```
 
-### 5.5 Config Model
+#### 5.1.4 `ErrorModel`
 
-- **File:** `src/app/core/models/config.model.js`
-- **Name:** `ConfigModel`
-- **Fields:**
-  - `analyticsEnabled` (boolean)
-  - `maxTrendMonths` (number)
-  - `defaultTrendMonths` (number)
+```js
+class ErrorModel {
+  constructor() {
+    this.errorCode = null;     // String
+    this.message = null;       // String
+    this.correlationId = null; // String
+  }
+}
+```
 
-### 5.6 State Transitions
+### 5.2 Validation Rules & Defaults
 
-- **DashboardSummaryModel State:**
-  - `INITIAL` → `LOADING` → `READY` → `ERROR`.
-- **Card List State:**
-  - `INITIAL` → `LOADING` → `READY` → `EMPTY` (no cards) or `ERROR`.
-
-State fields are maintained in controllers via flags like `vm.state`, `vm.loading`.
+- Use AngularJS form validation for inputs (date range selectors, filters).
+- Client must not attempt to manipulate card identifiers or user ids.
+- Any negative value received for limits or spend is rejected and logged.
+- `monthlySpend` is computed server-side; UI ensures numeric rendering only.
 
 ---
 
 ## 6. Data Flow
 
-### 6.1 Primary Dashboard Load Flow
+### 6.1 User Action to UI Update
 
-1. User navigates to `/dashboard`.
-2. `ui-router` resolves state, instantiates `DashboardController`.
-3. `DashboardController.init()` is called:
-   - sets `vm.loading = true`, `vm.error = null`.
-   - calls `ConfigService.load()` (if not already loaded).
-   - calls `DashboardService.loadDashboardSummary()`.
-4. `DashboardService`:
-   - uses `CardService.getCards()` to fetch cards.
-   - uses `TransactionAnalyticsService.getMonthlySpendSummary()` and `getSpendTrends()`.
-   - aggregates metrics into `DashboardSummaryModel`.
-5. On success, `DashboardController`:
-   - assigns `vm.summary`, `vm.cards`, `vm.trend`.
-   - sets `vm.loading = false`.
-6. View renders metric tiles, card list, and chart.
+1. **User Action:** User opens dashboard URL or navigates to dashboard via menu.
+2. **Routing:** AngularJS `ngRoute` routes `/dashboard` to `DashboardController` and `dashboard.html`.
+3. **Initialization:** `DashboardController.init()` is invoked, sets `isLoading=true`.
+4. **Config Load (if not loaded):** `ConfigService.loadConfig()` ensures API base URL and features are ready.
+5. **API Call:** `DashboardService.loadDashboard(dateRange)` is executed.
+6. **Cache Check:** `CacheService` may serve existing response; otherwise HTTP call.
+7. **HTTP:** `$http.get('/dashboard/overview')` with appropriate query params and auth header.
+8. **API Gateway:** Validates token, routes to Dashboard Application Service.
+9. **Backend Orchestration:** Dashboard Application Service calls Card, Transaction, and Analytics Services; returns consolidated DTO.
+10. **Response Handling:** DashboardService maps DTO → `DashboardResponse` model.
+11. **State Update:** `DashboardController` updates view models and sets `isLoading=false`.
+12. **UI Render:** Directives `ccSummaryTiles` and `ccCardList` show latest metrics and cards; errors or warnings displayed if needed.
 
-### 6.2 User Action → UI Update Flow
+### 6.2 Partial Data Scenario
 
-- **User Action:** Clicks refresh.
-  - `DashboardController.refresh()` invokes `DashboardService.refresh()`.
-- **Service:** Repeats above steps, optionally using last filters.
-- **View:** Updates with new summary and trends.
-
-### 6.3 Multi-Device Responsiveness
-
-- CSS media queries for breakpoints (desktop, tablet, phone).
-- Use Bootstrap grid classes (`col-md-`, `col-sm-`, `col-xs-`).
-- Directives (`responsive-container`) adjust layout based on window width.
+- Backend includes `partialDataWarning` when some cards/transactions failed.
+- `DashboardService` passes it through.
+- `DashboardController.hasPartialData()` returns true.
+- `ccCardList` shows badge/banner: “Some card data might be missing due to temporary issues.”
 
 ---
 
@@ -769,86 +763,86 @@ State fields are maintained in controllers via flags like `vm.state`, `vm.loadin
 ```mermaid
 sequenceDiagram
   participant U as User
-  participant B as Browser
-  participant App as Angular App
-  participant Auth as AuthService
-  participant Config as ConfigService
+  participant B as Browser (SPA)
+  participant R as ngRoute
+  participant C as ConfigService
+  participant A as AuthService
 
-  U->>B: Navigate to dashboard URL
-  B->>App: Load index.html + app scripts
-  App->>Auth: initialize()
-  Auth-->>App: user session (if any)
-  App->>Config: load()
-  Config-->>App: config & feature flags
-  App->>B: Bootstrap AngularJS (ccadApp)
+  U->>B: Load /index.html
+  B->>C: loadConfig()
+  C-->>B: config (apiBaseUrl, features)
+  B->>A: isAuthenticated()
+  alt not authenticated
+    B->>A: login() (redirect to IAM)
+  else authenticated
+    B->>R: route to /dashboard
+    R-->>B: instantiate DashboardController
+  end
 ```
 
-### 7.2 Dashboard Primary Workflow
+### 7.2 Primary User Workflow – Dashboard Load
 
 ```mermaid
 sequenceDiagram
   participant U as User
-  participant VC as DashboardController
+  participant DC as DashboardController
   participant DS as DashboardService
-  participant CS as CardService
-  participant TAS as TransactionAnalyticsService
-  participant API as API Gateway/BFF
+  participant CA as CacheService
+  participant HTTP as $http
+  participant AG as API Gateway
+  participant DAS as Dashboard App Service
 
-  U->>VC: Open /dashboard
-  VC->>DS: loadDashboardSummary(options)
-  DS->>CS: getCards()
-  CS->>API: GET /v1/cards
-  API-->>CS: 200 cards
-  DS->>TAS: getMonthlySpendSummary(options)
-  TAS->>API: GET /v1/analytics/monthly-spend
-  API-->>TAS: 200 summary
-  DS->>TAS: getSpendTrends(options)
-  TAS->>API: GET /v1/analytics/monthly-spend/trend
-  API-->>TAS: 200 trend
-  DS-->>VC: DashboardSummaryModel
-  VC->>U: Render dashboard metrics, cards, chart
-```
-
-### 7.3 Service/API Interaction with Error Handling
-
-```mermaid
-sequenceDiagram
-  participant VC as DashboardController
-  participant DS as DashboardService
-  participant CS as CardService
-  participant API as API Gateway
-  participant EH as ErrorHandlerService
-
-  VC->>DS: loadDashboardSummary()
-  DS->>CS: getCards()
-  CS->>API: GET /v1/cards
-  API-->>CS: 503 Service Unavailable
-  CS->>EH: handleHttpError(503)
-  EH-->>CS: normalized error
-  CS-->>DS: reject(error)
-  DS-->>VC: reject(error)
-  VC->>EH: handleClientError(error)
-  EH-->>VC: user-friendly message
-  VC->>View: Show error banner, partial data if available
-```
-
-### 7.4 Error Fallback to Cached Data
-
-```mermaid
-sequenceDiagram
-  participant DS as DashboardService
-  participant Cache as Local Cache
-  participant EH as ErrorHandlerService
-
-  DS->>Cache: read last-known summary
-  alt cache available
-    Cache-->>DS: DashboardSummaryModel
-    DS-->>Caller: success with stale=true
-  else no cache
-    Cache-->>DS: null
-    DS->>EH: handleClientError(no-data)
-    DS-->>Caller: error
+  U->>DC: Open Dashboard
+  DC->>DS: loadDashboard(dateRange)
+  DS->>CA: get(cacheKey)
+  alt hit cache
+    CA-->>DS: cached DashboardResponse
+    DS-->>DC: DashboardResponse
+    DC-->>U: Render dashboard from cache
+  else miss cache
+    CA-->>DS: null
+    DS->>HTTP: GET /dashboard/overview?dateRange=...
+    HTTP->>AG: request with token
+    AG->>DAS: validate & forward
+    DAS-->>AG: consolidated DTO
+    AG-->>HTTP: 200 OK + DTO
+    HTTP-->>DS: DTO
+    DS-->>CA: put(cacheKey, DashboardResponse)
+    DS-->>DC: DashboardResponse
+    DC-->>U: Render dashboard
   end
+```
+
+### 7.3 Service/API Interaction – Backend Orchestration (Conceptual)
+
+```mermaid
+sequenceDiagram
+  participant DAS as Dashboard App Service
+  participant CS as Card Service
+  participant TS as Transaction Service
+  participant ANS as Analytics Service
+
+  DAS->>CS: GET /cards?userId=...
+  CS-->>DAS: list of cards
+  DAS->>TS: GET /transactions/summary?userId=...&dateRange=...
+  TS-->>DAS: transaction summary
+  DAS->>ANS: POST /analytics/dashboard (cards + txns)
+  ANS-->>DAS: aggregated metrics
+  DAS-->>DAS: build Dashboard DTO
+```
+
+### 7.4 Error Handling Scenario – Analytics Service Down
+
+```mermaid
+sequenceDiagram
+  participant DAS as Dashboard App Service
+  participant ANS as Analytics Service
+
+  DAS->>ANS: POST /analytics/dashboard
+  ANS--xDAS: 503 Service Unavailable
+  DAS-->>DAS: Circuit breaker trips
+  DAS-->>DAS: Fallback - compute minimal metrics from CS/TS
+  DAS-->>AG: 200 OK + DTO + partialDataWarning
 ```
 
 ---
@@ -857,82 +851,51 @@ sequenceDiagram
 
 ### 8.1 AngularJS Implementation Approach
 
-- Use component-based structure with `controllerAs` syntax; avoid `$scope` where possible.
-- Use `ui-router` for stateful routing.
-- Keep controllers thin; complex business logic resides in services.
+- Use controller-as syntax (`vm`) to avoid `$scope` pollution.
+- Use `ngRoute` for simple routing; ensure lazy loading via template URLs.
+- Use services for all HTTP interactions; controllers never call `$http` directly.
 
-### 8.2 ES6 Coding Patterns
+### 8.2 JavaScript ES6 Coding Patterns
 
-- Use `class` syntax for models, compiled to ES5 for browser compatibility.
-- Example model pattern:
-
-```js
-class CardModel {
-  constructor(data = {}) {
-    this.cardId = data.cardId || null;
-    this.maskedPan = data.maskedPan || '';
-    this.displayName = data.displayName || '';
-    this.creditLimit = data.creditLimit || 0;
-    this.outstandingBalance = data.outstandingBalance || 0;
-    this.availableCredit = data.availableCredit != null
-      ? data.availableCredit
-      : Math.max(0, this.creditLimit - this.outstandingBalance);
-    this.currency = data.currency || 'USD';
-    this.status = data.status || 'ACTIVE';
-  }
-}
-```
-
-- Use arrow functions in services where context binding is required.
+- Prefer `const` and `let` over `var` (where transpilation allows).
+- Use arrow functions for internal callbacks (`.then(response => {...})`).
+- Modularize via IIFEs to maintain compatibility with AngularJS 1.x and older bundlers.
 
 ### 8.3 Dependency Injection
 
-- Annotate dependencies using inline array notation or `ng-annotate` to be minification-safe.
-
-```js
-angular
-  .module('ccadApp')
-  .service('DashboardService', [
-    'CardService',
-    'TransactionAnalyticsService',
-    '$q',
-    'ConfigService',
-    'AuditService',
-    function(CardService, TransactionAnalyticsService, $q, ConfigService, AuditService) {
-      // implementation
-    }
-  ]);
-```
+- Rely on AngularJS DI.
+- Do not use global variables for config; instead, `ConfigService`.
+- Ensure minification-safe injections via `$inject` array.
 
 ### 8.4 Business Logic Flow
 
-- **Aggregation:** All arithmetic operations for total limit/outstanding/available credit executed in `DashboardService` or backend BFF.
-- **Consent Handling:** `ConfigService` and `AuthService` provide consent flags. `DashboardController` hides analytics sections if consent is false.
+- All business logic involving metrics resides in backend services.
+- UI uses `DashboardService` exclusively to obtain metrics and never recomputes totals from raw transactions, except for minor UI-only computations (e.g., percentage utilization = outstanding / limit).
 
 ### 8.5 Validation Logic
 
-- Client-side validation focuses on filters (dates, ranges).
-- Use `ngMessages` for form validation messages.
-- For date filter:
-  - enforce `from <= to`.
-  - limit range as per config (`maxTrendMonths`).
+- Input fields (e.g., date range pickers) use AngularJS form validation.
+- Any user input for filters is validated:
+  - Accept only known date range types or valid `YYYY-MM` format.
+  - Reject unknown filters; show user-friendly message.
 
 ### 8.6 State Management Approach
 
-- Use controller-level view models; avoid global state.
-- Use `resolve` functions in routes where preloading data improves UX.
-- Use `$rootScope` events minimally (e.g., for global error notifications).
+- State kept within controllers.
+- No use of global event bus; multi-component coordination via shared services where necessary.
+- Navigation state is route-based.
 
-### 8.7 DOM Interaction
+### 8.7 DOM Interaction Approach
 
-- Avoid direct DOM manipulation; use directives and Angular bindings.
-- Use `ng-class` and `ng-show`/`ng-if` to show/hide elements based on state.
+- Use Angular directives and data binding for DOM updates.
+- No direct DOM manipulation from controllers except via directives if needed.
 
-### 8.8 API Integration
+### 8.8 API Integration Approach
 
-- All `$http` calls centralized in services.
-- Use promises and `.then/.catch` patterns; optionally wrap with `$q` for combined flows.
-- Uniform HTTP header structure defined via interceptors.
+- All outgoing REST calls use `$http` configured with:
+  - Base URL from `ConfigService`.
+  - `AuthInterceptor` to inject `Authorization` header.
+  - Global error handler to intercept 401/403 and redirect to login.
 
 ---
 
@@ -940,40 +903,53 @@ angular
 
 ### 9.1 AngularJS Configuration Files
 
-- `app.config.js` – routing, interceptors.
-- `env/*.js` – environment-specific constants:
+- `app.config.js` – module configuration, HTTP interceptors, route defaults.
+- `app.routes.js` – route definitions.
+- `app.constants.js` – static constants (e.g., route paths, error codes).
 
 ```js
-angular.module('ccadApp')
-  .constant('API_CONFIG', {
-    BASE_URL: 'https://api.example.com',
-    CARD_SERVICE_BASE_URL: 'https://api.example.com/cards',
-    TX_ANALYTICS_BASE_URL: 'https://api.example.com/transactions',
-    CONFIG_BASE_URL: 'https://api.example.com/config',
-    AUDIT_BASE_URL: 'https://api.example.com/audit'
-  });
+// app/app.config.js
+(function() {
+  'use strict';
+
+  angular
+    .module('ccDashboardApp')
+    .config(config);
+
+  config.$inject = ['$httpProvider'];
+
+  function config($httpProvider) {
+    $httpProvider.interceptors.push('AuthInterceptor');
+  }
+})();
 ```
 
-### 9.2 Environment Properties
+### 9.2 Environment-Specific Properties
 
-- `env.local.js` – local dev
-- `env.dev.js` – dev environment
-- `env.qa.js` – QA
-- `env.prod.js` – production
+- `config/environment.<env>.json` loaded at runtime.
+- Example properties:
+  - `apiBaseUrl`
+  - `logLevel`
+  - `featureFlags` (e.g., `enablePartialDataWarnings`)
+  - `supportedDevices`
 
-Each file overrides `API_CONFIG` and other environment-specific flags (e.g., logging level, feature flags defaults).
+### 9.3 API Base URLs
 
-### 9.3 Feature Flags
+- `ConfigService.getApiBaseUrl()` returns environment-specific API Gateway URL.
+- All services build URIs based on this value.
 
-- Controlled through `ConfigService`.
-- Example flags:
-  - `analyticsEnabled`
-  - `showSupportContactBanner`
+### 9.4 Feature Flags
 
-### 9.4 Logging & Telemetry
+- Provided by server configuration.
+- Examples:
+  - `showMonthlySpend`
+  - `enableAnalyticsCharts`
+  - `enableAuditLoggingClientSide`
 
-- `http-logger.interceptor.js` intercepts responses for latency and error logging (to console in dev, to remote in prod).
-- Optional integration with external monitoring JS SDK (e.g., AppInsights) via initialization in `app.run.js`.
+### 9.5 Logging & Telemetry
+
+- `LoggingService` respects `logLevel` from configuration.
+- Optional endpoint `/logs/ui` to send client logs to Audit and Monitoring Service (non-blocking, best-effort).
 
 ---
 
@@ -981,43 +957,44 @@ Each file overrides `API_CONFIG` and other environment-specific flags (e.g., log
 
 ### 10.1 Client-Side Exception Handling
 
-- Override `$exceptionHandler` to log errors via `ErrorHandlerService` and optionally remote logging.
-
-```js
-angular
-  .module('ccadApp')
-  .factory('$exceptionHandler', ['ErrorHandlerService', function(ErrorHandlerService) {
-    return function(exception, cause) {
-      ErrorHandlerService.handleClientError({ exception, cause });
-    };
-  }]);
-```
+- Global `$exceptionHandler` override logs uncaught exceptions via `LoggingService`.
+- Display generic error banner for unexpected UI errors, with correlation id when available.
 
 ### 10.2 REST API Error Handling
 
-- HTTP interceptor inspects status codes:
-  - `401/403` → triggers logout or login redirect.
-  - `429` or `5xx` → show retry suggestion or degraded mode message.
-- `ErrorHandlerService` maps codes to messages (e.g., `"Service temporarily unavailable. Please try again later."`).
+- `AuthInterceptor` inspects 401/403:
+  - 401 → clear tokens, redirect to IAM login.
+  - 403 → show “Not authorized” banner.
+- `ErrorHandlingService.wrapHttpError` standardizes error payload:
+
+```js
+{
+  code: 'DASHBOARD_LOAD_FAILED',
+  httpStatus: 503,
+  message: 'Dashboard temporarily unavailable.',
+  correlationId: '...' // from header
+}
+```
 
 ### 10.3 Retry Mechanisms
 
-- For idempotent GET calls, implement limited retries with exponential backoff in services (config-driven).
-- Use `ConfigService` to read `maxRetries` and `retryBackoffMs`.
+- Client does not aggressively retry to avoid load; instead:
+  - Provide manual “Retry” button on error states.
+  - Optionally implement single automatic retry for certain transient statuses (e.g., 502, 503, 504) with small delay.
 
 ### 10.4 Logging Strategy
 
-- Log structure includes correlation ID and endpoint.
-- Errors with security context (auth failures) flagged distinctly.
+- Log levels:
+  - `debug` – dev only.
+  - `info` – key lifecycle events (dashboard load, filter changes).
+  - `warn` – partial data, degraded mode.
+  - `error` – failed dashboard loads, unexpected exceptions.
 
-### 10.5 Recovery & Fallbacks
+### 10.5 Recovery and Fallback Behavior
 
-- If Transaction Analytics service fails:
-  - Show card-level metrics; hide chart and monthly spend section.
-  - Display banner: `"Spend analytics are temporarily unavailable."`
-- If Card Service fails:
-  - Show message: `"Card details are temporarily unavailable."`
-  - Optionally show last-known data if cached.
+- When partial data is returned, UI still renders available metrics and cards.
+- If service is fully unavailable, show error page with suggestion to retry and contact support.
+- Cache may be used to display last known good snapshot with clear timestamp when backend unreachable.
 
 ---
 
@@ -1025,46 +1002,44 @@ angular
 
 ### 11.1 Input Validation & Sanitization
 
-- All user inputs (filters, search strings) validated client-side using Angular forms:
-  - Type checks (dates, numbers).
-  - Length limits.
-- Use `$sanitize` or dedicated sanitization for any HTML-rendered data.
+- Use AngularJS built-in validation for forms.
+- Sanitize any user-provided text using `ngSanitize`.
+- No free-text fields directly rendered without escaping.
 
 ### 11.2 XSS Prevention
 
-- Disable/avoid use of `ng-bind-html` unless sanitized.
-- Encode all dynamic content in templates via Angular expressions.
+- Use `ng-bind` and `{{ }}` with auto-escaping; never use `ng-bind-html` unless content is trusted and sanitized.
+- Avoid `ng-include` with dynamic URLs from user input.
 
 ### 11.3 CSRF Protection
 
-- Leverage token-based auth via `Authorization` header (JWT).
-- For additional CSRF protection where cookies are used, include CSRF token header from backend.
+- API Gateway implements CSRF protection; SPA integrates by sending CSRF token (if applicable) via `$http` default headers.
 
 ### 11.4 Secure API Communication
 
-- All API endpoints are HTTPS-only; enforce via configuration.
-- Angular app only calls `https://` URLs.
+- Always use HTTPS endpoints.
+- Enforce HSTS at server; SPA uses `https://` URLs only.
 
-### 11.5 Authentication & Authorization Integration
+### 11.5 Authentication & Authorization
 
-- `AuthService` obtains JWT from IDP (outside of Angular app) and injects into HTTP headers.
-- Claims used to control UI visibility:
-  - If role is `support-read-only`, restrict card interactions accordingly.
-- UI never allows specifying user ID in query; user context derived solely from token.
+- `AuthService` consults IAM-issued tokens.
+- Role-based display:
+  - Dashboard view accessible only to users with `dashboard_viewer` role.
+  - UI hides unauthorized actions (if any) based on roles.
 
 ### 11.6 Sensitive Data Handling
 
-- No storage of raw PAN or sensitive identifiers in browser storage.
-- Only masked PAN and non-sensitive fields shown.
-- Tokens stored in HTTP-only cookies or secure storage mechanisms.
+- Only masked card numbers displayed; never full PAN.
+- No storage of sensitive data in localStorage beyond tokens required for session.
+- Tokens stored in secure HTTP-only cookies where possible; if using localStorage, protect via best practices (short TTL, token refresh, logout clearing).
 
-### 11.7 Audit Logging
+### 11.7 Audit Logging Approach
 
-- Every dashboard view triggers `AuditService.log({ action: 'VIEW_DASHBOARD', resource: 'CREDIT_CARD_DASHBOARD', ... })`.
-- Card detail views similarly logged.
+- Client logs high-level events (e.g., dashboard viewed) via logging endpoint when enabled.
+- Correlation IDs provided by backend (e.g., via `X-Correlation-Id` header) are propagated in logs.
 
 ---
 
 ## 12. Summary
 
-This LLD defines the AngularJS-based implementation of the Credit Card Analysis Dashboard. Each HLD component (Dashboard Application Service, Card Service, Transaction Analytics Service, Auth, Config, Audit, Monitoring) is mapped to concrete AngularJS modules, controllers, services, directives, and data models, with detailed API interfaces, data flows, error handling, and security measures. The design supports enterprise-grade requirements, including responsive UX, robust error handling, secure communication, and compliance-oriented logging and consent handling.
+This LLD defines a concrete AngularJS-based implementation of the Credit Card Analysis Dashboard consistent with the HLD. It maps each HLD component to AngularJS modules, controllers, services, and directives, specifies REST interfaces and data models, defines error handling and security, and provides sequence diagrams to guide implementation. It enables developers to implement the SPA without further reference to the HLD.
