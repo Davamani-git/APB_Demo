@@ -1,0 +1,10 @@
+<div class="kpi-tile panel panel-default">
+  <div class="panel-body">
+    <h4 class="kpi-title" ng-bind="title"></h4>
+    <p class="kpi-value">
+      <span ng-if="unit" ng-bind="unit"></span>
+      <span ng-bind="value"></span>
+    </p>
+    <p class="kpi-description" ng-if="description" ng-bind="description"></p>
+  </div>
+</div>

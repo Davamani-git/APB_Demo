@@ -1,0 +1,9 @@
+.kpi-tile {
+  min-height: 120px;
+}
+
+@media (max-width: 767px) {
+  body {
+    padding-top: 50px;
+  }
+}

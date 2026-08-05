@@ -1,0 +1,39 @@
+body {
+  padding-top: 60px;
+}
+
+.kpi-tile {
+  margin-bottom: 20px;
+}
+
+.kpi-title {
+  font-weight: bold;
+}
+
+.kpi-value {
+  font-size: 1.5em;
+}
+
+.loading-spinner .spinner-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 999;
+}
+
+.loading-spinner .spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+
+.footer {
+  padding: 20px 0;
+  border-top: 1px solid #eee;
+  margin-top: 40px;
+}

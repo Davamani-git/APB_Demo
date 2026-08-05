@@ -1,0 +1,57 @@
+<div class="dashboard-summary" ng-if="vm">
+  <div class="row">
+    <div class="col-sm-6 col-md-3" ng-if="vm.summary">
+      <kpi-tile title="Total Credit Limit" value="vm.summary.totalCreditLimit | currencyWithSymbol:vm.summary.currency" unit="" description="Total credit limit across all cards"></kpi-tile>
+    </div>
+    <div class="col-sm-6 col-md-3" ng-if="vm.summary">
+      <kpi-tile title="Total Outstanding" value="vm.summary.totalOutstanding | currencyWithSymbol:vm.summary.currency" unit="" description="Total outstanding balance"></kpi-tile>
+    </div>
+    <div class="col-sm-6 col-md-3" ng-if="vm.summary">
+      <kpi-tile title="Available Credit" value="vm.summary.availableCredit | currencyWithSymbol:vm.summary.currency" unit="" description="Available credit"></kpi-tile>
+    </div>
+    <div class="col-sm-6 col-md-3" ng-if="vm.summary && vm.summary.monthlySpend != null">
+      <kpi-tile title="Monthly Spend" value="vm.summary.monthlySpend | currencyWithSymbol:vm.summary.currency" unit="" description="Monthly spend for selected period"></kpi-tile>
+    </div>
+  </div>
+
+  <div class="row" ng-if="vm.summary">
+    <div class="col-md-12">
+      <p class="text-muted" ng-if="vm.summary.asOfDate" ng-bind="'As of ' + (vm.summary.asOfDate | date:'mediumDate')"></p>
+      <p class="text-muted" ng-if="vm.summary.lineageId" ng-bind="'Lineage: ' + vm.summary.lineageId"></p>
+    </div>
+  </div>
+
+  <div class="row" ng-if="vm.isDegraded">
+    <div class="col-md-12">
+      <div class="alert alert-info" ng-bind="'Some data is temporarily unavailable; showing last known values.'"></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <form class="form-inline" ng-submit="vm.refresh()">
+        <div class="form-group">
+          <label for="fromDate">From</label>
+          <input id="fromDate" type="date" class="form-control" ng-model="vm.fromDate" required>
+        </div>
+        <div class="form-group">
+          <label for="toDate">To</label>
+          <input id="toDate" type="date" class="form-control" ng-model="vm.toDate" required>
+        </div>
+        <button type="submit" class="btn btn-primary" ng-disabled="vm.isLoading">Refresh</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="row" ng-if="vm.summary && vm.summary.monthlySpend != null">
+    <div class="col-md-12">
+      <summary-chart data="vm.summaryTrendData" title="Monthly Spend Trend"></summary-chart>
+    </div>
+  </div>
+
+  <div class="row" ng-if="vm.error">
+    <div class="col-md-12">
+      <error-banner error="vm.error" on-retry="vm.refresh()"></error-banner>
+    </div>
+  </div>
+</div>
