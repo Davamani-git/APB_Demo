@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="execDashboardApp">
+<head>
+  <meta charset="UTF-8">
+  <title>Executive KPI & Testing Scope Dashboard</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="src/app/assets/css/styles.css">
+  <link rel="stylesheet" href="src/app/assets/css/themes.css">
+</head>
+<body>
+  <div class="container" ng-controller="KpiController as kpiVm">
+    <h1>Executive KPI &amp; Testing Scope Dashboard</h1>
+    <error-banner></error-banner>
+    <manual-data-source-banner source-note="configVm.config.dataSourceNote"></manual-data-source-banner>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="kpi-dashboard" ng-include="'src/app/kpi/views/kpi-dashboard.html'"></div>
+      </div>
+    </div>
+    <div class="row" ng-controller="ScopeController as scopeVm">
+      <div class="col-md-12">
+        <div class="scope-dashboard" ng-include="'src/app/scope/views/scope-dashboard.html'"></div>
+      </div>
+    </div>
+    <div class="row" ng-controller="ConfigController as configVm">
+      <div class="col-md-12">
+        <div class="config-panel" ng-include="'src/app/config/views/config-panel.html'"></div>
+      </div>
+    </div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-animate.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-sanitize.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.js"></script>
+  <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="src/app/config/env.config.js"></script>
+  <script src="src/app/app.js"></script>
+  <script src="src/app/app.routes.js"></script>
+  <script src="src/app/core/core.module.js"></script>
+  <script src="src/app/core/models/kpi.model.js"></script>
+  <script src="src/app/core/models/scope.model.js"></script>
+  <script src="src/app/core/models/config.model.js"></script>
+  <script src="src/app/core/models/audit-event.model.js"></script>
+  <script src="src/app/core/services/validation.service.js"></script>
+  <script src="src/app/core/services/security.service.js"></script>
+  <script src="src/app/core/services/logging.service.js"></script>
+  <script src="src/app/core/services/storage.service.js"></script>
+  <script src="src/app/core/services/error-handling.service.js"></script>
+  <script src="src/app/core/services/audit.service.js"></script>
+  <script src="src/app/core/services/data-store.service.js"></script>
+  <script src="src/app/core/services/theme.service.js"></script>
+  <script src="src/app/core/services/config.service.js"></script>
+  <script src="src/app/core/services/api.service.js"></script>
+  <script src="src/app/kpi/kpi.module.js"></script>
+  <script src="src/app/kpi/kpi.controller.js"></script>
+  <script src="src/app/kpi/kpiTile.directive.js"></script>
+  <script src="src/app/scope/scope.module.js"></script>
+  <script src="src/app/scope/scope.controller.js"></script>
+  <script src="src/app/scope/scopeTile.directive.js"></script>
+  <script src="src/app/scope/scopeList.directive.js"></script>
+  <script src="src/app/config/config.module.js"></script>
+  <script src="src/app/config/config.controller.js"></script>
+  <script src="src/app/config/themeSelector.directive.js"></script>
+  <script src="src/app/resilience/resilience.module.js"></script>
+  <script src="src/app/resilience/resilience.service.js"></script>
+  <script src="src/app/resilience/errorBanner.controller.js"></script>
+  <script src="src/app/resilience/errorBanner.directive.js"></script>
+  <script src="src/app/shared/directives/progressBar.directive.js"></script>
+  <script src="src/app/shared/directives/statusBadge.directive.js"></script>
+  <script src="src/app/shared/directives/manualDataSourceBanner.directive.js"></script>
+</body>
+</html>

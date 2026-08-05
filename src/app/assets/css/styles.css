@@ -1,0 +1,11 @@
+body {
+  padding-top: 20px;
+}
+
+.kpi-tile, .scope-tile {
+  margin-bottom: 20px;
+}
+
+.manual-data-source-banner {
+  margin-top: 15px;
+}

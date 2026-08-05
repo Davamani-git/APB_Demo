@@ -1,0 +1,5 @@
+<div class="row">
+  <div class="col-md-3" ng-repeat="scope in scopes | filter:{ status: filterStatus || undefined }">
+    <scope-tile scope-item="scope" on-edit="scopeVm.editScope(scope)"></scope-tile>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+<div class="panel panel-default scope-tile">
+  <div class="panel-heading">
+    <h3 class="panel-title" ng-bind="scopeItem.name"></h3>
+  </div>
+  <div class="panel-body">
+    <p>Status: <status-badge status="scopeItem.status"></status-badge></p>
+    <p>Total cases: <span ng-bind="scopeItem.totalCases"></span></p>
+    <p>Executed: <span ng-bind="scopeItem.executedCases"></span></p>
+    <p>Passed: <span ng-bind="scopeItem.passedCases"></span></p>
+    <p>Readiness: <span ng-bind="scopeItem.readinessFlag"></span></p>
+    <progress-bar value="(scopeItem.executedCases / (scopeItem.totalCases || 1)) * 100" label="Execution"></progress-bar>
+    <progress-bar value="(scopeItem.passedCases / (scopeItem.totalCases || 1)) * 100" label="Pass"></progress-bar>
+    <button type="button" class="btn btn-xs btn-primary" ng-click="onEdit({ scope: scopeItem })">Edit</button>
+  </div>
+</div>

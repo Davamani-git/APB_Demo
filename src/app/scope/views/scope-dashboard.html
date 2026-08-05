@@ -1,0 +1,10 @@
+<div>
+  <div class="scope-filters">
+    <button type="button" class="btn btn-default" ng-click="scopeVm.filterByStatus(null)">All</button>
+    <button type="button" class="btn btn-default" ng-click="scopeVm.filterByStatus('Not Started')">Not Started</button>
+    <button type="button" class="btn btn-default" ng-click="scopeVm.filterByStatus('Design in Progress')">Design in Progress</button>
+    <button type="button" class="btn btn-default" ng-click="scopeVm.filterByStatus('In Progress')">In Progress</button>
+    <button type="button" class="btn btn-default" ng-click="scopeVm.filterByStatus('Completed')">Completed</button>
+  </div>
+  <scope-list scopes="scopeVm.scopes" filter-status="scopeVm.filterStatus"></scope-list>
+</div>

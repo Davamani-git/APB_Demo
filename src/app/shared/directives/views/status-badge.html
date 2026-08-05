@@ -1,0 +1,5 @@
+<span class="label" ng-class="{
+  'label-success': status === 'On Track' || status === 'Completed',
+  'label-warning': status === 'At Risk' || status === 'In Progress',
+  'label-danger': status === 'Off Track' || status === 'Not Started'
+}" ng-bind="status"></span>
