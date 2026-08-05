@@ -1,0 +1,290 @@
+# Unit Test Cases for ETL Data Management Capabilities for EUMDR
+
+## Scope
+These unit test cases validate ETL data management capabilities for EUMDR compliance based on the provided user stories (Stories 1–8: connections, extraction, transformation, validation, reporting, audit trail, alerts, and SCIP integration).
+
+---
+
+## 1. Configure Data Source Connections (Story 1)
+
+### Test Case 1.1 – Successful database connection configuration
+- **Preconditions:**
+  - System Administrator account exists and is active.
+  - Network connectivity to target database is available.
+- **Inputs:**
+  - Host, port, database name
+  - Valid username and password
+  - TLS/SSL enabled flag = true
+- **Steps:**
+  1. Log in as System Administrator.
+  2. Navigate to “Data Sources” → “Add New Source.”
+  3. Enter valid connection parameters.
+  4. Click “Test Connection.”
+  5. Click “Save” after successful test.
+- **Expected Results:**
+  - Connection test returns success.
+  - Credentials are stored (not logged in plaintext).
+  - Connection appears in data source list with status = “Active.”
+  - Connection is selectable when creating ETL jobs.
+
+### Test Case 1.2 – Connection failure due to invalid credentials
+- **Inputs:** Valid host/port/db, invalid username/password.
+- **Steps:**
+  1. Configure data source with invalid credentials.
+  2. Click “Test Connection.”
+- **Expected Results:**
+  - Connection test fails.
+  - Error message indicates authentication failure (no stack trace).
+  - No partial configuration is saved to persistent storage.
+  - Failure event is logged with type = AUTH_FAILURE.
+
+### Test Case 1.3 – Enforcing TLS/SSL and certificate validation
+- **Inputs:** Data source configuration with TLS flag true.
+- **Steps:**
+  1. Enable TLS/SSL for the connection.
+  2. Provide a server using a trusted certificate.
+  3. Test and save the connection.
+- **Expected Results:**
+  - Connection is refused if TLS is disabled on server or handshake fails.
+  - Connection only succeeds when certificate is valid and trusted.
+  - Saved configuration indicates “Encryption: TLS.”
+
+### Test Case 1.4 – Credential encryption at rest
+- **Preconditions:** Key management system available.
+- **Steps:**
+  1. Create a new data source with credentials.
+  2. Inspect stored configuration via admin diagnostics or DB query.
+- **Expected Results:**
+  - Credentials are stored encrypted (e.g., AES-256 or equivalent).
+  - Raw passwords are not readable in config or logs.
+
+---
+
+## 2. Extract Restricted Substances Data (Story 2)
+
+### Test Case 2.1 – Successful scheduled extraction
+- **Preconditions:**
+  - Data source from Story 1 configured and active.
+  - Scheduler configured for daily 02:00 run.
+- **Steps:**
+  1. Wait until 02:00, or trigger scheduled job manually.
+  2. Observe extraction job execution.
+- **Expected Results:**
+  - Job starts at scheduled time.
+  - Only restricted substances dataset is extracted.
+  - Extraction metrics (record count, duration, source) are logged.
+  - Job status = SUCCESS.
+
+### Test Case 2.2 – Incremental extraction after successful run
+- **Preconditions:**
+  - At least one successful past extraction.
+  - Source has both old and new/updated records.
+- **Steps:**
+  1. Run extraction job.
+- **Expected Results:**
+  - Only records modified since last successful extraction are fetched.
+  - Delta log includes IDs of new/updated records and last run timestamp.
+
+### Test Case 2.3 – Retry on timeout with exponential backoff
+- **Inputs:** Simulate source system timeout.
+- **Steps:**
+  1. Trigger extraction with source configured to timeout.
+- **Expected Results:**
+  - Job retries up to 3 times.
+  - Time between retries increases (e.g., 1s, 2s, 4s or configured pattern).
+  - After retries exhausted, job status = FAILED_WITH_RETRY_EXHAUSTED.
+  - Alert/notification is sent to administrators.
+
+---
+
+## 3. Transform Data to EUMDR Format (Story 3)
+
+### Test Case 3.1 – Field mapping to EUMDR schema
+- **Preconditions:** Extracted data available in staging.
+- **Inputs:** Sample record with internal fields (e.g., INT_SUBST_ID, CONC_VALUE, UNIT).
+- **Steps:**
+  1. Run transformation job.
+- **Expected Results:**
+  - CAS number, substance name, concentration, classification fields are populated.
+  - Missing mandatory values are flagged and recorded as issues.
+  - Output conforms to EUMDR schema (field names/types).
+
+### Test Case 3.2 – Unit conversion to standard units
+- **Inputs:**
+  - Record A: 1000 ppm.
+  - Record B: 0.05 %.
+  - Record C: 500 mg/kg.
+- **Steps:**
+  1. Execute transformation.
+- **Expected Results:**
+  - All concentrations converted to standard unit (e.g., % or mg/kg as configured).
+  - Conversion factors logged.
+  - Original unit/value preserved in metadata.
+
+### Test Case 3.3 – Substance classification lookup
+- **Inputs:** Internal substance code mapped to known CAS.
+- **Steps:**
+  1. Execute transformation with ECHA database mock.
+- **Expected Results:**
+  - CAS number validated.
+  - GHS classification populated.
+  - SVHC flag set correctly based on candidate list.
+
+---
+
+## 4. Validate Data Quality and Completeness (Story 4)
+
+### Test Case 4.1 – Mandatory field validation
+- **Inputs:**
+  - Record X missing CAS number.
+  - Record Y with invalid concentration (-1%).
+- **Steps:**
+  1. Run validation engine.
+- **Expected Results:**
+  - Both records flagged as invalid.
+  - Error codes indicate specific missing/invalid fields.
+  - Validation report lists these issues.
+
+### Test Case 4.2 – Threshold and business rules
+- **Inputs:**
+  - Record A: SVHC at 0.09%.
+  - Record B: SVHC at 0.11%.
+- **Steps:**
+  1. Run validation rules.
+- **Expected Results:**
+  - Record A produces warning (approaching 0.1% threshold).
+  - Record B produces error (threshold exceeded).
+  - Prohibited combinations generate appropriate rule violations.
+
+### Test Case 4.3 – Consistency validation across sources
+- **Inputs:** Same product-substance data from two sources with conflicting concentrations.
+- **Steps:**
+  1. Run consistency validation.
+- **Expected Results:**
+  - Conflict is detected and logged.
+  - Reconciliation report lists both source values.
+  - Data steward notification is triggered for critical inconsistencies.
+
+---
+
+## 5. Generate EUMDR Compliance Reports (Story 5)
+
+### Test Case 5.1 – Standard single-product report generation
+- **Preconditions:** Validated data available for Product P.
+- **Steps:**
+  1. Request report for Product P and date range.
+- **Expected Results:**
+  - System generates report in configured format (XML/PDF).
+  - Report includes product ID, substance details, concentrations, classifications.
+  - Report is digitally signed and timestamped.
+
+### Test Case 5.2 – Batch report generation for multiple products
+- **Inputs:** Products P1, P2, P3.
+- **Steps:**
+  1. Select P1–P3 and request batch generation.
+- **Expected Results:**
+  - Individual report generated for each product.
+  - Summary report created combining key metrics.
+  - All reports packaged together for download/submission.
+
+### Test Case 5.3 – Historical report retrieval
+- **Preconditions:** At least one report previously generated and stored.
+- **Steps:**
+  1. Search reports by product ID/date.
+  2. Open selected report.
+- **Expected Results:**
+  - Exact original report is returned.
+  - Audit log shows who generated and who accessed the report.
+  - Report available in both human-readable and machine-readable formats.
+
+---
+
+## 6. Implement Audit Trail for Data Lineage (Story 6)
+
+### Test Case 6.1 – ETL process audit logging
+- **Steps:**
+  1. Execute an ETL job (extract + transform + load).
+- **Expected Results:**
+  - Audit log entry created with timestamp, job ID, user/service account, record counts, duration.
+  - Sample before/after values stored for transformation traceability.
+  - Audit record is immutable (cannot be edited/deleted via UI or API).
+
+### Test Case 6.2 – Data access logging
+- **Steps:**
+  1. User U views restricted substances dataset.
+  2. User U attempts unauthorized access to another dataset.
+- **Expected Results:**
+  - Access log records successful view with user, timestamp, dataset ID.
+  - Failed access logged with reason (UNAUTHORIZED/ACCESS_DENIED).
+  - Logs retained according to configured retention policy (>= 10 years in production).
+
+### Test Case 6.3 – Configuration change audit trail
+- **Steps:**
+  1. Modify ETL job schedule.
+  2. Update validation rule threshold.
+- **Expected Results:**
+  - Changes logged with before/after values, user, timestamp.
+  - Justification field stored if provided.
+  - Previous version recoverable (rollback possible).
+
+---
+
+## 7. Configure Substance Threshold Alerts (Story 7)
+
+### Test Case 7.1 – Threshold rule configuration and validation
+- **Steps:**
+  1. Configure threshold for SVHC = 0.1%, warning at 0.08.
+- **Expected Results:**
+  - System validates thresholds against regulatory constraints.
+  - Rule saved with version ID and stored in audit log.
+
+### Test Case 7.2 – Real-time alert generation
+- **Inputs:**
+  - Record A: SVHC at 0.081%.
+  - Record B: SVHC at 0.105%.
+- **Steps:**
+  1. Load validated data into system.
+- **Expected Results:**
+  - Warning alert issued for Record A.
+  - Critical alert issued for Record B.
+  - Dashboard displays both alerts with correct severity.
+
+### Test Case 7.3 – Alert escalation
+- **Preconditions:** Alert escalation rule: escalate if unacknowledged after 24h.
+- **Steps:**
+  1. Generate alert and leave unacknowledged for simulated 24h.
+- **Expected Results:**
+  - Alert escalated to management recipients.
+  - Alert history shows generated → pending → escalated → resolved.
+  - Resolution notes captured when alert is closed.
+
+---
+
+## 8. Integrate with SCIP Database (Story 8)
+
+### Test Case 8.1 – SCIP submission file preparation
+- **Preconditions:** Valid restricted substances data for selected products.
+- **Steps:**
+  1. Initiate SCIP submission preparation.
+- **Expected Results:**
+  - IUCLID file generated for each product.
+  - File validates against ECHA schema (using validator/mocks).
+  - Submission package includes all required supporting documents.
+
+### Test Case 8.2 – Automated SCIP submission
+- **Preconditions:** Prepared IUCLID files and configured ECHA API credentials.
+- **Steps:**
+  1. Authorize submission.
+- **Expected Results:**
+  - System sends submission via API using secure channel.
+  - Submission reference numbers returned and stored.
+  - Full transaction logged in audit trail.
+
+### Test Case 8.3 – Submission status tracking
+- **Preconditions:** At least one submission made (pending/accepted/rejected).
+- **Steps:**
+  1. Open SCIP submission status screen.
+- **Expected Results:**
+  - Status for each submission displayed with date, reference number, current state.
+  - Any feedback/errors from ECHA stored and visible.
+  - Alerts raised for rejected submissions requiring resubmission.
