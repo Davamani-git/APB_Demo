@@ -1,0 +1,6 @@
+<div class="panel panel-default" ng-if="series && series.length">
+  <div class="panel-heading">Monthly Spend</div>
+  <div class="panel-body">
+    <p>{{series[0].label}}: {{series[0].value | currencyFormat:series[0].currency}}</p>
+  </div>
+</div>

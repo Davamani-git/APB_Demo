@@ -1,0 +1,24 @@
+<div class="dashboard-overview" ng-cloak>
+  <loading-spinner loading="vm.loading"></loading-spinner>
+  <error-banner message="{{vm.error}}"></error-banner>
+  <div class="alert alert-info stale-banner" ng-if="vm.summary && vm.isStale">
+    Some data may be outdated. Last updated at {{vm.summary.asOfTimestamp}}.
+  </div>
+  <div ng-if="vm.summary">
+    <div class="row dashboard-summary-tiles">
+      <div class="col-md-4">
+        <credit-summary-tile summary="vm.summary"></credit-summary-tile>
+      </div>
+    </div>
+    <div class="row dashboard-card-list">
+      <div class="col-md-8">
+        <card-list-panel cards="vm.cards" selected-card-id="vm.selectedCardId" on-select="vm.selectCard(cardId)"></card-list-panel>
+      </div>
+    </div>
+  </div>
+  <div class="row" style="margin-top:15px;">
+    <div class="col-md-12">
+      <button type="button" class="btn btn-default" ng-click="vm.refresh()" ng-disabled="vm.loading">Refresh</button>
+    </div>
+  </div>
+</div>

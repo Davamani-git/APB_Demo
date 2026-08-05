@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="appmrn25DashboardApp">
+<head>
+  <meta charset="UTF-8">
+  <title>APPMRN25 Dashboard</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="src/app/assets/css/app.css">
+  <link rel="stylesheet" href="src/app/assets/css/dashboard.css">
+</head>
+<body>
+  <div class="container" ng-view></div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-animate.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-sanitize.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.6/ui-bootstrap-tpls.js"></script>
+
+  <script src="src/app/assets/js/app/app.module.js"></script>
+  <script src="src/app/assets/js/app/app.config.js"></script>
+  <script src="src/app/assets/js/app/app.routes.js"></script>
+  <script src="src/app/assets/js/app/app.constants.js"></script>
+
+  <script src="src/app/assets/js/app/core/services/config.service.js"></script>
+  <script src="src/app/assets/js/app/core/services/auth.context.service.js"></script>
+  <script src="src/app/assets/js/app/core/services/http.base.service.js"></script>
+  <script src="src/app/assets/js/app/core/services/logging.service.js"></script>
+
+  <script src="src/app/assets/js/app/core/interceptors/auth.interceptor.js"></script>
+  <script src="src/app/assets/js/app/core/interceptors/error.interceptor.js"></script>
+
+  <script src="src/app/assets/js/app/core/directives/loading-spinner.directive.js"></script>
+  <script src="src/app/assets/js/app/core/directives/error-banner.directive.js"></script>
+
+  <script src="src/app/assets/js/app/core/filters/currency.format.filter.js"></script>
+  <script src="src/app/assets/js/app/core/filters/percentage.filter.js"></script>
+
+  <script src="src/app/assets/js/app/dashboard/dashboard.module.js"></script>
+  <script src="src/app/assets/js/app/dashboard/dashboard.routes.js"></script>
+
+  <script src="src/app/assets/js/app/dashboard/services/dashboard.service.js"></script>
+  <script src="src/app/assets/js/app/dashboard/services/card-data.service.js"></script>
+  <script src="src/app/assets/js/app/dashboard/services/transaction-data.service.js"></script>
+
+  <script src="src/app/assets/js/app/dashboard/controllers/dashboard.overview.controller.js"></script>
+  <script src="src/app/assets/js/app/dashboard/controllers/dashboard.card-list.controller.js"></script>
+
+  <script src="src/app/assets/js/app/dashboard/directives/credit-summary-tile.directive.js"></script>
+  <script src="src/app/assets/js/app/dashboard/directives/card-list-panel.directive.js"></script>
+  <script src="src/app/assets/js/app/dashboard/directives/monthly-spend-chart.directive.js"></script>
+</body>
+</html>

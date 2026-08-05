@@ -1,0 +1,9 @@
+<div class="panel panel-default" ng-if="summary">
+  <div class="panel-heading">Credit Summary</div>
+  <div class="panel-body">
+    <p>Total Credit Limit: {{summary.totalCreditLimit | currencyFormat:summary.currency}}</p>
+    <p>Total Outstanding Amount: {{summary.totalOutstandingAmount | currencyFormat:summary.currency}}</p>
+    <p>Total Available Credit: {{summary.totalAvailableCredit | currencyFormat:summary.currency}}</p>
+    <p>Monthly Spend: {{summary.monthlySpend | currencyFormat:summary.currency}}</p>
+  </div>
+</div>

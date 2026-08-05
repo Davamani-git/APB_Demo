@@ -1,0 +1,13 @@
+<div class="panel panel-default">
+  <div class="panel-heading">Cards</div>
+  <ul class="list-group">
+    <li class="list-group-item card-item" ng-repeat="card in vm.getCards()" ng-class="{'active': card.cardId === vm.selectedCardId}" ng-click="vm.onCardClick(card)">
+      <div><strong>{{card.cardAlias}}</strong> (**** {{card.last4}})</div>
+      <div>Issuer: {{card.issuer}}</div>
+      <div>Credit Limit: {{card.creditLimit | currencyFormat:card.currency}}</div>
+      <div>Outstanding: {{card.outstandingAmount | currencyFormat:card.currency}}</div>
+      <div>Available: {{card.availableCredit | currencyFormat:card.currency}}</div>
+      <div>Utilization: {{(card.outstandingAmount / card.creditLimit) | percentage}}</div>
+    </li>
+  </ul>
+</div>
