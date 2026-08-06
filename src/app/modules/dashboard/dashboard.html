@@ -1,0 +1,47 @@
+<div ng-controller="DashboardController as vm">
+  <h1>Credit Card Dashboard</h1>
+  
+  <div ng-if="vm.loading" class="loading">
+    <p>Loading dashboard...</p>
+  </div>
+  
+  <div ng-if="vm.error" class="error-message">
+    <p>{{vm.error}}</p>
+  </div>
+  
+  <div ng-if="!vm.loading && !vm.error">
+    <div class="row">
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="kpi-card">
+          <div class="kpi-value">₹{{::vm.dashboardKPIs.totalMonthlySpend | number:2}}</div>
+          <div class="kpi-label">Monthly Spend</div>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="kpi-card">
+          <div class="kpi-value">₹{{::vm.dashboardKPIs.totalCreditLimit | number:2}}</div>
+          <div class="kpi-label">Total Credit Limit</div>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="kpi-card">
+          <div class="kpi-value">₹{{::vm.dashboardKPIs.totalAvailableCredit | number:2}}</div>
+          <div class="kpi-label">Available Credit</div>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="kpi-card">
+          <div class="kpi-value">₹{{::vm.dashboardKPIs.totalOutstanding | number:2}}</div>
+          <div class="kpi-label">Outstanding Amount</div>
+        </div>
+      </div>
+    </div>
+    
+    <h2>Your Credit Cards ({{::vm.dashboardKPIs.cardCount}})</h2>
+    <div class="row">
+      <div ng-repeat="card in vm.cards" class="col-xs-12 col-sm-6 col-md-4">
+        <card-summary card="card"></card-summary>
+      </div>
+    </div>
+  </div>
+</div>
