@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html ng-app="aiDashboardApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Dashboard</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+</head>
+<body>
+  <div ng-view></div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/services/cloudDataService.js"></script>
+  <script src="src/app/services/authService.js"></script>
+  <script src="src/app/services/monitoringService.js"></script>
+  <script src="src/app/services/analyticsService.js"></script>
+  <script src="src/app/factories/aggregationFactory.js"></script>
+  <script src="src/app/factories/accessControlFactory.js"></script>
+  <script src="src/app/factories/recommendationFactory.js"></script>
+  <script src="src/app/controllers/dashboardController.js"></script>
+  <script src="src/app/directives/reportingDirective/reportingDirective.js"></script>
+  <script src="src/app/directives/drilldown/drilldownDirective.js"></script>
+</body>
+</html>

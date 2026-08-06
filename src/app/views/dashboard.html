@@ -1,0 +1,60 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>AI Dashboard - Consolidated Real-Time View</h1>
+      <button class="btn btn-default" ng-click="vm.refresh()">Refresh</button>
+    </div>
+  </div>
+  <div class="row" ng-if="vm.loading">
+    <div class="col-md-12">
+      <p>Loading dashboard data...</p>
+    </div>
+  </div>
+  <div class="row" ng-if="vm.error">
+    <div class="col-md-12">
+      <div class="alert alert-danger">{{vm.error}}</div>
+    </div>
+  </div>
+  <div class="row" ng-if="!vm.loading && !vm.error">
+    <div class="col-md-12">
+      <h3>Aggregated AI Usage and Spend</h3>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Company ID</th>
+            <th>Total Spend</th>
+            <th>AWS</th>
+            <th>Azure</th>
+            <th>GCP</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="company in vm.aggregatedData">
+            <td>{{company.companyId}}</td>
+            <td>{{company.totalSpend | currency}}</td>
+            <td>{{company.spendByProvider.AWS || 0 | currency}}</td>
+            <td>{{company.spendByProvider.Azure || 0 | currency}}</td>
+            <td>{{company.spendByProvider.GCP || 0 | currency}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row" ng-if="!vm.loading && !vm.error">
+    <div class="col-md-12">
+      <h3>AI-Driven Recommendations</h3>
+      <ul class="list-group">
+        <li class="list-group-item" ng-repeat="rec in vm.recommendations">
+          <strong>{{rec.type | uppercase}}:</strong> {{rec.suggestion}}
+          <span class="badge">Estimated Impact: {{rec.estimatedImpact | currency}}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="row" ng-if="!vm.loading && !vm.error">
+    <div class="col-md-12">
+      <h3>Export Reports</h3>
+      <reporting-directive report-data="vm.aggregatedData" report-title="AI Dashboard Report"></reporting-directive>
+    </div>
+  </div>
+</div>
