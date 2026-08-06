@@ -1,24 +1,22 @@
 #### 1. High-Level Design
-- Summary: This epic aims to enable proactive portfolio management by providing automated alerts for budget overruns and data staleness, and allowing users to export dashboard views as PDF/Excel reports for stakeholder communication.
+- Summary: This epic enables proactive portfolio management by providing automated alerts for budget overruns and data staleness, as well as the ability to export dashboard views for offline analysis.
 - Component Flow: 
 ```mermaid
 flowchart TD
-    DS["Aggregated Data"]
-    AS["Alerting System"]
-    NS["Notification Service"]
-    U["User"]
-    DB["Dashboard"]
-    RS["Reporting Service"]
-    F["PDF/Excel Report"]
-    DS --> AS
-    AS --> NS
-    NS --> U
-    U --> DB
-    DB --> RS
-    RS --> F
+    A["Data Aggregation Layer"]
+    B["Monitoring Service"]
+    C["Alerting Service"]
+    D["User Notification"]
+    E["Reporting Service"]
+    F["Exported Report (PDF/Excel)"]
+    A --> B
+    B -- Triggers Alert --> C
+    C --> D
+    A --> E
+    E --> F
 ```
-- Integration Points: Depends on the data aggregation epic to have up-to-date spend and usage data for triggering alerts and generating reports.
+- Integration Points: Depends on the data aggregation epic to have up-to-date spend and usage data.
 
 #### 2. Validation Report
-- Requirements Coverage: The design covers the specified scope for automated alerts and report exporting.
-- Identified Gaps/Risks: The mechanism for configuring budget thresholds for alerts is not defined. The NFR for sending alerts within 5 minutes of detection implies a near real-time processing pipeline, which could be a technical challenge depending on the data volume.
+- Requirements Coverage: The design covers the requirements for automated alerts on budget thresholds and data freshness, as well as report exporting.
+- Identified Gaps/Risks: The specific channels for user notifications (e.g., email, SMS, in-app) are not defined. The process for generating "Monthly executive summaries" is ambiguous.
