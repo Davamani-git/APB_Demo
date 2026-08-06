@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html ng-app="executiveDashboardApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Executive Testing Summary Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; padding: 20px; }
+    .container { max-width: 1400px; margin: 0 auto; }
+    h1 { color: #333; margin-bottom: 20px; font-size: 28px; }
+    .section { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .section-title { font-size: 20px; color: #555; margin-bottom: 15px; font-weight: 600; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; }
+    .kpi-tile { padding: 20px; border-radius: 8px; color: white; transition: transform 0.2s; }
+    .kpi-tile:hover { transform: translateY(-2px); }
+    .kpi-title { font-size: 14px; opacity: 0.9; margin-bottom: 8px; }
+    .kpi-value { font-size: 32px; font-weight: bold; margin-bottom: 5px; }
+    .kpi-unit { font-size: 14px; opacity: 0.8; }
+    .testing-scope-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
+    .testing-scope-tile { padding: 20px; border-radius: 8px; background: white; border: 1px solid #e0e0e0; }
+    .scope-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .scope-name { font-size: 16px; font-weight: 600; color: #333; }
+    .scope-status { font-size: 12px; padding: 4px 8px; border-radius: 4px; color: white; }
+    .status-inProgress { background: #4CAF50; }
+    .status-designInProgress { background: #FFC107; }
+    .progress-section { margin-bottom: 12px; }
+    .progress-label { font-size: 13px; color: #666; margin-bottom: 5px; display: flex; justify-content: space-between; }
+    .progress-bar-container { width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: #2196F3; transition: width 0.3s; }
+    .eta-display { font-size: 13px; color: #666; margin-top: 10px; }
+    .eta-label { font-weight: 600; }
+    .status-group { padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+    .status-group.in-progress { background: #E8F5E9; }
+    .status-group.design-in-progress { background: #FFF3E0; }
+    .group-title { font-size: 18px; font-weight: 600; margin-bottom: 15px; }
+    .group-title.in-progress { color: #2E7D32; }
+    .group-title.design-in-progress { color: #F57C00; }
+    .editor-section { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .editor-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-bottom: 20px; }
+    .control-group { display: flex; flex-direction: column; }
+    .control-label { font-size: 13px; font-weight: 600; color: #555; margin-bottom: 5px; }
+    .control-input { padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+    .btn { padding: 10px 20px; border: none; border-radius: 4px; font-size: 14px; cursor: pointer; transition: background 0.2s; }
+    .btn-primary { background: #2196F3; color: white; }
+    .btn-primary:hover { background: #1976D2; }
+    .btn-secondary { background: #757575; color: white; }
+    .btn-secondary:hover { background: #616161; }
+    .btn-success { background: #4CAF50; color: white; }
+    .btn-success:hover { background: #388E3C; }
+    .theme-editor { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .color-picker-group { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .color-picker-label { flex: 1; font-size: 14px; color: #555; }
+    .color-picker-input { width: 60px; height: 40px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; }
+    .bulk-actions { display: flex; gap: 10px; margin-top: 15px; }
+    .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e0e0e0; }
+    .tab { padding: 10px 20px; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
+    .tab:hover { background: #f5f5f5; }
+    .tab.active { border-bottom-color: #2196F3; color: #2196F3; font-weight: 600; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container" ng-controller="MainController as main">
+    <h1>Executive Testing Summary Dashboard</h1>
+    
+    <div class="tabs">
+      <div class="tab" ng-class="{active: main.activeTab === 'dashboard'}" ng-click="main.setTab('dashboard')">Dashboard</div>
+      <div class="tab" ng-class="{active: main.activeTab === 'editor'}" ng-click="main.setTab('editor')">Data Editor</div>
+      <div class="tab" ng-class="{active: main.activeTab === 'theme'}" ng-click="main.setTab('theme')">Theme Editor</div>
+    </div>
+
+    <div class="tab-content" ng-class="{active: main.activeTab === 'dashboard'}">
+      <div ng-controller="KpiDisplayController as kpi">
+        <div class="section">
+          <h2 class="section-title">Executive KPI Summary</h2>
+          <div class="kpi-grid">
+            <div kpi-tile kpi-data="tile" ng-repeat="tile in kpi.kpiTiles track by tile.id"></div>
+          </div>
+        </div>
+      </div>
+
+      <div ng-controller="StatusManagerController as status">
+        <div class="section">
+          <h2 class="section-title">Testing Scope Status</h2>
+          
+          <div class="status-group in-progress">
+            <h3 class="group-title in-progress">In Progress</h3>
+            <div class="testing-scope-grid">
+              <div class="testing-scope-tile" ng-repeat="scope in status.inProgressScopes track by scope.scopeId" ng-style="status.getScopeTileStyle(scope.scopeId)">
+                <div class="scope-header">
+                  <span class="scope-name">{{scope.scopeName}}</span>
+                  <span class="scope-status status-inProgress">{{scope.status}}</span>
+                </div>
+                <div class="progress-section">
+                  <div class="progress-label">
+                    <span>Use Cases</span>
+                    <span>{{scope.useCaseCompleted}}/{{scope.useCaseTotal}} ({{scope.useCasePercentage}}%)</span>
+                  </div>
+                  <div progress-bar completed="scope.useCaseCompleted" total="scope.useCaseTotal"></div>
+                </div>
+                <div class="progress-section">
+                  <div class="progress-label">
+                    <span>Agents</span>
+                    <span>{{scope.agentCompleted}}/{{scope.agentTotal}} ({{scope.agentPercentage}}%)</span>
+                  </div>
+                  <div progress-bar completed="scope.agentCompleted" total="scope.agentTotal"></div>
+                </div>
+                <div class="eta-display" eta-display eta-date="scope.eta"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="status-group design-in-progress">
+            <h3 class="group-title design-in-progress">Design in Progress</h3>
+            <div class="testing-scope-grid">
+              <div class="testing-scope-tile" ng-repeat="scope in status.designInProgressScopes track by scope.scopeId" ng-style="status.getScopeTileStyle(scope.scopeId)">
+                <div class="scope-header">
+                  <span class="scope-name">{{scope.scopeName}}</span>
+                  <span class="scope-status status-designInProgress">{{scope.status}}</span>
+                </div>
+                <div class="progress-section">
+                  <div class="progress-label">
+                    <span>Use Cases</span>
+                    <span>{{scope.useCaseCompleted}}/{{scope.useCaseTotal}} ({{scope.useCasePercentage}}%)</span>
+                  </div>
+                  <div progress-bar completed="scope.useCaseCompleted" total="scope.useCaseTotal"></div>
+                </div>
+                <div class="progress-section">
+                  <div class="progress-label">
+                    <span>Agents</span>
+                    <span>{{scope.agentCompleted}}/{{scope.agentTotal}} ({{scope.agentPercentage}}%)</span>
+                  </div>
+                  <div progress-bar completed="scope.agentCompleted" total="scope.agentTotal"></div>
+                </div>
+                <div class="eta-display" eta-display eta-date="scope.eta"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" ng-class="{active: main.activeTab === 'editor'}">
+      <div ng-controller="DataManagementController as data">
+        <div class="editor-section">
+          <h2 class="section-title">Edit KPI Data</h2>
+          <div class="editor-controls">
+            <div class="control-group" ng-repeat="kpi in data.kpiData track by kpi.id">
+              <label class="control-label">{{kpi.title}}</label>
+              <input type="number" class="control-input" ng-model="kpi.completed" ng-change="data.updateKpiData()" placeholder="Completed">
+              <input type="number" class="control-input" ng-model="kpi.total" ng-change="data.updateKpiData()" placeholder="Total" style="margin-top: 5px;">
+            </div>
+          </div>
+        </div>
+
+        <div class="editor-section">
+          <h2 class="section-title">Edit Testing Scope Data</h2>
+          <div class="editor-controls">
+            <div class="control-group" ng-repeat="scope in data.scopeData track by scope.scopeId">
+              <label class="control-label">{{scope.scopeName}}</label>
+              <select class="control-input" ng-model="scope.status" ng-change="data.updateScopeData()">
+                <option value="In Progress">In Progress</option>
+                <option value="Design in Progress">Design in Progress</option>
+                <option value="Completed">Completed</option>
+                <option value="Not Started">Not Started</option>
+              </select>
+              <input type="number" class="control-input" ng-model="scope.useCaseCompleted" ng-change="data.updateScopeData()" placeholder="Use Cases Completed" style="margin-top: 5px;">
+              <input type="number" class="control-input" ng-model="scope.useCaseTotal" ng-change="data.updateScopeData()" placeholder="Use Cases Total" style="margin-top: 5px;">
+              <input type="number" class="control-input" ng-model="scope.agentCompleted" ng-change="data.updateScopeData()" placeholder="Agents Completed" style="margin-top: 5px;">
+              <input type="number" class="control-input" ng-model="scope.agentTotal" ng-change="data.updateScopeData()" placeholder="Agents Total" style="margin-top: 5px;">
+              <input type="date" class="control-input" ng-model="scope.eta" ng-change="data.updateScopeData()" style="margin-top: 5px;">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" ng-class="{active: main.activeTab === 'theme'}">
+      <div ng-controller="ThemeEditorController as theme">
+        <div class="theme-editor">
+          <h2 class="section-title">Customize KPI Tile Colors</h2>
+          <div class="color-picker-group" ng-repeat="kpi in theme.kpiTiles track by kpi.id">
+            <span class="color-picker-label">{{kpi.title}}</span>
+            <input type="color" class="color-picker-input" ng-model="kpi.color" ng-change="theme.updateKpiColor(kpi.id, kpi.color)">
+          </div>
+          <div class="bulk-actions">
+            <button class="btn btn-primary" ng-click="theme.applyBulkKpiColor()">Apply Same Color to All KPIs</button>
+          </div>
+        </div>
+
+        <div class="theme-editor">
+          <h2 class="section-title">Customize Testing Scope Tile Colors</h2>
+          <div class="color-picker-group" ng-repeat="scope in theme.scopeTiles track by scope.scopeId">
+            <span class="color-picker-label">{{scope.scopeName}}</span>
+            <input type="color" class="color-picker-input" ng-model="scope.color" ng-change="theme.updateScopeColor(scope.scopeId, scope.color)">
+          </div>
+          <div class="bulk-actions">
+            <button class="btn btn-primary" ng-click="theme.applyBulkScopeColor()">Apply Same Color to All Scopes</button>
+          </div>
+        </div>
+
+        <div class="theme-editor">
+          <h2 class="section-title">Customize Status Colors</h2>
+          <div class="color-picker-group">
+            <span class="color-picker-label">In Progress Status</span>
+            <input type="color" class="color-picker-input" ng-model="theme.statusColors.inProgress" ng-change="theme.updateStatusColor('inProgress', theme.statusColors.inProgress)">
+          </div>
+          <div class="color-picker-group">
+            <span class="color-picker-label">Design in Progress Status</span>
+            <input type="color" class="color-picker-input" ng-model="theme.statusColors.designInProgress" ng-change="theme.updateStatusColor('designInProgress', theme.statusColors.designInProgress)">
+          </div>
+        </div>
+
+        <div class="theme-editor">
+          <h2 class="section-title">Customize Group Background Colors</h2>
+          <div class="color-picker-group">
+            <span class="color-picker-label">In Progress Group Background</span>
+            <input type="color" class="color-picker-input" ng-model="theme.groupColors.inProgress" ng-change="theme.updateGroupColor('inProgress', theme.groupColors.inProgress)">
+          </div>
+          <div class="color-picker-group">
+            <span class="color-picker-label">Design in Progress Group Background</span>
+            <input type="color" class="color-picker-input" ng-model="theme.groupColors.designInProgress" ng-change="theme.updateGroupColor('designInProgress', theme.groupColors.designInProgress)">
+          </div>
+        </div>
+
+        <div class="theme-editor">
+          <div class="bulk-actions">
+            <button class="btn btn-success" ng-click="theme.saveTheme()">Save Theme</button>
+            <button class="btn btn-secondary" ng-click="theme.resetTheme()">Reset to Default</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/services/local-storage.factory.js"></script>
+  <script src="src/app/services/calculation.service.js"></script>
+  <script src="src/app/services/data-storage.service.js"></script>
+  <script src="src/app/services/progress-tracking.service.js"></script>
+  <script src="src/app/services/status-management.service.js"></script>
+  <script src="src/app/services/agentification.service.js"></script>
+  <script src="src/app/services/status-data.service.js"></script>
+  <script src="src/app/services/color-customization.service.js"></script>
+  <script src="src/app/services/theme-persistence.service.js"></script>
+  <script src="src/app/services/theme-rendering.service.js"></script>
+  <script src="src/app/executive-dashboard/controllers/main.controller.js"></script>
+  <script src="src/app/executive-dashboard/controllers/kpi-display.controller.js"></script>
+  <script src="src/app/executive-dashboard/controllers/data-management.controller.js"></script>
+  <script src="src/app/testing-scope-status/controllers/status-manager.controller.js"></script>
+  <script src="src/app/testing-scope-status/controllers/agentification.controller.js"></script>
+  <script src="src/app/theme-editor/controllers/theme-editor.controller.js"></script>
+  <script src="src/app/executive-dashboard/directives/kpi-tile.directive.js"></script>
+  <script src="src/app/executive-dashboard/directives/progress-bar.directive.js"></script>
+  <script src="src/app/testing-scope-status/directives/status-group-tile.directive.js"></script>
+  <script src="src/app/testing-scope-status/directives/eta-display.directive.js"></script>
+  <script src="src/app/theme-editor/directives/theme-applicator.directive.js"></script>
+  <script src="src/app/testing-scope-status/filters/group-by-status.filter.js"></script>
+</body>
+</html>
