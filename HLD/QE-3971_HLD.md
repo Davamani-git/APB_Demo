@@ -1,22 +1,23 @@
 #### 1. High-Level Design
-- Summary: This epic enables proactive portfolio management by providing automated alerts for budget overruns and data staleness, as well as the ability to export dashboard views for offline analysis.
+- Summary: To enable proactive portfolio management by providing automated alerts for budget overruns and data staleness, and allowing dashboard views to be exported as PDF/Excel for stakeholder communication.
 - Component Flow: 
 ```mermaid
 flowchart TD
     A["Data Aggregation Layer"]
     B["Monitoring Service"]
-    C["Alerting Service"]
-    D["User Notification"]
-    E["Reporting Service"]
-    F["Exported Report (PDF/Excel)"]
+    C["Alerting Engine"]
+    D["Reporting Engine"]
+    E["Notification Service (Email)"]
+    F["User"]
     A --> B
-    B -- Triggers Alert --> C
-    C --> D
-    A --> E
-    E --> F
+    B --> C
+    B --> D
+    C --> E
+    D --> F
 ```
-- Integration Points: Depends on the data aggregation epic to have up-to-date spend and usage data.
-
+- Integration Points: Depends on the data aggregation epic (like QE-3969) to have up-to-date spend and usage data to monitor.
+- Key Assumptions: Assumes alerts are sent via email to designated contacts. Assumes the exported reports are based on predefined templates of existing dashboard views.
+- NFR Highlights: Alerts sent to Operating Partners within 5 minutes of detection.
 #### 2. Validation Report
-- Requirements Coverage: The design covers the requirements for automated alerts on budget thresholds and data freshness, as well as report exporting.
-- Identified Gaps/Risks: The specific channels for user notifications (e.g., email, SMS, in-app) are not defined. The process for generating "Monthly executive summaries" is ambiguous.
+- Requirements Coverage: The design covers the requirements for alerting, reporting, and notifications as specified.
+- Identified Gaps/Risks: The effectiveness of the alerting system is highly dependent on the timeliness and reliability of the upstream data aggregation epic. Any delays there will directly impact this epic's NFRs.

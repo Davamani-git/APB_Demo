@@ -1,24 +1,23 @@
 #### 1. High-Level Design
-- Summary: This epic covers the foundational capability to automatically collect, aggregate, and display AI technology usage and spending data from AWS, Azure, and GCP.
+- Summary: This epic's core requirement is to automatically collect, aggregate, and display AI technology usage and spending data from major cloud providers (AWS, Azure, GCP) in a single, consolidated real-time dashboard.
 - Component Flow: 
 ```mermaid
 flowchart LR
-    A["AWS Connector"]
-    B["Azure Connector"]
-    C["GCP Connector"]
-    D["Data Aggregation Layer"]
-    E["Centralized Database"]
-    F["Visualization Service"]
-    G["Dashboard"]
+    A["AWS API"]
+    B["Azure API"]
+    C["GCP API"]
+    D["Data Ingestion Service"]
+    E["Data Aggregation Layer"]
+    F["Visualization Dashboard"]
     A --> D
     B --> D
     C --> D
     D --> E
     E --> F
-    F --> G
 ```
-- Integration Points: Integration with AWS, Azure, and GCP AI services.
-
+- Integration Points: Upstream systems are the APIs for AWS, Azure, and GCP AI services. The downstream system is the visualization dashboard itself.
+- Key Assumptions: Assumes portfolio companies will provide the necessary API credentials with read-only access. Assumes data is aggregated on a daily schedule.
+- NFR Highlights: System shall support up to 200 portfolio companies and 1,000 concurrent users.
 #### 2. Validation Report
-- Requirements Coverage: The design covers the primary requirement of aggregating data from the three specified major cloud providers and visualizing it.
-- Identified Gaps/Risks: The epic's success is highly dependent on external factors, including the "willingness" of portfolio companies to enable data integrations and the stability of cloud provider APIs. These dependencies pose a significant risk.
+- Requirements Coverage: The design covers the core scope of integrating with the three specified cloud providers and consolidating their data.
+- Identified Gaps/Risks: The primary risk is the dependency on portfolio companies' willingness and ability to provide secure API access. A lack of cooperation would render the system useless for those companies.
