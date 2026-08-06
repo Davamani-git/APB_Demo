@@ -1,0 +1,51 @@
+<div>
+  <h2>My Orders</h2>
+  <div ng-if="vm.loading" class="text-center">
+    <p>Loading orders...</p>
+  </div>
+  <div ng-if="!vm.loading">
+    <div ng-if="vm.orders.length === 0" class="alert alert-info">
+      <p>You have no orders yet.</p>
+    </div>
+    <div ng-if="vm.orders.length > 0">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="order in vm.orders track by order.orderId">
+            <td>{{order.orderId}}</td>
+            <td>{{order.createdDate | date:'short'}}</td>
+            <td>{{order.totalAmount | currency}}</td>
+            <td><span class="label label-info">{{order.orderStatus}}</span></td>
+            <td>
+              <a href="#!/order/{{order.orderId}}" class="btn btn-primary btn-sm">View Details</a>
+              <button class="btn btn-info btn-sm" ng-click="vm.viewTracking(order)">Track</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div ng-if="vm.trackingInfo" class="panel panel-default" style="margin-top: 20px;">
+      <div class="panel-heading"><h4>Tracking Information - Order {{vm.selectedOrder.orderId}}</h4></div>
+      <div class="panel-body">
+        <p><strong>Tracking Number:</strong> {{vm.trackingInfo.trackingNumber}}</p>
+        <p><strong>Carrier:</strong> {{vm.trackingInfo.carrier}}</p>
+        <p><strong>Status:</strong> {{vm.trackingInfo.status}}</p>
+        <p><strong>Estimated Delivery:</strong> {{vm.trackingInfo.estimatedDelivery | date:'medium'}}</p>
+        <h5>Tracking Events:</h5>
+        <ul>
+          <li ng-repeat="event in vm.trackingInfo.events track by $index">
+            <strong>{{event.timestamp | date:'short'}}</strong> - {{event.status}} ({{event.location}})
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

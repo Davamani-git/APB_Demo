@@ -1,0 +1,36 @@
+<div>
+  <h2>My Wishlist</h2>
+  <div ng-if="vm.loading" class="text-center">
+    <p>Loading wishlist...</p>
+  </div>
+  <div ng-if="!vm.loading">
+    <div ng-if="vm.wishlistItems.length === 0" class="alert alert-info">
+      <p>Your wishlist is empty.</p>
+    </div>
+    <div ng-if="vm.wishlistItems.length > 0">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Added Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="item in vm.wishlistItems track by item.productId">
+            <td>
+              <a href="#!/product/{{item.productId}}">{{item.productName}}</a>
+            </td>
+            <td>{{item.price | currency}}</td>
+            <td>{{item.addedDate | date:'short'}}</td>
+            <td>
+              <button class="btn btn-primary btn-sm" ng-click="vm.moveToCart(item)">Add to Cart</button>
+              <button class="btn btn-danger btn-sm" ng-click="vm.removeItem(item.productId)">Remove</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

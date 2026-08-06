@@ -1,0 +1,38 @@
+<div>
+  <h2>User Management</h2>
+  <div ng-if="vm.loading" class="text-center">
+    <p>Loading users...</p>
+  </div>
+  <div ng-if="!vm.loading">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>User ID</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Registration Date</th>
+          <th>Last Login</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="user in vm.users track by user.userId">
+          <td>{{user.userId}}</td>
+          <td>{{user.email}}</td>
+          <td>
+            <select class="form-control" ng-model="user.role" ng-options="role for role in vm.roles" ng-change="vm.updateUserRole(user)"></select>
+          </td>
+          <td>
+            <select class="form-control" ng-model="user.status" ng-options="status for status in vm.statuses" ng-change="vm.updateUserStatus(user)"></select>
+          </td>
+          <td>{{user.registrationDate | date:'short'}}</td>
+          <td>{{user.lastLogin | date:'short'}}</td>
+          <td>
+            <button class="btn btn-warning btn-sm" ng-click="vm.suspendUser(user.userId)" ng-if="user.status !== 'suspended'">Suspend</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

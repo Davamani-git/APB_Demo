@@ -1,0 +1,44 @@
+<div>
+  <h2>Platform Analytics</h2>
+  <div ng-if="vm.loading" class="text-center">
+    <p>Loading analytics...</p>
+  </div>
+  <div ng-if="!vm.loading">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading"><h4>Revenue Trends</h4></div>
+          <div class="panel-body">
+            <div class="chart-container">
+              <chart-directive chart-data="vm.chartData" chart-type="line"></chart-directive>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="panel panel-default">
+          <div class="panel-heading"><h4>Key Metrics</h4></div>
+          <div class="panel-body">
+            <p><strong>Total Users:</strong> {{vm.analyticsData.totalUsers}}</p>
+            <p><strong>Total Orders:</strong> {{vm.analyticsData.totalOrders}}</p>
+            <p><strong>Total Revenue:</strong> {{vm.analyticsData.totalRevenue | currency}}</p>
+            <p><strong>Average Order Value:</strong> {{vm.analyticsData.averageOrderValue | currency}}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="panel panel-default">
+          <div class="panel-heading"><h4>Growth Metrics</h4></div>
+          <div class="panel-body">
+            <p><strong>New Users (This Month):</strong> {{vm.analyticsData.newUsersThisMonth}}</p>
+            <p><strong>Active Sellers:</strong> {{vm.analyticsData.activeSellers}}</p>
+            <p><strong>Conversion Rate:</strong> {{vm.analyticsData.conversionRate}}%</p>
+            <p><strong>Cart Abandonment Rate:</strong> {{vm.analyticsData.cartAbandonmentRate}}%</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

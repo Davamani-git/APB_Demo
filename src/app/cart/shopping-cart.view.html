@@ -1,0 +1,45 @@
+<div>
+  <h2>Shopping Cart</h2>
+  <div ng-if="vm.loading" class="text-center">
+    <p>Loading cart...</p>
+  </div>
+  <div ng-if="!vm.loading">
+    <div ng-if="vm.cartItems.length === 0" class="alert alert-info">
+      <p>Your cart is empty. <a href="#!/catalog">Continue shopping</a></p>
+    </div>
+    <div ng-if="vm.cartItems.length > 0">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="item in vm.cartItems track by item.productId">
+            <td>
+              <img ng-src="{{item.imageUrl}}" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;" alt="{{item.productName}}">
+              {{item.productName}}
+            </td>
+            <td>{{item.price | currency}}</td>
+            <td>
+              <input type="number" class="form-control" ng-model="item.quantity" min="1" ng-change="vm.updateQuantity(item)" style="width: 80px;">
+            </td>
+            <td>{{item.price * item.quantity | currency}}</td>
+            <td>
+              <button class="btn btn-danger btn-sm" ng-click="vm.removeItem(item.productId)">Remove</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="text-right">
+        <h3>Total: {{vm.total | currency}}</h3>
+        <button class="btn btn-default" ng-click="vm.continueShopping()">Continue Shopping</button>
+        <button class="btn btn-success" ng-click="vm.proceedToCheckout()">Proceed to Checkout</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,86 @@
+<div>
+  <h2>Seller Dashboard</h2>
+  <div ng-if="vm.loading" class="text-center">
+    <p>Loading dashboard...</p>
+  </div>
+  <div ng-if="!vm.loading">
+    <div class="row">
+      <div class="col-md-3">
+        <div class="dashboard-card">
+          <h4>Total Sales</h4>
+          <h2>{{vm.metrics.totalSales | currency}}</h2>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="dashboard-card">
+          <h4>Active Products</h4>
+          <h2>{{vm.metrics.activeProducts}}</h2>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="dashboard-card">
+          <h4>Pending Orders</h4>
+          <h2>{{vm.metrics.pendingOrders}}</h2>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="dashboard-card">
+          <h4>Low Stock Items</h4>
+          <h2>{{vm.lowStockProducts.length}}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 20px;">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading"><h4>Quick Actions</h4></div>
+          <div class="panel-body">
+            <a href="#!/seller/products" class="btn btn-primary">Manage Products</a>
+            <a href="#!/seller/inventory" class="btn btn-info">Manage Inventory</a>
+            <a href="#!/seller/orders" class="btn btn-success">View Orders</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="panel panel-default">
+          <div class="panel-heading"><h4>Recent Orders</h4></div>
+          <div class="panel-body">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="order in vm.recentOrders track by order.orderId">
+                  <td>{{order.orderId}}</td>
+                  <td>{{order.totalAmount | currency}}</td>
+                  <td><span class="label label-info">{{order.status}}</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="panel panel-default">
+          <div class="panel-heading"><h4>Low Stock Alerts</h4></div>
+          <div class="panel-body">
+            <div ng-if="vm.lowStockProducts.length === 0">
+              <p>No low stock items.</p>
+            </div>
+            <ul ng-if="vm.lowStockProducts.length > 0">
+              <li ng-repeat="product in vm.lowStockProducts track by product.productId">
+                {{product.name}} - <span class="alert-badge">{{product.currentStock}} left</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

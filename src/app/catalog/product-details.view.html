@@ -1,0 +1,42 @@
+<div ng-if="vm.loading" class="text-center">
+  <p>Loading product details...</p>
+</div>
+<div ng-if="!vm.loading && vm.product">
+  <div class="row">
+    <div class="col-md-6">
+      <img ng-src="{{vm.selectedImage}}" class="img-responsive" alt="{{vm.product.name}}">
+      <div class="row" style="margin-top: 10px;">
+        <div class="col-xs-3" ng-repeat="image in vm.product.images track by $index">
+          <img ng-src="{{image}}" class="img-thumbnail" ng-click="vm.selectImage(image)" style="cursor: pointer;" alt="Thumbnail">
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <h2>{{vm.product.name}}</h2>
+      <p><rating-stars rating="vm.product.averageRating"></rating-stars> ({{vm.product.reviewCount}} reviews)</p>
+      <h3>{{vm.product.price | currency:vm.product.currency}}</h3>
+      <p>{{vm.product.description}}</p>
+      <p><strong>Category:</strong> {{vm.product.category}}</p>
+      <p><strong>Stock:</strong> {{vm.product.stock}} available</p>
+      <div class="form-group">
+        <label>Quantity:</label>
+        <input type="number" class="form-control" ng-model="vm.quantity" min="1" max="{{vm.product.stock}}" style="width: 100px;">
+      </div>
+      <button class="btn btn-success" ng-click="vm.addToCart()" ng-disabled="vm.product.stock === 0">Add to Cart</button>
+      <button class="btn btn-default" ng-click="vm.addToWishlist()">Add to Wishlist</button>
+    </div>
+  </div>
+  <div class="row" style="margin-top: 30px;">
+    <div class="col-md-12">
+      <h3>Customer Reviews</h3>
+      <div ng-if="vm.reviews.length === 0">
+        <p>No reviews yet.</p>
+      </div>
+      <div ng-repeat="review in vm.reviews track by review.id" style="border-bottom: 1px solid #eee; padding: 10px 0;">
+        <p><rating-stars rating="review.rating"></rating-stars></p>
+        <p>{{review.comment}}</p>
+        <p class="text-muted"><small>{{review.createdDate | date:'medium'}}</small></p>
+      </div>
+    </div>
+  </div>
+</div>

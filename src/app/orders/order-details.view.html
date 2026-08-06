@@ -1,0 +1,55 @@
+<div ng-if="vm.loading" class="text-center">
+  <p>Loading order details...</p>
+</div>
+<div ng-if="!vm.loading && vm.order">
+  <h2>Order Details - {{vm.order.orderId}}</h2>
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-md-6">
+          <h4>Order Information</h4>
+          <p><strong>Order ID:</strong> {{vm.order.orderId}}</p>
+          <p><strong>Order Date:</strong> {{vm.order.createdDate | date:'medium'}}</p>
+          <p><strong>Status:</strong> <span class="label label-info">{{vm.order.orderStatus}}</span></p>
+          <p><strong>Payment Status:</strong> <span class="label label-success">{{vm.order.paymentStatus}}</span></p>
+          <p><strong>Payment Method:</strong> {{vm.order.paymentMethod}}</p>
+        </div>
+        <div class="col-md-6">
+          <h4>Shipping Address</h4>
+          <p>{{vm.order.shippingAddress.street}}</p>
+          <p>{{vm.order.shippingAddress.city}}, {{vm.order.shippingAddress.state}} {{vm.order.shippingAddress.zipCode}}</p>
+          <p>{{vm.order.shippingAddress.country}}</p>
+        </div>
+      </div>
+      <hr>
+      <h4>Order Items</h4>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="item in vm.order.items track by item.productId">
+            <td>{{item.productName}}</td>
+            <td>{{item.quantity}}</td>
+            <td>{{item.price | currency}}</td>
+            <td>{{item.quantity * item.price | currency}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="text-right">
+        <h4>Total: {{vm.order.totalAmount | currency}}</h4>
+      </div>
+      <div ng-if="vm.order.orderStatus !== 'Cancelled' && vm.order.orderStatus !== 'Delivered'">
+        <button class="btn btn-danger" ng-click="vm.cancelOrder()" ng-disabled="vm.cancelling">
+          <span ng-if="!vm.cancelling">Cancel Order & Request Refund</span>
+          <span ng-if="vm.cancelling">Processing...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

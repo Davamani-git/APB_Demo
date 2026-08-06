@@ -1,0 +1,25 @@
+<div>
+  <h2>Product Catalog</h2>
+  <search-filter filters="vm.filters" on-apply="vm.applyFilters()" categories="vm.categories"></search-filter>
+  <div ng-if="vm.loading" class="text-center">
+    <p>Loading products...</p>
+  </div>
+  <div ng-if="vm.error" class="alert alert-danger">
+    {{vm.error}}
+  </div>
+  <div class="row" ng-if="!vm.loading && !vm.error">
+    <div class="col-md-3" ng-repeat="product in vm.products track by product.id">
+      <div class="product-card">
+        <img ng-src="{{product.images[0]}}" class="product-image" alt="{{product.name}}">
+        <h4>{{product.name}}</h4>
+        <p>{{product.description | limitTo:100}}...</p>
+        <p><strong>{{product.price | currency:product.currency}}</strong></p>
+        <p><rating-stars rating="product.averageRating"></rating-stars> ({{product.reviewCount}} reviews)</p>
+        <a href="#!/product/{{product.id}}" class="btn btn-primary btn-sm">View Details</a>
+      </div>
+    </div>
+  </div>
+  <div ng-if="!vm.loading && !vm.error && vm.products.length === 0">
+    <p class="text-center">No products found.</p>
+  </div>
+</div>

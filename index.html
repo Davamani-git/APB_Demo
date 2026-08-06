@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html ng-app="shoppingPlatform">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Shopping Platform</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <style>
+    body { padding-top: 60px; }
+    .navbar { margin-bottom: 20px; }
+    .product-card { margin-bottom: 20px; border: 1px solid #ddd; padding: 15px; }
+    .product-image { width: 100%; height: 200px; object-fit: cover; }
+    .cart-item { border-bottom: 1px solid #eee; padding: 10px 0; }
+    .rating-stars { color: #f39c12; }
+    .alert-badge { background-color: #d9534f; color: white; padding: 2px 8px; border-radius: 10px; }
+    .fraud-alert { background-color: #f2dede; border: 1px solid #ebccd1; padding: 15px; margin: 10px 0; }
+    .dashboard-card { border: 1px solid #ddd; padding: 20px; margin: 10px 0; }
+    .chart-container { height: 300px; margin: 20px 0; }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#!/">Shopping Platform</a>
+      </div>
+      <ul class="nav navbar-nav">
+        <li><a href="#!/catalog">Products</a></li>
+        <li><a href="#!/cart">Cart <span ng-if="cartCount > 0" class="badge">{{cartCount}}</span></a></li>
+        <li><a href="#!/wishlist">Wishlist</a></li>
+        <li><a href="#!/orders">Orders</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li ng-if="!isAuthenticated"><a href="#!/login">Login</a></li>
+        <li ng-if="isAuthenticated && userRole === 'seller'"><a href="#!/seller/dashboard">Seller Dashboard</a></li>
+        <li ng-if="isAuthenticated && userRole === 'admin'"><a href="#!/admin/dashboard">Admin Dashboard</a></li>
+        <li ng-if="isAuthenticated"><a href="#" ng-click="logout()">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container">
+    <div ng-view></div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.9/angular-sanitize.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/app.config.js"></script>
+  <script src="src/app/app.run.js"></script>
+  <script src="src/app/services/auth.service.js"></script>
+  <script src="src/app/services/auth.interceptor.js"></script>
+  <script src="src/app/services/rbac.service.js"></script>
+  <script src="src/app/services/permission.factory.js"></script>
+  <script src="src/app/services/notification.service.js"></script>
+  <script src="src/app/services/notification.factory.js"></script>
+  <script src="src/app/catalog/product-catalog.controller.js"></script>
+  <script src="src/app/catalog/product-catalog.service.js"></script>
+  <script src="src/app/catalog/search-filter.service.js"></script>
+  <script src="src/app/catalog/search-filter.directive.js"></script>
+  <script src="src/app/catalog/product-details.controller.js"></script>
+  <script src="src/app/catalog/product-details.service.js"></script>
+  <script src="src/app/cart/shopping-cart.controller.js"></script>
+  <script src="src/app/cart/cart.service.js"></script>
+  <script src="src/app/cart/cart.factory.js"></script>
+  <script src="src/app/wishlist/wishlist.controller.js"></script>
+  <script src="src/app/wishlist/wishlist.service.js"></script>
+  <script src="src/app/reviews/reviews.controller.js"></script>
+  <script src="src/app/reviews/reviews.service.js"></script>
+  <script src="src/app/reviews/rating-stars.directive.js"></script>
+  <script src="src/app/checkout/checkout.controller.js"></script>
+  <script src="src/app/checkout/checkout.service.js"></script>
+  <script src="src/app/payment/payment-gateway.service.js"></script>
+  <script src="src/app/payment/payment.factory.js"></script>
+  <script src="src/app/payment/payment-validation.service.js"></script>
+  <script src="src/app/orders/order.controller.js"></script>
+  <script src="src/app/orders/order.service.js"></script>
+  <script src="src/app/orders/order-tracking.controller.js"></script>
+  <script src="src/app/orders/order-tracking.service.js"></script>
+  <script src="src/app/orders/refund.service.js"></script>
+  <script src="src/app/services/fraud-detection.service.js"></script>
+  <script src="src/app/seller/seller-dashboard.controller.js"></script>
+  <script src="src/app/seller/product-management.controller.js"></script>
+  <script src="src/app/seller/product-management.service.js"></script>
+  <script src="src/app/seller/inventory.controller.js"></script>
+  <script src="src/app/seller/inventory.service.js"></script>
+  <script src="src/app/seller/inventory-alert.directive.js"></script>
+  <script src="src/app/seller/order-management.controller.js"></script>
+  <script src="src/app/seller/order-management.service.js"></script>
+  <script src="src/app/admin/admin-dashboard.controller.js"></script>
+  <script src="src/app/admin/analytics.controller.js"></script>
+  <script src="src/app/admin/analytics.service.js"></script>
+  <script src="src/app/admin/chart.directive.js"></script>
+  <script src="src/app/admin/user-management.controller.js"></script>
+  <script src="src/app/admin/user-management.service.js"></script>
+  <script src="src/app/admin/fraud-monitoring.service.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<div>
+  <h2>Order Management</h2>
+  <div ng-if="vm.loading" class="text-center">
+    <p>Loading orders...</p>
+  </div>
+  <div ng-if="!vm.loading">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Items</th>
+          <th>Total</th>
+          <th>Order Date</th>
+          <th>Fulfillment Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="order in vm.orders track by order.orderId">
+          <td>{{order.orderId}}</td>
+          <td>{{order.buyerEmail}}</td>
+          <td>{{order.items.length}}</td>
+          <td>{{order.totalAmount | currency}}</td>
+          <td>{{order.orderDate | date:'short'}}</td>
+          <td>
+            <select class="form-control" ng-model="order.fulfillmentStatus" ng-options="status for status in vm.statusOptions"></select>
+          </td>
+          <td>
+            <button class="btn btn-primary btn-sm" ng-click="vm.updateOrderStatus(order)">Update</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

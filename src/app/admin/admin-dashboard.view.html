@@ -1,0 +1,64 @@
+<div>
+  <h2>Admin Dashboard</h2>
+  <div ng-if="vm.loading" class="text-center">
+    <p>Loading dashboard...</p>
+  </div>
+  <div ng-if="!vm.loading">
+    <div class="row">
+      <div class="col-md-3">
+        <div class="dashboard-card">
+          <h4>Total Users</h4>
+          <h2>{{vm.metrics.totalUsers}}</h2>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="dashboard-card">
+          <h4>Total Orders</h4>
+          <h2>{{vm.metrics.totalOrders}}</h2>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="dashboard-card">
+          <h4>Total Revenue</h4>
+          <h2>{{vm.metrics.totalRevenue | currency}}</h2>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="dashboard-card">
+          <h4>Active Sellers</h4>
+          <h2>{{vm.metrics.activeSellers}}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 20px;">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading"><h4>Quick Actions</h4></div>
+          <div class="panel-body">
+            <a href="#!/admin/users" class="btn btn-primary">Manage Users</a>
+            <a href="#!/admin/analytics" class="btn btn-info">View Analytics</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading"><h4>Fraud Alerts</h4></div>
+          <div class="panel-body">
+            <div ng-if="vm.fraudAlerts.length === 0">
+              <p>No fraud alerts at this time.</p>
+            </div>
+            <div ng-repeat="alert in vm.fraudAlerts track by alert.id" class="fraud-alert">
+              <h5><strong>Alert:</strong> {{alert.type}}</h5>
+              <p><strong>Account ID:</strong> {{alert.accountId}}</p>
+              <p><strong>Reason:</strong> {{alert.reason}}</p>
+              <p><strong>Detected:</strong> {{alert.detectedDate | date:'medium'}}</p>
+              <button class="btn btn-warning btn-sm" ng-click="vm.investigateFraud(alert)">Investigate</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

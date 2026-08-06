@@ -1,0 +1,38 @@
+<div>
+  <h2>Inventory Management</h2>
+  <div ng-if="vm.loading" class="text-center">
+    <p>Loading inventory...</p>
+  </div>
+  <div ng-if="!vm.loading">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Current Stock</th>
+          <th>Low Stock Threshold</th>
+          <th>Status</th>
+          <th>Last Updated</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="item in vm.inventory track by item.productId" ng-class="{'danger': item.currentStock <= item.lowStockThreshold}">
+          <td>{{item.name}}</td>
+          <td>
+            <input type="number" class="form-control" ng-model="item.currentStock" min="0" style="width: 100px;">
+          </td>
+          <td>{{item.lowStockThreshold}}</td>
+          <td>
+            <span ng-if="item.currentStock <= item.lowStockThreshold" class="alert-badge">Low Stock</span>
+            <span ng-if="item.currentStock > item.lowStockThreshold" class="label label-success">OK</span>
+            <inventory-alert product-id="item.productId" current-stock="item.currentStock" threshold="item.lowStockThreshold"></inventory-alert>
+          </td>
+          <td>{{item.lastUpdated | date:'short'}}</td>
+          <td>
+            <button class="btn btn-primary btn-sm" ng-click="vm.updateStock(item)">Update</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
