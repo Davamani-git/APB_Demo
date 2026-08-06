@@ -1,0 +1,82 @@
+@media (max-width: 1199px) {
+.kpi-grid, .scope-grid {
+grid-template-columns: repeat(2, 1fr);
+}
+.dashboard-header {
+flex-direction: column;
+align-items: flex-start;
+}
+.header-actions {
+margin-top: 15px;
+width: 100%;
+justify-content: flex-start;
+}
+}
+@media (max-width: 767px) {
+.kpi-grid, .scope-grid {
+grid-template-columns: 1fr;
+}
+.dashboard-container {
+padding: 10px;
+}
+.dashboard-header h1 {
+font-size: 22px;
+}
+.kpi-value {
+font-size: 24px;
+}
+.scope-inputs {
+grid-template-columns: 1fr;
+}
+.modal-content {
+width: 95%;
+}
+}
+@media (min-width: 1920px) {
+.kpi-grid, .scope-grid {
+grid-template-columns: repeat(4, 1fr);
+}
+.dashboard-container {
+padding: 40px;
+}
+.kpi-tile, .scope-tile {
+padding: 30px;
+}
+.kpi-value {
+font-size: 40px;
+}
+}
+.device-mobile .kpi-grid,
+.device-mobile .scope-grid {
+grid-template-columns: 1fr;
+}
+.device-tablet .kpi-grid,
+.device-tablet .scope-grid {
+grid-template-columns: repeat(2, 1fr);
+}
+.device-desktop .kpi-grid,
+.device-desktop .scope-grid {
+grid-template-columns: repeat(3, 1fr);
+}
+.device-presentation .kpi-grid,
+.device-presentation .scope-grid {
+grid-template-columns: repeat(4, 1fr);
+}
+.breakpoint-sm .dashboard-header h1 {
+font-size: 20px;
+}
+.breakpoint-md .dashboard-header h1 {
+font-size: 24px;
+}
+.breakpoint-lg .dashboard-header h1 {
+font-size: 28px;
+}
+.breakpoint-xl .dashboard-header h1 {
+font-size: 32px;
+}
+.orientation-portrait .dashboard-container {
+padding: 15px;
+}
+.orientation-landscape .dashboard-container {
+padding: 20px;
+}

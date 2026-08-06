@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html ng-app="executiveDashboard">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Executive Testing Summary Dashboard</title>
+<link rel="stylesheet" href="src/app/assets/css/styles.css">
+<link rel="stylesheet" href="src/app/assets/css/responsive.css">
+</head>
+<body ng-controller="LayoutController as layoutCtrl">
+<div class="dashboard-container" ng-class="layoutCtrl.layoutClasses">
+<header class="dashboard-header">
+<h1>Executive Testing Summary Dashboard</h1>
+<div class="header-actions">
+<button ng-click="dashboardCtrl.openDataEditor()" class="btn-edit">Edit Data</button>
+<button ng-click="themeCtrl.openThemeEditor()" class="btn-theme">Customize Theme</button>
+</div>
+</header>
+<main ng-controller="DashboardController as dashboardCtrl">
+<section class="kpi-section">
+<h2>Executive KPIs</h2>
+<div class="kpi-grid" responsive-grid>
+<div class="kpi-tile" ng-repeat="kpi in dashboardCtrl.kpis track by kpi.id" ng-style="{backgroundColor: dashboardCtrl.getKpiColor(kpi.id)}">
+<h3>{{kpi.label}}</h3>
+<div class="kpi-value">{{kpi.value}}</div>
+<div class="kpi-subtitle">{{kpi.subtitle}}</div>
+<progress-bar percentage="kpi.percentage" color="kpi.progressColor"></progress-bar>
+</div>
+</div>
+</section>
+<section class="testing-scope-section">
+<h2>Testing Scope Status</h2>
+<div class="status-group" ng-style="{backgroundColor: dashboardCtrl.getGroupColor('inProgress')}">
+<h3>In Progress</h3>
+<div class="scope-grid" responsive-grid>
+<div class="scope-tile" ng-repeat="scope in dashboardCtrl.inProgressScopes track by scope.id" ng-style="{backgroundColor: dashboardCtrl.getScopeColor(scope.id)}">
+<h4>{{scope.name}}</h4>
+<div class="scope-metrics">
+<div class="metric">
+<span class="label">Use Cases:</span>
+<span class="value">{{scope.useCasesCompleted}}/{{scope.useCasesTotal}}</span>
+</div>
+<div class="metric">
+<span class="label">Agents:</span>
+<span class="value">{{scope.agentsCompleted}}/{{scope.agentsTotal}}</span>
+</div>
+<div class="metric">
+<span class="label">ETA:</span>
+<span class="value">{{scope.agentificationETA}}</span>
+</div>
+</div>
+<progress-bar percentage="scope.progressPercentage" color="scope.progressColor"></progress-bar>
+</div>
+</div>
+</div>
+<div class="status-group" ng-style="{backgroundColor: dashboardCtrl.getGroupColor('designInProgress')}" lazy-load>
+<h3>Design in Progress</h3>
+<div class="scope-grid" responsive-grid>
+<div class="scope-tile" ng-repeat="scope in dashboardCtrl.designInProgressScopes track by scope.id" ng-style="{backgroundColor: dashboardCtrl.getScopeColor(scope.id)}">
+<h4>{{scope.name}}</h4>
+<div class="scope-metrics">
+<div class="metric">
+<span class="label">Use Cases:</span>
+<span class="value">{{scope.useCasesCompleted}}/{{scope.useCasesTotal}}</span>
+</div>
+<div class="metric">
+<span class="label">Agents:</span>
+<span class="value">{{scope.agentsCompleted}}/{{scope.agentsTotal}}</span>
+</div>
+<div class="metric">
+<span class="label">ETA:</span>
+<span class="value">{{scope.agentificationETA}}</span>
+</div>
+</div>
+<progress-bar percentage="scope.progressPercentage" color="scope.progressColor"></progress-bar>
+</div>
+</div>
+</div>
+</section>
+</main>
+<div ng-controller="DataEditorController as dataEditorCtrl">
+<div class="modal" ng-show="dataEditorCtrl.isOpen">
+<div class="modal-content">
+<div class="modal-header">
+<h2>Edit Dashboard Data</h2>
+<button ng-click="dataEditorCtrl.close()" class="btn-close">&times;</button>
+</div>
+<div class="modal-body">
+<form name="dataEditorForm" ng-submit="dataEditorCtrl.save()">
+<h3>Executive KPIs</h3>
+<div class="form-group" ng-repeat="kpi in dataEditorCtrl.editableKpis track by kpi.id">
+<label>{{kpi.label}}</label>
+<input type="number" ng-model="kpi.value" min="0" required>
+</div>
+<h3>Testing Scopes</h3>
+<div class="form-group" ng-repeat="scope in dataEditorCtrl.editableScopes track by scope.id">
+<label>{{scope.name}}</label>
+<div class="scope-inputs">
+<input type="number" ng-model="scope.useCasesCompleted" placeholder="Completed" min="0" required>
+<input type="number" ng-model="scope.useCasesTotal" placeholder="Total" min="0" required>
+<input type="number" ng-model="scope.agentsCompleted" placeholder="Agents Done" min="0" required>
+<input type="number" ng-model="scope.agentsTotal" placeholder="Agents Total" min="0" required>
+<input type="text" ng-model="scope.agentificationETA" placeholder="ETA" required>
+<select ng-model="scope.status">
+<option value="Not Started">Not Started</option>
+<option value="In Progress">In Progress</option>
+<option value="Design in Progress">Design in Progress</option>
+<option value="Completed">Completed</option>
+</select>
+</div>
+</div>
+<div class="form-actions">
+<button type="submit" class="btn-save">Save Changes</button>
+<button type="button" ng-click="dataEditorCtrl.close()" class="btn-cancel">Cancel</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+<div ng-controller="ThemeEditorController as themeCtrl">
+<div class="modal" ng-show="themeCtrl.isOpen">
+<div class="modal-content">
+<div class="modal-header">
+<h2>Theme Customization</h2>
+<button ng-click="themeCtrl.close()" class="btn-close">&times;</button>
+</div>
+<div class="modal-body">
+<h3>KPI Tiles</h3>
+<div class="theme-section">
+<button ng-click="themeCtrl.applyColorToAllKpis()" class="btn-bulk">Apply Color to All KPIs</button>
+<div class="color-options" ng-repeat="kpi in themeCtrl.kpiElements track by kpi.id">
+<label>{{kpi.label}}</label>
+<input type="color" ng-model="kpi.color" ng-change="themeCtrl.applyKpiColor(kpi.id, kpi.color)" color-picker>
+</div>
+</div>
+<h3>Testing Scope Tiles</h3>
+<div class="theme-section">
+<button ng-click="themeCtrl.applyColorToAllScopes()" class="btn-bulk">Apply Color to All Scopes</button>
+<div class="color-options" ng-repeat="scope in themeCtrl.scopeElements track by scope.id">
+<label>{{scope.name}}</label>
+<input type="color" ng-model="scope.color" ng-change="themeCtrl.applyScopeColor(scope.id, scope.color)" color-picker>
+</div>
+</div>
+<h3>Status Group Backgrounds</h3>
+<div class="theme-section">
+<div class="color-options">
+<label>In Progress Background</label>
+<input type="color" ng-model="themeCtrl.groupColors.inProgress" ng-change="themeCtrl.applyGroupColor('inProgress', themeCtrl.groupColors.inProgress)" color-picker>
+</div>
+<div class="color-options">
+<label>Design in Progress Background</label>
+<input type="color" ng-model="themeCtrl.groupColors.designInProgress" ng-change="themeCtrl.applyGroupColor('designInProgress', themeCtrl.groupColors.designInProgress)" color-picker>
+</div>
+</div>
+<div class="form-actions">
+<button ng-click="themeCtrl.saveTheme()" class="btn-save">Save Theme</button>
+<button ng-click="themeCtrl.resetTheme()" class="btn-reset">Reset to Default</button>
+<button ng-click="themeCtrl.close()" class="btn-cancel">Cancel</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+<script src="src/app/app.module.js"></script>
+<script src="src/app/services/local-storage.service.js"></script>
+<script src="src/app/services/calculation.factory.js"></script>
+<script src="src/app/services/kpi.service.js"></script>
+<script src="src/app/services/testing-scope.service.js"></script>
+<script src="src/app/services/theme-storage.service.js"></script>
+<script src="src/app/services/theme.service.js"></script>
+<script src="src/app/services/contrast-validator.factory.js"></script>
+<script src="src/app/services/viewport.service.js"></script>
+<script src="src/app/services/performance.service.js"></script>
+<script src="src/app/services/visual-hierarchy.service.js"></script>
+<script src="src/app/dashboard/dashboard.controller.js"></script>
+<script src="src/app/dashboard/data-editor.controller.js"></script>
+<script src="src/app/theme/theme-editor.controller.js"></script>
+<script src="src/app/layout/layout.controller.js"></script>
+<script src="src/app/directives/progress-bar.directive.js"></script>
+<script src="src/app/directives/color-picker.directive.js"></script>
+<script src="src/app/directives/responsive-grid.directive.js"></script>
+<script src="src/app/directives/lazy-load.directive.js"></script>
+</body>
+</html>
