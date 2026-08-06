@@ -1,0 +1,99 @@
+<div class="card-management-container">
+  <div class="row">
+    <div class="col-md-12">
+      <h2>My Credit Cards</h2>
+    </div>
+  </div>
+  <div class="alert alert-danger" ng-if="vm.error">{{vm.error}}</div>
+  <div ng-if="vm.loading" class="text-center">
+    <p>Loading credit cards...</p>
+  </div>
+  <div ng-if="!vm.loading">
+    <div class="row">
+      <div class="col-md-4">
+        <h3>Card List</h3>
+        <div class="card-item" ng-repeat="card in vm.cards" ng-class="{active: vm.selectedCard.cardId === card.cardId}" ng-click="vm.selectCard(card)">
+          <h4>{{card.cardType}}</h4>
+          <p><strong>{{vm.maskCardNumber(card.cardNumber)}}</strong></p>
+          <p>Limit: ₹{{card.creditLimit | number:2}}</p>
+          <p>Available: ₹{{card.availableCredit | number:2}}</p>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <div ng-if="vm.selectedCard">
+          <h3>Card Details</h3>
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <p><strong>Card Type:</strong> {{vm.selectedCard.cardType}}</p>
+                  <p><strong>Card Number:</strong> {{vm.maskCardNumber(vm.selectedCard.cardNumber)}}</p>
+                  <p><strong>Card Holder:</strong> {{vm.selectedCard.cardHolderName}}</p>
+                  <p><strong>Expiry Date:</strong> {{vm.selectedCard.expiryDate}}</p>
+                </div>
+                <div class="col-md-6">
+                  <p><strong>Credit Limit:</strong> ₹{{vm.selectedCard.creditLimit | number:2}}</p>
+                  <p><strong>Available Credit:</strong> ₹{{vm.selectedCard.availableCredit | number:2}}</p>
+                  <p><strong>Outstanding Balance:</strong> ₹{{vm.selectedCard.outstandingBalance | number:2}}</p>
+                  <p><strong>Status:</strong> <span ng-class="{'text-success': vm.selectedCard.isActive, 'text-danger': !vm.selectedCard.isActive}">{{vm.selectedCard.isActive ? 'Active' : 'Inactive'}}</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div ng-controller="TransactionController as txnVm">
+            <h3>Transaction History</h3>
+            <div class="filter-panel">
+              <div class="row">
+                <div class="col-md-3">
+                  <input type="text" class="form-control" placeholder="Merchant" ng-model="txnVm.filters.merchantName">
+                </div>
+                <div class="col-md-3">
+                  <input type="number" class="form-control" placeholder="Min Amount" ng-model="txnVm.filters.minAmount">
+                </div>
+                <div class="col-md-3">
+                  <input type="number" class="form-control" placeholder="Max Amount" ng-model="txnVm.filters.maxAmount">
+                </div>
+                <div class="col-md-3">
+                  <button class="btn btn-primary" ng-click="txnVm.applyFilters()">Apply Filters</button>
+                </div>
+              </div>
+            </div>
+            <div ng-if="txnVm.loading" class="text-center">
+              <p>Loading transactions...</p>
+            </div>
+            <div ng-if="!txnVm.loading && txnVm.transactions.length > 0">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Merchant</th>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="txn in txnVm.transactions">
+                    <td>{{txn.date | date:'dd/MM/yyyy'}}</td>
+                    <td>{{txn.merchantName}}</td>
+                    <td>{{txn.category}}</td>
+                    <td>₹{{txn.amount | number:2}}</td>
+                    <td>{{txn.status}}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="text-center">
+                <button class="btn btn-default" ng-click="txnVm.previousPage()" ng-disabled="txnVm.filters.pageNumber <= 1">Previous</button>
+                <span>Page {{txnVm.filters.pageNumber}}</span>
+                <button class="btn btn-default" ng-click="txnVm.nextPage()" ng-disabled="txnVm.transactions.length < txnVm.filters.pageSize">Next</button>
+              </div>
+            </div>
+            <div ng-if="!txnVm.loading && txnVm.transactions.length === 0">
+              <p>No transactions found for this card.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
