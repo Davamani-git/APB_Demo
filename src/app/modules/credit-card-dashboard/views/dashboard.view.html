@@ -1,0 +1,41 @@
+<div ng-if="vm.loading" class="text-center">
+  <h3>Loading dashboard...</h3>
+</div>
+<div ng-if="vm.error" class="alert alert-danger">
+  {{vm.error}}
+</div>
+<div ng-if="!vm.loading && !vm.error && vm.kpiData">
+  <h2>Consolidated KPIs</h2>
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-3">
+      <div class="kpi-card">
+        <div class="kpi-label">Monthly Spend</div>
+        <div class="kpi-value">₹{{vm.kpiData.totalMonthlySpend | number:0}}</div>
+      </div>
+    </div>
+    <div class="col-xs-12 col-sm-6 col-md-3">
+      <div class="kpi-card">
+        <div class="kpi-label">Total Credit Limit</div>
+        <div class="kpi-value">₹{{vm.kpiData.totalCreditLimit | number:0}}</div>
+      </div>
+    </div>
+    <div class="col-xs-12 col-sm-6 col-md-3">
+      <div class="kpi-card">
+        <div class="kpi-label">Available Credit</div>
+        <div class="kpi-value">₹{{vm.kpiData.totalAvailableCredit | number:0}}</div>
+      </div>
+    </div>
+    <div class="col-xs-12 col-sm-6 col-md-3">
+      <div class="kpi-card">
+        <div class="kpi-label">Outstanding Amount</div>
+        <div class="kpi-value">₹{{vm.kpiData.totalOutstandingAmount | number:0}}</div>
+      </div>
+    </div>
+  </div>
+  <h2>Your Credit Cards</h2>
+  <div class="row">
+    <div class="col-xs-12" ng-repeat="card in vm.kpiData.cards">
+      <cc-dashboard-card card="card"></cc-dashboard-card>
+    </div>
+  </div>
+</div>
