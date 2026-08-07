@@ -1,0 +1,47 @@
+<div class="container">
+  <h2>Search Products</h2>
+  <div class="row">
+    <div class="col-md-12">
+      <form ng-submit="vm.search()">
+        <div class="form-group">
+          <label>Keyword</label>
+          <input type="text" class="form-control" ng-model="vm.searchParams.keyword" placeholder="Enter product name or description">
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select class="form-control" ng-model="vm.searchParams.category">
+            <option value="">All Categories</option>
+            <option ng-repeat="category in vm.categories" value="{{category}}">{{category}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Sort By</label>
+          <select class="form-control" ng-model="vm.selectedSort">
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="name-asc">Name: A-Z</option>
+            <option value="rating-desc">Rating: High to Low</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+      </form>
+    </div>
+  </div>
+  <div ng-if="vm.loading" class="text-center">
+    <p>Searching...</p>
+  </div>
+  <div class="row" ng-if="vm.results.length > 0">
+    <div class="col-md-3" ng-repeat="product in vm.results track by product.productId">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <img ng-src="{{product.imageUrl}}" class="img-responsive" alt="{{product.name}}">
+          <h4>{{product.name}}</h4>
+          <p>{{product.description}}</p>
+          <p><strong>${{product.price}}</strong></p>
+          <p>Rating: {{product.rating}}/5</p>
+          <button class="btn btn-primary btn-sm">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

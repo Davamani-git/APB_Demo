@@ -1,0 +1,59 @@
+<div class="container">
+  <h2>Fraud Detection</h2>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="panel panel-danger">
+        <div class="panel-heading">
+          <h4>Active Fraud Alerts</h4>
+        </div>
+        <div class="panel-body">
+          <div ng-if="vm.alerts.length === 0">
+            <p>No active alerts</p>
+          </div>
+          <table class="table" ng-if="vm.alerts.length > 0">
+            <thead>
+              <tr>
+                <th>Alert ID</th>
+                <th>User ID</th>
+                <th>Severity</th>
+                <th>Reason</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="alert in vm.alerts track by alert.alertId" ng-class="{'warning': alert.severity === 'high'}">
+                <td>{{alert.alertId}}</td>
+                <td>{{alert.userId}}</td>
+                <td>
+                  <span class="label" ng-class="{'label-danger': alert.severity === 'high', 'label-warning': alert.severity === 'medium', 'label-info': alert.severity === 'low'}">{{alert.severity}}</span>
+                </td>
+                <td>{{alert.reason}}</td>
+                <td>
+                  <button class="btn btn-primary btn-xs" ng-click="vm.reviewAlert(alert)">Review</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6" ng-if="vm.selectedAlert">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4>Alert Details</h4>
+        </div>
+        <div class="panel-body">
+          <p><strong>Alert ID:</strong> {{vm.selectedAlert.alertId}}</p>
+          <p><strong>User ID:</strong> {{vm.selectedAlert.userId}}</p>
+          <p><strong>Transaction ID:</strong> {{vm.selectedAlert.transactionId}}</p>
+          <p><strong>Severity:</strong> {{vm.selectedAlert.severity}}</p>
+          <p><strong>Reason:</strong> {{vm.selectedAlert.reason}}</p>
+          <p><strong>Created:</strong> {{vm.selectedAlert.createdAt | date:'medium'}}</p>
+          <hr>
+          <button class="btn btn-danger" ng-click="vm.lockAccount(vm.selectedAlert.userId)">Lock Account</button>
+          <button class="btn btn-default" ng-click="vm.dismissAlert(vm.selectedAlert.alertId)">Dismiss Alert</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

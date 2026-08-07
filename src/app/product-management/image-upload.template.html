@@ -1,0 +1,12 @@
+<div class="image-upload">
+  <label class="btn btn-default">
+    <input type="file" multiple accept="image/*" ngf-select ng-model="files" ngf-change="selectFiles(files)" style="display:none;">
+    Choose Images
+  </label>
+  <div class="image-preview-container">
+    <div ng-repeat="image in images track by $index" class="image-preview" style="display:inline-block; margin:5px;">
+      <img ng-src="{{image.preview}}" style="width:100px; height:100px; object-fit:cover;">
+      <button type="button" class="btn btn-danger btn-xs" ng-click="removeImage($index)">Remove</button>
+    </div>
+  </div>
+</div>

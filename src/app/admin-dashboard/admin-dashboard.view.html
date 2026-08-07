@@ -1,0 +1,63 @@
+<div class="container">
+  <h2>Admin Dashboard</h2>
+  <div class="row" ng-if="vm.metrics">
+    <div class="col-md-3">
+      <div class="panel panel-info">
+        <div class="panel-body text-center">
+          <h4>System Health</h4>
+          <h2>{{vm.metrics.status}}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="panel panel-success">
+        <div class="panel-body text-center">
+          <h4>Active Users</h4>
+          <h2>{{vm.metrics.activeUsers}}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="panel panel-warning">
+        <div class="panel-body text-center">
+          <h4>Pending Issues</h4>
+          <h2>{{vm.metrics.pendingIssues}}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="panel panel-primary">
+        <div class="panel-body text-center">
+          <h4>Response Time</h4>
+          <h2>{{vm.metrics.responseTime}}ms</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row" ng-if="vm.analytics">
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4>User Activity Statistics</h4>
+        </div>
+        <div class="panel-body">
+          <p>Total Users: {{vm.analytics.totalUsers}}</p>
+          <p>New Users (24h): {{vm.analytics.newUsers}}</p>
+          <p>Active Sessions: {{vm.analytics.activeSessions}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4>Transaction Volumes</h4>
+        </div>
+        <div class="panel-body">
+          <p>Total Transactions: {{vm.analytics.totalTransactions}}</p>
+          <p>Transactions (24h): {{vm.analytics.recentTransactions}}</p>
+          <p>Total Revenue: ${{vm.analytics.totalRevenue}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

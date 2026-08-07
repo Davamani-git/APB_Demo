@@ -1,0 +1,49 @@
+<div class="container">
+  <h2>Inventory Management</h2>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4>Current Inventory</h4>
+    </div>
+    <div class="panel-body">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Current Stock</th>
+            <th>Low Stock Threshold</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="item in vm.inventory track by item.productId">
+            <td>{{item.productName}}</td>
+            <td>
+              <input type="number" class="form-control" ng-model="item.currentStock" style="width:100px;">
+            </td>
+            <td>
+              <input type="number" class="form-control" ng-model="item.lowStockThreshold" style="width:100px;">
+            </td>
+            <td>
+              <span ng-if="item.currentStock <= item.lowStockThreshold" class="label label-danger">Low Stock</span>
+              <span ng-if="item.currentStock > item.lowStockThreshold" class="label label-success">In Stock</span>
+            </td>
+            <td>
+              <button class="btn btn-primary btn-sm" ng-click="vm.updateStock(item)">Update</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="panel panel-warning" ng-if="vm.alerts.length > 0">
+    <div class="panel-heading">
+      <h4>Recent Alerts</h4>
+    </div>
+    <div class="panel-body">
+      <div ng-repeat="alert in vm.alerts track by $index">
+        <p><strong>{{alert.productName}}</strong> - Stock: {{alert.currentStock}} (Threshold: {{alert.threshold}}) - {{alert.timestamp | date:'short'}}</p>
+      </div>
+    </div>
+  </div>
+</div>

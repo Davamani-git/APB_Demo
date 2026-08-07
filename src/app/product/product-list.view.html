@@ -1,0 +1,19 @@
+<div class="container">
+  <h2>Products</h2>
+  <div ng-if="vm.loading" class="text-center">
+    <p>Loading products...</p>
+  </div>
+  <div class="row">
+    <div class="col-md-3" ng-repeat="product in vm.products track by product.productId">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <img ng-src="{{product.imageUrl}}" class="img-responsive" alt="{{product.name}}">
+          <h4>{{product.name}}</h4>
+          <p>{{product.description}}</p>
+          <p><strong>${{product.price}}</strong></p>
+          <button class="btn btn-primary btn-sm">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

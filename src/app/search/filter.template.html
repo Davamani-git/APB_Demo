@@ -1,0 +1,19 @@
+<div class="filter-panel">
+  <h4>Filters</h4>
+  <div class="form-group">
+    <label>Price Range</label>
+    <input type="number" class="form-control" ng-model="filters.priceRange.min" placeholder="Min">
+    <input type="number" class="form-control" ng-model="filters.priceRange.max" placeholder="Max">
+  </div>
+  <div class="form-group">
+    <label>Minimum Rating</label>
+    <select class="form-control" ng-model="filters.rating">
+      <option value="0">All</option>
+      <option value="1">1+ Stars</option>
+      <option value="2">2+ Stars</option>
+      <option value="3">3+ Stars</option>
+      <option value="4">4+ Stars</option>
+    </select>
+  </div>
+  <button class="btn btn-primary" ng-click="applyFilters()">Apply Filters</button>
+</div>

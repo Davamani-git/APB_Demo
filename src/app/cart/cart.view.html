@@ -1,0 +1,36 @@
+<div class="container">
+  <h2>Shopping Cart</h2>
+  <div ng-if="vm.cartItems.length === 0">
+    <p>Your cart is empty</p>
+  </div>
+  <div ng-if="vm.cartItems.length > 0">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Subtotal</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="item in vm.cartItems track by item.cartItemId">
+          <td>{{item.name}}</td>
+          <td>${{item.price}}</td>
+          <td>
+            <input type="number" class="form-control" ng-model="item.quantity" ng-change="vm.updateQuantity(item)" min="1" style="width: 80px;">
+          </td>
+          <td>${{item.price * item.quantity}}</td>
+          <td>
+            <button class="btn btn-danger btn-sm" ng-click="vm.removeItem(item.cartItemId)">Remove</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="text-right">
+      <h3>Total: ${{vm.total}}</h3>
+      <a href="#!/checkout" class="btn btn-primary">Proceed to Checkout</a>
+    </div>
+  </div>
+</div>
