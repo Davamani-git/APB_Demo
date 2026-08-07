@@ -1,0 +1,72 @@
+<div ng-controller="DashboardController as vm">
+    <div class="page-header">
+        <h1>Credit Card Portfolio Dashboard</h1>
+    </div>
+    <div ng-if="vm.loading" class="text-center">
+        <i class="fa fa-spinner fa-spin fa-3x"></i>
+        <p>Loading portfolio data...</p>
+    </div>
+    <div ng-if="vm.error" class="alert alert-danger">
+        <i class="fa fa-exclamation-circle"></i> {{vm.error}}
+    </div>
+    <div ng-if="!vm.loading && !vm.error && vm.portfolioSummary">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <portfolio-kpi-card 
+                    kpi-title="Monthly Spend" 
+                    kpi-value="vm.portfolioSummary.totalMonthlySpend" 
+                    kpi-icon="fa-credit-card">
+                </portfolio-kpi-card>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <portfolio-kpi-card 
+                    kpi-title="Total Credit Limit" 
+                    kpi-value="vm.portfolioSummary.totalCreditLimit" 
+                    kpi-icon="fa-bank">
+                </portfolio-kpi-card>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <portfolio-kpi-card 
+                    kpi-title="Available Credit" 
+                    kpi-value="vm.portfolioSummary.totalAvailableCredit" 
+                    kpi-icon="fa-check-circle">
+                </portfolio-kpi-card>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <portfolio-kpi-card 
+                    kpi-title="Outstanding Amount" 
+                    kpi-value="vm.portfolioSummary.totalOutstanding" 
+                    kpi-icon="fa-exclamation-triangle">
+                </portfolio-kpi-card>
+            </div>
+        </div>
+        <div class="card-list">
+            <h2>Your Credit Cards</h2>
+            <div class="card-item" ng-repeat="card in vm.portfolioSummary.cards">
+                <h4>{{card.cardType}} - {{card.cardNumber}}</h4>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-3">
+                        <div class="card-detail">
+                            <strong>Credit Limit:</strong> {{card.creditLimit | currency}}
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-3">
+                        <div class="card-detail">
+                            <strong>Outstanding:</strong> {{card.outstandingAmount | currency}}
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-3">
+                        <div class="card-detail">
+                            <strong>Available:</strong> {{card.availableCredit | currency}}
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-3">
+                        <div class="card-detail">
+                            <strong>Monthly Spend:</strong> {{card.monthlySpend | currency}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
