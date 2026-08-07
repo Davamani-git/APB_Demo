@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html ng-app="apbDemo">
+<head>
+  <title>Credit Card Analytics Dashboard</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+
+  <!-- App Files -->
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/app.config.js"></script>
+
+  <!-- Core Services -->
+  <script src="src/app/services/api.service.js"></script>
+  <script src="src/app/services/error-handler.service.js"></script>
+  <script src="src/app/services/transaction-data.service.js"></script>
+  <script src="src/app/services/analytics-engine.service.js"></script>
+  <script src="src/app/services/logging.service.js"></script>
+
+  <!-- Dashboard Feature -->
+  <script src="src/app/dashboard/dashboard.module.js"></script>
+  <script src="src/app/dashboard/dashboard.controller.js"></script>
+  
+  <!-- Dashboard Components -->
+  <script src="src/app/dashboard/components/error-banner.directive.js"></script>
+  <script src="src/app/dashboard/components/loading-indicator.directive.js"></script>
+  <script src="src/app/dashboard/components/filters-toolbar.directive.js"></script>
+  <script src="src/app/dashboard/components/trend-chart.directive.js"></script>
+  <script src="src/app/dashboard/components/category-breakdown-panel.directive.js"></script>
+  <script src="src/app/dashboard/components/card-spend-panel.directive.js"></script>
+
+</head>
+<body ng-controller="DashboardController as vm">
+
+  <h1>Credit Card Analytics Dashboard</h1>
+
+  <filters-toolbar on-filters-change="vm.refreshAnalytics()"></filters-toolbar>
+  
+  <loading-indicator is-loading="vm.loading"></loading-indicator>
+  
+  <error-banner error="vm.error" on-retry="vm.refreshAnalytics()"></error-banner>
+
+  <div ng-if="!vm.loading && !vm.error">
+      <trend-chart data="vm.trendSeries"></trend-chart>
+      <category-breakdown-panel categories="vm.categorySummaries"></category-breakdown-panel>
+      <card-spend-panel cards="vm.cardSummaries"></card-spend-panel>
+  </div>
+
+</body>
+</html>

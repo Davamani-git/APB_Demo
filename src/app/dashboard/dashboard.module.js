@@ -1,0 +1,1 @@
+angular.module('apbDemo.dashboard', ['apbDemo.services']);
