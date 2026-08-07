@@ -1,0 +1,144 @@
+/*
+File: styles.css
+Description: Custom styles for the Credit Card Expenditure Dashboard.
+Author: Senior UI Engineer
+Date: 2024-07-25
+*/
+
+/* --- General & Theming --- */
+body {
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.dark-mode {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+.dark-mode .card, 
+.dark-mode .modal-content {
+    background-color: #1e1e1e;
+    border-color: #333;
+    color: #e0e0e0;
+}
+
+.dark-mode .card-header {
+    background-color: #252525;
+    border-bottom-color: #333;
+}
+
+.dark-mode .table {
+    color: #e0e0e0;
+}
+
+.dark-mode .table-striped > tbody > tr:nth-of-type(odd) > * {
+    --bs-table-accent-bg: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .form-control, .dark-mode .form-select {
+    background-color: #252525;
+    color: #e0e0e0;
+    border-color: #444;
+}
+
+.dark-mode .form-control::placeholder {
+    color: #888;
+}
+
+.dark-mode .list-group-item {
+    background-color: transparent;
+    border-color: #333;
+}
+
+.dark-mode .page-link {
+    background-color: #252525;
+    border-color: #444;
+    color: #0d6efd;
+}
+
+.dark-mode .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: #fff;
+}
+
+.dark-mode .page-item.disabled .page-link {
+    background-color: #1e1e1e;
+    border-color: #444;
+    color: #6c757d;
+}
+
+/* --- Loading Overlay --- */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* --- Card Flipper --- */
+.card-flipper {
+    perspective: 1000px;
+}
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+.card-flipper:hover .card-inner {
+    transform: rotateY(180deg);
+}
+.card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.card-front {
+    /* Inherits card styles */
+}
+.card-back {
+    transform: rotateY(180deg);
+    /* Inherits card styles */
+}
+.card-back .card-body {
+    text-align: left;
+}
+
+/* --- Table & Filters --- */
+thead th {
+    cursor: pointer;
+}
+
+thead th i {
+    font-size: 0.8em;
+    margin-left: 5px;
+}
+
+/* --- Category Badges --- */
+.bg-Food { background-color: #ff6384 !important; }
+.bg-Shopping { background-color: #36a2eb !important; }
+.bg-Travel { background-color: #ffce56 !important; }
+.bg-Entertainment { background-color: #9966ff !important; }
+.bg-Utilities { background-color: #4bc0c0 !important; }
+.bg-Healthcare { background-color: #ff9f40 !important; }
+.bg-Transport { background-color: #c9cbcf !important; }
+.bg-Miscellaneous { background-color: #777777 !important; }
+
+/* --- Chart Responsiveness --- */
+canvas {
+    max-width: 100%;
+    height: auto !important;
+}
