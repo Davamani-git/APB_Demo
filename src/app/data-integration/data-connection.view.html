@@ -1,0 +1,80 @@
+<div class="dashboard-container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Cloud Provider Integrations</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="widget-container">
+        <h3>Add New Connection</h3>
+        <form ng-submit="vm.addConnection()">
+          <div class="form-group">
+            <label>Provider</label>
+            <select class="form-control" ng-model="vm.newConnection.provider" required>
+              <option value="">Select Provider</option>
+              <option ng-repeat="provider in vm.providerTypes" value="{{provider}}">{{provider}}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>API Key</label>
+            <input type="text" class="form-control" ng-model="vm.newConnection.credentials.apiKey" required>
+          </div>
+          <div class="form-group">
+            <label>Secret Key</label>
+            <input type="password" class="form-control" ng-model="vm.newConnection.credentials.secretKey" required>
+          </div>
+          <div class="form-group">
+            <label>Region</label>
+            <input type="text" class="form-control" ng-model="vm.newConnection.credentials.region" placeholder="e.g., us-east-1">
+          </div>
+          <button type="submit" class="btn btn-primary" ng-disabled="vm.loading">Add Connection</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="widget-container">
+        <h3>Existing Connections</h3>
+        <div ng-if="vm.loading" class="text-center">
+          <p>Loading connections...</p>
+        </div>
+        <table class="table table-striped" ng-if="!vm.loading && vm.connections.length > 0">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Provider</th>
+              <th>Status</th>
+              <th>Last Sync</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="conn in vm.connections">
+              <td>{{conn.companyName || conn.companyId}}</td>
+              <td>{{conn.provider}}</td>
+              <td>
+                <cloud-provider-status connection="conn"></cloud-provider-status>
+              </td>
+              <td>
+                {{conn.lastSync | date:'short'}}
+                <span ng-if="vm.getConnectionStatus(conn) === 'stale'" class="warning-icon" title="Data is outdated">
+                  <i class="glyphicon glyphicon-warning-sign"></i>
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-info" ng-click="vm.testConnection(conn.id)">Test</button>
+                <button class="btn btn-sm btn-success" ng-click="vm.syncData(conn.id)">Sync</button>
+                <button class="btn btn-sm btn-danger" ng-click="vm.deleteConnection(conn.id)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div ng-if="!vm.loading && vm.connections.length === 0" class="text-center">
+          <p>No connections configured. Add your first cloud provider connection above.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

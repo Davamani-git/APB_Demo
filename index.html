@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html ng-app="aiPortfolioApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Portfolio Management Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css">
+  <link rel="stylesheet" href="src/app/styles/app.css">
+</head>
+<body>
+  <div ng-view></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.9/angular.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.9/angular-route.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-chart.js/1.1.1/angular-chart.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/app.config.js"></script>
+  <script src="src/app/services/auth.service.js"></script>
+  <script src="src/app/services/rbac.service.js"></script>
+  <script src="src/app/services/audit.service.js"></script>
+  <script src="src/app/services/alert.service.js"></script>
+  <script src="src/app/services/notification.service.js"></script>
+  <script src="src/app/services/cloud-provider.service.js"></script>
+  <script src="src/app/services/data-aggregation.factory.js"></script>
+  <script src="src/app/services/freshness-monitor.service.js"></script>
+  <script src="src/app/services/analytics.service.js"></script>
+  <script src="src/app/services/benchmarking.service.js"></script>
+  <script src="src/app/services/export.service.js"></script>
+  <script src="src/app/security/auth.interceptor.js"></script>
+  <script src="src/app/security/directives/has-role.directive.js"></script>
+  <script src="src/app/security/directives/has-permission.directive.js"></script>
+  <script src="src/app/dashboard/dashboard.controller.js"></script>
+  <script src="src/app/dashboard/directives/dashboard-widget.directive.js"></script>
+  <script src="src/app/dashboard/directives/chart-widget.directive.js"></script>
+  <script src="src/app/dashboard/filters/portfolio.filter.js"></script>
+  <script src="src/app/data-integration/data-connection.controller.js"></script>
+  <script src="src/app/data-integration/directives/cloud-provider-status.directive.js"></script>
+</body>
+</html>
