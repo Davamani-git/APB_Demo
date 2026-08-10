@@ -1,0 +1,38 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+  padding: 20px;
+}
+.transaction-list-container {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.page-header {
+  border-bottom: 2px solid #007bff;
+  margin-bottom: 30px;
+}
+.filter-section {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 4px;
+}
+.spend-breakdown {
+  background: #e9f5ff;
+  padding: 15px;
+  border-radius: 4px;
+}
+.transaction-table {
+  overflow-x: auto;
+}
+.pagination-section {
+  margin-top: 20px;
+  text-align: center;
+}
+.loading-indicator {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #666;
+}

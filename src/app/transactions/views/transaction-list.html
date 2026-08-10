@@ -1,0 +1,76 @@
+<div class="transaction-list-container">
+  <div class="page-header">
+    <h2>Transaction History</h2>
+  </div>
+  <div class="alert alert-danger" ng-if="vm.error">
+    <strong>Error:</strong> {{vm.error}}
+  </div>
+  <div class="filter-section" style="margin-bottom: 20px;">
+    <div class="row">
+      <div class="col-md-4">
+        <label>Filter by Card:</label>
+        <select class="form-control" ng-model="vm.selectedCardId" ng-change="vm.filterByCard(vm.selectedCardId)">
+          <option value="">All Cards</option>
+          <option ng-repeat="card in vm.cards" value="{{card.cardId}}">{{card.cardNumber}} - {{card.cardType}}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="spend-breakdown" style="margin-bottom: 20px;" ng-if="vm.spendBreakdown.length > 0">
+    <h4>Spend Breakdown by Card</h4>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Card ID</th>
+          <th>Total Spend</th>
+          <th>Transaction Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="breakdown in vm.spendBreakdown">
+          <td>{{breakdown.cardId}}</td>
+          <td>{{breakdown.totalSpend | transactionAmount:breakdown.currency}}</td>
+          <td>{{breakdown.transactionCount}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="loading-indicator" ng-if="vm.loading">
+    <p>Loading transactions...</p>
+  </div>
+  <div class="transaction-table" ng-if="!vm.loading">
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th>Date & Time</th>
+          <th>Merchant</th>
+          <th>Category</th>
+          <th>Amount</th>
+          <th>Card ID</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="txn in vm.transactions" ng-click="vm.viewTransactionDetail(txn)" style="cursor: pointer;">
+          <td>{{txn.timestamp | transactionDate}}</td>
+          <td>{{txn.merchantName}}</td>
+          <td>{{txn.category}}</td>
+          <td>{{txn.amount | transactionAmount:txn.currency}}</td>
+          <td>{{txn.cardId}}</td>
+          <td><span class="label" ng-class="{'label-success': txn.status === 'completed', 'label-warning': txn.status === 'pending', 'label-danger': txn.status === 'failed'}">{{txn.status}}</span></td>
+          <td><button class="btn btn-sm btn-info" ng-click="vm.viewTransactionDetail(txn); $event.stopPropagation();">View</button></td>
+        </tr>
+        <tr ng-if="vm.transactions.length === 0">
+          <td colspan="7" class="text-center">No transactions found</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="pagination-section" ng-if="vm.totalItems > vm.pageSize">
+    <uib-pagination total-items="vm.totalItems" ng-model="vm.currentPage" items-per-page="vm.pageSize" ng-change="vm.pageChanged()" max-size="5" boundary-links="true"></uib-pagination>
+  </div>
+  <div class="transaction-detail-modal" ng-if="vm.selectedTransaction">
+    <transaction-detail transaction="vm.selectedTransaction" on-close="vm.closeDetail()"></transaction-detail>
+  </div>
+</div>

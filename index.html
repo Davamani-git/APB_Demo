@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html ng-app="creditCardApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credit Card Analysis Dashboard</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="src/app/styles/app.css">
+</head>
+<body>
+  <div class="container-fluid">
+    <div ng-view></div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/app.config.js"></script>
+  <script src="src/app/services/transactionService.js"></script>
+  <script src="src/app/services/creditCardService.js"></script>
+  <script src="src/app/services/analyticsService.js"></script>
+  <script src="src/app/transactions/controllers/transactionController.js"></script>
+  <script src="src/app/transactions/directives/transactionDetail.js"></script>
+  <script src="src/app/transactions/filters/transactionFilter.js"></script>
+</body>
+</html>
