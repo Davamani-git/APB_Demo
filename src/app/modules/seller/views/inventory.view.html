@@ -1,0 +1,45 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>Inventory Management</h2>
+    <hr>
+    <div class="panel panel-default">
+      <div class="panel-heading">Inventory Levels</div>
+      <div class="panel-body">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Product ID</th>
+              <th>Quantity</th>
+              <th>Low Stock Threshold</th>
+              <th>Status</th>
+              <th>Last Updated</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="item in vm.inventory track by item.inventoryId">
+              <td>{{ item.productId }}</td>
+              <td>
+                <input type="number" class="form-control input-sm" ng-model="item.quantity" min="0">
+              </td>
+              <td>
+                <input type="number" class="form-control input-sm" ng-model="item.lowStockThreshold" min="0">
+              </td>
+              <td>
+                <inventory-alert item="item"></inventory-alert>
+              </td>
+              <td>{{ item.lastUpdated | date:'short' }}</td>
+              <td>
+                <button class="btn btn-sm btn-primary" ng-click="vm.updateInventory(item)">Update Qty</button>
+                <button class="btn btn-sm btn-warning" ng-click="vm.setThreshold(item)">Set Threshold</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div ng-if="vm.inventory.length === 0" class="text-center">
+          <p>No inventory data available.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

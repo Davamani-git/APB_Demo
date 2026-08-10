@@ -1,0 +1,8 @@
+<div class="alert {{ getAlertClass() }}" role="alert">
+  <span ng-if="isLowStock()">
+    <strong>Low Stock!</strong> Quantity: {{ item.quantity }} (Threshold: {{ item.lowStockThreshold }})
+  </span>
+  <span ng-if="!isLowStock()">
+    <strong>In Stock</strong> Quantity: {{ item.quantity }}
+  </span>
+</div>

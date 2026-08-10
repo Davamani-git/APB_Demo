@@ -1,0 +1,13 @@
+<div class="panel panel-default">
+  <div class="panel-body">
+    <h4>{{ product.title }}</h4>
+    <p>{{ product.description }}</p>
+    <p><strong>Price:</strong> {{ product.price | currency }}</p>
+    <p><strong>SKU:</strong> {{ product.sku }}</p>
+    <p><strong>Category:</strong> {{ product.category }}</p>
+    <div class="btn-group btn-group-sm">
+      <button class="btn btn-primary" ng-click="editProduct()">Edit</button>
+      <button class="btn btn-danger" ng-click="deleteProduct()">Delete</button>
+    </div>
+  </div>
+</div>

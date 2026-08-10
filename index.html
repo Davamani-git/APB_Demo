@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html ng-app="app.sellerDashboard">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seller Management Platform</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="src/app/assets/css/styles.css">
+</head>
+<body>
+  <div class="container-fluid">
+    <div ng-view></div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/app.config.js"></script>
+  <script src="src/app/services/seller.service.js"></script>
+  <script src="src/app/services/product.service.js"></script>
+  <script src="src/app/services/inventory.service.js"></script>
+  <script src="src/app/services/order.service.js"></script>
+  <script src="src/app/services/analytics.service.js"></script>
+  <script src="src/app/services/notification.service.js"></script>
+  <script src="src/app/modules/seller/controllers/auth.controller.js"></script>
+  <script src="src/app/modules/seller/controllers/product.controller.js"></script>
+  <script src="src/app/modules/seller/controllers/inventory.controller.js"></script>
+  <script src="src/app/modules/seller/controllers/order.controller.js"></script>
+  <script src="src/app/modules/seller/controllers/analytics.controller.js"></script>
+  <script src="src/app/modules/seller/directives/product-card.directive.js"></script>
+  <script src="src/app/modules/seller/directives/inventory-alert.directive.js"></script>
+</body>
+</html>

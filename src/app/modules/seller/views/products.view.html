@@ -1,0 +1,54 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>Product Management</h2>
+    <hr>
+    <div class="row">
+      <div class="col-md-4">
+        <div class="panel panel-default">
+          <div class="panel-heading">{{ vm.isEditing ? 'Edit Product' : 'Add New Product' }}</div>
+          <div class="panel-body">
+            <form ng-submit="vm.isEditing ? vm.updateProduct() : vm.createProduct()">
+              <div class="form-group">
+                <label for="title">Product Title</label>
+                <input type="text" class="form-control" id="title" ng-model="vm.currentProduct.title" required>
+              </div>
+              <div class="form-group">
+                <label for="description">Description</label>
+                <textarea class="form-control" id="description" ng-model="vm.currentProduct.description" rows="3" required></textarea>
+              </div>
+              <div class="form-group">
+                <label for="price">Price</label>
+                <input type="number" class="form-control" id="price" ng-model="vm.currentProduct.price" step="0.01" required>
+              </div>
+              <div class="form-group">
+                <label for="sku">SKU</label>
+                <input type="text" class="form-control" id="sku" ng-model="vm.currentProduct.sku">
+              </div>
+              <div class="form-group">
+                <label for="category">Category</label>
+                <input type="text" class="form-control" id="category" ng-model="vm.currentProduct.category">
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">{{ vm.isEditing ? 'Update' : 'Create' }} Product</button>
+              <button type="button" class="btn btn-default btn-block" ng-click="vm.resetForm()" ng-if="vm.isEditing">Cancel</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <div class="panel panel-default">
+          <div class="panel-heading">Product Catalog</div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-md-6" ng-repeat="product in vm.products track by product.productId">
+                <product-card product="product" on-edit="vm.editProduct(product)" on-delete="vm.deleteProduct(productId)"></product-card>
+              </div>
+            </div>
+            <div ng-if="vm.products.length === 0" class="text-center">
+              <p>No products found. Add your first product to get started.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
