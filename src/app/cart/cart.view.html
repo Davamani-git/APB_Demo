@@ -1,0 +1,55 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>Shopping Cart</h2>
+  </div>
+</div>
+<div class="row" ng-if="vm.cartItems.length === 0">
+  <div class="col-md-12 text-center">
+    <p>Your cart is empty.</p>
+    <a href="#!/" class="btn btn-primary">Continue Shopping</a>
+  </div>
+</div>
+<div class="row" ng-if="vm.cartItems.length > 0">
+  <div class="col-md-8">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Subtotal</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="item in vm.cartItems">
+          <td>
+            <img ng-src="{{item.imageUrl}}" style="width: 50px; height: 50px; margin-right: 10px;" alt="{{item.productName}}">
+            {{item.productName}}
+          </td>
+          <td>${{item.price}}</td>
+          <td>
+            <input type="number" class="form-control" ng-model="item.quantity" ng-change="vm.updateQuantity(item)" min="1" style="width: 80px;">
+          </td>
+          <td>${{item.price * item.quantity}}</td>
+          <td>
+            <button class="btn btn-danger btn-sm" ng-click="vm.removeItem(item.cartItemId)">Remove</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4>Order Summary</h4>
+      </div>
+      <div class="panel-body">
+        <p>Total Items: {{vm.cartItems.length}}</p>
+        <h3>Total: ${{vm.total}}</h3>
+        <button class="btn btn-success btn-block btn-lg" ng-click="vm.proceedToCheckout()">Proceed to Checkout</button>
+        <a href="#!/" class="btn btn-default btn-block">Continue Shopping</a>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,34 @@
+<div class="row" ng-if="vm.loading">
+  <div class="col-md-12 text-center">
+    <p>Loading product...</p>
+  </div>
+</div>
+<div class="row" ng-if="!vm.loading && vm.product">
+  <div class="col-md-6">
+    <img ng-src="{{vm.product.imageUrl}}" class="img-responsive" alt="{{vm.product.name}}">
+  </div>
+  <div class="col-md-6">
+    <h2>{{vm.product.name}}</h2>
+    <p class="lead">{{vm.product.description}}</p>
+    <h3>${{vm.product.price}}</h3>
+    <p>Rating: {{vm.product.ratings}} / 5</p>
+    <p>Category: {{vm.product.category}}</p>
+    <p>Stock: {{vm.product.stock}} available</p>
+    <div class="form-group">
+      <label>Quantity:</label>
+      <input type="number" class="form-control" ng-model="vm.quantity" min="1" max="{{vm.product.stock}}" style="width: 100px;">
+    </div>
+    <button class="btn btn-success btn-lg" ng-click="vm.addToCart()" ng-disabled="vm.product.stock === 0">Add to Cart</button>
+    <a href="#!/" class="btn btn-default btn-lg">Back to Products</a>
+  </div>
+</div>
+<div class="row" ng-if="!vm.loading && vm.product">
+  <div class="col-md-12">
+    <h3>Reviews</h3>
+    <p ng-if="vm.product.reviews.length === 0">No reviews yet.</p>
+    <div ng-repeat="review in vm.product.reviews">
+      <p><strong>{{review.author}}</strong> - {{review.rating}} / 5</p>
+      <p>{{review.comment}}</p>
+    </div>
+  </div>
+</div>

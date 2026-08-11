@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html ng-app="onlineShoppingApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Shopping Platform</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css">
+  <style>
+    body { padding-top: 70px; }
+    .product-card { margin-bottom: 20px; border: 1px solid #ddd; padding: 15px; }
+    .product-image { width: 100%; height: 200px; object-fit: cover; }
+    .cart-icon { position: relative; }
+    .cart-badge { position: absolute; top: -8px; right: -8px; background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 12px; }
+    .filter-panel { background: #f5f5f5; padding: 15px; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#!/">Shopping Platform</a>
+      </div>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#!/cart" class="cart-icon"><span class="glyphicon glyphicon-shopping-cart"></span> <cart-summary></cart-summary></a></li>
+        <li><a href="#!/orders"><span class="glyphicon glyphicon-list-alt"></span> Orders</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container">
+    <div ng-view></div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/app.config.js"></script>
+  <script src="src/app/services/auth.service.js"></script>
+  <script src="src/app/services/auth.interceptor.js"></script>
+  <script src="src/app/services/product.service.js"></script>
+  <script src="src/app/services/cart.service.js"></script>
+  <script src="src/app/services/checkout.service.js"></script>
+  <script src="src/app/services/payment.service.js"></script>
+  <script src="src/app/services/order.service.js"></script>
+  <script src="src/app/services/notification.service.js"></script>
+  <script src="src/app/services/toast.factory.js"></script>
+  <script src="src/app/catalog/product-list.controller.js"></script>
+  <script src="src/app/catalog/product-detail.controller.js"></script>
+  <script src="src/app/cart/cart.controller.js"></script>
+  <script src="src/app/cart/cart-summary.directive.js"></script>
+  <script src="src/app/checkout/checkout.controller.js"></script>
+  <script src="src/app/orders/order-history.controller.js"></script>
+  <script src="src/app/orders/order-detail.controller.js"></script>
+</body>
+</html>

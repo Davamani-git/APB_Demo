@@ -1,0 +1,46 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>Order History</h2>
+  </div>
+</div>
+<div class="row" ng-if="vm.loading">
+  <div class="col-md-12 text-center">
+    <p>Loading orders...</p>
+  </div>
+</div>
+<div class="row" ng-if="!vm.loading && vm.orders.length === 0">
+  <div class="col-md-12 text-center">
+    <p>No orders found.</p>
+    <a href="#!/" class="btn btn-primary">Start Shopping</a>
+  </div>
+</div>
+<div class="row" ng-if="!vm.loading && vm.orders.length > 0">
+  <div class="col-md-12">
+    <table class="table table-bordered table-hover">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Date</th>
+          <th>Total Amount</th>
+          <th>Status</th>
+          <th>Tracking Number</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="order in vm.orders">
+          <td>{{order.orderId}}</td>
+          <td>{{order.createdAt | date:'short'}}</td>
+          <td>${{order.totalAmount}}</td>
+          <td>
+            <span class="label" ng-class="{'label-success': order.status === 'Confirmed', 'label-warning': order.status === 'Processing', 'label-danger': order.status === 'Cancelled'}">{{order.status}}</span>
+          </td>
+          <td>{{order.trackingNumber}}</td>
+          <td>
+            <a href="#!/orders/{{order.orderId}}" class="btn btn-info btn-sm">View Details</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
