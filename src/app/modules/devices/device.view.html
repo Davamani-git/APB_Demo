@@ -1,0 +1,86 @@
+<div class="device-container">
+  <div class="row">
+    <div class="col-md-12">
+      <h2>Device Management</h2>
+      <a href="#/devices/manage" class="btn btn-primary pull-right">Manage Devices</a>
+    </div>
+  </div>
+  <div ng-if="vm.loading" class="text-center">
+    <p>Loading devices...</p>
+  </div>
+  <div ng-if="vm.error" class="alert alert-danger">
+    {{vm.error}}
+  </div>
+  <div ng-if="!vm.loading && vm.devices.length > 0">
+    <div class="row" style="margin-top: 20px;">
+      <div class="col-md-12">
+        <table class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th>Device Name</th>
+              <th>Type</th>
+              <th>Protocol</th>
+              <th>Status</th>
+              <th>Consumption (kWh)</th>
+              <th>Power (kW)</th>
+              <th>Cost Estimate</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="device in vm.devices">
+              <td>{{device.name}}</td>
+              <td>{{device.type}}</td>
+              <td>{{device.protocol}}</td>
+              <td>
+                <span class="label" ng-class="{'label-success': device.status === 'active', 'label-warning': device.status === 'idle', 'label-danger': device.status === 'offline'}">{{device.status}}</span>
+              </td>
+              <td>{{device.consumption | energyUnit}}</td>
+              <td>{{device.power | energyUnit}}</td>
+              <td>{{device.cost | costFormat}}</td>
+              <td>
+                <button class="btn btn-xs btn-info" ng-click="vm.selectDevice(device)">View</button>
+                <button class="btn btn-xs btn-warning" ng-if="device.status === 'active'" ng-click="vm.controlDevice(device.id, 'off')">Turn Off</button>
+                <button class="btn btn-xs btn-success" ng-if="device.status !== 'active'" ng-click="vm.controlDevice(device.id, 'on')">Turn On</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 20px;" ng-if="vm.selectedDevice">
+      <div class="col-md-12">
+        <div class="panel panel-info">
+          <div class="panel-heading">
+            <h4>Device Details: {{vm.selectedDevice.name}}</h4>
+          </div>
+          <div class="panel-body">
+            <dl class="dl-horizontal">
+              <dt>Device ID:</dt>
+              <dd>{{vm.selectedDevice.id}}</dd>
+              <dt>Type:</dt>
+              <dd>{{vm.selectedDevice.type}}</dd>
+              <dt>Protocol:</dt>
+              <dd>{{vm.selectedDevice.protocol}}</dd>
+              <dt>Status:</dt>
+              <dd>{{vm.selectedDevice.status}}</dd>
+              <dt>Group ID:</dt>
+              <dd>{{vm.selectedDevice.groupId}}</dd>
+              <dt>Connected:</dt>
+              <dd>{{vm.selectedDevice.isConnected ? 'Yes' : 'No'}}</dd>
+              <dt>Current Consumption:</dt>
+              <dd>{{vm.selectedDevice.consumption | energyUnit}} kWh</dd>
+              <dt>Current Power:</dt>
+              <dd>{{vm.selectedDevice.power | energyUnit}} kW</dd>
+              <dt>Cost Estimate:</dt>
+              <dd>{{vm.selectedDevice.cost | costFormat}}</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div ng-if="!vm.loading && vm.devices.length === 0">
+    <p>No devices found. Please add devices to start monitoring.</p>
+  </div>
+</div>

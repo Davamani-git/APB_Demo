@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html ng-app="energyDashboard">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Home Energy Management System</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="src/app/assets/css/app.css">
+</head>
+<body>
+  <div class="container-fluid">
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#/">Energy Management</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li><a href="#/dashboard">Dashboard</a></li>
+          <li><a href="#/devices">Devices</a></li>
+        </ul>
+      </div>
+    </nav>
+    <div ng-view></div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/app.config.js"></script>
+  <script src="src/app/app.routes.js"></script>
+  <script src="src/app/services/auth.service.js"></script>
+  <script src="src/app/services/energy-data.service.js"></script>
+  <script src="src/app/services/analytics.service.js"></script>
+  <script src="src/app/services/pricing.service.js"></script>
+  <script src="src/app/services/device.service.js"></script>
+  <script src="src/app/services/auth-interceptor.factory.js"></script>
+  <script src="src/app/modules/dashboard/dashboard.module.js"></script>
+  <script src="src/app/modules/dashboard/dashboard.controller.js"></script>
+  <script src="src/app/modules/devices/device.module.js"></script>
+  <script src="src/app/modules/devices/device.controller.js"></script>
+  <script src="src/app/modules/devices/device-management.controller.js"></script>
+  <script src="src/app/shared/directives/energy-chart.directive.js"></script>
+  <script src="src/app/shared/directives/device-card.directive.js"></script>
+  <script src="src/app/shared/filters/cost-format.filter.js"></script>
+  <script src="src/app/shared/filters/energy-unit.filter.js"></script>
+</body>
+</html>

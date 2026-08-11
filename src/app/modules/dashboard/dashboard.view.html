@@ -1,0 +1,73 @@
+<div class="dashboard-container">
+  <div class="row">
+    <div class="col-md-12">
+      <h2>Energy Monitoring Dashboard</h2>
+      <button class="btn btn-primary pull-right" ng-click="vm.refreshData()">Refresh</button>
+    </div>
+  </div>
+  <div ng-if="vm.loading" class="text-center">
+    <p>Loading dashboard data...</p>
+  </div>
+  <div ng-if="!vm.loading">
+    <div class="row" style="margin-top: 20px;">
+      <div class="col-md-3">
+        <div class="panel panel-primary">
+          <div class="panel-heading">Total Consumption</div>
+          <div class="panel-body">
+            <h3>{{vm.realTimeData.totalConsumption | energyUnit}} kWh</h3>
+            <p>Cost: {{vm.realTimeData.cost | costFormat}}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="panel panel-success">
+          <div class="panel-heading">Instantaneous Power</div>
+          <div class="panel-body">
+            <h3>{{vm.realTimeData.instantaneousPower | energyUnit}} kW</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="panel panel-info">
+          <div class="panel-heading">Current Rate</div>
+          <div class="panel-body">
+            <h3>{{vm.pricing.ratePerKwh | costFormat}}/kWh</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="panel panel-warning">
+          <div class="panel-heading">Active Devices</div>
+          <div class="panel-body">
+            <h3>{{vm.realTimeData.devices.length}}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 20px;">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4>Energy Consumption Trends</h4>
+            <div class="btn-group pull-right">
+              <button class="btn btn-sm" ng-class="{'btn-primary': vm.selectedTimeframe === 'daily', 'btn-default': vm.selectedTimeframe !== 'daily'}" ng-click="vm.onTimeframeChange('daily')">Daily</button>
+              <button class="btn btn-sm" ng-class="{'btn-primary': vm.selectedTimeframe === 'weekly', 'btn-default': vm.selectedTimeframe !== 'weekly'}" ng-click="vm.onTimeframeChange('weekly')">Weekly</button>
+              <button class="btn btn-sm" ng-class="{'btn-primary': vm.selectedTimeframe === 'monthly', 'btn-default': vm.selectedTimeframe !== 'monthly'}" ng-click="vm.onTimeframeChange('monthly')">Monthly</button>
+            </div>
+          </div>
+          <div class="panel-body">
+            <energy-chart chart-data="vm.trends" timeframe="vm.selectedTimeframe"></energy-chart>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 20px;">
+      <div class="col-md-12">
+        <h3>Device-Level Consumption</h3>
+      </div>
+      <div class="col-md-3" ng-repeat="device in vm.realTimeData.devices">
+        <device-card device-data="device"></device-card>
+      </div>
+    </div>
+  </div>
+</div>
