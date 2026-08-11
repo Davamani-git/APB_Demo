@@ -1,0 +1,12 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>AI Insights</h2>
+    <div ng-if="vm.error" class="alert alert-danger">{{vm.error}}</div>
+    <button class="btn btn-primary" ng-click="vm.loadInsights()">Refresh Insights</button>
+    <div ng-if="vm.loading" class="text-center" style="margin-top: 20px;"><i class="glyphicon glyphicon-refresh"></i> Loading insights...</div>
+    <div ng-if="!vm.loading && vm.insights.length === 0" class="alert alert-info" style="margin-top: 20px;">No insights available yet.</div>
+    <div ng-repeat="insight in vm.insights track by insight.id" style="margin-top: 15px;">
+      <insight-card insight="insight" on-explain="vm.requestExplanation(insightId)" on-feedback="vm.submitFeedback(insightId, feedback)"></insight-card>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,42 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>Transactions</h2>
+    <div ng-if="vm.error" class="alert alert-danger">{{vm.error}}</div>
+    <transaction-filter filters="vm.filters" categories="vm.categories" on-apply="vm.applyFilters()" on-clear="vm.clearFilters()"></transaction-filter>
+    <div class="text-right" style="margin: 10px 0;">
+      <button class="btn btn-success" ng-click="vm.exportTransactions()">Export CSV</button>
+    </div>
+    <div ng-if="vm.loading" class="text-center"><i class="glyphicon glyphicon-refresh"></i> Loading...</div>
+    <table class="table table-striped" ng-if="!vm.loading">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Merchant</th>
+          <th>Description</th>
+          <th>Amount</th>
+          <th>Category</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="txn in vm.transactions track by txn.id">
+          <td>{{txn.date | date:'short'}}</td>
+          <td>{{txn.merchantName}}</td>
+          <td>{{txn.description}}</td>
+          <td>${{txn.amount | number:2}}</td>
+          <td>
+            <span ng-if="!txn.editing">{{txn.category}}</span>
+            <select ng-if="txn.editing" ng-model="txn.newCategoryId" class="form-control input-sm">
+              <option ng-repeat="cat in vm.categories track by cat.id" value="{{cat.id}}">{{cat.name}}</option>
+            </select>
+          </td>
+          <td>
+            <button ng-if="!txn.editing" class="btn btn-xs btn-primary" ng-click="txn.editing = true">Edit</button>
+            <button ng-if="txn.editing" class="btn btn-xs btn-success" ng-click="vm.correctCategory(txn.id, txn.newCategoryId); txn.editing = false">Save</button>
+            <button ng-if="txn.editing" class="btn btn-xs btn-default" ng-click="txn.editing = false">Cancel</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

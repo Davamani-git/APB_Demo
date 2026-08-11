@@ -1,0 +1,21 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>Connected Accounts</h2>
+    <div ng-if="vm.error" class="alert alert-danger">{{vm.error}}</div>
+    <div ng-if="vm.loading" class="text-center"><i class="glyphicon glyphicon-refresh"></i> Loading...</div>
+    <account-list accounts="vm.accounts" on-disconnect="vm.disconnectAccount(accountId)" on-sync="vm.triggerSync(accountId)"></account-list>
+    <hr>
+    <h3>Connect New Account</h3>
+    <div class="form-group">
+      <label>Select Institution:</label>
+      <select class="form-control" ng-model="vm.selectedInstitution">
+        <option value="">-- Select Bank --</option>
+        <option value="chase">Chase</option>
+        <option value="bofa">Bank of America</option>
+        <option value="wells">Wells Fargo</option>
+        <option value="citi">Citibank</option>
+      </select>
+    </div>
+    <button class="btn btn-success" ng-click="vm.connectAccount(vm.selectedInstitution)" ng-disabled="!vm.selectedInstitution || vm.loading">Connect Account</button>
+  </div>
+</div>

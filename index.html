@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html ng-app="financeApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Personal Finance Manager</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <style>
+    body { padding-top: 60px; }
+    .budget-progress { margin: 15px 0; }
+    .progress-green .progress-bar { background-color: #5cb85c; }
+    .progress-yellow .progress-bar { background-color: #f0ad4e; }
+    .progress-red .progress-bar { background-color: #d9534f; }
+    .insight-card { border: 1px solid #ddd; border-radius: 4px; padding: 15px; margin-bottom: 15px; }
+    .insight-card.high-confidence { border-left: 4px solid #5cb85c; }
+    .insight-card.medium-confidence { border-left: 4px solid #f0ad4e; }
+    .insight-card.low-confidence { border-left: 4px solid #d9534f; }
+    .account-status-active { color: #5cb85c; }
+    .account-status-syncing { color: #f0ad4e; }
+    .account-status-error { color: #d9534f; }
+    .goal-card { border: 1px solid #ddd; border-radius: 4px; padding: 15px; margin-bottom: 15px; background: #f9f9f9; }
+    .nl-query-container { max-width: 800px; margin: 20px auto; }
+    .query-history { max-height: 400px; overflow-y: auto; margin-bottom: 15px; }
+    .query-item { padding: 10px; margin-bottom: 10px; border-radius: 4px; }
+    .query-item.user { background: #e3f2fd; text-align: right; }
+    .query-item.system { background: #f5f5f5; }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#/">Finance Manager</a>
+      </div>
+      <ul class="nav navbar-nav">
+        <li><a href="#/accounts">Accounts</a></li>
+        <li><a href="#/transactions">Transactions</a></li>
+        <li><a href="#/budgets">Budgets</a></li>
+        <li><a href="#/goals">Goals</a></li>
+        <li><a href="#/insights">Insights</a></li>
+        <li><a href="#/nlquery">Ask AI</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#/notifications">Notifications</a></li>
+        <li><a href="#/" ng-click="logout()">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container-fluid">
+    <div ng-view></div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/app.config.js"></script>
+  <script src="src/app/services/auth.service.js"></script>
+  <script src="src/app/services/auth.interceptor.js"></script>
+  <script src="src/app/services/category.service.js"></script>
+  <script src="src/app/services/notification.service.js"></script>
+  <script src="src/app/accounts/account.service.js"></script>
+  <script src="src/app/accounts/sync-status.service.js"></script>
+  <script src="src/app/accounts/account-connection.controller.js"></script>
+  <script src="src/app/accounts/account-list.directive.js"></script>
+  <script src="src/app/accounts/sync-status-indicator.directive.js"></script>
+  <script src="src/app/transactions/transaction.service.js"></script>
+  <script src="src/app/transactions/transaction.controller.js"></script>
+  <script src="src/app/transactions/transaction-filter.directive.js"></script>
+  <script src="src/app/budgets/budget.service.js"></script>
+  <script src="src/app/budgets/budget.controller.js"></script>
+  <script src="src/app/budgets/budget-progress.directive.js"></script>
+  <script src="src/app/budgets/budget-alert-config.directive.js"></script>
+  <script src="src/app/goals/goal.service.js"></script>
+  <script src="src/app/goals/goal.controller.js"></script>
+  <script src="src/app/goals/goal-card.directive.js"></script>
+  <script src="src/app/insights/insights.service.js"></script>
+  <script src="src/app/insights/insights.controller.js"></script>
+  <script src="src/app/insights/insight-card.directive.js"></script>
+  <script src="src/app/insights/insight-feedback.directive.js"></script>
+  <script src="src/app/insights/spending-pattern-chart.directive.js"></script>
+  <script src="src/app/insights/recommendation.service.js"></script>
+  <script src="src/app/nlquery/nlquery.service.js"></script>
+  <script src="src/app/nlquery/nlquery.controller.js"></script>
+  <script src="src/app/nlquery/nl-query-input.directive.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>Budget Management</h2>
+    <div ng-if="vm.error" class="alert alert-danger">{{vm.error}}</div>
+    <button class="btn btn-primary" ng-click="vm.toggleCreateForm()" ng-if="!vm.showCreateForm">Create New Budget</button>
+    <div ng-if="vm.showCreateForm" class="panel panel-default" style="margin-top: 15px;">
+      <div class="panel-heading">Create New Budget</div>
+      <div class="panel-body">
+        <div class="form-group">
+          <label>Category:</label>
+          <select class="form-control" ng-model="vm.newBudget.categoryId" required>
+            <option value="">-- Select Category --</option>
+            <option ng-repeat="cat in vm.categories track by cat.id" value="{{cat.id}}">{{cat.name}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Limit Amount:</label>
+          <input type="number" class="form-control" ng-model="vm.newBudget.limitAmount" required>
+        </div>
+        <div class="form-group">
+          <label>Period:</label>
+          <select class="form-control" ng-model="vm.newBudget.period">
+            <option value="monthly">Monthly</option>
+            <option value="weekly">Weekly</option>
+          </select>
+        </div>
+        <budget-alert-config thresholds="vm.newBudget.alertThresholds"></budget-alert-config>
+        <button class="btn btn-success" ng-click="vm.createBudget()">Save Budget</button>
+        <button class="btn btn-default" ng-click="vm.cancelCreate()">Cancel</button>
+      </div>
+    </div>
+    <div ng-if="vm.loading" class="text-center"><i class="glyphicon glyphicon-refresh"></i> Loading...</div>
+    <div ng-if="!vm.loading && vm.budgets.length === 0" class="alert alert-info">No budgets created yet.</div>
+    <div ng-repeat="budget in vm.budgets track by budget.id" class="panel panel-default" style="margin-top: 15px;">
+      <div class="panel-heading">
+        <h3 class="panel-title">{{budget.categoryName}} Budget</h3>
+      </div>
+      <div class="panel-body">
+        <budget-progress budget="budget"></budget-progress>
+        <p>Period: {{budget.period}}</p>
+        <p>Alert Thresholds: {{budget.alertThresholds.join(', ')}}%</p>
+        <button class="btn btn-danger btn-sm" ng-click="vm.deleteBudget(budget.id)">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
