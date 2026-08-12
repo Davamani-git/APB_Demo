@@ -1,0 +1,15 @@
+<div class="widget">
+  <h2>Report Generator</h2>
+  <label>Report Type:
+    <select ng-model="vm.selectedType" ng-options="type for type in vm.reportTypes"></select>
+  </label>
+  <button class="btn" ng-click="vm.generate()" ng-disabled="!vm.selectedType||vm.loading">Generate</button>
+  <div ng-if="vm.loading">Generating report...</div>
+  <div ng-if="vm.error" class="alert-critical">{{vm.error}}</div>
+  <div ng-if="vm.report">
+    <h3>{{vm.report.title}}</h3>
+    <pre>{{vm.report.data | json}}</pre>
+    <button class="btn" ng-click="vm.export('pdf')">Export PDF</button>
+    <button class="btn" ng-click="vm.export('csv')">Export CSV</button>
+  </div>
+</div>

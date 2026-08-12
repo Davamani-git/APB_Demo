@@ -1,0 +1,20 @@
+<div class="widget">
+  <h2>User Management</h2>
+  <table>
+    <thead>
+      <tr><th>User ID</th><th>Email</th><th>Status</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="user in vm.users">
+        <td>{{user.userId}}</td>
+        <td>{{user.email}}</td>
+        <td>{{user.locked?'Locked':'Active'}}</td>
+        <td>
+          <button class="btn" ng-click="vm.unlockUser(user.userId)" ng-if="user.locked">Unlock</button>
+          <button class="btn" ng-click="vm.lockUser(user.userId)" ng-if="!user.locked">Lock</button>
+          <button class="btn" ng-click="vm.resetPassword(user.userId)">Reset Password</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

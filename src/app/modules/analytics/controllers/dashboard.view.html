@@ -1,0 +1,26 @@
+<div class="dash-grid">
+  <apb-widget title="Portfolio Summary" loading="vm.loading">
+    <div ng-if="vm.summary">
+      <p><strong>Total Companies:</strong> {{vm.summary.totalCompanies}}</p>
+      <p><strong>Total Spend:</strong> {{vm.summary.totalSpend | apbCurrency}}</p>
+      <p><strong>Active Alerts:</strong> {{vm.summary.activeAlerts}}</p>
+    </div>
+    <div ng-if="vm.error" class="alert-critical">{{vm.error}}</div>
+  </apb-widget>
+
+  <apb-widget title="Companies" loading="vm.loading">
+    <div ng-repeat="company in vm.companies" class="company-row" ng-click="vm.selectCompany(company.companyId)" style="cursor:pointer">
+      <strong>{{company.companyId}}</strong>: {{company.totalCost | apbCurrency}}
+      <span ng-if="company.freshnessStatus!=='current'" class="stale-icon" title="Data is {{company.freshnessStatus}}">⚠</span>
+    </div>
+  </apb-widget>
+
+  <apb-widget title="Company Details" loading="vm.loadingCompany" ng-if="vm.selectedCompany">
+    <h4>{{vm.selectedCompany.companyId}}</h4>
+    <p><strong>Total Cost:</strong> {{vm.selectedCompany.totalCost | apbCurrency}}</p>
+    <div ng-if="vm.trends">
+      <apb-chart data="vm.trends.chartData" type="line"></apb-chart>
+    </div>
+    <div ng-if="vm.companyError" class="alert-critical">{{vm.companyError}}</div>
+  </apb-widget>
+</div>

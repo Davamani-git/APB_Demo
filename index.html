@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="apbApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Portfolio Management Dashboard</title>
+  <link rel="stylesheet" href="src/app/app.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.9/angular.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.9/angular-route.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+</head>
+<body>
+  <div class="apb-header"><h1>AI Portfolio Management Dashboard</h1></div>
+  <div ng-view></div>
+
+  <!-- Module bootstrap (must load first) -->
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/app.config.js"></script>
+
+  <!-- Shared services -->
+  <script src="src/app/services/authService.js"></script>
+  <script src="src/app/services/authInterceptor.js"></script>
+  <script src="src/app/services/auditLogService.js"></script>
+  <script src="src/app/services/notificationService.js"></script>
+  <script src="src/app/services/alertService.js"></script>
+  <script src="src/app/services/notificationFactory.js"></script>
+  <script src="src/app/services/dataStorageService.js"></script>
+
+  <!-- Data Infrastructure module (QE-4267) -->
+  <script src="src/app/modules/data-infrastructure/factories/cloudProviderFactory.js"></script>
+  <script src="src/app/modules/data-infrastructure/services/dataTransformService.js"></script>
+  <script src="src/app/modules/data-infrastructure/services/dataAggregationService.js"></script>
+  <script src="src/app/modules/data-infrastructure/services/dataCollectionService.js"></script>
+  <script src="src/app/modules/data-infrastructure/services/freshnessMonitorService.js"></script>
+  <script src="src/app/modules/data-infrastructure/controllers/dataInfraController.js"></script>
+
+  <!-- Security module (QE-4268) -->
+  <script src="src/app/modules/security/services/rbacService.js"></script>
+  <script src="src/app/modules/security/services/authorizationService.js"></script>
+  <script src="src/app/modules/security/services/routeGuard.js"></script>
+  <script src="src/app/modules/security/directives/rbacDirective.js"></script>
+  <script src="src/app/modules/admin/services/userManagementService.js"></script>
+  <script src="src/app/modules/admin/controllers/userManagementController.js"></script>
+
+  <!-- Analytics module (QE-4269) -->
+  <script src="src/app/modules/analytics/filters/currencyFilter.js"></script>
+  <script src="src/app/modules/analytics/services/dashboardService.js"></script>
+  <script src="src/app/modules/analytics/services/analyticsService.js"></script>
+  <script src="src/app/modules/analytics/services/budgetAlertService.js"></script>
+  <script src="src/app/modules/analytics/directives/widgetDirective.js"></script>
+  <script src="src/app/modules/analytics/directives/chartDirective.js"></script>
+  <script src="src/app/modules/analytics/controllers/dashboardController.js"></script>
+  <script src="src/app/modules/reporting/services/reportGeneratorService.js"></script>
+  <script src="src/app/modules/reporting/controllers/reportController.js"></script>
+</body>
+</html>

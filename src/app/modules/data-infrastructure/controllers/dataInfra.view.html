@@ -1,0 +1,15 @@
+<div class="widget">
+  <h2>Data Infrastructure Management</h2>
+  <p>Manage multi-cloud data collection and freshness monitoring.</p>
+  <button class="btn" ng-click="vm.collectNow()" ng-disabled="vm.loading">Collect Data Now</button>
+  <button class="btn" ng-click="vm.startMonitoring()" ng-if="!vm.monitoringActive">Start Monitoring</button>
+  <button class="btn" ng-click="vm.stopMonitoring()" ng-if="vm.monitoringActive">Stop Monitoring</button>
+  <div ng-if="vm.loading">Loading...</div>
+  <div ng-if="vm.error" class="alert-critical">{{vm.error}}</div>
+  <div ng-if="vm.aggregated">
+    <h3>Aggregated Data</h3>
+    <div ng-repeat="agg in vm.aggregated" class="company-row">
+      <strong>{{agg.companyId}}</strong>: ${{agg.totalCost}} ({{agg.freshnessStatus}})
+    </div>
+  </div>
+</div>
