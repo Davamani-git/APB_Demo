@@ -1,0 +1,47 @@
+<div class="row">
+<div class="col-md-12">
+<div class="page-header">
+<h2>Activity Dashboard
+<button class="btn btn-primary pull-right" ng-click="vm.manualSync()" ng-disabled="vm.isSyncing">
+<span ng-if="!vm.isSyncing">Sync Now</span>
+<span ng-if="vm.isSyncing">Syncing...</span>
+</button>
+</h2>
+<p class="text-muted">
+Last sync: {{vm.formatLastSync()}}
+<span ng-if="vm.isSyncing" class="sync-indicator"></span>
+</p>
+</div>
+<div ng-if="vm.connectedDevices.length === 0" class="alert alert-info">
+<strong>No devices connected.</strong> <a href="#/pairing">Connect a wearable device</a> to start tracking your activity.
+</div>
+<div ng-if="vm.syncError" class="alert alert-warning">
+<strong>Sync Issue:</strong> {{vm.syncError}}
+</div>
+<div ng-if="vm.connectedDevices.length > 0">
+<div class="row">
+<div class="col-md-12">
+<h4>Connected Devices</h4>
+<div ng-repeat="device in vm.connectedDevices" class="device-card">
+<div class="row">
+<div class="col-sm-8">
+<strong>{{device.deviceName}}</strong>
+<span class="status-badge status-connected">Connected</span>
+<p class="text-muted" style="margin:5px 0 0 0">Last sync: {{device.lastSyncTime | date:'short'}}</p>
+</div>
+<div class="col-sm-4 text-right">
+<button class="btn btn-sm btn-danger" ng-click="vm.disconnectDevice(device.deviceId)">Disconnect</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="row" style="margin-top:30px">
+<div class="col-md-12">
+<h4>Today's Activity</h4>
+<health-metrics-widget activity-data="vm.activityData" last-sync="vm.lastSyncTime"></health-metrics-widget>
+</div>
+</div>
+</div>
+</div>
+</div>

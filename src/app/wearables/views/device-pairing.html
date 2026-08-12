@@ -1,0 +1,35 @@
+<div class="row">
+<div class="col-md-8 col-md-offset-2">
+<h2>Connect Your Wearable Device</h2>
+<p class="text-muted">Select a device to pair and authenticate with your fitness tracker</p>
+<div ng-if="vm.pairingSuccess" class="alert alert-success">
+<strong>Success!</strong> Device paired successfully. Redirecting to dashboard...
+</div>
+<div ng-if="vm.pairingError" class="alert alert-danger">
+<strong>Error:</strong> {{vm.pairingError}}
+<button class="btn btn-sm btn-default pull-right" ng-click="vm.cancelPairing()">Dismiss</button>
+</div>
+<div class="row" ng-if="!vm.pairingInProgress && !vm.pairingSuccess">
+<div class="col-sm-6" ng-repeat="device in vm.availableDevices">
+<div class="device-card" ng-click="vm.initiateDevicePairing(device.type)">
+<div class="text-center">
+<div class="device-icon">{{device.icon}}</div>
+<h4>{{device.name}}</h4>
+<p class="text-muted">{{device.description}}</p>
+<button class="btn btn-primary btn-block">Connect</button>
+</div>
+</div>
+</div>
+</div>
+<div ng-if="vm.pairingInProgress" class="text-center" style="padding:40px 0">
+<div class="spinner">
+<i class="glyphicon glyphicon-refresh" style="font-size:48px;animation:spin 1s linear infinite"></i>
+</div>
+<h4 style="margin-top:20px">Pairing {{vm.selectedDevice}}...</h4>
+<p class="text-muted">Please complete authentication on your device</p>
+</div>
+</div>
+</div>
+<style>
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+</style>

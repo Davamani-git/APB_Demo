@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fitness & Nutrition Tracking</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<style>
+.metrics-card{border:1px solid #ddd;border-radius:8px;padding:20px;margin:10px 0;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
+.metric-value{font-size:32px;font-weight:bold;color:#007bff}
+.metric-label{font-size:14px;color:#666;margin-top:5px}
+.device-card{border:1px solid #e0e0e0;border-radius:6px;padding:15px;margin:10px 0;cursor:pointer;transition:all 0.3s}
+.device-card:hover{box-shadow:0 4px 8px rgba(0,0,0,0.15);transform:translateY(-2px)}
+.device-icon{font-size:48px;margin-bottom:10px}
+.status-badge{display:inline-block;padding:4px 12px;border-radius:12px;font-size:12px;font-weight:600}
+.status-connected{background:#d4edda;color:#155724}
+.status-disconnected{background:#f8d7da;color:#721c24}
+.sync-indicator{display:inline-block;width:10px;height:10px;border-radius:50%;background:#28a745;margin-left:8px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+</style>
+</head>
+<body>
+<nav class="navbar navbar-default">
+<div class="container-fluid">
+<div class="navbar-header">
+<a class="navbar-brand" href="#/">Fitness & Nutrition Tracker</a>
+</div>
+<ul class="nav navbar-nav navbar-right">
+<li><a href="#/dashboard">Dashboard</a></li>
+<li><a href="#/pairing">Connect Device</a></li>
+</ul>
+</div>
+</nav>
+<div class="container">
+<div ng-view></div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+<script src="src/app/app.module.js"></script>
+<script src="src/app/wearables/models/activity-data.model.js"></script>
+<script src="src/app/wearables/factories/device-sdk.factory.js"></script>
+<script src="src/app/services/offline-cache.service.js"></script>
+<script src="src/app/wearables/services/wearable-sync.service.js"></script>
+<script src="src/app/wearables/controllers/device-pairing.controller.js"></script>
+<script src="src/app/wearables/controllers/activity-dashboard.controller.js"></script>
+<script src="src/app/wearables/directives/health-metrics-widget.directive.js"></script>
+</body>
+</html>

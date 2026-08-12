@@ -1,0 +1,54 @@
+<div class="row">
+<div class="col-sm-3">
+<div class="metrics-card">
+<div class="metric-value">{{activityData.steps | number}}</div>
+<div class="metric-label">Steps</div>
+<div class="progress" style="margin-top:10px">
+<div class="progress-bar progress-bar-success" role="progressbar" ng-style="{width: getStepsProgress() + '%'}">
+{{getStepsProgress() | number:0}}%
+</div>
+</div>
+</div>
+</div>
+<div class="col-sm-3">
+<div class="metrics-card">
+<div class="metric-value" ng-class="getHeartRateClass()">{{activityData.heartRate}}</div>
+<div class="metric-label">Heart Rate (bpm)</div>
+</div>
+</div>
+<div class="col-sm-3">
+<div class="metrics-card">
+<div class="metric-value">{{activityData.caloriesBurned | number}}</div>
+<div class="metric-label">Calories Burned</div>
+</div>
+</div>
+<div class="col-sm-3">
+<div class="metrics-card">
+<div class="metric-value">{{formatDistance(activityData.distance)}}</div>
+<div class="metric-label">Distance (km)</div>
+</div>
+</div>
+</div>
+<div class="row" ng-if="activityData.workoutSessions.length > 0" style="margin-top:20px">
+<div class="col-md-12">
+<h5>Workout Sessions</h5>
+<table class="table table-striped">
+<thead>
+<tr>
+<th>Type</th>
+<th>Duration</th>
+<th>Start Time</th>
+<th>End Time</th>
+</tr>
+</thead>
+<tbody>
+<tr ng-repeat="workout in activityData.workoutSessions">
+<td>{{workout.type}}</td>
+<td>{{workout.duration}} min</td>
+<td>{{workout.startTime | date:'short'}}</td>
+<td>{{workout.endTime | date:'short'}}</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
