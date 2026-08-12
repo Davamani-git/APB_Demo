@@ -1,0 +1,72 @@
+<div class="transactions-container">
+  <div class="row">
+    <div class="col-md-12">
+      <h2>Transaction History</h2>
+      <hr>
+    </div>
+  </div>
+  <div ng-if="vm.error" class="alert alert-danger">
+    <strong>Error:</strong> {{vm.error}}
+  </div>
+  <div class="row" style="margin-bottom: 20px;">
+    <div class="col-sm-3">
+      <label>Card</label>
+      <select class="form-control" ng-model="vm.filters.cardId" ng-change="vm.applyFilter()">
+        <option value="">All Cards</option>
+        <option ng-repeat="card in vm.cards" value="{{card.cardId}}">{{card.cardNumber}}</option>
+      </select>
+    </div>
+    <div class="col-sm-3">
+      <label>Category</label>
+      <select class="form-control" ng-model="vm.filters.category" ng-change="vm.applyFilter()">
+        <option value="">All Categories</option>
+        <option ng-repeat="category in vm.categories" value="{{category}}">{{category}}</option>
+      </select>
+    </div>
+    <div class="col-sm-3">
+      <label>Search</label>
+      <input type="text" class="form-control" ng-model="vm.filters.searchTerm" ng-change="vm.applyFilter()" placeholder="Search merchant or description">
+    </div>
+    <div class="col-sm-3">
+      <label>&nbsp;</label>
+      <div>
+        <button class="btn btn-primary btn-block" ng-click="vm.applyFilter()" ng-disabled="vm.loading">Apply Filters</button>
+      </div>
+    </div>
+  </div>
+  <div ng-if="vm.loading" class="text-center">
+    <p>Loading transactions...</p>
+  </div>
+  <div ng-if="!vm.loading && !vm.error">
+    <div class="table-responsive">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th ng-click="vm.changeSort('date')" style="cursor: pointer;">Date <span ng-if="vm.filters.sortBy === 'date'">{{vm.filters.sortOrder === 'asc' ? '▲' : '▼'}}</span></th>
+            <th>Card</th>
+            <th ng-click="vm.changeSort('merchant')" style="cursor: pointer;">Merchant <span ng-if="vm.filters.sortBy === 'merchant'">{{vm.filters.sortOrder === 'asc' ? '▲' : '▼'}}</span></th>
+            <th>Category</th>
+            <th ng-click="vm.changeSort('amount')" style="cursor: pointer;" class="text-right">Amount <span ng-if="vm.filters.sortBy === 'amount'">{{vm.filters.sortOrder === 'asc' ? '▲' : '▼'}}</span></th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-if="vm.transactions.length === 0">
+            <td colspan="6" class="text-center">No transactions found.</td>
+          </tr>
+          <tr ng-repeat="transaction in vm.transactions | filter:vm.filters.searchTerm" class="transaction-row">
+            <td>{{transaction.date | date:'MMM dd, yyyy'}}</td>
+            <td>{{transaction.cardNumber}}</td>
+            <td>{{transaction.merchant}}</td>
+            <td>{{transaction.category}}</td>
+            <td class="text-right">${{transaction.amount | number:2}}</td>
+            <td><span class="label" ng-class="{'label-success': transaction.status === 'Completed', 'label-warning': transaction.status === 'Pending', 'label-danger': transaction.status === 'Failed'}">{{transaction.status}}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="text-center" ng-if="vm.pagination.totalPages > 1">
+      <pagination current-page="vm.pagination.currentPage" total-pages="vm.pagination.totalPages" on-page-change="vm.changePage(page)"></pagination>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,68 @@
+<div class="dashboard-container">
+  <div class="row">
+    <div class="col-md-12">
+      <h2>Credit Card Dashboard
+        <button class="btn btn-primary btn-sm pull-right" ng-click="vm.refresh()" ng-disabled="vm.loading">
+          <span ng-if="!vm.loading">Refresh</span>
+          <span ng-if="vm.loading">Loading...</span>
+        </button>
+      </h2>
+      <hr>
+    </div>
+  </div>
+  <div ng-if="vm.error" class="alert alert-danger">
+    <strong>Error:</strong> {{vm.error}}
+  </div>
+  <div ng-if="vm.loading && !vm.error" class="text-center">
+    <p>Loading dashboard data...</p>
+  </div>
+  <div ng-if="!vm.loading && !vm.error">
+    <div class="row">
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="kpi-card">
+          <div class="kpi-value">${{vm.summary.totalMonthlySpend | number:2}}</div>
+          <div class="kpi-label">Monthly Spend</div>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="kpi-card">
+          <div class="kpi-value">${{vm.summary.totalCreditLimit | number:2}}</div>
+          <div class="kpi-label">Total Credit Limit</div>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="kpi-card">
+          <div class="kpi-value">${{vm.summary.totalAvailableCredit | number:2}}</div>
+          <div class="kpi-label">Available Credit</div>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <div class="kpi-card">
+          <div class="kpi-value">${{vm.summary.totalOutstanding | number:2}}</div>
+          <div class="kpi-label">Outstanding Amount</div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 30px;">
+      <div class="col-md-12">
+        <h3>My Credit Cards</h3>
+        <div ng-if="vm.summary.cards.length === 0" class="alert alert-info">
+          No credit cards found.
+        </div>
+        <div ng-repeat="card in vm.summary.cards" class="card-item">
+          <div class="row">
+            <div class="col-sm-6">
+              <strong>{{card.cardType}}</strong><br>
+              <span class="text-muted">{{card.cardNumber}}</span>
+            </div>
+            <div class="col-sm-6 text-right">
+              <div><strong>Limit:</strong> ${{card.creditLimit | number:2}}</div>
+              <div><strong>Available:</strong> ${{card.availableCredit | number:2}}</div>
+              <div><strong>Outstanding:</strong> ${{card.outstandingAmount | number:2}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
