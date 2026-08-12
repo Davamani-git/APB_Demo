@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html ng-app="onlineShoppingApp">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online Shopping Platform</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="src/app/assets/styles.css">
+</head>
+<body>
+<div class="container">
+<div ng-view></div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+<script src="src/app/app.module.js"></script>
+<script src="src/app/app.config.js"></script>
+<script src="src/app/services/session.service.js"></script>
+<script src="src/app/services/notification.service.js"></script>
+<script src="src/app/services/order-management.service.js"></script>
+<script src="src/app/services/analytics.service.js"></script>
+<script src="src/app/orders/buyer-order.controller.js"></script>
+<script src="src/app/seller-dashboard/seller-dashboard.controller.js"></script>
+<script src="src/app/orders/directives/order-tracking.directive.js"></script>
+<script src="src/app/seller-dashboard/directives/sales-chart.directive.js"></script>
+</body>
+</html>

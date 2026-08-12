@@ -1,0 +1,95 @@
+<div class="seller-dashboard">
+<h2>Seller Dashboard</h2>
+<div ng-if="vm.loading" class="alert alert-info">Loading dashboard...</div>
+<div ng-if="vm.error" class="alert alert-danger">{{vm.error}}</div>
+<div class="row" ng-if="!vm.loading">
+<div class="col-md-6">
+<div class="panel panel-primary">
+<div class="panel-heading">
+<h4>Sales Analytics</h4>
+</div>
+<div class="panel-body">
+<div class="btn-group" role="group">
+<button type="button" class="btn btn-default" ng-class="{active:vm.selectedPeriod==='daily'}" ng-click="vm.changePeriod('daily')">Daily</button>
+<button type="button" class="btn btn-default" ng-class="{active:vm.selectedPeriod==='weekly'}" ng-click="vm.changePeriod('weekly')">Weekly</button>
+<button type="button" class="btn btn-default" ng-class="{active:vm.selectedPeriod==='monthly'}" ng-click="vm.changePeriod('monthly')">Monthly</button>
+</div>
+<sales-chart sales-data="vm.salesData" ng-if="vm.salesData"></sales-chart>
+<div ng-if="vm.salesData" style="margin-top:20px;">
+<p><strong>Total Sales:</strong> {{vm.salesData.totalSales | currency}}</p>
+<p><strong>Total Orders:</strong> {{vm.salesData.totalOrders}}</p>
+<p><strong>Average Order Value:</strong> {{vm.salesData.averageOrderValue | currency}}</p>
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="panel panel-info">
+<div class="panel-heading">
+<h4>Pending Orders</h4>
+</div>
+<div class="panel-body">
+<div ng-if="vm.orders.length === 0" class="alert alert-warning">No pending orders.</div>
+<table class="table table-condensed" ng-if="vm.orders.length > 0">
+<thead>
+<tr>
+<th>Order ID</th>
+<th>Amount</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+<tr ng-repeat="order in vm.orders | filter:{orderStatus:'!delivered'} | limitTo:10 track by order.orderId">
+<td>{{order.orderId}}</td>
+<td>{{order.totalAmount | currency}}</td>
+<td>{{order.orderStatus}}</td>
+<td>
+<select class="form-control input-sm" ng-model="order.newStatus" ng-change="vm.updateOrderStatus(order.orderId,order.newStatus)">
+<option value="">Change Status</option>
+<option value="processing">Processing</option>
+<option value="shipped">Shipped</option>
+<option value="delivered">Delivered</option>
+</select>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-md-12">
+<div class="panel panel-default">
+<div class="panel-heading">
+<h4>All Orders</h4>
+</div>
+<div class="panel-body">
+<table class="table table-striped">
+<thead>
+<tr>
+<th>Order ID</th>
+<th>Buyer ID</th>
+<th>Date</th>
+<th>Amount</th>
+<th>Status</th>
+<th>Payment</th>
+</tr>
+</thead>
+<tbody>
+<tr ng-repeat="order in vm.orders track by order.orderId">
+<td>{{order.orderId}}</td>
+<td>{{order.buyerId}}</td>
+<td>{{order.createdAt | date:'short'}}</td>
+<td>{{order.totalAmount | currency}}</td>
+<td><span class="label" ng-class="{'label-success':order.orderStatus==='delivered','label-info':order.orderStatus==='shipped','label-warning':order.orderStatus==='processing'}">{{order.orderStatus}}</span></td>
+<td><span class="label" ng-class="{'label-success':order.paymentStatus==='completed','label-warning':order.paymentStatus==='pending'}">{{order.paymentStatus}}</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
