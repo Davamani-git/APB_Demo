@@ -1,0 +1,36 @@
+.analytics-container {
+  padding: 20px;
+}
+.card-comparison-container {
+  margin-top: 20px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.card-comparison-container table {
+  margin-bottom: 0;
+}
+.card-comparison-container tbody tr {
+  cursor: pointer;
+}
+.card-comparison-container tbody tr.active {
+  background-color: #d9edf7;
+}
+.trend-up {
+  color: #d9534f;
+  font-weight: bold;
+}
+.trend-down {
+  color: #5cb85c;
+  font-weight: bold;
+}
+.trend-stable {
+  color: #5bc0de;
+  font-weight: bold;
+}
+#trendChart {
+  max-height: 400px;
+  margin: 20px 0;
+}

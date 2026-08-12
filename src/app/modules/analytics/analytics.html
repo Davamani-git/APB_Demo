@@ -1,0 +1,27 @@
+<div class="analytics-container">
+  <div ng-if="vm.loading" class="text-center">
+    <h3>Loading analytics...</h3>
+  </div>
+  <div ng-if="vm.error" class="alert alert-danger">
+    <strong>Error:</strong> {{vm.error}}
+  </div>
+  <div ng-if="!vm.loading && !vm.error">
+    <div class="row">
+      <div class="col-md-12">
+        <h2>Spending Analytics</h2>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <h3>Monthly Spend Trends (Last 12 Months)</h3>
+        <div trend-chart trend-data="vm.trendData" selected-month="vm.selectedMonth" on-select="vm.selectMonth(month)"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <h3>Card-wise Spend Comparison</h3>
+        <div card-comparison card-performance="vm.cardPerformance" selected-card="vm.selectedCard" on-select="vm.selectCard(cardId)"></div>
+      </div>
+    </div>
+  </div>
+</div>
