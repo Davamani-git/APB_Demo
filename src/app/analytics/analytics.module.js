@@ -1,0 +1,1 @@
+(function(){'use strict';angular.module('app.analytics',['ui.router','chart.js']);})();

@@ -1,0 +1,56 @@
+<div class="row">
+<div class="col-md-12">
+<h2>Spending Analytics Dashboard</h2>
+<div ng-if="vm.loading" class="text-center">
+<p>Loading analytics...</p>
+</div>
+<div ng-if="vm.error" class="alert alert-danger">
+{{vm.error}}
+</div>
+<div ng-if="!vm.loading && !vm.error && vm.analytics">
+<div class="row">
+<div class="col-md-12">
+<div class="panel panel-primary">
+<div class="panel-heading">
+<h3 class="panel-title">Monthly Spend Trends (Last 12 Months)</h3>
+</div>
+<div class="panel-body">
+<spending-chart chart-type="line" chart-data="vm.analytics.monthlyTrends"></spending-chart>
+</div>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-md-12">
+<div class="panel panel-success">
+<div class="panel-heading">
+<h3 class="panel-title">Category-Wise Spending Breakdown</h3>
+</div>
+<div class="panel-body">
+<div class="row">
+<div class="col-md-6">
+<spending-chart chart-type="pie" chart-data="vm.analytics.categoryBreakdown"></spending-chart>
+</div>
+<div class="col-md-6">
+<div class="category-list">
+<div class="category-item" ng-repeat="cat in vm.analytics.categoryBreakdown">
+<strong>{{cat.category}}</strong>: ${{cat.amount | number:2}} ({{cat.percentage | number:1}}%)
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-md-12">
+<div class="kpi-card bg-info">
+<h4>Total Spending</h4>
+<h2>${{vm.analytics.totalSpend | number:2}}</h2>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
