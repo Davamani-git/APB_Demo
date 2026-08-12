@@ -1,75 +1,63 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="apbApp">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AI Portfolio Management Dashboard</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="src/app/app.css">
 </head>
 <body>
-  <div class="container-fluid">
-    <nav class="navbar navbar-default">
-      <div class="container-fluid">
-        <div class="navbar-header"><span class="navbar-brand">AI Portfolio Dashboard</span></div>
-        <ul class="nav navbar-nav" ng-if="$root.authenticated">
-          <li><a href="#!/dashboard">Dashboard</a></li>
-          <li><a href="#!/analytics">Analytics</a></li>
-          <li><a href="#!/users" ng-if="$root.isAdmin">User Management</a></li>
-          <li><a href="#" ng-click="$root.logout()">Logout</a></li>
-        </ul>
-      </div>
+  <div ng-controller="loginController as login" ng-if="!login.isAuthenticated()">
+    <h2>Sign In</h2>
+    <button ng-click="login.signIn()">Login with SSO</button>
+  </div>
+  <div ng-if="true">
+    <nav>
+      <a href="#!/dashboard">Dashboard</a> |
+      <a href="#!/integration">Integration</a> |
+      <a href="#!/admin">Admin</a>
     </nav>
-    <div ng-view></div>
+    <div ui-view></div>
   </div>
 
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ngStorage/0.3.11/ngStorage.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.9/angular.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.30/angular-ui-router.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
 
   <script src="src/app/app.module.js"></script>
   <script src="src/app/app.config.js"></script>
 
-  <script src="src/app/services/configService.js"></script>
-  <script src="src/app/services/notificationService.js"></script>
-  <script src="src/app/services/alertService.js"></script>
+  <script src="src/app/services/credential.service.js"></script>
+  <script src="src/app/services/notification.service.js"></script>
+  <script src="src/app/services/jwtHelper.service.js"></script>
 
-  <script src="src/app/common/interceptors/authInterceptor.js"></script>
-  <script src="src/app/common/interceptors/errorInterceptor.js"></script>
-  <script src="src/app/common/guards/routeGuard.js"></script>
-  <script src="src/app/common/filters/currencyFilter.js"></script>
-  <script src="src/app/common/filters/dateRangeFilter.js"></script>
+  <script src="src/app/common/interceptors/auth.interceptor.js"></script>
 
-  <script src="src/app/services/ssoAuthService.js"></script>
-  <script src="src/app/services/authenticationService.js"></script>
-  <script src="src/app/services/authorizationService.js"></script>
-  <script src="src/app/services/auditLogService.js"></script>
-  <script src="src/app/services/dataAccessService.js"></script>
+  <script src="src/app/auth/services/auth.service.js"></script>
+  <script src="src/app/auth/services/rbac.service.js"></script>
+  <script src="src/app/auth/services/route-guard.service.js"></script>
+  <script src="src/app/auth/services/audit.service.js"></script>
+  <script src="src/app/auth/controllers/login.controller.js"></script>
 
-  <script src="src/app/services/cloudIntegrationFactory.js"></script>
-  <script src="src/app/services/dataNormalizationService.js"></script>
-  <script src="src/app/services/dataStorageService.js"></script>
-  <script src="src/app/services/dataFreshnessService.js"></script>
-  <script src="src/app/services/aggregationService.js"></script>
+  <script src="src/app/admin/services/alert-monitor.service.js"></script>
+  <script src="src/app/admin/controllers/admin.controller.js"></script>
 
-  <script src="src/app/services/dataAggregationService.js"></script>
-  <script src="src/app/services/analyticsService.js"></script>
-  <script src="src/app/services/dashboardConfigService.js"></script>
-  <script src="src/app/services/alertingService.js"></script>
-  <script src="src/app/services/reportingService.js"></script>
+  <script src="src/app/integration/services/cloud-integration.service.js"></script>
+  <script src="src/app/integration/services/data-aggregation.service.js"></script>
+  <script src="src/app/integration/services/data-freshness.service.js"></script>
+  <script src="src/app/integration/services/alert.service.js"></script>
+  <script src="src/app/integration/factories/data-normalization.factory.js"></script>
+  <script src="src/app/integration/controllers/integration.controller.js"></script>
 
-  <script src="src/app/security/userManagementService.js"></script>
-  <script src="src/app/security/loginController.js"></script>
-  <script src="src/app/security/userManagementController.js"></script>
-
-  <script src="src/app/ai-integration/dashboardController.js"></script>
-  <script src="src/app/ai-integration/aiUsageWidget.js"></script>
-
-  <script src="src/app/analytics/analyticsDashboardController.js"></script>
-  <script src="src/app/analytics/reportController.js"></script>
-  <script src="src/app/analytics/customizableWidget.js"></script>
-  <script src="src/app/analytics/drillDownChart.js"></script>
-  <script src="src/app/analytics/benchmarkChart.js"></script>
+  <script src="src/app/dashboard/services/dashboard.service.js"></script>
+  <script src="src/app/dashboard/services/analytics.service.js"></script>
+  <script src="src/app/dashboard/services/benchmarking.service.js"></script>
+  <script src="src/app/dashboard/services/recommendation.service.js"></script>
+  <script src="src/app/dashboard/services/report.service.js"></script>
+  <script src="src/app/dashboard/directives/widget.directive.js"></script>
+  <script src="src/app/dashboard/controllers/dashboard.controller.js"></script>
+  <script src="src/app/dashboard/controllers/drilldown.controller.js"></script>
 </body>
 </html>

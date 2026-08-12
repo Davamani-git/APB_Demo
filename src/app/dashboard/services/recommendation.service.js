@@ -1,0 +1,1 @@
+(function(){'use strict';angular.module('apbApp').service('recommendationService',recommendationService);recommendationService.$inject=['$http'];function recommendationService($http){this.getRecommendations=function(companyId){return $http.get('/api/recommendations',{params:{companyId:companyId}}).then(function(res){return res.data||[];}).catch(function(){return [];});};}})();

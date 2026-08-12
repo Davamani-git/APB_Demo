@@ -1,0 +1,1 @@
+(function(){'use strict';angular.module('apbApp').directive('apbWidget',apbWidget);function apbWidget(){return {restrict:'E',scope:{title:'@',data:'='},template:'<div class="widget"><h4>{{title}}</h4><div ng-transclude></div></div>',transclude:true};}})();

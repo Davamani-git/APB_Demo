@@ -1,1 +1,1 @@
-angular.module('apbApp', ['ngRoute', 'ngStorage']);
+(function(){'use strict';angular.module('apbApp',['ui.router']);})();
