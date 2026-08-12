@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html ng-app="creditCardDashboardModule">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credit Card Analysis Dashboard</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <style>
+    body { padding-top: 20px; background-color: #f5f5f5; }
+    .kpi-card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .kpi-value { font-size: 32px; font-weight: bold; color: #2c3e50; }
+    .kpi-label { font-size: 14px; color: #7f8c8d; margin-top: 5px; }
+    .card-table { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .card-number { font-family: monospace; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div ng-view></div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/modules/dashboard/dashboard.module.js"></script>
+  <script src="src/app/services/credit-card-data.factory.js"></script>
+  <script src="src/app/services/transaction.factory.js"></script>
+  <script src="src/app/modules/dashboard/services/kpi-aggregation.service.js"></script>
+  <script src="src/app/modules/dashboard/controllers/dashboard.controller.js"></script>
+  <script src="src/app/modules/dashboard/directives/kpi-card.directive.js"></script>
+  <script src="src/app/modules/dashboard/directives/credit-summary.directive.js"></script>
+</body>
+</html>

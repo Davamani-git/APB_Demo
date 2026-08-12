@@ -1,0 +1,35 @@
+<div>
+  <div class="page-header">
+    <h1>Credit Card Analysis Dashboard</h1>
+  </div>
+  <div ng-if="vm.loading" class="text-center">
+    <div class="spinner">
+      <i class="glyphicon glyphicon-refresh glyphicon-spin" style="font-size: 48px;"></i>
+      <p>Loading dashboard...</p>
+    </div>
+  </div>
+  <div ng-if="vm.error" class="alert alert-danger" role="alert">
+    <strong>Error:</strong> {{ vm.error }}
+  </div>
+  <div ng-if="!vm.loading && !vm.error">
+    <div class="row">
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <kpi-card label="Monthly Spend" value="vm.kpis.monthlySpend" format="vm.formatCurrency(amount)"></kpi-card>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <kpi-card label="Total Credit Limit" value="vm.kpis.totalCreditLimit" format="vm.formatCurrency(amount)"></kpi-card>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <kpi-card label="Available Credit" value="vm.kpis.totalAvailableCredit" format="vm.formatCurrency(amount)"></kpi-card>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-3">
+        <kpi-card label="Outstanding Amount" value="vm.kpis.totalOutstandingAmount" format="vm.formatCurrency(amount)"></kpi-card>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 20px;">
+      <div class="col-xs-12">
+        <credit-summary cards="vm.cards" mask-card="vm.maskCardNumber(cardNumber)" format-currency="vm.formatCurrency(amount)"></credit-summary>
+      </div>
+    </div>
+  </div>
+</div>
