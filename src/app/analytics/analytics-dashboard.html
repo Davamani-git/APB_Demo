@@ -1,0 +1,29 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>Analytics Dashboard</h2>
+    <div class="form-group">
+      <label>Select Company:</label>
+      <select class="form-control" ng-model="vm.selectedCompany" ng-change="vm.selectCompany(vm.selectedCompany)">
+        <option ng-repeat="c in vm.companies" value="{{c.id}}">{{c.name}}</option>
+      </select>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">Cost Trends (30 days)</div>
+      <div class="panel-body">
+        <drill-down-chart company-id="vm.selectedCompany"></drill-down-chart>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">Top 5 Services</div>
+      <div class="panel-body">
+        <benchmark-chart company-id="vm.selectedCompany"></benchmark-chart>
+      </div>
+    </div>
+  </div>
+</div>
