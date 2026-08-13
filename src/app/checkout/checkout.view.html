@@ -1,0 +1,79 @@
+<div class="checkout-view">
+  <div class="row">
+    <div class="col-md-12">
+      <h2>Checkout</h2>
+    </div>
+  </div>
+  <div ng-if="vm.error" class="alert alert-danger" role="alert">{{vm.error}}</div>
+  <div ng-if="vm.validationErrors.length > 0" class="alert alert-warning" role="alert">
+    <ul>
+      <li ng-repeat="err in vm.validationErrors">{{err}}</li>
+    </ul>
+  </div>
+  <div class="row">
+    <div class="col-md-8">
+      <div class="panel panel-default">
+        <div class="panel-heading">Shipping Address</div>
+        <div class="panel-body">
+          <form name="shippingForm">
+            <div class="form-group">
+              <label for="street">Street Address</label>
+              <input type="text" id="street" class="form-control" ng-model="vm.shippingAddress.street" required aria-label="Street address">
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="city">City</label>
+                  <input type="text" id="city" class="form-control" ng-model="vm.shippingAddress.city" required aria-label="City">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="state">State</label>
+                  <input type="text" id="state" class="form-control" ng-model="vm.shippingAddress.state" required aria-label="State">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="zip">ZIP Code</label>
+                  <input type="text" id="zip" class="form-control" ng-model="vm.shippingAddress.zip" required aria-label="ZIP code">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="country">Country</label>
+                  <input type="text" id="country" class="form-control" ng-model="vm.shippingAddress.country" required aria-label="Country">
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">Payment Information</div>
+        <div class="panel-body">
+          <payment-form payment-details="vm.paymentDetails"></payment-form>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">Order Summary</div>
+        <div class="panel-body">
+          <div ng-repeat="item in vm.cart.items">
+            <p>{{item.productName}} x {{item.quantity}} - ${{item.price * item.quantity}}</p>
+          </div>
+          <hr>
+          <p><strong>Total: ${{vm.cart.totalAmount}}</strong></p>
+          <button class="btn btn-success btn-block" ng-click="vm.processCheckout()" ng-disabled="vm.processing">
+            <span ng-if="!vm.processing">Place Order</span>
+            <span ng-if="vm.processing">Processing...</span>
+          </button>
+          <a href="#/cart" class="btn btn-default btn-block">Back to Cart</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

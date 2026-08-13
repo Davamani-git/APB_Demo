@@ -1,0 +1,48 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+}
+.container {
+  margin-top: 20px;
+}
+.product-card {
+  margin-bottom: 20px;
+  min-height: 400px;
+}
+.product-card img {
+  margin-bottom: 10px;
+}
+.search-bar {
+  margin-bottom: 20px;
+}
+.panel {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.navbar {
+  margin-bottom: 30px;
+}
+.payment-form {
+  padding: 10px;
+}
+.order-view table {
+  background-color: white;
+}
+.cart-view table {
+  background-color: white;
+}
+.alert {
+  margin-top: 10px;
+}
+.btn {
+  margin-right: 5px;
+}
+.panel-body p {
+  margin-bottom: 5px;
+}
+.text-center {
+  padding: 20px;
+}
+.label {
+  font-size: 12px;
+  padding: 5px 10px;
+}

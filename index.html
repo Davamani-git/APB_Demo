@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html ng-app="app.shopping">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Shopping Platform</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="src/app/assets/styles.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#/">Shopping Platform</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="#/products">Products</a></li>
+          <li><a href="#/cart">Cart</a></li>
+          <li><a href="#/orders">Orders</a></li>
+        </ul>
+      </div>
+    </nav>
+    <div ng-view></div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/app.config.js"></script>
+  <script src="src/app/services/auth.service.js"></script>
+  <script src="src/app/services/auth.interceptor.js"></script>
+  <script src="src/app/services/product-catalog.service.js"></script>
+  <script src="src/app/services/cart.service.js"></script>
+  <script src="src/app/services/cart.factory.js"></script>
+  <script src="src/app/services/payment.service.js"></script>
+  <script src="src/app/services/order.service.js"></script>
+  <script src="src/app/services/notification.service.js"></script>
+  <script src="src/app/products/product.controller.js"></script>
+  <script src="src/app/cart/cart.controller.js"></script>
+  <script src="src/app/checkout/checkout.controller.js"></script>
+  <script src="src/app/orders/order.controller.js"></script>
+  <script src="src/app/reviews/review.controller.js"></script>
+  <script src="src/app/directives/payment-form.directive.js"></script>
+</body>
+</html>
