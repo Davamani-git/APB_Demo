@@ -1,0 +1,36 @@
+<div class="activity-summary-card">
+  <h2>Today's Activity Summary</h2>
+  <div class="metrics-grid">
+    <div class="metric-item">
+      <span class="metric-label">Steps</span>
+      <span class="metric-value">{{ summary.totalSteps || 0 }}</span>
+      <span class="metric-unit">steps</span>
+    </div>
+    <div class="metric-item">
+      <span class="metric-label">Heart Rate</span>
+      <span class="metric-value" ng-class="getHeartRateStatus()">{{ summary.avgHeartRate || 0 }}</span>
+      <span class="metric-unit">bpm</span>
+    </div>
+    <div class="metric-item">
+      <span class="metric-label">Calories</span>
+      <span class="metric-value">{{ summary.totalCalories || 0 }}</span>
+      <span class="metric-unit">kcal</span>
+    </div>
+    <div class="metric-item">
+      <span class="metric-label">Distance</span>
+      <span class="metric-value">{{ summary.totalDistance || 0 }}</span>
+      <span class="metric-unit">km</span>
+    </div>
+    <div class="metric-item">
+      <span class="metric-label">Workout Time</span>
+      <span class="metric-value">{{ summary.workoutMinutes || 0 }}</span>
+      <span class="metric-unit">minutes</span>
+    </div>
+  </div>
+  <div class="devices-synced" ng-if="summary.devicesSynced && summary.devicesSynced.length > 0">
+    <p><strong>Synced Devices:</strong> {{ summary.devicesSynced.join(', ') }}</p>
+  </div>
+  <div class="sync-timestamp">
+    <p><em>Last updated: {{ summary.date | date:'short' }}</em></p>
+  </div>
+</div>

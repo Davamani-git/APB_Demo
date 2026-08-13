@@ -1,0 +1,19 @@
+<div class="activity-dashboard-container">
+  <h1>Daily Activity Dashboard</h1>
+  <div class="dashboard-actions">
+    <button ng-click="vm.refreshDashboard()">Refresh</button>
+    <a href="#!/device-connection">Device Settings</a>
+  </div>
+  <div ng-if="vm.loading" class="loading-message">
+    <p>Loading your activity data...</p>
+  </div>
+  <div ng-if="vm.error" class="error-message">
+    <p>{{ vm.error }}</p>
+  </div>
+  <div ng-if="!vm.loading && !vm.error && vm.dailySummary">
+    <activity-summary summary="vm.dailySummary"></activity-summary>
+  </div>
+  <div ng-if="!vm.loading && !vm.error && !vm.dailySummary" class="no-data-message">
+    <p>No activity data available for today. Please sync your device.</p>
+  </div>
+</div>

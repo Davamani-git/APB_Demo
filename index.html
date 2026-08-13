@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html ng-app="wearableIntegrationApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fitness & Nutrition Tracking App</title>
+  <link rel="stylesheet" href="src/app/styles/main.css">
+</head>
+<body>
+  <div ng-view></div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-resource.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/app.config.js"></script>
+  <script src="src/app/services/health-data.service.js"></script>
+  <script src="src/app/services/sync.service.js"></script>
+  <script src="src/app/services/data-transform.factory.js"></script>
+  <script src="src/app/wearable-integration/device-connection.controller.js"></script>
+  <script src="src/app/wearable-integration/activity-dashboard.controller.js"></script>
+  <script src="src/app/wearable-integration/activity-summary.directive.js"></script>
+</body>
+</html>

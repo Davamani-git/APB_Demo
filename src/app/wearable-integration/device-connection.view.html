@@ -1,0 +1,20 @@
+<div class="device-connection-container">
+  <h1>Connect Your Wearable Device</h1>
+  <div class="connection-form">
+    <label for="deviceType">Select Device Type:</label>
+    <select id="deviceType" ng-model="vm.deviceType">
+      <option value="apple_watch">Apple Watch</option>
+      <option value="fitbit">Fitbit</option>
+      <option value="garmin">Garmin</option>
+      <option value="wear_os">Wear OS</option>
+    </select>
+    <button ng-click="vm.connectDevice()" ng-disabled="vm.connectionStatus === 'connected'">Connect Device</button>
+    <button ng-click="vm.disconnectDevice()" ng-disabled="vm.connectionStatus !== 'connected'">Disconnect</button>
+  </div>
+  <div class="status-message" ng-if="vm.statusMessage">
+    <p ng-class="{'success': vm.connectionStatus === 'connected', 'error': vm.connectionStatus === 'error'}">{{ vm.statusMessage }}</p>
+  </div>
+  <div class="navigation">
+    <a href="#!/dashboard">Go to Dashboard</a>
+  </div>
+</div>
