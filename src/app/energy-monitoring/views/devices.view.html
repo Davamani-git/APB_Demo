@@ -1,0 +1,32 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>Device Management</h2>
+    <div ng-if="vm.loading" class="text-center">
+      <h3>Loading devices...</h3>
+    </div>
+    <div ng-if="!vm.loading">
+      <div class="row">
+        <div class="col-md-6">
+          <h3>Connected Devices</h3>
+          <div class="device-item" ng-repeat="device in vm.devices" ng-click="vm.selectDevice(device)" style="cursor: pointer;">
+            <h4>{{device.deviceName}} <span ng-class="{'status-online': device.status === 'online', 'status-offline': device.status !== 'online'}">{{device.status}}</span></h4>
+            <p><strong>Usage:</strong> {{device.usage}} kWh</p>
+            <p><strong>Device ID:</strong> {{device.deviceId}}</p>
+          </div>
+        </div>
+        <div class="col-md-6" ng-if="vm.selectedDevice">
+          <h3>Device Details: {{vm.selectedDevice.deviceName}}</h3>
+          <div class="metric-card">
+            <p><strong>Device ID:</strong> {{vm.selectedDevice.deviceId}}</p>
+            <p><strong>Status:</strong> <span ng-class="{'status-online': vm.selectedDevice.status === 'online', 'status-offline': vm.selectedDevice.status !== 'online'}">{{vm.selectedDevice.status}}</span></p>
+            <p><strong>Current Usage:</strong> {{vm.selectedDevice.usage}} kWh</p>
+            <div ng-if="vm.selectedDevice.history">
+              <h4>Usage History</h4>
+              <p ng-repeat="entry in vm.selectedDevice.history">{{entry.timestamp | date:'short'}}: {{entry.usage}} kWh</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

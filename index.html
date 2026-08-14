@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html ng-app="energyMonitoringApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Home Energy Management</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <style>
+    body { padding: 20px; background: #f5f5f5; }
+    .dashboard-header { background: #2c3e50; color: white; padding: 20px; margin-bottom: 30px; border-radius: 5px; }
+    .metric-card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .metric-value { font-size: 2.5em; font-weight: bold; color: #27ae60; }
+    .metric-label { color: #7f8c8d; font-size: 0.9em; }
+    .alert-panel { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+    .device-item { background: white; padding: 15px; margin-bottom: 10px; border-radius: 5px; border-left: 4px solid #3498db; }
+    .chart-container { background: white; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
+    .status-online { color: #27ae60; }
+    .status-offline { color: #e74c3c; }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="dashboard-header">
+      <h1>Smart Home Energy Management</h1>
+      <p>Real-Time Energy Monitoring Dashboard</p>
+    </div>
+    <div ng-view></div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-resource.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/app.config.js"></script>
+  <script src="src/app/services/energyData.service.js"></script>
+  <script src="src/app/services/alert.service.js"></script>
+  <script src="src/app/services/utilityPricing.factory.js"></script>
+  <script src="src/app/energy-monitoring/controllers/energyDashboard.controller.js"></script>
+  <script src="src/app/energy-monitoring/controllers/deviceList.controller.js"></script>
+  <script src="src/app/energy-monitoring/directives/energyChart.directive.js"></script>
+  <script src="src/app/energy-monitoring/directives/deviceConsumption.directive.js"></script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<div class="row">
+  <div class="col-md-12">
+    <div ng-if="vm.loading" class="text-center">
+      <h3>Loading dashboard...</h3>
+    </div>
+    <div ng-if="!vm.loading">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="metric-card">
+            <div class="metric-label">Current Usage</div>
+            <div class="metric-value">{{vm.energyData.totalUsage}} <small>kWh</small></div>
+            <div class="metric-label">Updated: {{vm.energyData.timestamp | date:'short'}}</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="metric-card">
+            <div class="metric-label">Estimated Cost</div>
+            <div class="metric-value">${{vm.estimatedCost}}</div>
+            <div class="metric-label">Rate: ${{vm.utilityRate.pricePerKwh}}/kWh</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="metric-card">
+            <div class="metric-label">Active Devices</div>
+            <div class="metric-value">{{vm.energyData.deviceBreakdown.length}}</div>
+            <div class="metric-label">Connected</div>
+          </div>
+        </div>
+      </div>
+      <div class="row" ng-if="vm.alerts.length > 0">
+        <div class="col-md-12">
+          <div class="alert-panel" ng-repeat="alert in vm.alerts">
+            <strong>{{alert.type | uppercase}}:</strong> {{alert.message}}
+            <span class="pull-right"><small>{{alert.timestamp | date:'short'}}</small></span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="chart-container">
+            <h3>Energy Consumption Trends</h3>
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-default" ng-class="{active: vm.selectedPeriod === 'daily'}" ng-click="vm.loadHistoricalData('daily')">Daily</button>
+              <button type="button" class="btn btn-default" ng-class="{active: vm.selectedPeriod === 'weekly'}" ng-click="vm.loadHistoricalData('weekly')">Weekly</button>
+              <button type="button" class="btn btn-default" ng-class="{active: vm.selectedPeriod === 'monthly'}" ng-click="vm.loadHistoricalData('monthly')">Monthly</button>
+            </div>
+            <energy-chart chart-data="vm.chartData" period="{{vm.selectedPeriod}}"></energy-chart>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Device Breakdown</h3>
+          <device-consumption ng-repeat="device in vm.energyData.deviceBreakdown" device="device"></device-consumption>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <button class="btn btn-primary" ng-click="vm.refreshData()">Refresh Data</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
