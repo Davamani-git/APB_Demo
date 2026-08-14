@@ -1,0 +1,81 @@
+.dashboard-container {
+  padding: 20px;
+}
+
+.kpi-card {
+  margin-bottom: 20px;
+  transition: transform 0.2s;
+}
+
+.kpi-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.kpi-card .panel-body {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+}
+
+.kpi-icon {
+  font-size: 48px;
+  margin-right: 20px;
+  color: #337ab7;
+}
+
+.kpi-content {
+  flex: 1;
+}
+
+.kpi-title {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: #777;
+  text-transform: uppercase;
+}
+
+.kpi-value {
+  margin: 0;
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+}
+
+.credit-summary {
+  margin-top: 30px;
+}
+
+.glyphicon-refresh-animate {
+  animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.table > thead > tr > th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+.page-header {
+  border-bottom: 2px solid #337ab7;
+}
+
+.page-header h1 {
+  margin-top: 0;
+}
+
+@media (max-width: 768px) {
+  .kpi-card .panel-body {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .kpi-icon {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+}
