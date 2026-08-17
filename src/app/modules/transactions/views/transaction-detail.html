@@ -1,0 +1,19 @@
+<div class="panel panel-info">
+  <div class="panel-heading"><h3 class="panel-title">Transaction Details</h3></div>
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-md-6">
+        <p><strong>Transaction ID:</strong> {{transaction.transactionId}}</p>
+        <p><strong>Date:</strong> {{transaction.transactionDate | date:'MM/dd/yyyy HH:mm'}}</p>
+        <p><strong>Merchant:</strong> {{transaction.merchantName}}</p>
+        <p><strong>Category:</strong> {{transaction.category}}</p>
+      </div>
+      <div class="col-md-6">
+        <p><strong>Card Number:</strong> {{transaction.cardNumber}}</p>
+        <p><strong>Amount:</strong> {{transaction.currency}}{{transaction.amount | number:2}}</p>
+        <p><strong>Status:</strong> {{transaction.status}}</p>
+        <p><strong>Description:</strong> {{transaction.description || 'N/A'}}</p>
+      </div>
+    </div>
+  </div>
+</div>

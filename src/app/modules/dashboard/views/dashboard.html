@@ -1,0 +1,59 @@
+<div ng-controller="DashboardController as vm">
+  <h1>Credit Card Dashboard</h1>
+  <div ng-if="vm.loading" class="text-center">
+    <p>Loading dashboard...</p>
+  </div>
+  <div ng-if="vm.error" class="alert alert-danger">
+    {{vm.error}}
+    <button class="btn btn-sm btn-primary" ng-click="vm.retry()">Retry</button>
+  </div>
+  <div ng-if="!vm.loading && !vm.error">
+    <div class="row">
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <kpi-widget label="Monthly Spend" value="vm.kpis.monthlySpend" currency="$"></kpi-widget>
+      </div>
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <kpi-widget label="Total Credit Limit" value="vm.kpis.totalCreditLimit" currency="$"></kpi-widget>
+      </div>
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <kpi-widget label="Available Credit" value="vm.kpis.totalAvailableCredit" currency="$"></kpi-widget>
+      </div>
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <kpi-widget label="Outstanding Amount" value="vm.kpis.totalOutstanding" currency="$"></kpi-widget>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 30px;">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading"><h3 class="panel-title">My Credit Cards ({{vm.kpis.cardCount}})</h3></div>
+          <div class="panel-body">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Card Number</th>
+                    <th>Card Type</th>
+                    <th>Credit Limit</th>
+                    <th>Current Balance</th>
+                    <th>Available Credit</th>
+                    <th>Outstanding</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="card in vm.cards track by card.cardId">
+                    <td>{{card.cardNumber}}</td>
+                    <td><span class="card-badge">{{card.cardType}}</span></td>
+                    <td>${{card.creditLimit | number:2}}</td>
+                    <td>${{card.currentBalance | number:2}}</td>
+                    <td>${{card.availableCredit | number:2}}</td>
+                    <td>${{card.outstandingAmount | number:2}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

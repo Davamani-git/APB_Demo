@@ -1,0 +1,26 @@
+<div class="table-responsive">
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th ng-click="onSort({field: 'transactionDate'})" style="cursor: pointer;">Date</th>
+        <th>Card</th>
+        <th ng-click="onSort({field: 'merchantName'})" style="cursor: pointer;">Merchant</th>
+        <th>Category</th>
+        <th ng-click="onSort({field: 'amount'})" style="cursor: pointer;">Amount</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="txn in transactions | orderBy:sortBy:sortOrder === 'desc' track by txn.transactionId">
+        <td>{{txn.transactionDate | date:'MM/dd/yyyy'}}</td>
+        <td>{{txn.cardNumber}}</td>
+        <td>{{txn.merchantName}}</td>
+        <td>{{txn.category}}</td>
+        <td>{{txn.currency}}{{txn.amount | number:2}}</td>
+        <td>{{txn.status}}</td>
+        <td><button class="btn btn-xs btn-info" ng-click="onSelect({txn: txn})">View</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

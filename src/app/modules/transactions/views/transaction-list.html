@@ -1,0 +1,51 @@
+<div ng-controller="TransactionController as vm">
+  <h1>Transaction History</h1>
+  <div ng-if="vm.loading" class="text-center">
+    <p>Loading transactions...</p>
+  </div>
+  <div ng-if="vm.error" class="alert alert-danger">
+    {{vm.error}}
+    <button class="btn btn-sm btn-primary" ng-click="vm.retry()">Retry</button>
+  </div>
+  <div ng-if="!vm.loading && !vm.error">
+    <div class="row" style="margin-bottom: 20px;">
+      <div class="col-md-6">
+        <input type="text" class="form-control" placeholder="Search transactions..." ng-model="vm.filters.searchText">
+      </div>
+      <div class="col-md-6">
+        <input type="text" class="form-control" placeholder="Filter by Card ID..." ng-model="vm.filters.cardId">
+      </div>
+    </div>
+    <div class="transaction-table">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th ng-click="vm.setSortBy('transactionDate')" style="cursor: pointer;">Date <span ng-if="vm.sortBy === 'transactionDate'">{{vm.sortOrder === 'asc' ? '▲' : '▼'}}</span></th>
+              <th>Card</th>
+              <th ng-click="vm.setSortBy('merchantName')" style="cursor: pointer;">Merchant <span ng-if="vm.sortBy === 'merchantName'">{{vm.sortOrder === 'asc' ? '▲' : '▼'}}</span></th>
+              <th>Category</th>
+              <th ng-click="vm.setSortBy('amount')" style="cursor: pointer;">Amount <span ng-if="vm.sortBy === 'amount'">{{vm.sortOrder === 'asc' ? '▲' : '▼'}}</span></th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="txn in vm.transactions | filter:{merchantName: vm.filters.searchText, cardId: vm.filters.cardId} | orderBy:vm.sortBy:vm.sortOrder === 'desc' track by txn.transactionId">
+              <td>{{txn.transactionDate | date:'MM/dd/yyyy'}}</td>
+              <td><span class="card-badge">{{txn.cardNumber}}</span></td>
+              <td>{{txn.merchantName}}</td>
+              <td><span class="label label-default">{{txn.category}}</span></td>
+              <td>{{txn.currency}}{{txn.amount | number:2}}</td>
+              <td><span class="label" ng-class="{'label-success': txn.status === 'Completed', 'label-warning': txn.status === 'Pending', 'label-danger': txn.status === 'Failed'}">{{txn.status}}</span></td>
+              <td><button class="btn btn-xs btn-info" ng-click="vm.setSelectedTransaction(txn)">View</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div ng-if="vm.selectedTransaction" style="margin-top: 30px;">
+        <transaction-detail transaction="vm.selectedTransaction" on-close="vm.clearSelection()"></transaction-detail>
+      </div>
+    </div>
+  </div>
+</div>

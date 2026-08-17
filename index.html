@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html ng-app="creditCardApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credit Card Analysis Dashboard</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <style>
+    body { padding-top: 20px; background-color: #f5f5f5; }
+    .kpi-widget { background: #fff; padding: 20px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .kpi-widget h3 { margin-top: 0; color: #333; font-size: 16px; }
+    .kpi-widget .value { font-size: 28px; font-weight: bold; color: #007bff; }
+    .transaction-table { background: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .navbar { margin-bottom: 30px; }
+    .card-badge { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 12px; background: #e9ecef; }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#/">Credit Card Dashboard</a>
+      </div>
+      <ul class="nav navbar-nav">
+        <li><a href="#/dashboard">Dashboard</a></li>
+        <li><a href="#/transactions">Transactions</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container" style="margin-top: 70px;">
+    <div ng-view></div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/app.config.js"></script>
+  <script src="src/app/services/CreditCardDataService.js"></script>
+  <script src="src/app/services/TransactionService.js"></script>
+  <script src="src/app/modules/dashboard/services/KPICalculationService.js"></script>
+  <script src="src/app/modules/dashboard/services/AggregationService.js"></script>
+  <script src="src/app/modules/transactions/services/DataAggregationService.js"></script>
+  <script src="src/app/modules/dashboard/controllers/DashboardController.js"></script>
+  <script src="src/app/modules/transactions/controllers/TransactionController.js"></script>
+  <script src="src/app/modules/dashboard/directives/kpiWidgetDirective.js"></script>
+  <script src="src/app/modules/transactions/directives/transactionListDirective.js"></script>
+  <script src="src/app/modules/transactions/directives/transactionDetailDirective.js"></script>
+</body>
+</html>
