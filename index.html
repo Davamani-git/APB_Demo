@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html ng-app="fraudDetectionApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credit Card Fraud Alert System</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+    .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    h1 { color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
+    .transaction-card { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; background: #fafafa; }
+    .risk-low { border-left: 4px solid #28a745; }
+    .risk-medium { border-left: 4px solid #ffc107; }
+    .risk-high { border-left: 4px solid #dc3545; }
+    .risk-confirmed_fraud { border-left: 4px solid #6f42c1; }
+    .transaction-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .transaction-amount { font-size: 1.5em; font-weight: bold; color: #333; }
+    .risk-badge { padding: 5px 10px; border-radius: 3px; color: white; font-size: 0.85em; font-weight: bold; }
+    .risk-badge.low { background: #28a745; }
+    .risk-badge.medium { background: #ffc107; color: #333; }
+    .risk-badge.high { background: #dc3545; }
+    .risk-badge.confirmed_fraud { background: #6f42c1; }
+    .transaction-details { font-size: 0.9em; color: #666; margin: 5px 0; }
+    .alert-indicator { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-left: 5px; }
+    .alert-triggered { background: #dc3545; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .loading { text-align: center; padding: 20px; color: #666; }
+    .error { background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin: 10px 0; border: 1px solid #f5c6cb; }
+    .risk-signals { margin-top: 10px; padding: 10px; background: #f9f9f9; border-radius: 3px; font-size: 0.85em; }
+    .risk-signals strong { display: block; margin-bottom: 5px; color: #333; }
+    .risk-signals ul { margin: 5px 0; padding-left: 20px; }
+    .risk-signals li { color: #666; margin: 3px 0; }
+  </style>
+</head>
+<body>
+  <div class="container" ng-controller="fraudDashboardController as ctrl">
+    <h1>Fraud Detection Dashboard</h1>
+    
+    <div ng-if="ctrl.loading" class="loading">
+      <p>Loading transaction data...</p>
+    </div>
+    
+    <div ng-if="ctrl.error" class="error">
+      <strong>Error:</strong> {{ctrl.error}}
+    </div>
+    
+    <transaction-monitor transactions="ctrl.transactions"></transaction-monitor>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/models/transactionModel.js"></script>
+  <script src="src/app/models/riskDecisionModel.js"></script>
+  <script src="src/app/services/transactionIngestionService.js"></script>
+  <script src="src/app/services/policyDecisionService.js"></script>
+  <script src="src/app/services/alertService.js"></script>
+  <script src="src/app/services/auditService.js"></script>
+  <script src="src/app/factories/fraudRiskEngineFactory.js"></script>
+  <script src="src/app/modules/fraud-detection/controllers/fraudDashboardController.js"></script>
+  <script src="src/app/modules/fraud-detection/directives/transactionMonitor.js"></script>
+</body>
+</html>
