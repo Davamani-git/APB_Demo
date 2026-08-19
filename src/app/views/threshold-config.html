@@ -1,0 +1,47 @@
+<div class="config-section">
+  <h1>Risk Threshold Configuration</h1>
+  
+  <div ng-if="vm.error" class="error">
+    {{vm.error}}
+  </div>
+
+  <div ng-if="vm.success" style="padding: 15px; background: #e8f5e9; border-left: 4px solid #4caf50; border-radius: 4px; color: #4caf50; margin-bottom: 20px;">
+    {{vm.success}}
+  </div>
+
+  <div ng-if="vm.loading" class="loading">
+    Loading configuration...
+  </div>
+
+  <div ng-if="!vm.loading" class="config-form">
+    <div class="form-group">
+      <label>Low Risk Threshold (0-100):</label>
+      <input type="number" ng-model="vm.thresholds.low" min="0" max="100" step="1" />
+    </div>
+    <div class="form-group">
+      <label>Medium Risk Threshold (0-100):</label>
+      <input type="number" ng-model="vm.thresholds.medium" min="0" max="100" step="1" />
+    </div>
+    <div class="form-group">
+      <label>High Risk Threshold (0-100):</label>
+      <input type="number" ng-model="vm.thresholds.high" min="0" max="100" step="1" />
+    </div>
+    <div class="form-group">
+      <label>Confirmed Fraud Threshold (0-100):</label>
+      <input type="number" ng-model="vm.thresholds.confirmedFraud" min="0" max="100" step="1" />
+    </div>
+    <div class="form-group">
+      <label>Last Updated By:</label>
+      <span>{{vm.thresholds.updatedBy}}</span>
+    </div>
+    <div class="form-group">
+      <label>Last Updated At:</label>
+      <span>{{vm.thresholds.updatedAt | date:'short'}}</span>
+    </div>
+    <div style="display: flex; gap: 10px; margin-top: 20px;">
+      <button ng-click="vm.saveThresholds()" ng-disabled="vm.loading">Save Thresholds</button>
+      <button ng-click="vm.resetToDefaults()" style="background: #6c757d;">Reset to Defaults</button>
+      <a href="#!/dashboard"><button style="background: #6c757d;">Back to Dashboard</button></a>
+    </div>
+  </div>
+</div>

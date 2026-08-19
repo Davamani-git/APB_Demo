@@ -1,0 +1,62 @@
+<div class="dashboard">
+  <h1>Credit Card Fraud Alert Dashboard</h1>
+  
+  <div ng-if="vm.error" class="error">
+    {{vm.error}}
+  </div>
+
+  <div ng-if="vm.loading" class="loading">
+    Loading dashboard...
+  </div>
+
+  <div ng-if="!vm.loading">
+    <div class="metrics">
+      <div class="metric-card">
+        <h3>Total Transactions</h3>
+        <div class="value">{{vm.metrics.totalTransactions}}</div>
+      </div>
+      <div class="metric-card">
+        <h3>High Risk</h3>
+        <div class="value" style="color: #dc3545;">{{vm.metrics.highRiskCount}}</div>
+      </div>
+      <div class="metric-card">
+        <h3>Medium Risk</h3>
+        <div class="value" style="color: #ff9800;">{{vm.metrics.mediumRiskCount}}</div>
+      </div>
+      <div class="metric-card">
+        <h3>Low Risk</h3>
+        <div class="value" style="color: #4caf50;">{{vm.metrics.lowRiskCount}}</div>
+      </div>
+      <div class="metric-card">
+        <h3>Alerts Sent</h3>
+        <div class="value" style="color: #007bff;">{{vm.metrics.alertsSent}}</div>
+      </div>
+    </div>
+
+    <div class="alerts-list">
+      <h2>Recent Alerts</h2>
+      <div ng-if="vm.alerts.length === 0" style="padding: 20px; text-align: center; color: #666;">
+        No alerts yet. Monitoring transactions...
+      </div>
+      <div ng-repeat="alert in vm.alerts" class="alert-item" ng-class="alert.riskLevel">
+        <div class="alert-header">
+          <span class="transaction-id">{{alert.transactionId}}</span>
+          <span class="risk-level" ng-class="alert.riskLevel">{{alert.riskLevel | uppercase}}</span>
+        </div>
+        <div class="alert-details">
+          <div><strong>Card:</strong> {{alert.cardNumber}}</div>
+          <div><strong>Amount:</strong> {{alert.amount | currency:alert.currency}}</div>
+          <div><strong>Merchant:</strong> {{alert.merchantName}}</div>
+          <div><strong>Risk Score:</strong> {{alert.riskScore}}</div>
+          <div><strong>Action:</strong> {{alert.action}}</div>
+          <div><strong>Signals:</strong> {{vm.getSignalsList(alert.signals)}}</div>
+          <div><strong>Time:</strong> {{alert.timestamp | date:'short'}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 20px;">
+    <a href="#!/config"><button>Configure Thresholds</button></a>
+  </div>
+</div>
