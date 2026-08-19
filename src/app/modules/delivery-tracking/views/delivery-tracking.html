@@ -1,0 +1,16 @@
+<div class="card" ng-if="vm.loading">
+  <div class="loading">Loading delivery information...</div>
+</div>
+<div ng-if="!vm.loading">
+  <div class="card" ng-if="vm.error">
+    <div class="error-message">{{vm.error}}</div>
+  </div>
+  <div class="card">
+    <h2>Delivery Tracking - Order #{{vm.orderId}}</h2>
+    <partner-info partner="partner"></partner-info>
+  </div>
+  <div class="card">
+    <h3>Live Location</h3>
+    <live-map location="currentLocation" timestamp="vm.locationTimestamp"></live-map>
+  </div>
+</div>

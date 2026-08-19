@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html ng-app="foodDeliveryApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Delivery Order Tracking</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .partner-info { display: flex; align-items: center; gap: 15px; }
+    .partner-photo { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; }
+    .partner-details h3 { margin: 0 0 5px 0; }
+    .partner-details p { margin: 0; color: #666; font-size: 14px; }
+    .map-container { height: 400px; background: #e0e0e0; border-radius: 8px; position: relative; }
+    .timeline { display: flex; justify-content: space-between; align-items: center; margin: 20px 0; }
+    .timeline-step { flex: 1; text-align: center; position: relative; }
+    .timeline-step::before { content: ''; position: absolute; top: 20px; left: 50%; right: -50%; height: 2px; background: #ddd; z-index: 0; }
+    .timeline-step:last-child::before { display: none; }
+    .timeline-step.completed::before { background: #4CAF50; }
+    .timeline-dot { width: 40px; height: 40px; border-radius: 50%; background: #ddd; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1; }
+    .timeline-step.completed .timeline-dot { background: #4CAF50; color: white; }
+    .timeline-step.active .timeline-dot { background: #2196F3; color: white; border: 3px solid #1976D2; }
+    .eta-box { background: #E3F2FD; padding: 15px; border-radius: 8px; text-align: center; }
+    .eta-box h2 { margin: 0 0 5px 0; color: #1976D2; }
+    .eta-box p { margin: 0; color: #666; }
+    .location-info { padding: 10px; background: rgba(255,255,255,0.9); position: absolute; bottom: 10px; left: 10px; right: 10px; border-radius: 4px; font-size: 14px; }
+    .error-message { background: #ffebee; color: #c62828; padding: 10px; border-radius: 4px; margin: 10px 0; }
+    .loading { text-align: center; padding: 40px; color: #666; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Order Tracking</h1>
+    <div ng-view></div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-animate.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/shared/interceptors/auth.interceptor.js"></script>
+  <script src="src/app/services/order-status.service.js"></script>
+  <script src="src/app/services/websocket.service.js"></script>
+  <script src="src/app/services/eta.service.js"></script>
+  <script src="src/app/services/delivery-partner.service.js"></script>
+  <script src="src/app/services/location-tracking.service.js"></script>
+  <script src="src/app/services/map.service.js"></script>
+  <script src="src/app/modules/order-tracking/order-tracking.module.js"></script>
+  <script src="src/app/modules/order-tracking/controllers/order-tracking.controller.js"></script>
+  <script src="src/app/modules/order-tracking/directives/status-timeline.directive.js"></script>
+  <script src="src/app/modules/delivery-tracking/delivery-tracking.module.js"></script>
+  <script src="src/app/modules/delivery-tracking/controllers/delivery-tracking.controller.js"></script>
+  <script src="src/app/modules/delivery-tracking/directives/partner-info.directive.js"></script>
+  <script src="src/app/modules/delivery-tracking/directives/live-map.directive.js"></script>
+</body>
+</html>
