@@ -1,0 +1,84 @@
+<div class="dashboard-header">
+  <h2>Threshold Administration</h2>
+  <button class="btn btn-primary" ng-click="vm.createThreshold()">Create New Threshold</button>
+</div>
+
+<div ng-if="vm.loading" class="alert alert-info">Loading thresholds...</div>
+<div ng-if="vm.error" class="alert alert-danger">{{ vm.error }}</div>
+<div ng-if="vm.successMessage" class="alert alert-success">{{ vm.successMessage }}</div>
+
+<div ng-if="vm.editMode" class="panel panel-default" style="margin-bottom: 20px;">
+  <div class="panel-heading">
+    <h4>{{ vm.currentThreshold.thresholdId ? 'Edit' : 'Create' }} Threshold</h4>
+  </div>
+  <div class="panel-body">
+    <form name="thresholdForm">
+      <div class="form-group">
+        <label>Level:</label>
+        <select class="form-control" ng-model="vm.currentThreshold.level" required>
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+          <option value="critical">Critical</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Min Score:</label>
+        <input type="number" class="form-control" ng-model="vm.currentThreshold.minScore" min="0" max="100" required>
+      </div>
+      <div class="form-group">
+        <label>Max Score:</label>
+        <input type="number" class="form-control" ng-model="vm.currentThreshold.maxScore" min="0" max="100" required>
+      </div>
+      <div class="form-group">
+        <label>Action:</label>
+        <select class="form-control" ng-model="vm.currentThreshold.action" required>
+          <option value="approve">Approve</option>
+          <option value="alert">Alert</option>
+          <option value="step-up">Step-up</option>
+          <option value="hold">Hold</option>
+          <option value="decline">Decline</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" ng-model="vm.currentThreshold.enabled"> Enabled
+        </label>
+      </div>
+      <button type="button" class="btn btn-success" ng-click="vm.saveThreshold()" ng-disabled="!thresholdForm.$valid">Save</button>
+      <button type="button" class="btn btn-default" ng-click="vm.cancelEdit()">Cancel</button>
+    </form>
+  </div>
+</div>
+
+<div ng-if="vm.thresholds.length === 0 && !vm.loading" class="alert alert-info">No thresholds configured</div>
+
+<table class="table table-striped" ng-if="vm.thresholds.length > 0">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Level</th>
+      <th>Min Score</th>
+      <th>Max Score</th>
+      <th>Action</th>
+      <th>Enabled</th>
+      <th>Updated</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="threshold in vm.thresholds">
+      <td>{{ threshold.thresholdId }}</td>
+      <td>{{ threshold.level }}</td>
+      <td>{{ threshold.minScore }}</td>
+      <td>{{ threshold.maxScore }}</td>
+      <td>{{ threshold.action }}</td>
+      <td>{{ threshold.enabled ? 'Yes' : 'No' }}</td>
+      <td>{{ threshold.updatedAt | date:'short' }}</td>
+      <td>
+        <button class="btn btn-sm btn-primary" ng-click="vm.editThreshold(threshold)">Edit</button>
+        <button class="btn btn-sm btn-danger" ng-click="vm.deleteThreshold(threshold)">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>

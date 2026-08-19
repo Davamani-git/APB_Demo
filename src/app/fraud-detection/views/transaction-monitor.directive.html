@@ -1,0 +1,31 @@
+<div>
+  <div ng-if="loading" class="alert alert-info">Loading transactions...</div>
+  <div ng-if="error" class="alert alert-danger">{{ error }}</div>
+  
+  <div ng-if="transactions.length === 0 && !loading" class="alert alert-info">No recent transactions</div>
+  
+  <table class="table table-striped" ng-if="transactions.length > 0">
+    <thead>
+      <tr>
+        <th>Transaction ID</th>
+        <th>Card</th>
+        <th>Amount</th>
+        <th>Merchant</th>
+        <th>Location</th>
+        <th>Risk Level</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="txn in transactions">
+        <td>{{ txn.transactionId }}</td>
+        <td>{{ txn.cardIdentifier }}</td>
+        <td>{{ txn.amount }} {{ txn.currency }}</td>
+        <td>{{ txn.merchantName }}</td>
+        <td>{{ txn.location ? txn.location.city + ', ' + txn.location.country : 'N/A' }}</td>
+        <td><span class="risk-badge" ng-class="'risk-' + getRiskLevel(txn)">{{ getRiskLevel(txn) }}</span></td>
+        <td>{{ txn.timestamp | date:'short' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

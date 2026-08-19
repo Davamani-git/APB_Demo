@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html ng-app="fraudDetectionApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credit Card Fraud Alert System</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <style>
+    body { padding: 20px; background-color: #f5f5f5; }
+    .alert-card { margin-bottom: 15px; padding: 15px; background: white; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .transaction-details { margin: 10px 0; }
+    .risk-badge { padding: 5px 10px; border-radius: 3px; font-weight: bold; }
+    .risk-low { background-color: #d4edda; color: #155724; }
+    .risk-medium { background-color: #fff3cd; color: #856404; }
+    .risk-high { background-color: #f8d7da; color: #721c24; }
+    .risk-critical { background-color: #dc3545; color: white; }
+    .dashboard-header { margin-bottom: 30px; }
+    .metric-card { padding: 20px; background: white; border-radius: 4px; margin-bottom: 15px; text-align: center; }
+    .metric-value { font-size: 32px; font-weight: bold; color: #007bff; }
+    .metric-label { color: #666; margin-top: 5px; }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Fraud Detection System</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li><a href="#!/alerts">Alerts</a></li>
+          <li><a href="#!/dashboard">Analytics Dashboard</a></li>
+          <li><a href="#!/admin">Threshold Admin</a></li>
+          <li><a href="#!/monitor">Transaction Monitor</a></li>
+        </ul>
+      </div>
+    </nav>
+    <div ng-view></div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/app.config.js"></script>
+  <script src="src/app/services/transaction-ingestion.service.js"></script>
+  <script src="src/app/services/fraud-risk.service.js"></script>
+  <script src="src/app/services/policy-decision.service.js"></script>
+  <script src="src/app/services/alert.service.js"></script>
+  <script src="src/app/services/audit.service.js"></script>
+  <script src="src/app/services/idempotency.service.js"></script>
+  <script src="src/app/services/notification.service.js"></script>
+  <script src="src/app/services/storage.service.js"></script>
+  <script src="src/app/services/chart.service.js"></script>
+  <script src="src/app/fraud-detection/factories/threshold-config.factory.js"></script>
+  <script src="src/app/fraud-detection/controllers/alert.controller.js"></script>
+  <script src="src/app/fraud-detection/controllers/threshold-admin.controller.js"></script>
+  <script src="src/app/fraud-detection/controllers/analytics-dashboard.controller.js"></script>
+  <script src="src/app/fraud-detection/directives/transaction-monitor.directive.js"></script>
+</body>
+</html>
