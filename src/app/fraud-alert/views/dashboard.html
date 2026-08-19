@@ -1,0 +1,111 @@
+<div ng-controller="DashboardController as vm">
+  <div class="row">
+    <div class="col-md-12">
+      <h2>Transaction Risk Dashboard</h2>
+      <button class="btn btn-primary" ng-click="vm.simulateTransaction()">Simulate Transaction</button>
+      <hr>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-3">
+      <div class="panel panel-default">
+        <div class="panel-heading">Total Transactions</div>
+        <div class="panel-body">
+          <h3>{{vm.stats.total}}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="panel panel-success">
+        <div class="panel-heading">Low Risk</div>
+        <div class="panel-body">
+          <h3>{{vm.stats.low}}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="panel panel-warning">
+        <div class="panel-heading">Medium Risk</div>
+        <div class="panel-body">
+          <h3>{{vm.stats.medium}}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="panel panel-danger">
+        <div class="panel-heading">High Risk</div>
+        <div class="panel-body">
+          <h3>{{vm.stats.high}}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <h3>Recent Transactions</h3>
+      <div class="transaction-card" ng-repeat="txn in vm.transactions" ng-class="vm.getRiskClass(txn.riskBand)">
+        <div class="row">
+          <div class="col-md-3">
+            <strong>Transaction ID:</strong> {{txn.transactionId}}
+          </div>
+          <div class="col-md-2">
+            <strong>Amount:</strong> {{txn.amount}} {{txn.currency}}
+          </div>
+          <div class="col-md-2">
+            <strong>Merchant:</strong> {{txn.merchantName}}
+          </div>
+          <div class="col-md-2">
+            <strong>Card:</strong> {{txn.cardNumber}}
+          </div>
+          <div class="col-md-2">
+            <strong>Risk Band:</strong> <span class="alert-badge">{{txn.riskBand | uppercase}}</span>
+          </div>
+          <div class="col-md-1">
+            <strong>Decision:</strong> {{txn.decision}}
+          </div>
+        </div>
+        <div class="row" style="margin-top: 10px;">
+          <div class="col-md-12">
+            <small><strong>Timestamp:</strong> {{txn.timestamp | date:'medium'}}</small>
+            <span ng-if="txn.alertId" style="margin-left: 20px;">
+              <small><strong>Alert ID:</strong> {{txn.alertId}}</small>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div ng-if="vm.transactions.length === 0" class="alert alert-info">
+        No transactions processed yet. Click "Simulate Transaction" to test the system.
+      </div>
+    </div>
+  </div>
+  <div class="row" style="margin-top: 30px;">
+    <div class="col-md-12">
+      <h3>Active Alerts</h3>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Alert ID</th>
+            <th>Transaction ID</th>
+            <th>Type</th>
+            <th>Message</th>
+            <th>Status</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="alert in vm.alerts">
+            <td>{{alert.alertId}}</td>
+            <td>{{alert.transactionId}}</td>
+            <td>{{alert.alertType}}</td>
+            <td>{{alert.message}}</td>
+            <td><span class="label" ng-class="{'label-warning': alert.status === 'pending', 'label-success': alert.status === 'acknowledged'}">{{alert.status}}</span></td>
+            <td>{{alert.createdAt | date:'short'}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div ng-if="vm.alerts.length === 0" class="alert alert-info">
+        No active alerts.
+      </div>
+    </div>
+  </div>
+</div>

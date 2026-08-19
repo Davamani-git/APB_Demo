@@ -1,0 +1,24 @@
+<div class="modal-header">
+  <h3 class="modal-title">Fraud Alert - {{modal.alert.alertType | uppercase}}</h3>
+</div>
+<div class="modal-body">
+  <div class="alert alert-warning">
+    <strong>Alert ID:</strong> {{modal.alert.alertId}}
+  </div>
+  <p><strong>Message:</strong> {{modal.alert.message}}</p>
+  <div ng-if="modal.alert.transactionDetails">
+    <h4>Transaction Details:</h4>
+    <ul>
+      <li><strong>Amount:</strong> {{modal.alert.transactionDetails.amount}} {{modal.alert.transactionDetails.currency}}</li>
+      <li><strong>Merchant:</strong> {{modal.alert.transactionDetails.merchantName}}</li>
+      <li><strong>Card:</strong> {{modal.alert.transactionDetails.cardNumber}}</li>
+      <li><strong>Timestamp:</strong> {{modal.alert.transactionDetails.timestamp | date:'medium'}}</li>
+    </ul>
+  </div>
+  <p><strong>Status:</strong> {{modal.alert.status}}</p>
+  <p><strong>Created:</strong> {{modal.alert.createdAt | date:'medium'}}</p>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-success" ng-click="modal.acknowledge()">Acknowledge</button>
+  <button class="btn btn-default" ng-click="modal.close()">Close</button>
+</div>
