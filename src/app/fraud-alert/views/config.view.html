@@ -1,0 +1,28 @@
+<div class="row">
+<div class="col-md-8 col-md-offset-2">
+<h2>Alert Threshold Configuration</h2>
+<div ng-if="vm.loading" class="alert alert-info">Loading configuration...</div>
+<div ng-if="vm.error" class="alert alert-danger">{{vm.error}}</div>
+<div ng-if="vm.success" class="alert alert-success">{{vm.success}}</div>
+<form ng-submit="vm.saveThresholds()" ng-if="!vm.loading">
+<div class="form-group">
+<label>Low Risk Threshold</label>
+<input type="number" class="form-control" ng-model="vm.thresholds.lowThreshold" step="0.01" min="0" max="1" required>
+</div>
+<div class="form-group">
+<label>Medium Risk Threshold</label>
+<input type="number" class="form-control" ng-model="vm.thresholds.mediumThreshold" step="0.01" min="0" max="1" required>
+</div>
+<div class="form-group">
+<label>High Risk Threshold</label>
+<input type="number" class="form-control" ng-model="vm.thresholds.highThreshold" step="0.01" min="0" max="1" required>
+</div>
+<div class="form-group">
+<label>Confirmed Fraud Threshold</label>
+<input type="number" class="form-control" ng-model="vm.thresholds.confirmedFraudThreshold" step="0.01" min="0" max="1" required>
+</div>
+<button type="submit" class="btn btn-success" ng-disabled="vm.loading">Save Configuration</button>
+<a href="#/dashboard" class="btn btn-default">Back to Dashboard</a>
+</form>
+</div>
+</div>

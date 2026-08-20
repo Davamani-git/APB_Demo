@@ -1,0 +1,11 @@
+<div class="row">
+<div class="col-md-12">
+<h2>Fraud Alert Dashboard</h2>
+<div ng-if="vm.loading" class="alert alert-info">Loading transactions...</div>
+<div ng-if="vm.error" class="alert alert-danger">{{vm.error}}</div>
+<button class="btn btn-primary" ng-click="vm.refreshDashboard()" ng-disabled="vm.loading">Refresh</button>
+<a href="#/config" class="btn btn-default">Configure Thresholds</a>
+<hr>
+<transaction-monitor transactions="vm.transactions" on-confirm="vm.confirmTransaction(transaction)" on-report="vm.reportTransaction(transaction)"></transaction-monitor>
+</div>
+</div>
