@@ -1,0 +1,54 @@
+<div class="config-panel">
+  <h2>Risk Threshold Configuration</h2>
+  <p class="text-muted">Configure alert thresholds for fraud detection risk bands</p>
+  <a href="#/dashboard" class="btn btn-default">
+    <span class="glyphicon glyphicon-arrow-left"></span> Back to Dashboard
+  </a>
+  <hr>
+  <div class="alert alert-danger" ng-if="vm.error">
+    <strong>Error:</strong> {{vm.error}}
+  </div>
+  <div class="alert alert-success" ng-if="vm.success">
+    <strong>Success:</strong> {{vm.success}}
+  </div>
+  <div ng-if="vm.loading" class="text-center">
+    <p><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading configuration...</p>
+  </div>
+  <form ng-if="!vm.loading && vm.config" name="configForm" ng-submit="vm.saveConfig()" novalidate>
+    <div class="form-group">
+      <label for="lowRiskThreshold">Low Risk Threshold (0-100)</label>
+      <input type="number" class="form-control" id="lowRiskThreshold" ng-model="vm.config.lowRiskThreshold" min="0" max="100" required>
+      <p class="help-block">Transactions below this score are considered low risk</p>
+    </div>
+    <div class="form-group">
+      <label for="mediumRiskThreshold">Medium Risk Threshold (0-100)</label>
+      <input type="number" class="form-control" id="mediumRiskThreshold" ng-model="vm.config.mediumRiskThreshold" min="0" max="100" required>
+      <p class="help-block">Transactions between low and medium thresholds trigger monitoring alerts</p>
+    </div>
+    <div class="form-group">
+      <label for="highRiskThreshold">High Risk Threshold (0-100)</label>
+      <input type="number" class="form-control" id="highRiskThreshold" ng-model="vm.config.highRiskThreshold" min="0" max="100" required>
+      <p class="help-block">Transactions above this score trigger urgent alerts and may be blocked</p>
+    </div>
+    <div class="form-group">
+      <label>
+        <input type="checkbox" ng-model="vm.config.alertEnabled">
+        Enable Alert Notifications
+      </label>
+    </div>
+    <div class="form-group" ng-if="vm.config.lastModified">
+      <p class="text-muted">
+        <small>Last modified: {{vm.config.lastModified | date:'medium'}} by {{vm.config.modifiedBy}}</small>
+      </p>
+    </div>
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary" ng-disabled="vm.saving || !configForm.$valid">
+        <span ng-if="vm.saving" class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
+        {{vm.saving ? 'Saving...' : 'Save Configuration'}}
+      </button>
+      <button type="button" class="btn btn-default" ng-click="vm.resetConfig()" ng-disabled="vm.saving">
+        Reset
+      </button>
+    </div>
+  </form>
+</div>

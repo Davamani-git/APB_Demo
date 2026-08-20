@@ -1,0 +1,65 @@
+<div class="transaction-list">
+  <div class="row" style="margin-bottom: 15px;">
+    <div class="col-md-6">
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-sm" ng-class="{'btn-primary': filterRiskBand === '', 'btn-default': filterRiskBand !== ''}" ng-click="setFilter('')">All</button>
+        <button type="button" class="btn btn-sm" ng-class="{'btn-success': filterRiskBand === 'low', 'btn-default': filterRiskBand !== 'low'}" ng-click="setFilter('low')">Low Risk</button>
+        <button type="button" class="btn btn-sm" ng-class="{'btn-warning': filterRiskBand === 'medium', 'btn-default': filterRiskBand !== 'medium'}" ng-click="setFilter('medium')">Medium Risk</button>
+        <button type="button" class="btn btn-sm" ng-class="{'btn-danger': filterRiskBand === 'high', 'btn-default': filterRiskBand !== 'high'}" ng-click="setFilter('high')">High Risk</button>
+      </div>
+    </div>
+  </div>
+  <div ng-if="transactions.length === 0" class="alert alert-info">
+    No transactions to display
+  </div>
+  <div ng-if="transactions.length > 0">
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th ng-click="setSortBy('transactionId')" style="cursor: pointer;">Transaction ID</th>
+          <th ng-click="setSortBy('merchantName')" style="cursor: pointer;">Merchant</th>
+          <th ng-click="setSortBy('amount')" style="cursor: pointer;">Amount</th>
+          <th ng-click="setSortBy('riskScore')" style="cursor: pointer;">Risk Score</th>
+          <th ng-click="setSortBy('riskBand')" style="cursor: pointer;">Risk Band</th>
+          <th>Alert</th>
+          <th ng-click="setSortBy('transactionTimestamp')" style="cursor: pointer;">Timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="txn in getPagedTransactions() | orderBy:sortBy:sortReverse">
+          <td><small>{{txn.transactionId}}</small></td>
+          <td>{{txn.merchantName}}</td>
+          <td>{{txn.amount | currency:txn.currency}}</td>
+          <td><strong ng-style="{color: (txn.riskBand | riskBandColor)}">{{txn.riskScore | riskScore}}</strong></td>
+          <td>
+            <span class="label" ng-class="{'label-success': txn.riskBand === 'low', 'label-warning': txn.riskBand === 'medium', 'label-danger': txn.riskBand === 'high' || txn.riskBand === 'critical'}">
+              {{txn.riskBand | uppercase}}
+            </span>
+          </td>
+          <td>
+            <span ng-if="txn.alertTriggered" class="glyphicon glyphicon-bell text-danger" title="Alert triggered"></span>
+            <span ng-if="!txn.alertTriggered" class="text-muted">-</span>
+          </td>
+          <td><small>{{txn.transactionTimestamp | date:'short'}}</small></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="text-center">
+      <ul class="pagination pagination-sm">
+        <li ng-class="{disabled: currentPage === 1}">
+          <a ng-click="setPage(currentPage - 1)" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        <li ng-repeat="page in [] | range:getTotalPages()" ng-class="{active: page === currentPage}">
+          <a ng-click="setPage(page)">{{page}}</a>
+        </li>
+        <li ng-class="{disabled: currentPage === getTotalPages()}">
+          <a ng-click="setPage(currentPage + 1)" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

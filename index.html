@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html ng-app="fraudDetectionModule">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credit Card Fraud Alert System</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <style>
+    body { padding: 20px; background-color: #f5f5f5; }
+    .dashboard-header { margin-bottom: 30px; }
+    .risk-low { color: #5cb85c; }
+    .risk-medium { color: #f0ad4e; }
+    .risk-high { color: #d9534f; }
+    .transaction-card { background: white; padding: 15px; margin-bottom: 15px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .alert-badge { font-size: 12px; padding: 4px 8px; border-radius: 3px; }
+    .config-panel { background: white; padding: 20px; border-radius: 4px; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div ng-view></div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/app.config.js"></script>
+  <script src="src/app/services/transaction-ingestion.service.js"></script>
+  <script src="src/app/services/fraud-risk.service.js"></script>
+  <script src="src/app/services/policy-decision.service.js"></script>
+  <script src="src/app/services/alert-notification.service.js"></script>
+  <script src="src/app/services/audit-trail.service.js"></script>
+  <script src="src/app/services/config.service.js"></script>
+  <script src="src/app/services/cache.service.js"></script>
+  <script src="src/app/services/http-interceptor.service.js"></script>
+  <script src="src/app/fraud-detection/fraud-dashboard.controller.js"></script>
+  <script src="src/app/fraud-detection/threshold-config.controller.js"></script>
+  <script src="src/app/fraud-detection/transaction-list.directive.js"></script>
+  <script src="src/app/fraud-detection/risk-score.filter.js"></script>
+</body>
+</html>
