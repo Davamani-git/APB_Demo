@@ -1,0 +1,34 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>Fraud Alerts</h2>
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-default" ng-class="{active: vm.filter === 'active'}" ng-click="vm.setFilter('active')">Active</button>
+      <button type="button" class="btn btn-default" ng-class="{active: vm.filter === 'resolved'}" ng-click="vm.setFilter('resolved')">Resolved</button>
+    </div>
+    <div ng-if="vm.loading" class="text-center" style="margin-top: 20px;">
+      <p>Loading alerts...</p>
+    </div>
+    <div ng-if="vm.error" class="alert alert-danger" style="margin-top: 20px;">
+      {{vm.error}}
+    </div>
+    <div ng-if="!vm.loading && !vm.error">
+      <div ng-if="vm.alerts.length === 0" class="alert alert-info" style="margin-top: 20px;">
+        No alerts found.
+      </div>
+      <div ng-repeat="alert in vm.alerts" class="alert-card" ng-click="vm.viewAlert(alert.alertId)" style="cursor: pointer;">
+        <div class="row">
+          <div class="col-md-8">
+            <h4>{{alert.transaction.merchant}}</h4>
+            <p><strong>Amount:</strong> {{alert.transaction.currency}} {{alert.transaction.amount | number:2}}</p>
+            <p><strong>Time:</strong> {{alert.transaction.timestamp | date:'short'}}</p>
+            <p><strong>Card:</strong> <span class="masked-card">**** **** **** {{alert.transaction.cardId.slice(-4)}}</span></p>
+          </div>
+          <div class="col-md-4 text-right">
+            <span class="badge" ng-class="{'badge-low': alert.severity === 'low', 'badge-medium': alert.severity === 'medium', 'badge-high': alert.severity === 'high', 'badge-critical': alert.severity === 'critical'}">{{alert.severity | uppercase}}</span>
+            <p style="margin-top: 10px;"><strong>Status:</strong> {{alert.status}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

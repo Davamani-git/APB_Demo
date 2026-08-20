@@ -1,0 +1,39 @@
+<div class="row">
+  <div class="col-md-12">
+    <button class="btn btn-default" ng-click="vm.goBack()">&larr; Back to Alerts</button>
+    <div ng-if="vm.loading" class="text-center" style="margin-top: 20px;">
+      <p>Loading alert details...</p>
+    </div>
+    <div ng-if="vm.error" class="alert alert-danger" style="margin-top: 20px;">
+      {{vm.error}}
+    </div>
+    <div ng-if="vm.message" class="alert alert-success" style="margin-top: 20px;">
+      {{vm.message}}
+    </div>
+    <div ng-if="!vm.loading && !vm.error && vm.alert" class="alert-card" style="margin-top: 20px;">
+      <h3>Transaction Alert</h3>
+      <div class="transaction-detail">
+        <p><strong>Merchant:</strong> {{vm.alert.transaction.merchant}}</p>
+        <p><strong>Amount:</strong> {{vm.alert.transaction.currency}} {{vm.alert.transaction.amount | number:2}}</p>
+        <p><strong>Time:</strong> {{vm.alert.transaction.timestamp | date:'medium'}}</p>
+        <p><strong>Card:</strong> <span class="masked-card">**** **** **** {{vm.alert.transaction.cardId.slice(-4)}}</span></p>
+        <p ng-if="vm.alert.transaction.location.country"><strong>Location:</strong> {{vm.alert.transaction.location.country}}</p>
+        <p><strong>Severity:</strong> <span class="badge" ng-class="{'badge-low': vm.alert.severity === 'low', 'badge-medium': vm.alert.severity === 'medium', 'badge-high': vm.alert.severity === 'high', 'badge-critical': vm.alert.severity === 'critical'}">{{vm.alert.severity | uppercase}}</span></p>
+      </div>
+      <div class="alert alert-warning">
+        <strong>Risk Message:</strong> {{vm.alert.riskMessage}}
+      </div>
+      <div class="action-buttons" ng-if="vm.alert.status !== 'confirmed' && vm.alert.status !== 'reported'">
+        <p><strong>Was this transaction made by you?</strong></p>
+        <button class="btn btn-success btn-lg" ng-click="vm.confirmTransaction()" ng-disabled="vm.processing">Yes, this was me</button>
+        <button class="btn btn-danger btn-lg" ng-click="vm.reportTransaction()" ng-disabled="vm.processing" style="margin-left: 10px;">No, I don't recognize this</button>
+      </div>
+      <div ng-if="vm.alert.status === 'confirmed'" class="alert alert-success">
+        <strong>Transaction Confirmed:</strong> Thank you for verifying this transaction.
+      </div>
+      <div ng-if="vm.alert.status === 'reported'" class="alert alert-danger">
+        <strong>Transaction Reported:</strong> Your card has been secured. A replacement card will be sent to you shortly.
+      </div>
+    </div>
+  </div>
+</div>

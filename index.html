@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html ng-app="fraudDetection">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credit Card Fraud Alert System</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <style>
+    body { padding-top: 20px; background-color: #f5f5f5; }
+    .alert-card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .badge-low { background-color: #5cb85c; }
+    .badge-medium { background-color: #f0ad4e; }
+    .badge-high { background-color: #d9534f; }
+    .badge-critical { background-color: #d9534f; font-weight: bold; }
+    .transaction-detail { margin: 15px 0; }
+    .action-buttons { margin-top: 20px; }
+    .masked-card { font-family: monospace; letter-spacing: 2px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div ng-view></div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-resource.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/modules/fraud-detection/fraud-detection.module.js"></script>
+  <script src="src/app/services/idempotency.service.js"></script>
+  <script src="src/app/services/auth.service.js"></script>
+  <script src="src/app/modules/fraud-detection/ingestion/transaction-ingestion.service.js"></script>
+  <script src="src/app/modules/fraud-detection/ingestion/transaction-ingestion.controller.js"></script>
+  <script src="src/app/modules/fraud-detection/risk-engine/risk-signals.factory.js"></script>
+  <script src="src/app/modules/fraud-detection/risk-engine/risk-scoring.service.js"></script>
+  <script src="src/app/modules/fraud-detection/policy/threshold-config.service.js"></script>
+  <script src="src/app/modules/fraud-detection/policy/policy-decision.service.js"></script>
+  <script src="src/app/modules/fraud-detection/alerts/alert.service.js"></script>
+  <script src="src/app/modules/fraud-detection/alerts/alert.controller.js"></script>
+  <script src="src/app/modules/fraud-detection/alerts/alert-list.component.js"></script>
+  <script src="src/app/modules/fraud-detection/alerts/alert-detail.component.js"></script>
+  <script src="src/app/modules/fraud-detection/notification/notification.service.js"></script>
+  <script src="src/app/modules/fraud-detection/response/response.service.js"></script>
+  <script src="src/app/modules/fraud-detection/response/alert-response.controller.js"></script>
+  <script src="src/app/modules/fraud-detection/protection/protection.service.js"></script>
+  <script src="src/app/modules/fraud-detection/audit/audit.service.js"></script>
+  <script src="src/app/shared/interceptors/fraud-api.interceptor.js"></script>
+  <script src="src/app/models/fraud-models.js"></script>
+</body>
+</html>
