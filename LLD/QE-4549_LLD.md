@@ -1,181 +1,139 @@
-# Low-Level Design: Real-Time Fraud Detection System
-
-**Epic ID:** QE-4549
-
----
+# Low-Level Design: QE-4549
 
 ## a. Architecture Mapping
 
-- **Transaction Event Ingestion** → AngularJS Service (`transactionIngestionService`) + REST API endpoint
-- **Fraud Risk Engine** → AngularJS Service (`fraudRiskService`) consuming risk scoring API
-- **Policy Decision Engine** → AngularJS Service (`policyDecisionService`) for threshold evaluation
-- **Action Router** → AngularJS Controller (`fraudAlertController`) coordinating UI actions
-- **Audit Service** → AngularJS Factory (`auditFactory`) logging decisions to audit API
-- **Admin Configuration UI** → AngularJS Module (`fraudConfigModule`) with Controller/View for threshold management
+- **Transaction Authorization Platform** → AngularJS Service (TransactionEventService) - handles API polling/webhooks for transaction events
+- **Event Ingestion Layer** → AngularJS Service (IngestionService) - validates, normalizes, and deduplicates transaction data client-side
+- **Fraud Risk Scoring Engine** → AngularJS Service (RiskScoringService) - invokes REST API for risk evaluation
+- **Policy Engine** → AngularJS Service (PolicyDecisionService) - maps risk scores to action decisions via REST API
+- **Decision Router** → AngularJS Controller (DecisionController) - orchestrates action execution and UI updates
+- **Audit Trail Service** → AngularJS Service (AuditService) - logs decisions and model versions via REST API
 
 **Recommended Folder Structure:**
 ```
-app/
-├── modules/
-│   ├── fraud-detection/
-│   │   ├── controllers/
-│   │   │   ├── fraudAlertController.js
-│   │   │   └── fraudConfigController.js
-│   │   ├── services/
-│   │   │   ├── transactionIngestionService.js
-│   │   │   ├── fraudRiskService.js
-│   │   │   └── policyDecisionService.js
-│   │   ├── factories/
-│   │   │   └── auditFactory.js
-│   │   ├── views/
-│   │   │   ├── fraud-dashboard.html
-│   │   │   └── fraud-config.html
-│   │   └── fraud-detection.module.js
-├── shared/
-│   ├── interceptors/
-│   │   └── authInterceptor.js
-│   └── constants/
-│       └── fraudConstants.js
-└── app.js
+/app
+  /modules
+    /fraud-detection
+      /controllers
+      /services
+      /directives
+      /views
+  /shared
+    /services
+    /filters
+  /assets
 ```
-
----
 
 ## b. Component Specifications
 
-| Component Name | Artifact Type | Responsibility | Key Dependencies |
-|----------------|---------------|----------------|------------------|
-| fraudDetectionModule | Module | Root module for fraud detection functionality | angular, ngRoute, ui.bootstrap |
-| fraudAlertController | Controller | Manages fraud alert dashboard, displays transactions and risk decisions | fraudRiskService, policyDecisionService, auditFactory, $scope |
-| fraudConfigController | Controller | Manages threshold configuration UI for risk levels and actions | policyDecisionService, $scope, $http |
-| transactionIngestionService | Service | Validates and ingests transaction events with idempotency checks | $http, $q, auditFactory |
-| fraudRiskService | Service | Calculates fraud risk scores by calling risk engine API with transaction signals | $http, $q, fraudConstants |
-| policyDecisionService | Service | Maps risk scores to actions based on configurable thresholds | $http, $q, fraudConstants |
-| auditFactory | Factory | Logs all risk decisions and actions to audit API | $http |
-| authInterceptor | Interceptor | Attaches authentication tokens to all outbound API requests | $window, $q |
-| fraudConstants | Constant | Defines risk levels, action types, API endpoints, and default thresholds | N/A |
-
----
+| Name | Artifact Type | Responsibility | Key Dependencies |
+|------|---------------|----------------|------------------|
+| FraudDetectionModule | Module | Root module for fraud detection feature | angular, ngRoute, ui.bootstrap |
+| TransactionEventService | Service/Factory | Fetches transaction events from authorization platform API | $http, $q |
+| IngestionService | Service | Validates, normalizes, deduplicates transaction data | TransactionEventService, LocalStorageService |
+| RiskScoringService | Service | Calls fraud-risk engine API with transaction signals | $http, $q, ConfigService |
+| PolicyDecisionService | Service | Maps risk scores to actions via policy engine API | $http, RiskScoringService |
+| DecisionController | Controller | Orchestrates fraud detection workflow and updates UI | $scope, IngestionService, RiskScoringService, PolicyDecisionService, AuditService |
+| AuditService | Service | Logs all decisions and model versions to audit trail API | $http, $q |
+| TransactionListDirective | Directive | Displays real-time transaction list with risk indicators | DecisionController |
+| RiskIndicatorFilter | Filter | Formats risk level display (low/medium/high/confirmed fraud) | none |
+| ConfigService | Service | Manages configurable alert thresholds and feature flags | $http, LocalStorageService |
 
 ## c. Data Model
 
-**TransactionEvent (JS Object):**
+**Transaction Object:**
 ```javascript
 {
   transactionId: String,
-  cardIdentifier: String,
+  cardNumber: String (masked),
   amount: Number,
   currency: String,
   merchantId: String,
   merchantCategory: String,
-  location: { country: String, city: String, coordinates: Object },
   timestamp: Date,
+  geoLocation: Object { lat: Number, lon: Number },
   deviceId: String,
-  idempotencyKey: String
+  ipAddress: String,
+  isCompromised: Boolean
 }
 ```
 
-**FraudRiskScore (JS Object):**
+**RiskScore Object:**
 ```javascript
 {
   transactionId: String,
-  riskScore: Number,
-  riskLevel: String, // 'low', 'medium', 'high', 'confirmed_fraud'
-  signals: {
+  score: Number,
+  level: String, // 'low', 'medium', 'high', 'confirmed_fraud'
+  signals: Object {
     amountAnomaly: Boolean,
     merchantRisk: String,
-    geographicInconsistency: Boolean,
-    velocityPattern: String,
-    failedAuthAttempts: Number,
-    compromisedCardIndicator: Boolean
+    geoInconsistency: Boolean,
+    velocityAnomaly: Boolean,
+    compromisedCard: Boolean
   },
-  evaluatedAt: Date
+  modelVersion: String
 }
 ```
 
-**PolicyDecision (JS Object):**
+**Decision Object:**
 ```javascript
 {
   transactionId: String,
-  riskLevel: String,
   action: String, // 'approve', 'alert', 'step_up', 'hold', 'decline'
-  thresholdApplied: Object,
-  decidedAt: Date
-}
-```
-
-**ThresholdConfig (JS Object):**
-```javascript
-{
   riskLevel: String,
-  minScore: Number,
-  maxScore: Number,
-  action: String,
-  isActive: Boolean
+  timestamp: Date,
+  modelVersion: String
 }
 ```
-
----
 
 ## d. Data Flow
 
-When a transaction event is received, the fraud alert dashboard view triggers `fraudAlertController`, which calls `transactionIngestionService` to validate and deduplicate the event using its idempotency key. The service forwards the validated transaction to `fraudRiskService`, which invokes the backend fraud risk engine API to calculate a risk score based on multiple signals (amount, merchant, geography, velocity, compromised-card indicators). The returned `FraudRiskScore` object is passed to `policyDecisionService`, which applies configurable thresholds to map the risk level to an action (approve, alert, step-up, hold, decline). The `PolicyDecision` is executed by the controller, updating the UI with the transaction status and alert details, while `auditFactory` asynchronously logs the complete decision trail to the audit API for compliance and monitoring.
-
----
+User accesses the fraud detection dashboard (View) which is managed by DecisionController. The controller invokes IngestionService to fetch and validate transaction events from TransactionEventService. Normalized transaction data with risk signals is passed to RiskScoringService, which calls the fraud-risk engine REST API and returns a RiskScore object. PolicyDecisionService receives the risk score and invokes the policy engine API to determine the action (approve/alert/step-up/hold/decline). The controller updates the UI with the decision and risk indicator, while AuditService logs the decision and model version to the audit trail API for compliance tracking.
 
 ## e. Primary Sequence Diagram
 
 ```mermaid
 sequenceDiagram
     participant User
-    participant FraudDashboard
-    participant fraudAlertController
-    participant transactionIngestionService
-    participant fraudRiskService
-    participant policyDecisionService
-    participant auditFactory
-    participant RiskEngineAPI
-    participant PolicyAPI
-    participant AuditAPI
+    participant DecisionController
+    participant IngestionService
+    participant RiskScoringService
+    participant PolicyDecisionService
+    participant AuditService
+    participant API
 
-    User->>FraudDashboard: Views incoming transaction
-    FraudDashboard->>fraudAlertController: Load transaction event
-    fraudAlertController->>transactionIngestionService: ingestTransaction(event)
-    transactionIngestionService->>transactionIngestionService: Validate & check idempotency
-    transactionIngestionService->>fraudRiskService: calculateRiskScore(transaction)
-    fraudRiskService->>RiskEngineAPI: POST /api/fraud/risk-score
-    RiskEngineAPI-->>fraudRiskService: Return FraudRiskScore
-    fraudRiskService-->>fraudAlertController: Return risk score
-    fraudAlertController->>policyDecisionService: evaluatePolicy(riskScore)
-    policyDecisionService->>PolicyAPI: GET /api/policy/thresholds
-    PolicyAPI-->>policyDecisionService: Return threshold config
-    policyDecisionService->>policyDecisionService: Map risk level to action
-    policyDecisionService-->>fraudAlertController: Return PolicyDecision
-    fraudAlertController->>auditFactory: logDecision(policyDecision)
-    auditFactory->>AuditAPI: POST /api/audit/log
-    AuditAPI-->>auditFactory: Acknowledge
-    fraudAlertController->>FraudDashboard: Update UI with action & alert
-    FraudDashboard-->>User: Display transaction status & alert
+    User->>DecisionController: Access Fraud Detection Dashboard
+    DecisionController->>IngestionService: Fetch Transaction Events
+    IngestionService->>API: GET /transactions/events
+    API-->>IngestionService: Transaction Events
+    IngestionService->>IngestionService: Validate & Deduplicate
+    IngestionService-->>DecisionController: Normalized Transactions
+    DecisionController->>RiskScoringService: Evaluate Risk(transaction)
+    RiskScoringService->>API: POST /fraud-risk/score
+    API-->>RiskScoringService: RiskScore Object
+    RiskScoringService-->>DecisionController: Risk Score & Level
+    DecisionController->>PolicyDecisionService: Determine Action(riskScore)
+    PolicyDecisionService->>API: POST /policy/decision
+    API-->>PolicyDecisionService: Decision Object
+    PolicyDecisionService-->>DecisionController: Action Decision
+    DecisionController->>AuditService: Log Decision
+    AuditService->>API: POST /audit/log
+    API-->>AuditService: Audit Confirmation
+    DecisionController->>User: Update UI with Decision & Risk Indicator
 ```
-
----
 
 ## f. Implementation Notes
 
-- Use AngularJS Dependency Injection to inject services into controllers; follow singleton pattern for services and factories.
-- Implement ES6 Promises ($q) for all asynchronous API calls; chain promises for sequential operations (ingestion → risk scoring → policy decision).
-- Use `authInterceptor` to attach JWT tokens to all $http requests; configure in app.config using $httpProvider.interceptors.
-- Store API endpoints and risk thresholds in `fraudConstants` for easy configuration and environment-specific overrides.
-- Implement idempotency checks in `transactionIngestionService` using in-memory cache or backend API to prevent duplicate event processing.
-
----
+- Use AngularJS dependency injection for all services and controllers to enable testability and modularity
+- Implement ES6 classes for services with promise-based API calls using $http and $q
+- Use AngularJS interceptors for centralized API error handling, authentication token injection, and retry logic
+- Apply MVC pattern: controllers orchestrate workflow, services encapsulate business logic and API calls, views bind via ng-model/ng-repeat
+- Leverage Bootstrap components (alerts, badges, modals) for risk indicators and action notifications in the UI
 
 ## g. Error Handling
 
-Use `authInterceptor` for global HTTP error handling with try/catch blocks in services; display user-friendly error messages via Bootstrap modals and log errors to audit API.
-
----
+Interceptor-based error handling with $http interceptors for API failures, try/catch blocks in services for data validation errors, and user notifications via Bootstrap alerts/modals.
 
 ## h. Security Notes
 
-Requires token-based authentication via existing SSO; all API calls must include JWT tokens with role-based authorization enforced on backend; sensitive data encrypted in transit (HTTPS) and at rest.
+Requires token-based authentication via existing SSO with secure API calls over HTTPS; input validation on all transaction data fields to prevent injection attacks.
