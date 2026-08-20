@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html ng-app="fraudDetectionModule">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Credit Card Fraud Alert System</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container-fluid">
+<nav class="navbar navbar-default">
+<div class="container-fluid">
+<div class="navbar-header">
+<a class="navbar-brand" href="#/">Fraud Alert System</a>
+</div>
+<ul class="nav navbar-nav">
+<li><a href="#/dashboard">Dashboard</a></li>
+<li><a href="#/config">Configuration</a></li>
+</ul>
+</div>
+</nav>
+<div ng-view></div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
+<script src="src/app/app.module.js"></script>
+<script src="src/app/shared/constants/fraudConstants.js"></script>
+<script src="src/app/shared/interceptors/authInterceptor.js"></script>
+<script src="src/app/services/auditFactory.js"></script>
+<script src="src/app/modules/fraud-detection/services/transactionIngestionService.js"></script>
+<script src="src/app/modules/fraud-detection/services/fraudRiskService.js"></script>
+<script src="src/app/modules/fraud-detection/services/policyDecisionService.js"></script>
+<script src="src/app/modules/fraud-detection/fraud-detection.module.js"></script>
+<script src="src/app/modules/fraud-detection/controllers/fraudAlertController.js"></script>
+<script src="src/app/modules/fraud-detection/controllers/fraudConfigController.js"></script>
+</body>
+</html>

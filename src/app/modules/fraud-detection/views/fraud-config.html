@@ -1,0 +1,45 @@
+<div class="row">
+<div class="col-md-12">
+<h2>Fraud Alert Configuration</h2>
+<div class="panel panel-default">
+<div class="panel-heading">
+<h3 class="panel-title">Risk Threshold Management</h3>
+</div>
+<div class="panel-body">
+<div ng-if="vm.loading" class="alert alert-info">Loading configuration...</div>
+<div ng-if="vm.error" class="alert alert-danger">{{vm.error}}</div>
+<div ng-if="vm.success" class="alert alert-success">{{vm.success}}</div>
+<table class="table table-bordered" ng-if="vm.thresholds.length>0">
+<thead>
+<tr>
+<th>Risk Level</th>
+<th>Min Score</th>
+<th>Max Score</th>
+<th>Action</th>
+<th>Active</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+<tr ng-repeat="threshold in vm.thresholds track by threshold.riskLevel">
+<td>{{threshold.riskLevel}}</td>
+<td><input type="number" class="form-control" ng-model="threshold.minScore" min="0" max="100"></td>
+<td><input type="number" class="form-control" ng-model="threshold.maxScore" min="0" max="100"></td>
+<td>
+<select class="form-control" ng-model="threshold.action">
+<option value="approve">Approve</option>
+<option value="alert">Alert</option>
+<option value="step_up">Step Up</option>
+<option value="hold">Hold</option>
+<option value="decline">Decline</option>
+</select>
+</td>
+<td><input type="checkbox" ng-model="threshold.isActive"></td>
+<td><button class="btn btn-primary btn-sm" ng-click="vm.updateThreshold(threshold)" ng-disabled="vm.loading">Update</button></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
