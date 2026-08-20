@@ -1,0 +1,69 @@
+<div class="registration-container" ng-cloak>
+  <form name="registrationForm" novalidate ng-submit="vm.submit(registrationForm)">
+    <div>
+      <label for="email">Email</label>
+      <input id="email"
+             type="email"
+             name="email"
+             ng-model="vm.user.email"
+             required />
+      <div ng-show="registrationForm.$submitted && registrationForm.email.$invalid">
+        <span>Please enter a valid email address.</span>
+      </div>
+    </div>
+
+    <div>
+      <label for="password">Password</label>
+      <input id="password"
+             type="password"
+             name="password"
+             ng-model="vm.user.password"
+             ng-minlength="8"
+             required />
+      <div ng-show="registrationForm.$submitted && registrationForm.password.$invalid">
+        <span>Password must be at least 8 characters long.</span>
+      </div>
+    </div>
+
+    <div>
+      <label for="firstName">First Name</label>
+      <input id="firstName"
+             type="text"
+             name="firstName"
+             ng-model="vm.user.firstName"
+             required />
+    </div>
+
+    <div>
+      <label for="lastName">Last Name</label>
+      <input id="lastName"
+             type="text"
+             name="lastName"
+             ng-model="vm.user.lastName"
+             required />
+    </div>
+
+    <div>
+      <label for="role">Role</label>
+      <select id="role"
+              name="role"
+              ng-model="vm.user.role"
+              required>
+        <option value="buyer">Buyer</option>
+        <option value="seller">Seller</option>
+      </select>
+    </div>
+
+    <div ng-if="vm.errorMessage">
+      <span class="error">{{ vm.errorMessage }}</span>
+    </div>
+
+    <div ng-if="vm.successMessage">
+      <span class="success">{{ vm.successMessage }}</span>
+    </div>
+
+    <button type="submit" ng-disabled="vm.isSubmitting">
+      {{ vm.isSubmitting ? 'Registering...' : 'Register' }}
+    </button>
+  </form>
+</div>
