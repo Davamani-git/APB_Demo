@@ -1,16 +1,13 @@
 'use strict';
 
-angular
-  .module('sharedServices')
-  .service('UserService', UserService);
+angular.module('shared.services.user', [])
+  .service('UserService', ["$http", function($http) {
+    var baseUrl = '/api/users';
 
-UserService.$inject = ['$http'];
-
-function UserService($http) {
-  const apiBase = '/api/users';
-
-  this.register = function register(userPayload) {
-    return $http.post(apiBase + '/register', userPayload)
-      .then(response => response.data);
-  };
-}
+    this.register = function(user) {
+      return $http.post(baseUrl + '/register', user)
+        .then(function(response) {
+          return response.data;
+        });
+    };
+  }]);

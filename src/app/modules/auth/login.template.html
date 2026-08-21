@@ -1,0 +1,14 @@
+<div class="login-container">
+  <form name="loginForm" novalidate ng-submit="login(loginForm)">
+    <div>
+      <label>Email</label>
+      <input type="email" name="email" ng-model="credentials.email" required />
+    </div>
+    <div>
+      <label>Password</label>
+      <input type="password" name="password" ng-model="credentials.password" required />
+    </div>
+    <button type="submit" ng-disabled="loginForm.$invalid || isLoggingIn">Login</button>
+    <div class="message error" ng-if="errorMessage">{{errorMessage}}</div>
+  </form>
+</div>

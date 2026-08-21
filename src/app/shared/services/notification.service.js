@@ -1,16 +1,13 @@
 'use strict';
 
-angular
-  .module('sharedServices')
-  .service('NotificationService', NotificationService);
+angular.module('shared.services.notification', [])
+  .service('NotificationService', ["$http", function($http) {
+    var baseUrl = '/api/notifications';
 
-NotificationService.$inject = ['$http'];
-
-function NotificationService($http) {
-  const apiBase = '/api/notifications';
-
-  this.sendEmailConfirmation = function sendEmailConfirmation(userId) {
-    return $http.post(apiBase + '/email-confirmation', { userId: userId })
-      .then(response => response.data);
-  };
-}
+    this.sendEmailConfirmation = function(userId) {
+      return $http.post(baseUrl + '/email-confirmation', { userId: userId })
+        .then(function(response) {
+          return response.data;
+        });
+    };
+  }]);

@@ -1,5 +1,6 @@
 'use strict';
 
 angular.module('rbacModule', [
-  'sharedServices'
+  'shared.services.rbac',
+  'shared.services.auth'
 ]);

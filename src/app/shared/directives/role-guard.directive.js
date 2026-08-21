@@ -1,28 +1,27 @@
 'use strict';
 
-angular
-  .module('rbacModule')
-  .directive('roleGuard', roleGuard);
+angular.module('rbacModule')
+  .directive('roleGuard', ["RbacService", function(RbacService) {
+    return {
+      restrict: 'A',
+      link: function(scope, element, attrs) {
+        var requiredRole = attrs.roleGuard;
 
-roleGuard.$inject = ['AuthService'];
-
-function roleGuard(AuthService) {
-  return {
-    restrict: 'A',
-    link: function (scope, element, attrs) {
-      function applyVisibility() {
-        const requiredRole = attrs.roleGuard;
-        const roles = AuthService.getRoles();
-
-        if (roles.indexOf(requiredRole) === -1) {
-          element.addClass('ng-hide');
-        } else {
-          element.removeClass('ng-hide');
+        function updateVisibility() {
+          if (RbacService.hasRole(requiredRole)) {
+            element.removeClass('ng-hide');
+          } else {
+            element.addClass('ng-hide');
+          }
         }
-      }
 
-      applyVisibility();
-      scope.$on('auth:rolesUpdated', applyVisibility);
-    }
-  };
-}
+        scope.$watch(function() {
+          return RbacService.hasRole(requiredRole);
+        }, function() {
+          updateVisibility();
+        });
+
+        updateVisibility();
+      }
+    };
+  }]);

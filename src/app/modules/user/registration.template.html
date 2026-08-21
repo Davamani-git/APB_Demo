@@ -1,0 +1,30 @@
+<div class="registration-container">
+  <form name="registrationForm" novalidate ng-submit="register(registrationForm)">
+    <div>
+      <label>Email</label>
+      <input type="email" name="email" ng-model="user.email" required />
+    </div>
+    <div>
+      <label>Password</label>
+      <input type="password" name="password" ng-model="user.password" required />
+    </div>
+    <div>
+      <label>First Name</label>
+      <input type="text" name="firstName" ng-model="user.firstName" required />
+    </div>
+    <div>
+      <label>Last Name</label>
+      <input type="text" name="lastName" ng-model="user.lastName" required />
+    </div>
+    <div>
+      <label>Role</label>
+      <select name="role" ng-model="user.role" required>
+        <option value="buyer">Buyer</option>
+        <option value="seller">Seller</option>
+      </select>
+    </div>
+    <button type="submit" ng-disabled="registrationForm.$invalid || isSubmitting">Register</button>
+    <div class="message success" ng-if="successMessage">{{successMessage}}</div>
+    <div class="message error" ng-if="errorMessage">{{errorMessage}}</div>
+  </form>
+</div>

@@ -1,6 +1,6 @@
 'use strict';
 
 angular.module('userModule', [
-  'ngMessages',
-  'sharedServices'
+  'shared.services.user',
+  'shared.services.notification'
 ]);
