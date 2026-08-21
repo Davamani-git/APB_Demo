@@ -1,27 +1,34 @@
-(function () {
-  'use strict';
+'use strict';
 
-  angular
-    .module('rbacModule')
-    .service('RbacService', RbacService);
-
-  RbacService.$inject = ['$http'];
-
-  function RbacService($http) {
+angular.module('sharedServices')
+  .service('RbacService', ['AuthService', '$http', function(AuthService, $http) {
     var API_BASE = '/api/rbac';
+    var currentPermissions = [];
 
-    this.getCurrentUserRoles = function () {
-      return $http.get(API_BASE + '/me/roles')
-        .then(function (response) {
-          return response.data;
+    this.loadPermissionsForCurrentUser = function() {
+      var user = AuthService.getCurrentUser();
+      if (!user || !user.id) {
+        currentPermissions = [];
+        return Promise.resolve([]);
+      }
+      return $http.get(API_BASE + '/permissions', { params: { userId: user.id } })
+        .then(function(response) {
+          currentPermissions = response.data.permissions || [];
+          return currentPermissions;
         });
     };
 
-    this.hasRole = function (roles, roleToCheck) {
-      if (!Array.isArray(roles)) {
+    this.hasPermission = function(permission) {
+      return currentPermissions.indexOf(permission) !== -1;
+    };
+
+    this.hasAnyRole = function(roles) {
+      var user = AuthService.getCurrentUser();
+      if (!user || !user.roles) {
         return false;
       }
-      return roles.indexOf(roleToCheck) !== -1;
+      return roles.some(function(role) {
+        return user.roles.indexOf(role) !== -1;
+      });
     };
-  }
-})();
+  }]);

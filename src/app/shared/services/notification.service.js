@@ -1,22 +1,13 @@
-(function () {
-  'use strict';
+'use strict';
 
-  angular
-    .module('userModule')
-    .service('NotificationService', NotificationService);
-
-  NotificationService.$inject = ['$http'];
-
-  function NotificationService($http) {
+angular.module('sharedServices')
+  .service('NotificationService', ['$http', function($http) {
     var API_BASE = '/api/notifications';
 
-    this.sendEmailConfirmation = function (email, userId) {
-      return $http.post(API_BASE + '/email-confirmation', {
-        email: email,
-        userId: userId
-      }).then(function (response) {
-        return response.data;
-      });
+    this.sendEmailConfirmation = function(userId) {
+      return $http.post(API_BASE + '/email-confirmation', { userId: userId })
+        .then(function(response) {
+          return response.data;
+        });
     };
-  }
-})();
+  }]);
