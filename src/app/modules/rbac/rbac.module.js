@@ -1,5 +1,8 @@
-'use strict';
+(function() {
+  'use strict';
 
-angular.module('rbacModule', [
-  'sharedServices'
-]);
+  angular
+    .module('rbacModule', [
+      'sharedServices'
+    ]);
+})();

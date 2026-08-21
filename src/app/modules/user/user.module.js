@@ -1,6 +1,9 @@
-'use strict';
+(function() {
+  'use strict';
 
-angular.module('userModule', [
-  'ngMessages',
-  'sharedServices'
-]);
+  angular
+    .module('userModule', [
+      'ngMessages',
+      'sharedServices'
+    ]);
+})();

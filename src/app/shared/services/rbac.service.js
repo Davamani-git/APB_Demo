@@ -1,34 +1,45 @@
-'use strict';
+(function() {
+  'use strict';
 
-angular.module('sharedServices')
-  .service('RbacService', ['AuthService', '$http', function(AuthService, $http) {
-    var API_BASE = '/api/rbac';
-    var currentPermissions = [];
+  angular
+    .module('sharedServices')
+    .service('RbacService', RbacService);
 
-    this.loadPermissionsForCurrentUser = function() {
-      var user = AuthService.getCurrentUser();
-      if (!user || !user.id) {
-        currentPermissions = [];
-        return Promise.resolve([]);
-      }
-      return $http.get(API_BASE + '/permissions', { params: { userId: user.id } })
+  RbacService.$inject = ['$http'];
+
+  function RbacService($http) {
+    var currentRoles = [];
+    var permissionsCache = {};
+
+    var service = {
+      loadRolesForUser: loadRolesForUser,
+      hasRole: hasRole,
+      hasPermission: hasPermission
+    };
+
+    return service;
+
+    function loadRolesForUser(userId) {
+      return $http.get('/api/rbac/roles', { params: { userId: userId } })
         .then(function(response) {
-          currentPermissions = response.data.permissions || [];
-          return currentPermissions;
+          currentRoles = response.data.roles || [];
+          permissionsCache = response.data.permissionsByRole || {};
+          return {
+            roles: currentRoles,
+            permissionsByRole: permissionsCache
+          };
         });
-    };
+    }
 
-    this.hasPermission = function(permission) {
-      return currentPermissions.indexOf(permission) !== -1;
-    };
+    function hasRole(role) {
+      return currentRoles.indexOf(role) !== -1;
+    }
 
-    this.hasAnyRole = function(roles) {
-      var user = AuthService.getCurrentUser();
-      if (!user || !user.roles) {
-        return false;
-      }
-      return roles.some(function(role) {
-        return user.roles.indexOf(role) !== -1;
+    function hasPermission(permission) {
+      return currentRoles.some(function(role) {
+        var rolePermissions = permissionsCache[role] || [];
+        return rolePermissions.indexOf(permission) !== -1;
       });
-    };
-  }]);
+    }
+  }
+})();
