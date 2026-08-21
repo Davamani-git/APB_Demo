@@ -1,24 +1,16 @@
-(function() {
-  'use strict';
+'use strict';
 
-  angular
-    .module('sharedServices')
-    .service('UserService', UserService);
+angular
+  .module('sharedServices')
+  .service('UserService', UserService);
 
-  UserService.$inject = ['$http'];
+UserService.$inject = ['$http'];
 
-  function UserService($http) {
-    var service = {
-      register: register
-    };
+function UserService($http) {
+  const apiBase = '/api/users';
 
-    return service;
-
-    function register(user) {
-      return $http.post('/api/users/register', user)
-        .then(function(response) {
-          return response.data;
-        });
-    }
-  }
-})();
+  this.register = function register(userPayload) {
+    return $http.post(apiBase + '/register', userPayload)
+      .then(response => response.data);
+  };
+}

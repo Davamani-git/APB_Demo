@@ -1,45 +1,23 @@
-(function() {
-  'use strict';
+'use strict';
 
-  angular
-    .module('sharedServices')
-    .service('RbacService', RbacService);
+angular
+  .module('sharedServices')
+  .service('RbacService', RbacService);
 
-  RbacService.$inject = ['$http'];
+RbacService.$inject = ['$http'];
 
-  function RbacService($http) {
-    var currentRoles = [];
-    var permissionsCache = {};
+function RbacService($http) {
+  const apiBase = '/api/rbac';
 
-    var service = {
-      loadRolesForUser: loadRolesForUser,
-      hasRole: hasRole,
-      hasPermission: hasPermission
-    };
+  this.getRolesForUser = function getRolesForUser(userId) {
+    return $http.get(apiBase + '/roles', { params: { userId: userId } })
+      .then(response => response.data);
+  };
 
-    return service;
-
-    function loadRolesForUser(userId) {
-      return $http.get('/api/rbac/roles', { params: { userId: userId } })
-        .then(function(response) {
-          currentRoles = response.data.roles || [];
-          permissionsCache = response.data.permissionsByRole || {};
-          return {
-            roles: currentRoles,
-            permissionsByRole: permissionsCache
-          };
-        });
+  this.hasRole = function hasRole(sessionRoles, requiredRole) {
+    if (!Array.isArray(sessionRoles)) {
+      return false;
     }
-
-    function hasRole(role) {
-      return currentRoles.indexOf(role) !== -1;
-    }
-
-    function hasPermission(permission) {
-      return currentRoles.some(function(role) {
-        var rolePermissions = permissionsCache[role] || [];
-        return rolePermissions.indexOf(permission) !== -1;
-      });
-    }
-  }
-})();
+    return sessionRoles.indexOf(requiredRole) !== -1;
+  };
+}

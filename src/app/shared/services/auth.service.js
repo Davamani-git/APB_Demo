@@ -1,35 +1,44 @@
 'use strict';
 
-angular.module('sharedServices')
-  .service('AuthService', ['$http', '$window', function($http, $window) {
-    var API_BASE = '/api/auth';
-    var currentUser = null;
+angular
+  .module('sharedServices')
+  .service('AuthService', AuthService);
 
-    this.login = function(credentials) {
-      return $http.post(API_BASE + '/login', credentials)
-        .then(function(response) {
-          var data = response.data;
-          if (data && data.token) {
-            $window.localStorage.setItem('auth_token', data.token);
-          }
-          currentUser = data.user || null;
-          return currentUser;
-        });
-    };
+AuthService.$inject = ['$http', '$window'];
 
-    this.logout = function() {
-      $window.localStorage.removeItem('auth_token');
-      currentUser = null;
-    };
+function AuthService($http, $window) {
+  const apiBase = '/api/auth';
+  const tokenKey = 'auth_token';
+  const rolesKey = 'auth_roles';
 
-    this.getCurrentUser = function() {
-      if (currentUser) {
-        return currentUser;
-      }
-      var token = $window.localStorage.getItem('auth_token');
-      if (!token) {
-        return null;
-      }
-      return currentUser;
-    };
-  }]);
+  this.login = function login(email, password) {
+    return $http.post(apiBase + '/login', { email: email, password: password })
+      .then(response => {
+        const data = response.data || {};
+        if (data.token) {
+          $window.localStorage.setItem(tokenKey, data.token);
+        }
+        if (Array.isArray(data.roles)) {
+          $window.localStorage.setItem(rolesKey, JSON.stringify(data.roles));
+        }
+        return data;
+      });
+  };
+
+  this.getToken = function getToken() {
+    return $window.localStorage.getItem(tokenKey);
+  };
+
+  this.getRoles = function getRoles() {
+    const raw = $window.localStorage.getItem(rolesKey);
+    if (!raw) {
+      return [];
+    }
+
+    try {
+      return JSON.parse(raw);
+    } catch (e) {
+      return [];
+    }
+  };
+}

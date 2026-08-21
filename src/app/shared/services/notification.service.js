@@ -1,24 +1,16 @@
-(function() {
-  'use strict';
+'use strict';
 
-  angular
-    .module('sharedServices')
-    .service('NotificationService', NotificationService);
+angular
+  .module('sharedServices')
+  .service('NotificationService', NotificationService);
 
-  NotificationService.$inject = ['$http'];
+NotificationService.$inject = ['$http'];
 
-  function NotificationService($http) {
-    var service = {
-      sendRegistrationConfirmation: sendRegistrationConfirmation
-    };
+function NotificationService($http) {
+  const apiBase = '/api/notifications';
 
-    return service;
-
-    function sendRegistrationConfirmation(userId) {
-      return $http.post('/api/notifications/registration-confirmation', { userId: userId })
-        .then(function(response) {
-          return response.data;
-        });
-    }
-  }
-})();
+  this.sendEmailConfirmation = function sendEmailConfirmation(userId) {
+    return $http.post(apiBase + '/email-confirmation', { userId: userId })
+      .then(response => response.data);
+  };
+}

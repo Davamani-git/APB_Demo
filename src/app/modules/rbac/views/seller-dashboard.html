@@ -1,13 +1,11 @@
-<div class="seller-dashboard" ng-cloak>
+<div class="seller-dashboard" role-guard="seller">
   <h1>Seller Dashboard</h1>
+  <nav>
+    <a href="#/seller/inventory">Inventory Management</a>
+    <a href="#/seller/orders">Orders</a>
+  </nav>
 
-  <div role-guard="seller">
-    <h2>Inventory Management</h2>
-    <p>Manage your product inventory, pricing, and availability.</p>
-  </div>
-
-  <div role-guard="admin">
-    <h2>Admin Features</h2>
-    <p>This section is visible only to administrators.</p>
-  </div>
+  <section>
+    <p>Welcome to your seller dashboard. Use the links above to manage your inventory and view orders.</p>
+  </section>
 </div>
