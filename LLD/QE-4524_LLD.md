@@ -1,130 +1,103 @@
-# Low-Level Design (LLD) – Epic QE-4524: User Lifecycle Management
+# QE-4524 – User Lifecycle Management LLD
 
 ## a. Architecture Mapping (brief)
 
-- **User Registration & Profile Management** → `userModule` (AngularJS module), `RegistrationController`, `UserProfileController`, `UserService`, `NotificationService`.
-- **Authentication & Session Handling** → `authModule`, `LoginController`, `AuthService`, `TokenInterceptor`.
-- **Role-Based Access Control (RBAC)** → `rbacModule`, `RbacService`, `RoleGuardDirective`.
-- **Password Reset Workflow** → `authModule`, `PasswordResetController`, `AuthService`, `NotificationService`.
-- **Admin User Management (approve sellers, manage roles)** → `adminModule`, `AdminUserController`, `AdminUserService`.
+- Registration & onboarding → `userLifecycleModule`, `registrationController`, `userService`, `emailService` (AngularJS module, controller, services)
+- Authentication & login → `authController`, `authService`, `sessionService`
+- Role-based access control (RBAC) → `rbacService`, `roleDirective` (show/hide UI by role)
+- Password reset → `passwordResetController`, `authService`, `emailService`
+- User profile & account management → `profileController`, `userService`
 
 **Recommended folder structure**
-- `app/modules/user/` – controllers, services, views for registration/profile.
-- `app/modules/auth/` – login, logout, password reset, token interceptor.
-- `app/modules/admin/` – admin dashboards and user management.
-- `app/shared/services/` – `UserService`, `AuthService`, `NotificationService`, `RbacService`.
-- `app/shared/directives/` – `RoleGuardDirective`, common UI directives.
-- `app/shared/models/` – JS models for `User`, `Role`, `Session`, `PasswordResetToken`.
-- `assets/css/` – module-level styles, responsive layout.
-
----
+- `app/modules/userLifecycle/`
+- `app/controllers/` (e.g., `registrationController.js`, `authController.js`, `profileController.js`, `passwordResetController.js`)
+- `app/services/` (e.g., `userService.js`, `authService.js`, `emailService.js`, `sessionService.js`, `rbacService.js`)
+- `app/directives/` (e.g., `roleDirective.js`)
+- `app/views/` (e.g., `registration.html`, `login.html`, `profile.html`, `password-reset.html`)
+- `assets/css/user.css`
 
 ## b. Component Specifications
 
-| Name                     | Artifact Type      | Responsibility                                             | Key Dependencies                         |
-|--------------------------|--------------------|------------------------------------------------------------|------------------------------------------|
-| userModule               | AngularJS Module   | Bundle user registration and profile features             | `UserService`, `NotificationService`     |
-| authModule               | AngularJS Module   | Bundle authentication, session, and password reset flows  | `AuthService`, `TokenInterceptor`        |
-| adminModule              | AngularJS Module   | Bundle admin user and role management features            | `AdminUserService`, `RbacService`        |
-| rbacModule               | AngularJS Module   | Bundle role and permission handling utilities             | `RbacService`                            |
-| RegistrationController   | Controller         | Handle user registration form, validation, submission     | `UserService`, `NotificationService`     |
-| UserProfileController    | Controller         | Manage user profile view/edit operations                  | `UserService`, `AuthService`             |
-| LoginController          | Controller         | Handle login form, credential submission, error display   | `AuthService`                            |
-| PasswordResetController  | Controller         | Orchestrate password reset request and confirmation flows | `AuthService`, `NotificationService`     |
-| AdminUserController      | Controller         | Admin dashboard for user listing, approvals, role changes | `AdminUserService`, `RbacService`        |
-| UserService              | Service            | CRUD operations on user accounts and profiles             | `$http`, REST `User API`                 |
-| AuthService              | Service            | Login, logout, token handling, lockout and password reset | `$http`, REST `Auth API`                 |
-| AdminUserService         | Service            | Admin-only operations on users and roles                  | `$http`, REST `Admin User API`           |
-| NotificationService      | Service            | Trigger email/SMS notifications via backend APIs          | `$http`, REST `Notification API`         |
-| RbacService              | Service            | Resolve roles/permissions and expose checks to UI         | `AuthService`, REST `RBAC API`           |
-| TokenInterceptor         | HTTP Interceptor   | Attach JWT/session tokens, handle 401/403 globally        | `$http`, `AuthService`                   |
-| RoleGuardDirective       | Directive          | Show/hide elements or routes based on user role          | `RbacService`, `AuthService`             |
-| User                     | JS Model           | Represent user entity in client code                     | N/A                                      |
-| Role                     | JS Model           | Represent role with permissions for RBAC                 | N/A                                      |
-| Session                  | JS Model           | Represent authenticated session/token state              | N/A                                      |
-| PasswordResetToken       | JS Model           | Represent password reset request and token metadata      | N/A                                      |
-
----
+| Name                       | Artifact Type  | Responsibility                                       | Key Dependencies                          |
+|----------------------------|----------------|------------------------------------------------------|-------------------------------------------|
+| `userLifecycleModule`      | AngularJS Module | Configure user lifecycle components & routes         | `ngRoute`, `userService`, `authService`   |
+| `registrationController`   | Controller     | Handle user registration form and submit             | `userService`, `emailService`, `$scope`   |
+| `authController`           | Controller     | Manage login/logout and authentication state         | `authService`, `sessionService`, `$scope` |
+| `profileController`        | Controller     | Display and update user profile and account settings | `userService`, `sessionService`           |
+| `passwordResetController`  | Controller     | Orchestrate password reset request and completion    | `authService`, `emailService`, `$scope`   |
+| `userService`              | Service        | CRUD operations on user entities via REST APIs       | `$http`, `sessionService`                 |
+| `authService`              | Service        | Authentication, token handling, lockout enforcement  | `$http`, `$q`, `sessionService`           |
+| `emailService`             | Service        | Trigger email notifications for registration/reset   | `$http` (notification API)                |
+| `sessionService`           | Service        | Manage JWT/session token and current user context    | `window.localStorage`, `$rootScope`       |
+| `rbacService`             | Service        | Resolve user roles and permissions from server       | `$http`, `sessionService`                 |
+| `roleDirective`            | Directive      | Show/hide DOM elements based on current user role    | `rbacService`, `sessionService`           |
 
 ## c. Data Model (brief)
 
-- **User** (JS object)
-  - `id: String` – unique identifier.
-  - `email: String` – validated email address.
-  - `passwordHash: String` – server-generated password hash (never plain text).
-  - `firstName: String` – given name.
-  - `lastName: String` – family name.
-  - `role: String` – `"buyer" | "seller" | "admin"`.
-  - `status: String` – `"pending" | "active" | "locked" | "disabled"`.
-  - `emailVerified: Boolean` – email confirmation flag.
-  - `createdAt: Date` – account creation timestamp.
-  - `updatedAt: Date` – last profile update timestamp.
+**User**
+- `id`: String (UUID)
+- `email`: String
+- `passwordHash`: String
+- `firstName`: String
+- `lastName`: String
+- `role`: String (`"buyer" | "seller" | "admin"`)
+- `status`: String (`"pending" | "active" | "locked"`)
+- `createdAt`: Date
+- `updatedAt`: Date
 
-- **Role**
-  - `name: String` – role key (`buyer`, `seller`, `admin`).
-  - `permissions: Array<String>` – list of permission identifiers.
+**AuthToken**
+- `token`: String
+- `expiresAt`: Date
+- `userId`: String
+- `roles`: Array<String>
 
-- **Session**
-  - `token: String` – JWT/session token.
-  - `expiresAt: Date` – expiry timestamp.
-  - `userId: String` – associated user id.
-  - `roles: Array<String>` – active roles for session.
-
-- **PasswordResetToken**
-  - `token: String` – reset token value.
-  - `userId: String` – associated user id.
-  - `expiresAt: Date` – expiry time.
-  - `used: Boolean` – flag indicating token consumption.
-
----
+**PasswordResetRequest**
+- `id`: String
+- `userId`: String
+- `resetToken`: String
+- `expiresAt`: Date
+- `used`: Boolean
 
 ## d. Data Flow (one paragraph)
 
-The user initiates registration, login, or password reset via an AngularJS view bound to the relevant controller, which validates form inputs and invokes `UserService` or `AuthService` as appropriate; these services call REST APIs (User, Auth, Admin User, Notification, RBAC) to create or authenticate the user, issue tokens, send email notifications, and resolve role permissions, after which the controller updates scoped models and triggers UI changes (navigation to dashboards, role-based view toggling) using Angular bindings so the browser reflects the latest user/session state.
-
----
+User submits a registration or login form in the Bootstrap-based view, which binds data to the corresponding AngularJS controller; the controller validates input and calls the appropriate service (`userService` for registration, `authService` for login) that issues REST API requests to the backend, receives responses (user record, auth token, role set), updates `sessionService` and scope models, and the view reacts via AngularJS bindings and `roleDirective` to render the appropriate role-based UI while subsequent actions (profile updates, password reset) follow the same View → Controller → Service → API → UI Update cycle.
 
 ## e. Primary Sequence Diagram (ONE only)
 
 ```mermaid
 sequenceDiagram
     participant U as User (Browser)
-    participant V as AngularJS View
-    participant C as LoginController
-    participant S as AuthService
+    participant V as Registration View (AngularJS)
+    participant C as registrationController
+    participant S as userService
     participant A as Auth API
-    participant R as RBAC API
+    participant E as Email API
 
-    U->>V: Enter credentials and click "Login"
-    V->>C: ng-submit(loginForm)
-    C->>S: login(email, password)
-    S->>A: POST /auth/login {email, password}
-    A-->>S: 200 OK {token, userId}
-    S->>R: GET /rbac/roles?userId
-    R-->>S: 200 OK {roles, permissions}
-    S-->>C: {token, roles, permissions}
-    C->>V: Update session model, redirect to role dashboard
-    V-->>U: Render dashboard with role-based UI
+    U->>V: Fill and submit registration form
+    V->>C: ng-submit(userData)
+    C->>S: registerUser(userData)
+    S->>A: POST /api/users (userData)
+    A-->>S: 201 Created (userId, status=pending)
+    S->>E: POST /api/notifications/registration-confirmation
+    E-->>S: 202 Accepted
+    S-->>C: Registration success (pending confirmation)
+    C-->>V: Show confirmation message & instructions
+    U->>A: Click email confirmation link (GET /api/users/confirm)
+    A-->>V: Redirect to login view with status=active
 ```
-
----
 
 ## f. Implementation Notes (brief)
 
-- Use AngularJS modules per domain (`userModule`, `authModule`, `adminModule`, `rbacModule`) with DI for controllers and services.
-- Implement ES6 classes for services and models, transpiled where needed, while keeping AngularJS DI annotations explicit.
-- Centralize REST calls via `$http`-based services and handle tokens through `TokenInterceptor` attached to `$httpProvider.interceptors`.
-- Use UI-Router or `ngRoute` with route-level guards that consult `AuthService`/`RbacService` for role-based navigation.
-- Ensure forms use AngularJS validation directives with minimal custom directives for reusable input patterns.
-
----
+- Use AngularJS modules and dependency injection to wire controllers, services, and directives for the user lifecycle.
+- Implement services with ES6 classes where appropriate, wrapped in AngularJS service/factory definitions.
+- Use `$http` with a centralized interceptor to attach auth tokens and handle standard API errors.
+- Manage session state (JWT or session token) via `sessionService` using `localStorage` and `$rootScope` events.
+- Apply Bootstrap form components and AngularJS validation directives for responsive registration, login, and profile views.
 
 ## g. Error Handling (ONE line)
 
-Client-side error handling via `$http` interceptor and controller-level promise rejections that surface concise messages in the views.
-
----
+Client-side error handling via `$http` interceptor and controller-level promise rejections with concise user notifications.
 
 ## h. Security Notes (ONE line)
 
-Standard input validation and secure API calls assumed, with enforced account lockout and TLS-backed communication for all auth-related requests.
+Standard input validation, secure TLS REST calls, hashed passwords, account lockout on repeated failures, and compliance with regional data privacy laws assumed.
