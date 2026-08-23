@@ -2,11 +2,13 @@
 
 ## a. Architecture Mapping
 
-- **Transaction Management Service** → AngularJS Service (transactionManagementService.js) - Orchestrates transaction retrieval and filtering
-- **Transaction Data Service** → AngularJS Factory (transactionDataFactory.js) - REST API calls for transaction data
-- **Credit Card Service** → AngularJS Factory (creditCardFactory.js) - Retrieves card metadata for transaction association
-- **User Transaction UI** → AngularJS Controller (transactionController.js) + View (transactions.html) + Directive (transactionList.directive.js)
-- **Main Application** → AngularJS Module (creditCardApp.module.js)
+- **Transaction Module** → AngularJS Module (`app.transactions`)
+- **Transaction UI** → AngularJS Controller (`TransactionController`) + HTML Template (`transactions.html`)
+- **Transaction Management Service** → AngularJS Service (`TransactionService`) for business logic and API orchestration
+- **Transaction Data Service** → AngularJS Factory (`TransactionDataFactory`) for transaction API integration
+- **Credit Card Service** → AngularJS Factory (`CreditCardFactory`) for card association
+- **Filter Component** → AngularJS Directive (`transactionFilter`) for filter UI
+- **Transaction List Component** → AngularJS Directive (`transactionList`) for displaying paginated transactions
 
 **Recommended Folder Structure:**
 ```
@@ -14,24 +16,21 @@ app/
 ├── modules/
 │   └── transactions/
 │       ├── controllers/
-│       │   └── transactionController.js
+│       │   └── TransactionController.js
 │       ├── services/
-│       │   └── transactionManagementService.js
+│       │   └── TransactionService.js
+│       ├── factories/
+│       │   ├── TransactionDataFactory.js
+│       │   └── CreditCardFactory.js
 │       ├── directives/
-│       │   ├── transactionList.directive.js
-│       │   └── transactionFilter.directive.js
+│       │   ├── transactionFilter.js
+│       │   └── transactionList.js
 │       └── views/
 │           ├── transactions.html
-│           └── transactionDetail.html
+│           └── transaction-detail.html
 ├── shared/
-│   ├── factories/
-│   │   ├── transactionDataFactory.js
-│   │   └── creditCardFactory.js
 │   └── services/
-│       └── apiService.js
-├── assets/
-│   ├── css/
-│   └── images/
+│       └── HttpInterceptor.js
 └── app.module.js
 ```
 
@@ -39,58 +38,49 @@ app/
 
 | Component Name | Artifact Type | Responsibility | Key Dependencies |
 |----------------|---------------|----------------|------------------|
-| creditCardApp | Module | Root application module with routing for transaction views | angular, ngRoute, ngResource |
-| transactionController | Controller | Manages transaction list state, pagination, filtering, and detail view navigation | $scope, $routeParams, transactionManagementService |
-| transactionManagementService | Service | Coordinates transaction retrieval, filtering, pagination, and card association logic | $q, transactionDataFactory, creditCardFactory |
-| transactionDataFactory | Factory | REST API calls to Transaction Data Service with pagination and filter parameters | $resource, apiService |
-| creditCardFactory | Factory | REST API calls to Credit Card Service for card metadata | $resource, apiService |
-| transactionList | Directive | Renders paginated transaction list with sorting and filtering UI | None |
-| transactionFilter | Directive | Reusable filter component for date range, amount, category, and card selection | None |
-| apiService | Service | Centralized HTTP interceptor, error handling, and request/response transformation | $http, $q |
+| TransactionController | Controller | Manages transaction list view state, handles pagination, filter changes, and detail view navigation | TransactionService, $scope, $location |
+| TransactionService | Service | Orchestrates transaction retrieval with filters, manages pagination state, joins transaction and card data | TransactionDataFactory, CreditCardFactory, $q |
+| TransactionDataFactory | Factory | Provides REST API methods for fetching paginated and filtered transaction records | $http |
+| CreditCardFactory | Factory | Provides REST API methods for fetching card details to associate with transactions | $http |
+| transactionFilter | Directive | Renders filter UI (date range, card selector, amount range, category) and emits filter change events | None |
+| transactionList | Directive | Displays paginated transaction list with sorting, handles row click for detail view | None |
+| HttpInterceptor | Service | Handles loading states, error responses, and authentication headers | $q, $injector |
 
 ## c. Data Model
 
-**Transaction (JS Object):**
+**Transaction (JavaScript Object):**
 ```javascript
 {
-  transactionId: String,
-  cardId: String,
-  merchantName: String,
-  category: String,
-  amount: Number,
-  currency: String,
-  transactionDate: Date,
-  status: String,
-  description: String
+  transactionId: String,          // Unique transaction identifier
+  cardId: String,                 // Associated card ID
+  cardNumber: String,             // Masked card number (e.g., "****1234")
+  merchantName: String,           // Merchant/vendor name
+  category: String,               // Transaction category
+  amount: Number,                 // Transaction amount
+  currency: String,               // Currency code (e.g., "USD")
+  transactionDate: Date,          // Transaction date/time
+  status: String,                 // Status (e.g., "Posted", "Pending")
+  description: String             // Transaction description
 }
 ```
 
-**TransactionFilter (JS Object):**
+**TransactionFilter (JavaScript Object):**
 ```javascript
 {
-  cardId: String,
-  startDate: Date,
-  endDate: Date,
-  minAmount: Number,
-  maxAmount: Number,
-  category: String,
-  status: String
-}
-```
-
-**PaginationParams (JS Object):**
-```javascript
-{
-  page: Number,
-  pageSize: Number,
-  totalRecords: Number,
-  totalPages: Number
+  cardIds: Array<String>,         // Selected card IDs (empty = all cards)
+  startDate: Date,                // Filter start date
+  endDate: Date,                  // Filter end date
+  minAmount: Number,              // Minimum transaction amount
+  maxAmount: Number,              // Maximum transaction amount
+  category: String,               // Category filter
+  pageNumber: Number,             // Current page (1-indexed)
+  pageSize: Number                // Records per page (default: 50)
 }
 ```
 
 ## d. Data Flow
 
-User navigates to transaction list view → transactions.html loads → transactionController initializes with default pagination (page 1, pageSize 50) and empty filters → Controller calls transactionManagementService.getTransactions(filters, pagination) → Service invokes transactionDataFactory.query() with query parameters → transactionDataFactory makes GET /api/transactions?page=1&pageSize=50 → Backend returns paginated transaction array and total count → Service calls creditCardFactory.getCardById() for each unique cardId to enrich transaction objects with card details → Enriched transactions and pagination metadata returned to controller → Controller updates $scope.transactions and $scope.pagination → transactionList directive renders table with Bootstrap pagination controls → User applies filters via transactionFilter directive → Controller re-invokes service with updated filters → Updated results displayed.
+User navigates to transaction list → TransactionController initializes with default filters (last 30 days, all cards) → Controller calls TransactionService.getTransactions(filter) → TransactionService calls TransactionDataFactory.fetchTransactions() with pagination and filter params → Factory executes $http GET with query parameters to backend API → API returns paginated transaction data (50 records per page) → TransactionService calls CreditCardFactory.getCardDetails() to enrich transactions with card info → Service merges transaction and card data → Enriched transaction array returned to controller → Controller binds to $scope → transactionList directive renders table with Bootstrap styling → User applies filters via transactionFilter directive → Filter change triggers new API call with updated parameters → UI updates with filtered results within 300ms.
 
 ## e. Primary Sequence Diagram
 
@@ -99,48 +89,45 @@ sequenceDiagram
     participant User
     participant TransactionView
     participant TransactionController
-    participant TransactionMgmtService
+    participant TransactionService
     participant TransactionDataFactory
     participant CreditCardFactory
-    participant TransactionAPI
-    participant CreditCardAPI
+    participant API
 
     User->>TransactionView: Navigate to Transactions
-    TransactionView->>TransactionController: Initialize with default params
-    TransactionController->>TransactionMgmtService: getTransactions(filters, pagination)
-    TransactionMgmtService->>TransactionDataFactory: query({page:1, pageSize:50})
-    TransactionDataFactory->>TransactionAPI: GET /api/transactions?page=1&pageSize=50
-    TransactionAPI-->>TransactionDataFactory: Return {transactions[], totalCount}
-    TransactionDataFactory-->>TransactionMgmtService: Transactions array
-    TransactionMgmtService->>CreditCardFactory: getCardById(cardId) for each unique card
-    CreditCardFactory->>CreditCardAPI: GET /api/creditcards/{cardId}
-    CreditCardAPI-->>CreditCardFactory: Return card metadata
-    CreditCardFactory-->>TransactionMgmtService: Card details
-    TransactionMgmtService->>TransactionMgmtService: Enrich transactions with card info
-    TransactionMgmtService-->>TransactionController: Return enriched transactions + pagination
-    TransactionController->>TransactionView: Update $scope
-    TransactionView-->>User: Display transaction list with pagination
+    TransactionView->>TransactionController: Initialize with default filters
+    TransactionController->>TransactionService: getTransactions(filter)
+    TransactionService->>TransactionDataFactory: fetchTransactions(filter, pagination)
+    TransactionDataFactory->>API: GET /api/transactions?filters&page=1&size=50
+    API-->>TransactionDataFactory: Paginated transaction data
+    TransactionDataFactory-->>TransactionService: Transaction array
+    TransactionService->>CreditCardFactory: getCardDetails(cardIds)
+    CreditCardFactory->>API: GET /api/creditcards?ids=...
+    API-->>CreditCardFactory: Card details
+    CreditCardFactory-->>TransactionService: Card data
+    TransactionService->>TransactionService: Merge transaction & card data
+    TransactionService-->>TransactionController: Enriched transactions
+    TransactionController->>TransactionView: Bind to scope
+    TransactionView-->>User: Display transaction list
     User->>TransactionView: Apply filters
-    TransactionView->>TransactionController: onFilterChange(filters)
-    TransactionController->>TransactionMgmtService: getTransactions(newFilters, pagination)
-    Note over TransactionMgmtService,TransactionAPI: Repeat API call with filters
-    TransactionMgmtService-->>TransactionController: Filtered results
-    TransactionController->>TransactionView: Update $scope
-    TransactionView-->>User: Display filtered transactions
+    TransactionView->>TransactionController: Filter changed
+    TransactionController->>TransactionService: getTransactions(newFilter)
+    Note over TransactionService,API: Repeat API call flow
+    TransactionView-->>User: Display filtered results
 ```
 
 ## f. Implementation Notes
 
-- Use $resource with custom query action supporting pagination: `TransactionDataFactory = $resource('/api/transactions', {}, {query: {method: 'GET', isArray: false}})`
-- Implement server-side filtering by passing TransactionFilter object as query params; use ES6 template literals to build query strings
-- Cache card metadata in transactionManagementService using ES6 Map to avoid redundant API calls for same cardId within session
-- Apply AngularJS ng-repeat with track by transactionId for optimal list rendering performance with 10,000 records
-- Use Bootstrap pagination component with AngularJS dirPaginate or custom pagination directive for page navigation
+- Use AngularJS $http with query parameter serialization for filter and pagination parameters in GET requests
+- Implement server-side pagination with page number and page size (default 50 records per page) to handle 10,000+ transactions efficiently
+- Use AngularJS two-way data binding for filter inputs; debounce filter changes by 300ms using $timeout to reduce API calls
+- Leverage Bootstrap table-responsive class for mobile-friendly transaction list display
+- Store filter state in TransactionService to maintain filters across navigation and back-button usage
 
 ## g. Error Handling
 
-HTTP interceptor in apiService catches errors, logs details, displays Bootstrap toast notification with retry option, and returns rejected promise; controller handles rejection with fallback empty state message.
+HTTP interceptor pattern for centralized error handling; API failures display user-friendly error messages via Bootstrap alerts; empty state UI shown when no transactions match filters.
 
 ## h. Security Notes
 
-Standard input validation and secure API calls assumed; transaction data transmitted over HTTPS; sensitive fields (full card numbers) never exposed in API responses.
+Authentication tokens passed via HTTP headers; transaction data encrypted in transit (HTTPS); sensitive card numbers masked in UI and API responses.
