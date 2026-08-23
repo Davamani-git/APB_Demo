@@ -2,14 +2,13 @@
 
 **Epic ID:** QE-4628
 
----
-
 ## a. Architecture Mapping
 
-- **Dashboard UI Component** → AngularJS Module (`creditCardDashboard`) + Controller (`DashboardController`)
-- **API Gateway Integration** → AngularJS Service/Factory (`DashboardApiService`)
-- **KPI Display Logic** → Controller methods + View bindings
-- **Responsive Layout** → HTML5 templates with Bootstrap grid + CSS3 media queries
+- **Dashboard Module** (`app.dashboard`) → AngularJS Module containing all dashboard-related components
+- **Dashboard Controller** (`DashboardController`) → Manages dashboard state and orchestrates KPI data retrieval
+- **Dashboard Service** (`DashboardService`) → Factory handling REST API calls to backend dashboard endpoints
+- **KPI Card Directive** (`kpiCard`) → Reusable directive for rendering individual KPI metrics (spend, limit, available credit, outstanding)
+- **Data Refresh Service** (`DataRefreshService`) → Service managing near-real-time polling/refresh logic
 
 **Recommended Folder Structure:**
 ```
@@ -17,66 +16,38 @@ app/
   modules/
     dashboard/
       controllers/
-        dashboard.controller.js
       services/
-        dashboard-api.service.js
+      directives/
       views/
-        dashboard.html
       dashboard.module.js
-  shared/
-    services/
-      api-gateway.service.js
-  assets/
-    css/
-      dashboard.css
 ```
-
----
 
 ## b. Component Specifications
 
 | Component Name | Artifact Type | Responsibility | Key Dependencies |
 |----------------|---------------|----------------|------------------|
-| creditCardDashboard | Module | Root module for dashboard feature | angular, ngRoute |
-| DashboardController | Controller | Manages dashboard state, fetches KPIs, handles user interactions | DashboardApiService, $scope |
-| DashboardApiService | Factory | Fetches aggregated KPI data from backend via REST API | $http, ApiGatewayService |
-| ApiGatewayService | Service | Centralizes API endpoint configuration and HTTP interceptors | $http |
-| dashboardView | HTML Template | Renders KPI cards (monthly spend, credit limit, available credit, outstanding) with responsive layout | Bootstrap grid, ng-repeat, filters |
-| dashboardDirective | Directive (optional) | Encapsulates KPI card rendering logic for reusability | DashboardController |
-
----
+| DashboardController | Controller | Fetch and bind KPI data to view, handle refresh actions | DashboardService, $scope, $interval |
+| DashboardService | Factory | Execute REST API calls to /api/dashboard/kpis endpoint | $http, $q |
+| kpiCard | Directive | Render individual KPI with label, value, and icon | None |
+| DataRefreshService | Service | Poll backend every 5 seconds for updated KPI data | $interval, DashboardService |
+| DashboardView | HTML Template | Responsive layout displaying four KPI cards in grid | Bootstrap grid classes |
 
 ## c. Data Model
 
-**DashboardKPI (JavaScript Object):**
+**DashboardKPI Object:**
 ```javascript
 {
-  monthlySpend: Number,          // Total spend in current month
-  totalCreditLimit: Number,      // Sum of all card limits
-  availableCredit: Number,       // Total available credit across cards
-  outstandingAmount: Number,     // Total outstanding balance
-  lastUpdated: Date              // Timestamp of last data refresh
+  monthlySpend: Number,        // Total spend in current month
+  totalCreditLimit: Number,    // Sum of all card limits
+  availableCredit: Number,     // Total limit - outstanding
+  outstandingAmount: Number,   // Total balance across cards
+  lastUpdated: Date            // Timestamp of last data refresh
 }
 ```
-
-**CreditCard (JavaScript Object):**
-```javascript
-{
-  cardId: String,
-  cardNumber: String,            // Masked (e.g., "****1234")
-  balance: Number,
-  creditLimit: Number,
-  availableCredit: Number
-}
-```
-
----
 
 ## d. Data Flow
 
-User navigates to the dashboard view, triggering `DashboardController` initialization. The controller invokes `DashboardApiService.getKPIs()`, which sends a GET request to `/api/dashboard/kpis` via `ApiGatewayService`. The backend aggregates data from the Credit Card Data Service and returns a JSON payload containing monthly spend, total credit limit, available credit, and outstanding amount. The controller binds this data to `$scope.kpis`, and AngularJS updates the view to display the four KPI cards in a responsive Bootstrap grid layout.
-
----
+User navigates to the dashboard view, triggering DashboardController initialization. The controller invokes DashboardService.getKPIs(), which sends a GET request to `/api/dashboard/kpis`. The backend Dashboard Service aggregates data from Credit Card Data Service and returns calculated KPIs. DataRefreshService polls the same endpoint every 5 seconds to provide near-real-time updates. Upon receiving the response, the controller updates $scope.kpiData, and Angular's two-way binding refreshes the four kpiCard directives displaying monthly spend, total credit limit, available credit, and outstanding amount in a responsive Bootstrap grid.
 
 ## e. Primary Sequence Diagram
 
@@ -85,40 +56,35 @@ sequenceDiagram
     participant User
     participant DashboardView
     participant DashboardController
-    participant DashboardApiService
-    participant APIGateway
+    participant DashboardService
+    participant API
     participant Backend
-
+    
     User->>DashboardView: Navigate to Dashboard
-    DashboardView->>DashboardController: Initialize controller
-    DashboardController->>DashboardApiService: getKPIs()
-    DashboardApiService->>APIGateway: GET /api/dashboard/kpis
-    APIGateway->>Backend: Fetch aggregated KPI data
-    Backend-->>APIGateway: Return KPI JSON
-    APIGateway-->>DashboardApiService: Return KPI data
-    DashboardApiService-->>DashboardController: Resolve promise with KPIs
-    DashboardController->>DashboardView: Bind $scope.kpis
-    DashboardView-->>User: Display KPI cards (responsive layout)
+    DashboardView->>DashboardController: Initialize
+    DashboardController->>DashboardService: getKPIs()
+    DashboardService->>API: GET /api/dashboard/kpis
+    API->>Backend: Query Credit Card Data
+    Backend-->>API: Return aggregated KPI data
+    API-->>DashboardService: KPI JSON response
+    DashboardService-->>DashboardController: Resolve promise with KPI data
+    DashboardController->>DashboardView: Update $scope.kpiData
+    DashboardView-->>User: Display 4 KPI cards
+    Note over DashboardController,DashboardService: DataRefreshService polls every 5s
 ```
-
----
 
 ## f. Implementation Notes
 
-- Use AngularJS Dependency Injection to inject `DashboardApiService` into `DashboardController`.
-- Leverage ES6 Promises or AngularJS `$q` for asynchronous API calls; handle success/error callbacks.
-- Apply Bootstrap responsive grid classes (`col-xs-*`, `col-md-*`) to KPI cards for mobile/tablet/desktop support.
-- Use AngularJS filters (e.g., `currency`, `number`) for formatting monetary values in the view.
-- Implement periodic data refresh using `$interval` service for near-real-time updates (e.g., every 30 seconds).
-
----
+- Use AngularJS 1.x module pattern with dependency injection for DashboardService and DataRefreshService
+- Implement $http interceptor for global error handling and loading states
+- Leverage Bootstrap responsive grid (col-xs-12 col-sm-6 col-md-3) for KPI card layout across devices
+- Use $interval service for polling; ensure cleanup on $scope.$destroy to prevent memory leaks
+- Apply ES6 arrow functions and const/let in service implementations for cleaner code
 
 ## g. Error Handling
 
-HTTP interceptor in `ApiGatewayService` catches API errors; display user-friendly error messages via AngularJS `$rootScope` broadcast and toast notifications.
-
----
+HTTP interceptor captures API errors, displays user-friendly toast notifications using angular-toastr, and logs errors to console for debugging.
 
 ## h. Security Notes
 
-Standard input validation and secure API calls assumed; ensure HTTPS for all API requests and token-based authentication via HTTP headers.
+Standard input validation and secure API calls assumed; JWT token passed in Authorization header for authenticated requests.
