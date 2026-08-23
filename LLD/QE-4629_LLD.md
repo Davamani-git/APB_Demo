@@ -6,26 +6,33 @@
 
 ## a. Architecture Mapping
 
-- **Multi-Card View UI** → AngularJS Module (`creditCardApp.cardManagement`)
-- **Card Management Controller** → AngularJS Controller (`CardManagementController`)
-- **Card List Component** → AngularJS Directive (`cardList`)
-- **Card Comparison Component** → AngularJS Directive (`cardComparison`)
-- **Card Management Service** → AngularJS Service (`CardManagementService`)
-- **API Integration** → AngularJS Factory (`CardApiFactory`)
+- **Multi-Card View UI** → AngularJS Module (`multiCardManagement`) + Controller (`CardListController`)
+- **Card Management Service Integration** → AngularJS Factory (`CardManagementService`)
+- **Card Comparison Logic** → Controller method (`compareCards`) + View component
+- **Card Details Display** → Directive (`cardDetailsCard`) for reusable card rendering
+- **Responsive Layout** → HTML5 templates with Bootstrap grid + CSS3 flexbox
 
 **Recommended Folder Structure:**
 ```
 app/
-├── modules/
-│   └── card-management/
-│       ├── controllers/
-│       ├── services/
-│       ├── directives/
-│       └── views/
-├── shared/
-│   ├── factories/
-│   └── models/
-└── assets/
+  modules/
+    card-management/
+      controllers/
+        card-list.controller.js
+      services/
+        card-management.service.js
+      directives/
+        card-details-card.directive.js
+      views/
+        card-list.html
+        card-comparison.html
+      card-management.module.js
+  shared/
+    services/
+      api-gateway.service.js
+  assets/
+    css/
+      card-management.css
 ```
 
 ---
@@ -34,34 +41,37 @@ app/
 
 | Component Name | Artifact Type | Responsibility | Key Dependencies |
 |----------------|---------------|----------------|------------------|
-| CardManagementController | Controller | Manage multi-card view state, fetch card portfolio, handle card selection | CardManagementService, $scope |
-| CardManagementService | Service | Retrieve and process multiple card data, perform card-wise spend analysis | CardApiFactory |
-| CardApiFactory | Factory | Execute REST API calls to fetch card details, balances, and usage patterns | $http, $q |
-| cardList | Directive | Render scrollable list of all user credit cards with key details | None |
-| cardComparison | Directive | Display side-by-side card comparison view with limits, balances, and usage | None |
+| multiCardManagement | Module | Root module for multi-card management feature | angular, ngRoute |
+| CardListController | Controller | Manages card list state, fetches all user cards, handles comparison and filtering | CardManagementService, $scope, $filter |
+| CardManagementService | Factory | Retrieves card portfolio data (all cards with details, balances, usage) via REST API | $http, ApiGatewayService |
+| cardDetailsCard | Directive | Reusable component to render individual card details (limit, balance, usage) | None |
+| cardComparisonView | HTML Template | Displays side-by-side card comparison with key metrics | Bootstrap grid, ng-repeat |
+| ApiGatewayService | Service | Centralizes API endpoint configuration and HTTP interceptors | $http |
 
 ---
 
 ## c. Data Model
 
-**CreditCard (JS Object):**
+**CreditCard (JavaScript Object):**
 ```javascript
 {
   cardId: String,
-  cardName: String,
-  cardNumber: String,
+  cardNumber: String,            // Masked (e.g., "****5678")
+  cardType: String,              // e.g., "Visa", "Mastercard"
+  balance: Number,
   creditLimit: Number,
-  currentBalance: Number,
   availableCredit: Number,
-  utilizationPercentage: Number,
-  monthlySpend: Number
+  monthlySpend: Number,
+  lastTransactionDate: Date,
+  usagePercentage: Number        // (balance / creditLimit) * 100
 }
 ```
 
-**CardPortfolio (JS Object):**
+**CardPortfolio (JavaScript Object):**
 ```javascript
 {
-  cards: Array<CreditCard>,
+  userId: String,
+  cards: Array<CreditCard>,      // Array of CreditCard objects
   totalCards: Number
 }
 ```
@@ -70,7 +80,7 @@ app/
 
 ## d. Data Flow
 
-User accesses the multi-card management view, triggering CardManagementController to invoke CardManagementService.getAllCards(). The service calls CardApiFactory to fetch the complete card portfolio via REST API in a single request. The API returns an array of card objects with details, balances, and usage patterns. The service processes the data and returns it to the controller, which binds it to $scope. The view renders the card list using the cardList directive, and users can select cards to view details or trigger the cardComparison directive for side-by-side analysis.
+User navigates to the multi-card management view, triggering `CardListController` initialization. The controller calls `CardManagementService.getAllCards()`, which sends a GET request to `/api/cards/portfolio` via `ApiGatewayService`. The backend queries the Credit Card Data Service and returns a JSON array of all user cards with details, balances, and usage patterns. The controller binds this data to `$scope.cards` and calculates derived metrics (e.g., usage percentage). The view renders individual card details using the `cardDetailsCard` directive. When the user selects cards for comparison, the controller filters selected cards and updates the comparison view to display side-by-side metrics.
 
 ---
 
@@ -79,46 +89,46 @@ User accesses the multi-card management view, triggering CardManagementControlle
 ```mermaid
 sequenceDiagram
     participant User
-    participant CardManagementView
-    participant CardManagementController
+    participant CardListView
+    participant CardListController
     participant CardManagementService
-    participant CardApiFactory
-    participant API
+    participant APIGateway
+    participant Backend
 
-    User->>CardManagementView: Access Multi-Card View
-    CardManagementView->>CardManagementController: Initialize
-    CardManagementController->>CardManagementService: getAllCards()
-    CardManagementService->>CardApiFactory: fetchCardPortfolio()
-    CardApiFactory->>API: GET /api/creditcards/all
-    API-->>CardApiFactory: Card Portfolio Array
-    CardApiFactory-->>CardManagementService: Parsed Card Data
-    CardManagementService-->>CardManagementController: CardPortfolio Object
-    CardManagementController->>CardManagementView: Bind to $scope.cards
-    CardManagementView-->>User: Display Card List
-    User->>CardManagementView: Select Cards for Comparison
-    CardManagementView->>CardManagementController: compareCards(selectedCards)
-    CardManagementController->>CardManagementView: Update Comparison View
-    CardManagementView-->>User: Display Card Comparison
+    User->>CardListView: Navigate to Multi-Card View
+    CardListView->>CardListController: Initialize controller
+    CardListController->>CardManagementService: getAllCards()
+    CardManagementService->>APIGateway: GET /api/cards/portfolio
+    APIGateway->>Backend: Fetch all user cards
+    Backend-->>APIGateway: Return card portfolio JSON
+    APIGateway-->>CardManagementService: Return card array
+    CardManagementService-->>CardListController: Resolve promise with cards
+    CardListController->>CardListView: Bind $scope.cards
+    CardListView-->>User: Display card list with details
+    User->>CardListView: Select cards for comparison
+    CardListView->>CardListController: compareCards(selectedCards)
+    CardListController->>CardListView: Update comparison view
+    CardListView-->>User: Display side-by-side comparison
 ```
 
 ---
 
 ## f. Implementation Notes
 
-- Use AngularJS module with dependency injection for CardManagementService and CardApiFactory
-- Implement ES6 array methods (map, filter, reduce) for client-side card-wise spend analysis and sorting
-- Use $http service for single API call to fetch all cards; cache response with $cacheFactory for performance
-- Apply Bootstrap responsive grid and card components for consistent card display across devices
-- Use ng-repeat with track by cardId for efficient list rendering of up to 30 cards
+- Use AngularJS Dependency Injection to inject `CardManagementService` into `CardListController`.
+- Leverage `ng-repeat` with `track by cardId` for efficient rendering of card lists.
+- Implement `cardDetailsCard` directive with isolated scope to encapsulate card rendering logic and enable reusability.
+- Use ES6 array methods (`.filter()`, `.map()`) for card comparison and filtering logic in the controller.
+- Apply Bootstrap responsive utilities and CSS3 flexbox for adaptive card grid layout across devices.
 
 ---
 
 ## g. Error Handling
 
-HTTP interceptor-based error handling with try/catch blocks; display user notifications for API failures or empty card portfolio scenarios.
+HTTP interceptor in `ApiGatewayService` catches API errors; display user-friendly error messages via AngularJS toast notifications and fallback UI states.
 
 ---
 
 ## h. Security Notes
 
-Standard input validation and secure API calls assumed; sensitive card data (full card numbers) masked in UI display.
+Standard input validation and secure API calls assumed; mask sensitive card numbers in UI and ensure token-based authentication for API requests.
