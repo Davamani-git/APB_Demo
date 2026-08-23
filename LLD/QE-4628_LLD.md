@@ -6,11 +6,11 @@
 
 ## a. Architecture Mapping
 
-- **Dashboard Service** → AngularJS Service (`dashboardService.js`) - orchestrates data fetching and KPI aggregation
-- **Credit Card Data Service** → AngularJS Factory (`creditCardDataFactory.js`) - handles REST API calls for card data
-- **KPI Calculation Engine** → AngularJS Service (`kpiCalculationService.js`) - performs client-side calculations for metrics
-- **User Interface** → AngularJS Controller (`dashboardController.js`) + View (`dashboard.html`) - renders KPIs and handles user interactions
-- **Dashboard Module** → AngularJS Module (`app.dashboard`) - encapsulates all dashboard-related components
+- **Dashboard UI Component** → AngularJS Module (`creditCardApp.dashboard`)
+- **Dashboard Controller** → AngularJS Controller (`DashboardController`)
+- **KPI Display Components** → AngularJS Directives (`kpiCard`, `creditSummary`)
+- **Dashboard Service** → AngularJS Service (`DashboardService`)
+- **API Integration** → AngularJS Factory (`CreditCardApiFactory`)
 
 **Recommended Folder Structure:**
 ```
@@ -18,62 +18,39 @@ app/
 ├── modules/
 │   └── dashboard/
 │       ├── controllers/
-│       │   └── dashboardController.js
 │       ├── services/
-│       │   ├── dashboardService.js
-│       │   └── kpiCalculationService.js
-│       ├── factories/
-│       │   └── creditCardDataFactory.js
-│       ├── views/
-│       │   └── dashboard.html
-│       └── dashboard.module.js
+│       ├── directives/
+│       └── views/
 ├── shared/
+│   ├── factories/
 │   └── models/
-│       └── creditCard.model.js
 └── assets/
-    └── css/
-        └── dashboard.css
 ```
 
 ---
 
 ## b. Component Specifications
 
-| Name | Artifact Type | Responsibility | Key Dependencies |
-|------|---------------|----------------|------------------|
-| `app.dashboard` | Module | Root module for dashboard feature | `ngRoute`, `app.shared` |
-| `dashboardController` | Controller | Manages dashboard view state, triggers data fetch, exposes KPIs to view | `dashboardService`, `$scope` |
-| `dashboardService` | Service | Orchestrates data retrieval and KPI computation, caches results | `creditCardDataFactory`, `kpiCalculationService`, `$q` |
-| `creditCardDataFactory` | Factory | Executes REST API calls to fetch credit card data | `$http`, `API_ENDPOINTS` |
-| `kpiCalculationService` | Service | Aggregates monthly spend, calculates available credit, computes totals | None |
-| `dashboard.html` | View/Template | Displays KPI cards (monthly spend, total limit, available credit, outstanding), responsive layout | Bootstrap grid, AngularJS directives |
+| Component Name | Artifact Type | Responsibility | Key Dependencies |
+|----------------|---------------|----------------|------------------|
+| DashboardController | Controller | Orchestrate dashboard view, fetch and bind KPI data to scope | DashboardService, $scope |
+| DashboardService | Service | Aggregate and calculate KPIs (monthly spend, total limit, available credit, outstanding) | CreditCardApiFactory |
+| CreditCardApiFactory | Factory | Handle REST API calls to backend credit card data service | $http, $q |
+| kpiCard | Directive | Render individual KPI metric card with value and label | None |
+| creditSummary | Directive | Display consolidated credit summary view | None |
 
 ---
 
 ## c. Data Model
 
-**CreditCard Model** (`creditCard.model.js`):
+**CreditCardPortfolio (JS Object):**
 ```javascript
 {
-  cardId: String,
-  cardNumber: String,
-  cardType: String,
-  creditLimit: Number,
-  outstandingAmount: Number,
-  availableCredit: Number,
   monthlySpend: Number,
-  lastUpdated: Date
-}
-```
-
-**DashboardKPI Model** (in-memory):
-```javascript
-{
   totalCreditLimit: Number,
-  totalAvailableCredit: Number,
-  totalOutstanding: Number,
-  totalMonthlySpend: Number,
-  cardCount: Number
+  availableCredit: Number,
+  outstandingAmount: Number,
+  lastUpdated: Date
 }
 ```
 
@@ -81,7 +58,7 @@ app/
 
 ## d. Data Flow
 
-User navigates to dashboard → `dashboard.html` loads and `dashboardController` initializes → Controller calls `dashboardService.getKPIs()` → Service invokes `creditCardDataFactory.fetchAllCards()` which makes GET request to `/api/creditcards` → API returns array of credit card objects → `kpiCalculationService` aggregates data (sums monthly spend, credit limits, outstanding amounts; calculates available credit as limit minus outstanding) → Computed KPIs are returned to controller → Controller binds KPIs to `$scope` → View updates with KPI cards displaying financial metrics in responsive Bootstrap grid.
+User navigates to the dashboard view, triggering DashboardController initialization. The controller invokes DashboardService.getPortfolioKPIs(), which calls CreditCardApiFactory to fetch card balances, limits, and transaction data via REST API. The backend returns aggregated KPI data, which the service processes and returns to the controller. The controller binds the KPI data to $scope, and AngularJS two-way binding updates the view, rendering KPI cards through directives with real-time metrics.
 
 ---
 
@@ -90,45 +67,42 @@ User navigates to dashboard → `dashboard.html` loads and `dashboardController`
 ```mermaid
 sequenceDiagram
     participant User
-    participant View as dashboard.html
-    participant Ctrl as dashboardController
-    participant DS as dashboardService
-    participant Factory as creditCardDataFactory
-    participant API as REST API
-    participant KPI as kpiCalculationService
+    participant DashboardView
+    participant DashboardController
+    participant DashboardService
+    participant CreditCardApiFactory
+    participant API
 
-    User->>View: Navigate to Dashboard
-    View->>Ctrl: Initialize Controller
-    Ctrl->>DS: getKPIs()
-    DS->>Factory: fetchAllCards()
-    Factory->>API: GET /api/creditcards
-    API-->>Factory: [creditCard1, creditCard2, ...]
-    Factory-->>DS: creditCards[]
-    DS->>KPI: calculateKPIs(creditCards)
-    KPI-->>DS: dashboardKPIs
-    DS-->>Ctrl: dashboardKPIs
-    Ctrl->>View: $scope.kpis = dashboardKPIs
-    View-->>User: Display KPI Cards
+    User->>DashboardView: Navigate to Dashboard
+    DashboardView->>DashboardController: Initialize
+    DashboardController->>DashboardService: getPortfolioKPIs()
+    DashboardService->>CreditCardApiFactory: fetchCreditCardData()
+    CreditCardApiFactory->>API: GET /api/creditcards/portfolio
+    API-->>CreditCardApiFactory: Portfolio KPI Data
+    CreditCardApiFactory-->>DashboardService: Parsed Data
+    DashboardService-->>DashboardController: KPI Object
+    DashboardController->>DashboardView: Bind to $scope
+    DashboardView-->>User: Display KPI Cards
 ```
 
 ---
 
 ## f. Implementation Notes
 
-- Use AngularJS dependency injection to inject `dashboardService` into controller and `creditCardDataFactory` + `kpiCalculationService` into service
-- Implement `creditCardDataFactory` using `$http` service with promise-based API calls; cache results using `$cacheFactory` for performance
-- Use ES6 arrow functions and const/let in services; leverage Array.reduce() for KPI aggregation in `kpiCalculationService`
-- Apply Bootstrap responsive grid (col-xs/sm/md/lg) in `dashboard.html` to ensure mobile/tablet/desktop compatibility
-- Bind KPIs to view using AngularJS expressions ({{ }}) and ng-bind for dynamic updates
+- Use AngularJS module pattern with dependency injection for DashboardService and CreditCardApiFactory
+- Implement ES6 classes for service logic with arrow functions for cleaner promise handling
+- Use $http service with promise-based API calls; handle responses with .then() and .catch()
+- Apply Bootstrap grid system (col-md-3, col-sm-6) for responsive KPI card layout across devices
+- Leverage AngularJS $interval for periodic KPI refresh to support near-real-time updates
 
 ---
 
 ## g. Error Handling
 
-HTTP interceptor captures API errors; display user-friendly error messages via Bootstrap alerts in dashboard view; log errors to console for debugging.
+HTTP interceptor captures API errors; display user-friendly toast notifications using AngularJS service for network failures or data unavailability.
 
 ---
 
 ## h. Security Notes
 
-Standard input validation and secure API calls assumed; ensure API endpoints use authentication tokens passed via HTTP headers.
+Standard input validation and secure API calls assumed; API endpoints protected with authentication tokens passed via HTTP headers.
