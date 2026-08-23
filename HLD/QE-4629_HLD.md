@@ -1,38 +1,37 @@
 #### 1. High-Level Design
 
-- **Summary:** This epic provides users with the ability to manage and visualize multiple credit cards within a unified interface. Users can view all cards with their details, perform card-wise spend analysis, compare cards, and track individual card limits, balances, and usage patterns.
+- **Summary:** This epic enables users to manage and view multiple credit cards within a unified interface. Users can track card-specific information including individual limits, balances, and usage patterns, with functionality to compare cards and analyze card-wise spending from a consolidated view.
 
 - **Component Flow:**
 
 ```mermaid
 flowchart TD
-    A["User Interface"]
-    B["Multi-Card Management Service"]
-    C["Credit Card Data Service"]
-    D["Card Comparison Module"]
-    E["Spend Analysis Module"]
-    F["Data Repository"]
+    A["User Interface Multi-Card View"]
+    B["API Gateway"]
+    C["Card Management Service"]
+    D["Credit Card Data Service"]
+    E["Database"]
     A --> B
     B --> C
-    B --> D
-    B --> E
-    C --> F
-    D --> F
-    E --> F
+    C --> D
+    D --> E
+    D --> C
+    C --> B
+    B --> A
 ```
 
 - **Integration Points:** 
-  - Upstream: Credit Card Data Service (fetches card details and balances for multiple cards)
-  - Downstream: User Interface for card display and comparison features
+  - Downstream: Credit card data service (to fetch card details and balances for multiple cards)
+  - No upstream systems explicitly mentioned in the epic
 
 - **Key Assumptions:** 
-  - Card data is normalized and standardized across different card types for consistent display
-  - System supports scalable card portfolio (performance maintained as number of cards increases)
+  - The system will support a reasonable upper limit of cards per user (e.g., up to 20-30 cards) without performance degradation
+  - Card comparison functionality uses client-side rendering with data fetched in a single API call
 
 - **NFR Highlights:** System must support viewing and managing multiple credit cards simultaneously; Interface must maintain performance with increasing number of cards
 
-- **Data Flow:** User accesses multi-card view → Multi-Card Management Service requests card portfolio from Credit Card Data Service → Service retrieves all cards associated with user from Data Repository → Card Comparison Module and Spend Analysis Module process card-specific metrics → Aggregated card data with individual details, balances, and usage patterns is returned → UI renders unified view with card comparison and analysis capabilities
+- **Data Flow:** User accesses the multi-card management interface, which requests card portfolio data through the API Gateway to the Card Management Service. The service queries the Credit Card Data Service to retrieve details, balances, and usage patterns for all user cards from the Database. The aggregated multi-card data is returned and displayed in the UI, enabling users to view individual card details, perform card-wise spend analysis, and compare cards side-by-side.
 
 #### 2. Validation Report
 
-- **Requirements Coverage:** The design addresses all scope elements including multiple credit card display, card-wise spend analysis, individual card details view, and card comparison functionality. The modular architecture with dedicated comparison and analysis modules ensures scalability as specified in NFRs, supporting performance maintenance with increasing card volumes.
+- **Requirements Coverage:** The design addresses all scope items including multiple credit card display, card-wise spend analysis, individual card details view, and card comparison functionality. The architecture supports scalability for multiple cards as specified in the NFRs and properly integrates with the credit card data service dependency.
