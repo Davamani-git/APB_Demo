@@ -8,9 +8,9 @@
 
 - **Multi-Card Management Service** → AngularJS Service (`multiCardService.js`) - orchestrates card portfolio retrieval and management
 - **Credit Card Data Service** → AngularJS Factory (`creditCardDataFactory.js`) - handles REST API calls for multiple card data
-- **Card Comparison Module** → AngularJS Service (`cardComparisonService.js`) - performs side-by-side card comparison logic
-- **Spend Analysis Module** → AngularJS Service (`spendAnalysisService.js`) - calculates card-wise spending metrics
-- **User Interface** → AngularJS Controller (`multiCardController.js`) + View (`multi-card-view.html`) - manages card display and interactions
+- **Card Comparison Module** → AngularJS Service (`cardComparisonService.js`) - performs side-by-side card comparisons
+- **Spend Analysis Module** → AngularJS Service (`spendAnalysisService.js`) - computes card-wise spend metrics
+- **User Interface** → AngularJS Controller (`multiCardController.js`) + View (`multi-card-view.html`) - displays card list and comparison UI
 - **Multi-Card Module** → AngularJS Module (`app.multiCard`) - encapsulates multi-card management components
 
 **Recommended Folder Structure:**
@@ -40,47 +40,47 @@ app/
 
 ## b. Component Specifications
 
-| Component Name | Artifact Type | Responsibility | Key Dependencies |
-|---|---|---|---|
+| Name | Artifact Type | Responsibility | Key Dependencies |
+|------|---------------|----------------|------------------|
 | `app.multiCard` | Module | Root module for multi-card management feature | `ngRoute`, `app.shared` |
-| `multiCardController` | Controller | Manages card portfolio view, triggers comparison and analysis actions | `multiCardService`, `$scope` |
-| `multiCardService` | Service | Orchestrates fetching card portfolio and delegates to comparison/analysis modules | `creditCardDataFactory`, `cardComparisonService`, `spendAnalysisService` |
-| `creditCardDataFactory` | Factory | Fetches all user credit cards via REST API (`/api/creditcards/portfolio`) | `$http`, `$q` |
-| `cardComparisonService` | Service | Compares selected cards on limit, balance, APR, rewards, and usage metrics | None |
-| `spendAnalysisService` | Service | Calculates card-wise monthly spend, utilization rate, and spending trends | None |
-| `cardTileDirective` | Directive | Reusable card tile component displaying individual card details | `multiCardController` |
+| `multiCardController` | Controller | Manages card portfolio view state, triggers comparison and analysis | `multiCardService`, `cardComparisonService`, `$scope` |
+| `multiCardService` | Service | Fetches and manages user's credit card portfolio | `creditCardDataFactory`, `$q` |
+| `creditCardDataFactory` | Factory | Executes REST API calls to retrieve multiple card details | `$http`, `API_ENDPOINTS` |
+| `cardComparisonService` | Service | Compares selected cards on key metrics (limit, balance, APR, rewards) | None |
+| `spendAnalysisService` | Service | Calculates card-wise spend totals and usage percentages | None |
+| `cardTile.directive` | Directive | Reusable card display component showing individual card details | None |
+| `multi-card-view.html` | View/Template | Displays card grid, comparison table, and analysis charts | Bootstrap, `cardTile` directive |
 
 ---
 
 ## c. Data Model
 
-**CreditCard Model:**
+**CreditCard Model** (`creditCard.model.js`):
 ```javascript
 {
   cardId: String,
-  cardNumber: String (masked),
+  cardNumber: String,
   cardType: String,
   issuer: String,
   creditLimit: Number,
   currentBalance: Number,
   availableCredit: Number,
   apr: Number,
-  rewardsPoints: Number,
+  rewardsProgram: String,
   monthlySpend: Number,
-  utilizationRate: Number,
-  lastTransactionDate: Date
+  usagePercentage: Number
 }
 ```
 
-**CardComparison Model:**
+**CardComparison Model** (in-memory):
 ```javascript
 {
-  cards: [CreditCard],
+  cards: Array<CreditCard>,
   comparisonMetrics: {
-    limits: [Number],
-    balances: [Number],
-    aprs: [Number],
-    utilizationRates: [Number]
+    limits: Array<Number>,
+    balances: Array<Number>,
+    aprs: Array<Number>,
+    rewards: Array<String>
   }
 }
 ```
@@ -89,7 +89,7 @@ app/
 
 ## d. Data Flow
 
-User navigates to multi-card view → `multiCardController` initializes and calls `multiCardService.getCardPortfolio()` → `multiCardService` invokes `creditCardDataFactory.fetchPortfolio()` which makes GET request to `/api/creditcards/portfolio` → API returns normalized array of all user credit cards → `spendAnalysisService.analyzeCardSpending(cards)` calculates card-wise metrics and utilization rates → User selects cards for comparison → `cardComparisonService.compareCards(selectedCards)` generates side-by-side comparison data → Controller binds card portfolio and comparison results to `$scope` → View renders card tiles using `cardTileDirective` and displays comparison table.
+User navigates to multi-card view → `multi-card-view.html` loads and `multiCardController` initializes → Controller calls `multiCardService.getCardPortfolio()` → Service invokes `creditCardDataFactory.fetchAllCards()` which makes GET request to `/api/creditcards/portfolio` → API returns array of all user's credit cards → `spendAnalysisService` computes card-wise spend and usage percentages → Controller binds card array to `$scope` → View renders card grid using `cardTile` directive for each card → User selects cards for comparison → Controller calls `cardComparisonService.compareCards(selectedCards)` → Comparison metrics are computed and displayed in table format.
 
 ---
 
@@ -98,51 +98,49 @@ User navigates to multi-card view → `multiCardController` initializes and call
 ```mermaid
 sequenceDiagram
     participant User
-    participant MultiCardView
-    participant MultiCardController
-    participant MultiCardService
-    participant CreditCardDataFactory
-    participant SpendAnalysisService
-    participant CardComparisonService
-    participant API
+    participant View as multi-card-view.html
+    participant Ctrl as multiCardController
+    participant MCS as multiCardService
+    participant Factory as creditCardDataFactory
+    participant API as REST API
+    participant CCS as cardComparisonService
 
-    User->>MultiCardView: Access Multi-Card View
-    MultiCardView->>MultiCardController: Initialize
-    MultiCardController->>MultiCardService: getCardPortfolio()
-    MultiCardService->>CreditCardDataFactory: fetchPortfolio()
-    CreditCardDataFactory->>API: GET /api/creditcards/portfolio
-    API-->>CreditCardDataFactory: [CreditCard[]]
-    CreditCardDataFactory-->>MultiCardService: [CreditCard[]]
-    MultiCardService->>SpendAnalysisService: analyzeCardSpending(cards)
-    SpendAnalysisService-->>MultiCardService: [Card Metrics]
-    MultiCardService-->>MultiCardController: Card Portfolio + Metrics
-    MultiCardController->>MultiCardView: Render Card Tiles
-    User->>MultiCardView: Select Cards for Comparison
-    MultiCardView->>MultiCardController: compareCards(selectedCards)
-    MultiCardController->>CardComparisonService: compareCards(selectedCards)
-    CardComparisonService-->>MultiCardController: CardComparison
-    MultiCardController->>MultiCardView: Display Comparison Table
-    MultiCardView-->>User: Show Comparison Results
+    User->>View: Navigate to Multi-Card View
+    View->>Ctrl: Initialize Controller
+    Ctrl->>MCS: getCardPortfolio()
+    MCS->>Factory: fetchAllCards()
+    Factory->>API: GET /api/creditcards/portfolio
+    API-->>Factory: [card1, card2, card3, ...]
+    Factory-->>MCS: creditCards[]
+    MCS-->>Ctrl: creditCards[]
+    Ctrl->>View: $scope.cards = creditCards
+    View-->>User: Display Card Grid
+    User->>View: Select Cards for Comparison
+    View->>Ctrl: compareSelectedCards()
+    Ctrl->>CCS: compareCards(selectedCards)
+    CCS-->>Ctrl: comparisonData
+    Ctrl->>View: $scope.comparison = comparisonData
+    View-->>User: Display Comparison Table
 ```
 
 ---
 
 ## f. Implementation Notes
 
-- Use AngularJS DI to inject services into controllers; leverage `$http` with promise chaining for API calls
-- Implement `cardTileDirective` as isolated scope directive with two-way binding for card selection state
-- Use ES6 array methods (`.map()`, `.filter()`, `.reduce()`) in analysis and comparison services for efficient data processing
-- Apply Bootstrap card components and responsive grid for scalable card display; use `ng-repeat` with `track by cardId` for performance
-- Implement lazy loading or pagination if card count exceeds threshold (e.g., >20 cards) to maintain UI performance
+- Use AngularJS dependency injection to wire all services and factories into controllers
+- Implement `cardTile` directive with isolated scope for reusability; pass card object as attribute
+- Use ES6 Array methods (map, filter, reduce) in `spendAnalysisService` and `cardComparisonService` for data processing
+- Apply Bootstrap grid and card components for responsive multi-card layout; use ng-repeat to iterate over card array
+- Implement card selection using ng-model with checkboxes; store selected cards in controller scope array
 
 ---
 
 ## g. Error Handling
 
-HTTP interceptor with global error handler; display toast notifications for API failures and fallback to cached data if available.
+HTTP interceptor handles API failures; display error notification using Bootstrap alert component; implement try/catch in service methods.
 
 ---
 
 ## h. Security Notes
 
-Standard input validation and secure API calls assumed; mask sensitive card data (full card numbers) in UI and API responses.
+Standard input validation and secure API calls assumed; mask sensitive card numbers in UI (show last 4 digits only).
