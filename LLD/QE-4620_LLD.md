@@ -1,47 +1,42 @@
 # Low-Level Design: Multi-Card Management and Visualization
 
 **Epic ID:** QE-4620  
-**Technology Stack:** AngularJS 1.x, JavaScript ES6, HTML5, CSS3, Bootstrap, REST APIs, MVC Architecture
+**Technology Stack:** AngularJS (1.x), JavaScript ES6, HTML5, CSS3, Bootstrap, REST APIs, MVC Architecture
 
 ---
 
 ## a. Architecture Mapping
 
-| HLD Component | AngularJS Artifact | Mapping |
-|---------------|-------------------|----------|
-| User Interface | Module: `multiCardModule` | Root module for multi-card management feature |
-| User Interface | Controller: `MultiCardDashboardController` | Manages card portfolio display and user interactions |
-| User Interface | Controller: `CardSpendAnalysisController` | Handles card-wise spend analysis view |
-| Multi-Card Management Service | Service: `MultiCardService` | Orchestrates card data retrieval and aggregation |
-| Credit Card Data Service | Service: `CreditCardDataService` | Fetches card information and metadata via REST API |
-| User Service | Service: `UserAuthService` | Validates user authentication and card associations |
-| Analytics Engine | Service: `CardAnalyticsService` | Aggregates and processes card-wise spend data |
-| User Interface | Directive: `cardTile` | Reusable component for displaying individual card details |
-| User Interface | Directive: `spendComparisonChart` | Renders card-wise spend comparison visualization |
+- **Multi-Card Management Service** → AngularJS Service (`multiCardService.js`) - Orchestrates card retrieval and aggregation
+- **Credit Card Data Service** → AngularJS Factory (`creditCardDataFactory.js`) - Handles REST API calls for card data
+- **User Service** → AngularJS Service (`userService.js`) - Manages user authentication and card associations
+- **Analytics Engine** → AngularJS Service (`analyticsService.js`) - Aggregates and processes spend data per card
+- **User Interface** → AngularJS Controller (`cardPortfolioController.js`) + View (`card-portfolio.html`) - Displays consolidated card dashboard
+- **Card Comparison Component** → AngularJS Directive (`cardComparison`) - Enables side-by-side card comparison
 
 **Recommended Folder Structure:**
 ```
 app/
 ├── modules/
-│   └── multi-card/
+│   └── card-management/
 │       ├── controllers/
-│       │   ├── multi-card-dashboard.controller.js
-│       │   └── card-spend-analysis.controller.js
+│       │   └── cardPortfolioController.js
 │       ├── services/
-│       │   ├── multi-card.service.js
-│       │   ├── credit-card-data.service.js
-│       │   ├── user-auth.service.js
-│       │   └── card-analytics.service.js
+│       │   ├── multiCardService.js
+│       │   ├── analyticsService.js
+│       │   └── userService.js
+│       ├── factories/
+│       │   └── creditCardDataFactory.js
 │       ├── directives/
-│       │   ├── card-tile.directive.js
-│       │   └── spend-comparison-chart.directive.js
-│       ├── views/
-│       │   ├── multi-card-dashboard.html
-│       │   └── card-spend-analysis.html
-│       └── multi-card.module.js
+│       │   └── cardComparison.js
+│       └── views/
+│           ├── card-portfolio.html
+│           └── card-comparison.html
+├── models/
+│   └── creditCard.model.js
 └── assets/
-    └── css/
-        └── multi-card.css
+    ├── css/
+    └── images/
 ```
 
 ---
@@ -50,52 +45,47 @@ app/
 
 | Component Name | Artifact Type | Responsibility | Key Dependencies |
 |----------------|---------------|----------------|------------------|
-| `multiCardModule` | Module | Encapsulates all multi-card management functionality | `ngRoute`, `ngResource` |
-| `MultiCardDashboardController` | Controller | Fetches and displays all user credit cards in consolidated view | `MultiCardService`, `$scope` |
-| `CardSpendAnalysisController` | Controller | Displays card-wise spend analysis and enables comparison | `CardAnalyticsService`, `MultiCardService`, `$scope` |
-| `MultiCardService` | Service | Coordinates data retrieval from CreditCardDataService and UserAuthService | `CreditCardDataService`, `UserAuthService`, `$q` |
-| `CreditCardDataService` | Service | Calls REST API to fetch card details, balances, and metadata | `$http`, `API_CONFIG` |
-| `UserAuthService` | Service | Validates user session and retrieves user-to-card associations | `$http`, `$window`, `API_CONFIG` |
-| `CardAnalyticsService` | Service | Aggregates transaction data and computes card-wise spend breakdowns | `$http`, `API_CONFIG` |
-| `cardTile` | Directive | Renders individual card information (card number, balance, type) | None |
-| `spendComparisonChart` | Directive | Visualizes spend comparison across multiple cards using Chart.js | `Chart.js` library |
+| `cardManagementModule` | Module | Root module for multi-card management feature | `ngRoute`, `ngResource` |
+| `cardPortfolioController` | Controller | Manages card portfolio view state and user interactions | `multiCardService`, `$scope` |
+| `multiCardService` | Service | Orchestrates card retrieval, aggregation, and coordination between services | `creditCardDataFactory`, `userService`, `analyticsService` |
+| `creditCardDataFactory` | Factory | Executes REST API calls to retrieve card data and metadata | `$http`, `$q` |
+| `userService` | Service | Handles user authentication and retrieves user-card associations | `$http`, `$window` (for session storage) |
+| `analyticsService` | Service | Aggregates spend data per card and provides comparison metrics | `creditCardDataFactory`, `$q` |
+| `cardComparison` | Directive | Renders side-by-side card comparison UI with spend breakdowns | `analyticsService` |
+| `cardListView` | Directive | Displays consolidated list of all user credit cards with key details | None |
 
 ---
 
 ## c. Data Model
 
-**CreditCard Object:**
+**CreditCard Model** (`creditCard.model.js`):
 ```javascript
-{
-  cardId: String,
-  cardNumber: String,        // Masked (e.g., "**** **** **** 1234")
-  cardType: String,          // e.g., "Visa", "MasterCard", "Amex"
-  cardHolderName: String,
-  expiryDate: String,        // Format: "MM/YY"
-  currentBalance: Number,
-  creditLimit: Number,
-  availableCredit: Number,
-  status: String             // e.g., "Active", "Blocked"
+class CreditCard {
+  constructor(data) {
+    this.cardId = data.cardId;                    // String
+    this.cardNumber = data.cardNumber;            // String (masked)
+    this.cardType = data.cardType;                // String (Visa, MasterCard, Amex)
+    this.cardName = data.cardName;                // String
+    this.balance = data.balance;                  // Number
+    this.creditLimit = data.creditLimit;          // Number
+    this.availableCredit = data.availableCredit;  // Number
+    this.dueDate = data.dueDate;                  // Date
+    this.minPayment = data.minPayment;            // Number
+    this.userId = data.userId;                    // String
+  }
 }
 ```
 
-**CardSpendAnalysis Object:**
+**CardSpendAnalysis Model:**
 ```javascript
-{
-  cardId: String,
-  totalSpend: Number,
-  spendByCategory: Array,    // [{ category: String, amount: Number }]
-  transactionCount: Number,
-  averageTransactionValue: Number,
-  period: String             // e.g., "Last 30 days"
-}
-```
-
-**UserCardPortfolio Object:**
-```javascript
-{
-  userId: String,
-  cards: Array               // Array of CreditCard objects
+class CardSpendAnalysis {
+  constructor(data) {
+    this.cardId = data.cardId;                    // String
+    this.totalSpend = data.totalSpend;            // Number
+    this.categoryBreakdown = data.categoryBreakdown; // Array of {category: String, amount: Number}
+    this.monthlySpend = data.monthlySpend;        // Array of {month: String, amount: Number}
+    this.comparisonMetrics = data.comparisonMetrics; // Object {avgSpend: Number, rank: Number}
+  }
 }
 ```
 
@@ -103,7 +93,7 @@ app/
 
 ## d. Data Flow
 
-User navigates to the multi-card dashboard → `MultiCardDashboardController` initializes and calls `MultiCardService.getUserCards()` → `MultiCardService` first authenticates the user via `UserAuthService.validateSession()`, then retrieves the user's card associations → `CreditCardDataService.fetchCardDetails()` is invoked for each associated card ID, making REST API calls to `/api/cards/{cardId}` → Card data is aggregated and returned to the controller → Controller binds the card array to `$scope.cards` → View renders each card using the `cardTile` directive with Bootstrap grid layout → When user selects "Card-wise Spend Analysis", `CardSpendAnalysisController` calls `CardAnalyticsService.getSpendAnalysis()` → Service fetches spend data from `/api/analytics/cards/{cardId}/spend` for each card → Aggregated spend data is bound to scope and rendered via `spendComparisonChart` directive → User can compare spending patterns across cards in a visual format.
+User navigates to the card portfolio dashboard → `card-portfolio.html` view loads → `cardPortfolioController` initializes and calls `multiCardService.getAllUserCards()` → Service authenticates user via `userService.getCurrentUser()` → `creditCardDataFactory` makes REST API call (`GET /api/users/{userId}/cards`) to retrieve all associated cards → `analyticsService.getSpendAnalysis(cardIds)` fetches spend data via `GET /api/analytics/cards/spend` → Services aggregate card data with spend metrics → Controller receives consolidated card array and binds to `$scope.cards` → View renders card list using `ng-repeat` with Bootstrap card components → User selects card comparison → `cardComparison` directive triggers, fetches detailed comparison data, and renders side-by-side view with spend breakdowns.
 
 ---
 
@@ -112,55 +102,52 @@ User navigates to the multi-card dashboard → `MultiCardDashboardController` in
 ```mermaid
 sequenceDiagram
     participant User
-    participant UI as Multi-Card Dashboard View
-    participant Controller as MultiCardDashboardController
-    participant MCS as MultiCardService
-    participant UAS as UserAuthService
-    participant CCDS as CreditCardDataService
+    participant View as card-portfolio.html
+    participant Controller as cardPortfolioController
+    participant MultiCardSvc as multiCardService
+    participant UserSvc as userService
+    participant CardFactory as creditCardDataFactory
+    participant AnalyticsSvc as analyticsService
     participant API as REST API
 
-    User->>UI: Navigate to Multi-Card Dashboard
-    UI->>Controller: Initialize controller
-    Controller->>MCS: getUserCards()
-    MCS->>UAS: validateSession()
-    UAS->>API: GET /api/auth/validate
-    API-->>UAS: Session valid + userId
-    UAS-->>MCS: userId
-    MCS->>API: GET /api/users/{userId}/cards
-    API-->>MCS: Array of cardIds
-    loop For each cardId
-        MCS->>CCDS: fetchCardDetails(cardId)
-        CCDS->>API: GET /api/cards/{cardId}
-        API-->>CCDS: Card details
-        CCDS-->>MCS: CreditCard object
-    end
-    MCS-->>Controller: Array of CreditCard objects
-    Controller->>UI: Bind cards to $scope
-    UI-->>User: Display all cards in grid layout
+    User->>View: Navigate to card portfolio
+    View->>Controller: Initialize controller
+    Controller->>MultiCardSvc: getAllUserCards()
+    MultiCardSvc->>UserSvc: getCurrentUser()
+    UserSvc->>API: GET /api/users/current
+    API-->>UserSvc: User data with userId
+    UserSvc-->>MultiCardSvc: userId
+    MultiCardSvc->>CardFactory: getCardsByUserId(userId)
+    CardFactory->>API: GET /api/users/{userId}/cards
+    API-->>CardFactory: Array of card data
+    CardFactory-->>MultiCardSvc: cards[]
+    MultiCardSvc->>AnalyticsSvc: getSpendAnalysis(cardIds[])
+    AnalyticsSvc->>API: GET /api/analytics/cards/spend?cardIds=...
+    API-->>AnalyticsSvc: Spend analysis data
+    AnalyticsSvc-->>MultiCardSvc: spendData[]
+    MultiCardSvc-->>Controller: Consolidated cards with spend metrics
+    Controller->>View: Bind $scope.cards
+    View-->>User: Display all cards with spend analysis
 ```
 
 ---
 
 ## f. Implementation Notes
 
-- **Dependency Injection:** Use AngularJS DI to inject all services into controllers; declare dependencies in array notation for minification safety (e.g., `['$scope', 'MultiCardService', function($scope, MultiCardService) {...}]`).
-- **Promise Chaining:** Use `$q.all()` in `MultiCardService` to fetch multiple card details in parallel and aggregate results before returning to controller.
-- **REST API Integration:** Configure base API URL in `API_CONFIG` constant; use `$http` service with interceptors for token-based authentication headers.
-- **Reusable Directives:** Implement `cardTile` and `spendComparisonChart` as isolated-scope directives with two-way binding for card data to enable reuse across views.
-- **Responsive Design:** Use Bootstrap grid classes (col-xs, col-sm, col-md) in card tile layout to ensure dashboard adapts to mobile, tablet, and desktop viewports.
+- Use AngularJS Dependency Injection to inject services into controllers and directives; register all components with the `cardManagementModule`.
+- Implement ES6 classes for data models (`CreditCard`, `CardSpendAnalysis`) and use constructor functions for instantiation in factories.
+- Use `$http` service with promise chaining (`$q`) for all REST API calls; implement response transformations in factory methods.
+- Apply Bootstrap grid system (`col-md-4`, `col-sm-6`) for responsive card layout; use Bootstrap card components for consistent styling.
+- Implement `ng-repeat` with `track by cardId` for optimal rendering performance when displaying multiple cards; use one-time binding (`::`) for static card properties.
 
 ---
 
 ## g. Error Handling
 
-HTTP interceptor captures API errors (4xx/5xx), logs to console, and displays user-friendly error messages via a shared notification service with Bootstrap alerts.
+HTTP interceptor registered at module level to catch API errors (4xx/5xx), log to console, and display user-friendly error messages via Bootstrap alert component; controller-level try/catch for service method failures.
 
 ---
 
 ## h. Security Notes
 
-Standard input validation and secure API calls assumed; card numbers are masked on the server side before transmission to the client.
-
----
-
-**End of LLD Document**
+Card numbers are masked on the server side before transmission; user authentication token validated on every API call via HTTP interceptor; standard input validation and secure API calls assumed.
