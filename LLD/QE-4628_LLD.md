@@ -2,13 +2,15 @@
 
 **Epic ID:** QE-4628
 
+---
+
 ## a. Architecture Mapping
 
-- **Dashboard Service** → AngularJS Module (`creditCardDashboardModule`) + Controller (`DashboardController`)
-- **Credit Card Data Service** → AngularJS Factory (`CreditCardDataFactory`) for REST API calls
-- **KPI Calculation Engine** → AngularJS Service (`KPICalculationService`) for client-side aggregation
-- **User Interface** → HTML5 views with Bootstrap responsive grid + AngularJS directives for KPI widgets
-- **Data Store Integration** → REST API endpoints consumed via `$http` service
+- **Dashboard Service** → AngularJS Service (`dashboardService.js`) - orchestrates data fetching and KPI calculations
+- **Credit Card Data Service** → AngularJS Factory (`creditCardDataFactory.js`) - handles REST API calls for card data
+- **KPI Calculation Engine** → AngularJS Service (`kpiCalculationService.js`) - performs client-side aggregations and computations
+- **User Interface** → AngularJS Controller (`dashboardController.js`) + View (`dashboard.html`) - manages UI state and renders KPIs
+- **Dashboard Module** → AngularJS Module (`app.dashboard`) - encapsulates all dashboard-related components
 
 **Recommended Folder Structure:**
 ```
@@ -16,96 +18,116 @@ app/
 ├── modules/
 │   └── dashboard/
 │       ├── controllers/
-│       │   └── DashboardController.js
+│       │   └── dashboardController.js
 │       ├── services/
-│       │   ├── CreditCardDataFactory.js
-│       │   └── KPICalculationService.js
-│       ├── directives/
-│       │   └── kpiWidget.js
-│       └── views/
-│           └── dashboard.html
-├── assets/
-│   ├── css/
-│   └── js/
-└── app.js
+│       │   ├── dashboardService.js
+│       │   └── kpiCalculationService.js
+│       ├── factories/
+│       │   └── creditCardDataFactory.js
+│       ├── views/
+│       │   └── dashboard.html
+│       └── dashboard.module.js
+├── shared/
+│   └── services/
+└── assets/
+    └── css/
+        └── dashboard.css
 ```
+
+---
 
 ## b. Component Specifications
 
 | Component Name | Artifact Type | Responsibility | Key Dependencies |
 |---|---|---|---|
-| creditCardDashboardModule | Module | Root module for dashboard feature | angular, ngRoute |
-| DashboardController | Controller | Orchestrates dashboard view, fetches data, triggers KPI calculations | CreditCardDataFactory, KPICalculationService, $scope |
-| CreditCardDataFactory | Factory | Fetches credit card data from REST API endpoints | $http, $q |
-| KPICalculationService | Service | Aggregates monthly spend, calculates available credit, computes totals | None |
-| kpiWidget | Directive | Reusable widget for displaying individual KPI metrics | None |
-| dashboard.html | View | Responsive layout with Bootstrap grid displaying all KPIs | Bootstrap CSS |
+| `app.dashboard` | Module | Root module for dashboard feature | `ngRoute`, `app.shared` |
+| `dashboardController` | Controller | Manages dashboard view state, triggers data refresh, binds KPIs to view | `dashboardService`, `$scope` |
+| `dashboardService` | Service | Orchestrates data retrieval and delegates KPI calculations | `creditCardDataFactory`, `kpiCalculationService` |
+| `creditCardDataFactory` | Factory | Fetches credit card data via REST API (`/api/creditcards`) | `$http`, `$q` |
+| `kpiCalculationService` | Service | Aggregates monthly spend, calculates available credit (limit - outstanding), computes totals | None |
+| `dashboardView` | View/Template | Renders KPI widgets (monthly spend, total limit, available credit, outstanding) using Bootstrap grid | `dashboardController` |
+
+---
 
 ## c. Data Model
 
-**CreditCard Object:**
+**CreditCard Model:**
 ```javascript
 {
   cardId: String,
-  cardNumber: String,
+  cardNumber: String (masked),
   cardType: String,
   creditLimit: Number,
   outstandingAmount: Number,
   availableCredit: Number,
-  monthlySpend: Number
-}
-```
-
-**DashboardKPI Object:**
-```javascript
-{
-  totalMonthlySpend: Number,
-  totalCreditLimit: Number,
-  totalAvailableCredit: Number,
-  totalOutstanding: Number,
+  monthlySpend: Number,
   lastUpdated: Date
 }
 ```
 
+**DashboardKPI Model:**
+```javascript
+{
+  totalCreditLimit: Number,
+  totalAvailableCredit: Number,
+  totalOutstanding: Number,
+  totalMonthlySpend: Number,
+  cardCount: Number
+}
+```
+
+---
+
 ## d. Data Flow
 
-User navigates to dashboard → `dashboard.html` view loads → `DashboardController` initializes and calls `CreditCardDataFactory.getAllCards()` → Factory makes GET request to `/api/creditcards` REST endpoint → API returns array of credit card objects → `KPICalculationService.calculateKPIs(cards)` aggregates monthly spend, sums credit limits, computes available credit (limit - outstanding), and totals outstanding amounts → Calculated KPIs are bound to `$scope.dashboardKPIs` → View updates via two-way data binding, rendering responsive KPI widgets with Bootstrap grid layout.
+User navigates to dashboard → `dashboardController` initializes and calls `dashboardService.getKPIs()` → `dashboardService` invokes `creditCardDataFactory.fetchAllCards()` which makes GET request to `/api/creditcards` → API returns array of credit card objects → `kpiCalculationService.calculateKPIs(cards)` aggregates monthly spend, sums credit limits, computes total available credit (sum of limit - outstanding per card), and totals outstanding amounts → Calculated KPIs are bound to `$scope.kpis` → View updates responsive Bootstrap widgets displaying financial health metrics in real-time.
+
+---
 
 ## e. Primary Sequence Diagram
 
 ```mermaid
 sequenceDiagram
     participant User
-    participant View as dashboard.html
-    participant Controller as DashboardController
-    participant Factory as CreditCardDataFactory
-    participant Service as KPICalculationService
-    participant API as REST API
+    participant DashboardView
+    participant DashboardController
+    participant DashboardService
+    participant CreditCardDataFactory
+    participant KPICalculationService
+    participant API
 
-    User->>View: Navigate to Dashboard
-    View->>Controller: Initialize Controller
-    Controller->>Factory: getAllCards()
-    Factory->>API: GET /api/creditcards
-    API-->>Factory: Return card data array
-    Factory-->>Controller: Return cards
-    Controller->>Service: calculateKPIs(cards)
-    Service-->>Controller: Return aggregated KPIs
-    Controller->>View: Update $scope.dashboardKPIs
-    View-->>User: Display KPI widgets
+    User->>DashboardView: Navigate to Dashboard
+    DashboardView->>DashboardController: Initialize
+    DashboardController->>DashboardService: getKPIs()
+    DashboardService->>CreditCardDataFactory: fetchAllCards()
+    CreditCardDataFactory->>API: GET /api/creditcards
+    API-->>CreditCardDataFactory: [CreditCard[]]
+    CreditCardDataFactory-->>DashboardService: [CreditCard[]]
+    DashboardService->>KPICalculationService: calculateKPIs(cards)
+    KPICalculationService-->>DashboardService: DashboardKPI
+    DashboardService-->>DashboardController: DashboardKPI
+    DashboardController->>DashboardView: Bind KPIs to $scope
+    DashboardView-->>User: Display KPI Widgets
 ```
+
+---
 
 ## f. Implementation Notes
 
-- Use AngularJS Dependency Injection to inject `CreditCardDataFactory` and `KPICalculationService` into `DashboardController`
-- Implement Factory pattern for API calls using `$http` service with promise-based error handling via `$q`
-- Use Bootstrap responsive grid (col-xs-*, col-sm-*, col-md-*) for mobile-first responsive layout
-- Implement custom directive `kpiWidget` with isolated scope for reusable KPI display components
-- Cache API responses in Factory using simple object cache with configurable TTL to optimize performance
+- Use AngularJS dependency injection to inject `dashboardService`, `creditCardDataFactory`, and `kpiCalculationService` into controllers and services
+- Implement ES6 classes or factory pattern for services; use `$http` promises with `.then()` chaining for asynchronous API calls
+- Apply Bootstrap responsive grid (col-xs/sm/md/lg) for KPI widgets to ensure mobile, tablet, and desktop compatibility
+- Cache API responses in `creditCardDataFactory` using `$cacheFactory` or service-level caching to optimize repeated calls
+- Use AngularJS `$interval` or manual refresh button to periodically update KPIs for near real-time data
+
+---
 
 ## g. Error Handling
 
-HTTP interceptor registered at module level to catch API errors, with controller-level try/catch for calculation errors and user-friendly toast notifications via Bootstrap alerts.
+HTTP interceptor captures API failures; display user-friendly error messages via Bootstrap alerts and log errors to console.
+
+---
 
 ## h. Security Notes
 
-Standard input validation and secure API calls assumed; ensure API endpoints use authentication tokens passed via HTTP headers.
+Standard input validation and secure API calls assumed; ensure API endpoints use authentication tokens (e.g., JWT in headers).
