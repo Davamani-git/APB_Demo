@@ -1,6 +1,6 @@
 #### 1. High-Level Design
 
-- **Summary:** This epic delivers a consolidated dashboard that displays key performance indicators (KPIs) for users' credit card portfolios, including monthly spend, total credit limit, available credit, and outstanding amounts. The dashboard provides real-time monitoring of multiple credit cards from a single, centralized interface.
+- **Summary:** This epic delivers a consolidated dashboard that displays key performance indicators (KPIs) for users' credit card portfolios, including monthly spend, total credit limit, available credit, and outstanding amount. The dashboard provides real-time monitoring of multiple credit cards from a single interface, enabling users to track their credit card financial health at a glance.
 
 - **Component Flow:**
 
@@ -20,17 +20,17 @@ flowchart TD
 ```
 
 - **Integration Points:** 
-  - **Upstream:** Credit card data service (provides card details, balances, limits, and real-time updates)
-  - **Downstream:** User interface clients (web, tablet, mobile)
+  - **Upstream:** Credit card data service for retrieving card details, balances, credit limits, and outstanding amounts
+  - **Downstream:** User interface (web, tablet, mobile) for rendering dashboard KPIs
 
 - **Key Assumptions:** 
-  - Credit card data service provides a REST/GraphQL API with real-time or near real-time data updates
-  - KPI calculations (monthly spend, available credit) are pre-computed by the credit card data service or cached for performance
+  - Credit card data is refreshed at regular intervals (e.g., every 15-30 minutes) to ensure near real-time accuracy
+  - Authentication and authorization are handled by an existing identity service not explicitly mentioned in the epic
 
-- **NFR Highlights:** Dashboard must load within 2 seconds; must support responsive layouts across desktop, tablet, and mobile devices; UI must be modern and intuitive
+- **NFR Highlights:** Dashboard must load within 2 seconds; system must support responsive layouts across desktop, tablet, and mobile devices with modern and intuitive UI
 
-- **Data Flow:** User requests dashboard → API Gateway authenticates and routes request → Dashboard Service retrieves aggregated KPI data from Credit Card Data Service → Credit Card Data Service queries Database for card details, balances, limits, and monthly spend → Data is returned through the service layers → Dashboard UI Component renders KPIs (Monthly Spend, Total Credit Limit, Available Credit, Outstanding Amount) in a responsive layout within 2 seconds
+- **Data Flow:** User authenticates and accesses the dashboard. The Dashboard UI Component requests KPI data via the API Gateway, which routes the request to the Dashboard Service. The Dashboard Service queries the Credit Card Data Service, which retrieves card details, balances, limits, and outstanding amounts from the Database. Aggregated KPI data (Monthly Spend, Total Credit Limit, Available Credit, Outstanding Amount) is returned through the chain and rendered on the user's device in a responsive layout.
 
 #### 2. Validation Report
 
-- **Requirements Coverage:** The design fully covers the epic's stated scope including dashboard KPIs display, multiple credit card view, consolidated interface, and real-time balance monitoring. The component architecture supports the 2-second load time NFR through service-oriented design and assumes pre-computed aggregations. The responsive UI requirement is addressed through the UI component layer supporting multiple device types.
+- **Requirements Coverage:** The design covers all stated scope items including dashboard KPIs display (Monthly Spend, Total Credit Limit, Available Credit, Outstanding Amount), multiple credit card view, consolidated interface, and real-time balance monitoring. The architecture supports the NFR requirements for 2-second load time and responsive design across devices. Integration with the credit card data service is properly identified. Out-of-scope items (Real Bank Integration, Card Payments, Fund Transfers, Loans, Payment Gateway Integration) are explicitly excluded and not included in the design.

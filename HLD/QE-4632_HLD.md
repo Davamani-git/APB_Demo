@@ -1,6 +1,6 @@
 #### 1. High-Level Design
 
-- **Summary:** This epic provides interactive visualizations and analytics to help users understand spending behavior across nine predefined categories (Food & Dining, Fuel, Shopping, Travel, Entertainment, Utilities, Healthcare, Education, Miscellaneous). Users can analyze spending patterns, view monthly trends, and perform card-wise spend analysis for better financial planning.
+- **Summary:** This epic provides interactive visualizations and analytics to help users understand their spending behavior across different categories (Food & Dining, Fuel, Shopping, Travel, Entertainment, Utilities, Healthcare, Education, Miscellaneous). Users can analyze category-wise spending patterns, monthly trends, and card-wise spending to support better financial planning and budget management.
 
 - **Component Flow:**
 
@@ -22,17 +22,18 @@ flowchart TD
 ```
 
 - **Integration Points:**
-  - **Upstream:** Transaction data service (provides category-tagged spending information), Data aggregation service (computes category totals and trends)
-  - **Downstream:** User interface clients with interactive charting libraries (web, tablet, mobile)
+  - **Upstream:** Transaction data service for category-tagged spending information
+  - **Upstream:** Data aggregation service for computing category totals and trends
+  - **Downstream:** Interactive charting/visualization library on the user interface for rendering graphs across all devices
 
 - **Key Assumptions:**
-  - Transactions are pre-categorized at ingestion time or by the transaction data service
-  - Data aggregation service maintains materialized views or cached aggregates for monthly and category-wise totals to meet the 3-second rendering requirement
+  - Transactions are pre-categorized by the transaction data service or a categorization engine
+  - Aggregation computations are performed server-side to optimize client performance and support the 3-second rendering requirement
 
 - **NFR Highlights:** Analytics visualizations must render within 3 seconds; system must handle data aggregation for multiple categories efficiently; charts must be interactive and responsive across all devices
 
-- **Data Flow:** User requests analytics view → API Gateway authenticates and routes request → Analytics Service calls Data Aggregation Service with filters (date range, card, category) → Data Aggregation Service retrieves pre-categorized transaction data from Transaction Data Service → Transaction Data Service queries Database for category-tagged transactions → Aggregated spending totals by category, monthly trends, and card-wise breakdowns are computed → Data is formatted for visualization and returned → Analytics UI Component renders interactive charts and graphs within 3 seconds
+- **Data Flow:** User navigates to the analytics section. The Analytics UI Component requests spending data via the API Gateway to the Analytics Service. The Analytics Service calls the Data Aggregation Service, which retrieves category-tagged transaction data from the Transaction Data Service and Database. The aggregation service computes category totals, monthly trends, and card-wise breakdowns. The aggregated data is returned to the Analytics Service, then to the UI, where interactive charts and graphs are rendered within 3 seconds, displaying spending patterns across categories.
 
 #### 2. Validation Report
 
-- **Requirements Coverage:** The design comprehensively covers the epic's scope including category-wise spending visualization, interactive charts, spending pattern analysis, monthly trends, and card-wise analysis. The multi-layer architecture with dedicated data aggregation service supports efficient handling of multiple categories and the 3-second rendering NFR. Interactive and responsive chart requirements are addressed through the Analytics UI Component supporting all device types.
+- **Requirements Coverage:** The design fully addresses the epic's scope including category-wise spending visualization, interactive charts and graphs, spending pattern analysis, monthly spend trends, and card-wise spend analysis. The architecture supports the NFR requirements for 3-second rendering time, efficient data aggregation for multiple categories, and interactive/responsive charts across all devices. Dependencies on transaction data service and data aggregation service are properly identified and integrated. Out-of-scope items (Real Bank Integration, Predictive analytics, Budget setting features, Spending alerts) are explicitly excluded from the design.
