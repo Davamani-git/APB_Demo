@@ -1,107 +1,104 @@
-# Low-Level Design: Credit Card Spending Analytics
-
-**Epic ID:** QE-4645  
-**Technology Stack:** AngularJS 1.x, JavaScript ES6, HTML5, CSS3, Bootstrap, REST APIs, MVC Architecture
-
----
+# Low-Level Design: Credit Card Spending Analytics (QE-4645)
 
 ## a. Architecture Mapping
 
-- **Analytics Module** → `app.analytics` (AngularJS Module)
-- **Analytics Controller** → `AnalyticsController` (Controller managing analytics data and chart rendering)
-- **Analytics Service** → `AnalyticsService` (Factory for analytics API calls)
-- **Transaction Service** → `TransactionService` (Factory for raw transaction data)
-- **Credit Card Service** → `CreditCardService` (Factory for card metadata)
-- **Analytics View** → `analytics.html` (HTML5 template with chart containers)
-- **Chart Directive** → `spendingChart` (Directive wrapping Chart.js or similar library)
-- **Category Filter Directive** → `categoryFilter` (Directive for interactive filtering)
+- **Analytics Service** → AngularJS Service (analyticsService.js) - Orchestrates analytics data retrieval and aggregation
+- **Transaction Service** → AngularJS Factory (transactionFactory.js) - Retrieves raw transaction data
+- **Analytics Engine** → AngularJS Service (analyticsEngineService.js) - Client-side aggregation and computation for category, monthly, and card-wise analysis
+- **Credit Card Service** → AngularJS Factory (creditCardFactory.js) - Provides card metadata for card-wise analysis
+- **User Analytics UI** → AngularJS Controller (analyticsController.js) + View (analytics.html) + Directives (categoryChart.directive.js, trendChart.directive.js, cardComparisonChart.directive.js)
+- **Main Application** → AngularJS Module (creditCardApp.module.js)
 
 **Recommended Folder Structure:**
 ```
 app/
 ├── modules/
 │   └── analytics/
-│       ├── analytics.module.js
-│       ├── analytics.controller.js
-│       ├── analytics.html
-│       └── directives/
-│           ├── spending-chart.directive.js
-│           └── category-filter.directive.js
-├── services/
-│   ├── analytics.service.js
-│   ├── transaction.service.js
-│   └── credit-card.service.js
-└── assets/
-    ├── css/
-    │   └── analytics.css
-    └── js/
-        └── chart.min.js
+│       ├── controllers/
+│       │   └── analyticsController.js
+│       ├── services/
+│       │   ├── analyticsService.js
+│       │   └── analyticsEngineService.js
+│       ├── directives/
+│       │   ├── categoryChart.directive.js
+│       │   ├── trendChart.directive.js
+│       │   └── cardComparisonChart.directive.js
+│       └── views/
+│           └── analytics.html
+├── shared/
+│   ├── factories/
+│   │   ├── transactionFactory.js
+│   │   └── creditCardFactory.js
+│   └── services/
+│       └── apiService.js
+├── assets/
+│   ├── css/
+│   ├── js/
+│   │   └── chart.min.js (Chart.js library)
+│   └── images/
+└── app.module.js
 ```
-
----
 
 ## b. Component Specifications
 
 | Component Name | Artifact Type | Responsibility | Key Dependencies |
 |----------------|---------------|----------------|------------------|
-| `app.analytics` | Module | Register analytics module with routing and chart library | `ngRoute`, `chart.js`, `app.services` |
-| `AnalyticsController` | Controller | Orchestrate analytics data retrieval, aggregation, and chart configuration | `AnalyticsService`, `TransactionService`, `CreditCardService`, `$scope` |
-| `AnalyticsService` | Factory | Fetch pre-aggregated analytics data (category, monthly, card-wise) via REST API | `$http`, `API_CONFIG` |
-| `TransactionService` | Factory | Fetch raw transaction data if client-side aggregation needed | `$http`, `API_CONFIG` |
-| `CreditCardService` | Factory | Fetch card metadata for card-wise analysis | `$http`, `API_CONFIG` |
-| `spendingChart` | Directive | Render interactive charts (pie, bar, line) using Chart.js library | `Chart.js` |
-| `categoryFilter` | Directive | Provide interactive filter controls for category, time period, and card selection | None |
-| `analytics.html` | View | Display multiple chart containers in responsive Bootstrap grid | Bootstrap CSS |
-
----
+| creditCardApp | Module | Root application module with routing for analytics views | angular, ngRoute, ngResource, chart.js |
+| analyticsController | Controller | Manages analytics view state, date range selection, and chart data binding | $scope, $filter, analyticsService |
+| analyticsService | Service | Coordinates data retrieval from transactionFactory and creditCardFactory, delegates aggregation to analyticsEngineService | $q, transactionFactory, creditCardFactory, analyticsEngineService |
+| analyticsEngineService | Service | Performs client-side aggregation for category-wise, monthly trend, and card-wise spending analysis | None |
+| transactionFactory | Factory | REST API calls to Transaction Service for raw transaction data with date range filters | $resource, apiService |
+| creditCardFactory | Factory | REST API calls to Credit Card Service for card metadata | $resource, apiService |
+| categoryChart | Directive | Renders interactive pie/donut chart for 9-category spending breakdown using Chart.js | chart.js |
+| trendChart | Directive | Renders line/bar chart for monthly spending trends over time using Chart.js | chart.js |
+| cardComparisonChart | Directive | Renders bar chart comparing spending across multiple cards using Chart.js | chart.js |
+| apiService | Service | Centralized HTTP interceptor and error handling for all API calls | $http, $q |
 
 ## c. Data Model
 
-**CategorySpending (JavaScript Object):**
+**CategorySpending (JS Object):**
 ```javascript
 {
-  category: String,              // One of 9 categories
-  amount: Number,
-  percentage: Number,
-  transactionCount: Number
+  category: String, // One of 9: Food & Dining, Fuel, Shopping, Travel, Entertainment, Utilities, Healthcare, Education, Miscellaneous
+  totalAmount: Number,
+  transactionCount: Number,
+  percentage: Number
 }
 ```
 
-**MonthlyTrend (JavaScript Object):**
+**MonthlyTrend (JS Object):**
 ```javascript
 {
-  month: String,                 // "YYYY-MM"
+  month: String, // YYYY-MM format
   totalSpend: Number,
-  categoryBreakdown: Array<CategorySpending>
+  transactionCount: Number,
+  categoryBreakdown: Array<{category: String, amount: Number}>
 }
 ```
 
-**CardWiseSpending (JavaScript Object):**
+**CardSpending (JS Object):**
 ```javascript
 {
   cardId: String,
-  cardNumber: String,            // Masked
+  cardName: String,
   totalSpend: Number,
-  categoryBreakdown: Array<CategorySpending>
+  categoryBreakdown: Array<{category: String, amount: Number}>
 }
 ```
 
-**AnalyticsData (JavaScript Object):**
+**AnalyticsData (JS Object):**
 ```javascript
 {
   categorySpending: Array<CategorySpending>,
   monthlyTrends: Array<MonthlyTrend>,
-  cardWiseSpending: Array<CardWiseSpending>
+  cardSpending: Array<CardSpending>,
+  dateRange: {startDate: Date, endDate: Date}
 }
 ```
 
----
-
 ## d. Data Flow
 
-User navigates to analytics page → `analytics.html` loads → `AnalyticsController` initializes and calls `AnalyticsService.getAnalytics(dateRange, cardIds)` → Service makes REST API call to backend → Backend's Analytics Engine retrieves pre-aggregated data from data store (computed periodically) → API returns aggregated analytics data (category-wise, monthly trends, card-wise) → Controller processes data and prepares chart configurations (labels, datasets, colors) → Controller binds chart data to `$scope` → `spendingChart` directives render interactive charts using Chart.js → User applies filters via `categoryFilter` directive → Controller updates filter parameters and re-fetches analytics data → Charts update dynamically with drill-down capability.
-
----
+User navigates to analytics view → analytics.html loads → analyticsController initializes with default date range (last 12 months) → Controller calls analyticsService.getAnalytics(dateRange) → analyticsService invokes transactionFactory.query() with date range filters to retrieve raw transactions → transactionFactory makes GET /api/transactions?startDate=X&endDate=Y → Backend returns transaction array → analyticsService calls creditCardFactory.getCards() for card metadata → analyticsService passes transactions and cards to analyticsEngineService.computeAnalytics() → analyticsEngineService aggregates data: groups transactions by category (9 categories), by month, and by cardId; computes totals and percentages → Computed AnalyticsData object returned to controller → Controller updates $scope.analyticsData → categoryChart, trendChart, and cardComparisonChart directives watch scope changes and render interactive Chart.js visualizations → User interacts with charts (hover, click) for drill-down or applies new date range filter → Controller re-invokes analyticsService with updated parameters → Charts re-render with new data.
 
 ## e. Primary Sequence Diagram
 
@@ -111,56 +108,53 @@ sequenceDiagram
     participant AnalyticsView
     participant AnalyticsController
     participant AnalyticsService
-    participant API
     participant AnalyticsEngine
-    participant DataStore
+    participant TransactionFactory
+    participant CreditCardFactory
+    participant TransactionAPI
+    participant CreditCardAPI
 
-    User->>AnalyticsView: Navigate to analytics
-    AnalyticsView->>AnalyticsController: Initialize controller
-    AnalyticsController->>AnalyticsService: getAnalytics(dateRange, cardIds)
-    AnalyticsService->>API: GET /api/analytics?dateRange&cards
-    API->>AnalyticsEngine: Request aggregated data
-    AnalyticsEngine->>DataStore: Retrieve pre-aggregated analytics
-    DataStore-->>AnalyticsEngine: Return category, monthly, card-wise data
-    AnalyticsEngine-->>API: Aggregated analytics JSON
-    API-->>AnalyticsService: Analytics data
-    AnalyticsService-->>AnalyticsController: analyticsData object
-    AnalyticsController->>AnalyticsController: Prepare chart configs
-    AnalyticsController-->>AnalyticsView: Bind chart data to $scope
-    AnalyticsView->>AnalyticsView: Render charts via spendingChart directive
-    AnalyticsView-->>User: Display interactive charts (pie, bar, line)
-    User->>AnalyticsView: Apply filter (category/time/card)
-    AnalyticsView->>AnalyticsController: Update filter criteria
-    AnalyticsController->>AnalyticsService: getAnalytics(new filters)
-    AnalyticsService->>API: GET /api/analytics?new filters
-    API->>AnalyticsEngine: Request filtered data
-    AnalyticsEngine->>DataStore: Retrieve filtered aggregates
-    DataStore-->>AnalyticsEngine: Return filtered data
-    AnalyticsEngine-->>API: Filtered analytics
-    API-->>AnalyticsService: Updated analytics data
-    AnalyticsService-->>AnalyticsController: Updated analyticsData
-    AnalyticsController-->>AnalyticsView: Update chart data
-    AnalyticsView-->>User: Refresh charts with filtered data
+    User->>AnalyticsView: Navigate to Analytics
+    AnalyticsView->>AnalyticsController: Initialize with default date range
+    AnalyticsController->>AnalyticsService: getAnalytics(dateRange)
+    AnalyticsService->>TransactionFactory: query({startDate, endDate})
+    TransactionFactory->>TransactionAPI: GET /api/transactions?startDate=X&endDate=Y
+    TransactionAPI-->>TransactionFactory: Return transactions array
+    TransactionFactory-->>AnalyticsService: Transactions
+    AnalyticsService->>CreditCardFactory: getCards()
+    CreditCardFactory->>CreditCardAPI: GET /api/creditcards
+    CreditCardAPI-->>CreditCardFactory: Return cards array
+    CreditCardFactory-->>AnalyticsService: Cards metadata
+    AnalyticsService->>AnalyticsEngine: computeAnalytics(transactions, cards)
+    AnalyticsEngine->>AnalyticsEngine: Aggregate by category (9 categories)
+    AnalyticsEngine->>AnalyticsEngine: Aggregate by month
+    AnalyticsEngine->>AnalyticsEngine: Aggregate by cardId
+    AnalyticsEngine-->>AnalyticsService: Return AnalyticsData
+    AnalyticsService-->>AnalyticsController: AnalyticsData object
+    AnalyticsController->>AnalyticsView: Update $scope.analyticsData
+    AnalyticsView->>AnalyticsView: Render categoryChart, trendChart, cardComparisonChart
+    AnalyticsView-->>User: Display interactive charts
+    User->>AnalyticsView: Change date range filter
+    AnalyticsView->>AnalyticsController: onDateRangeChange(newDateRange)
+    AnalyticsController->>AnalyticsService: getAnalytics(newDateRange)
+    Note over AnalyticsService,TransactionAPI: Repeat data retrieval and aggregation
+    AnalyticsService-->>AnalyticsController: Updated AnalyticsData
+    AnalyticsController->>AnalyticsView: Update $scope
+    AnalyticsView-->>User: Re-render charts with new data
 ```
-
----
 
 ## f. Implementation Notes
 
-- Integrate Chart.js library via CDN or npm; create `spendingChart` directive that wraps Chart.js initialization and update logic.
-- Use AngularJS `$watch` in directive to detect data changes and call `chart.update()` for dynamic chart rendering.
-- Implement `AnalyticsService` as factory with method `getAnalytics(filters)` returning promise; cache responses for 5 minutes using `$cacheFactory`.
-- Configure chart options for responsive design (`responsive: true`, `maintainAspectRatio: false`) to meet cross-device NFR.
-- Use ES6 array methods (`map`, `filter`, `reduce`) in controller for data transformation before binding to charts.
-
----
+- Use Chart.js library integrated via AngularJS directives; each chart directive isolates scope and watches data binding for reactive updates
+- Implement analyticsEngineService aggregation using ES6 Array.reduce() and Map for efficient grouping by category, month, and cardId
+- Apply AngularJS $filter('date') and $filter('currency') for consistent date and currency formatting in chart labels and tooltips
+- Use $q.all() to parallelize transactionFactory and creditCardFactory API calls for optimal performance within 3-second rendering target
+- Enable Chart.js responsive mode and Bootstrap grid layout (col-md-6, col-lg-4) for responsive chart display across devices
 
 ## g. Error Handling
 
-Use HTTP interceptor for global error handling; display user-friendly error message in analytics view with retry button if API call fails.
-
----
+HTTP interceptor in apiService catches API errors, logs to console, displays user-friendly error message via Bootstrap alert, and returns empty dataset to prevent chart rendering failures.
 
 ## h. Security Notes
 
-Standard input validation and secure API calls assumed; ensure transaction data includes only aggregated amounts without exposing sensitive merchant details unnecessarily.
+Standard input validation and secure API calls assumed; transaction data filtered server-side by authenticated user; no sensitive card details exposed in analytics aggregations.
