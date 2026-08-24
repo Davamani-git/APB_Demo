@@ -1,40 +1,40 @@
 #### 1. High-Level Design
 
-**Summary:** This epic establishes the foundational data layer for the AI Portfolio Management Dashboard by automating the collection and aggregation of AI usage and spend data from three major cloud providers (AWS, Azure, GCP) across all portfolio companies. The system provides real-time data synchronization, freshness monitoring, and secure encrypted data handling to enable accurate portfolio-wide visibility.
+- **Summary**: This epic establishes the foundational data layer for an AI Portfolio Management Dashboard by automating the collection and aggregation of AI usage and spend data from three major cloud providers (AWS, Azure, GCP) across up to 50 portfolio companies. The system provides real-time synchronization, data freshness monitoring, and secure encrypted data handling to enable Operating Partners and stakeholders to gain accurate visibility into AI technology adoption and investments.
 
-**Component Flow:**
+- **Component Flow**:
 
 ```mermaid
 flowchart TD
-    A["Portfolio Company Cloud Accounts"]
-    B["Cloud Provider APIs"]
+    A["Portfolio Companies"]
+    B["Cloud Providers (AWS/Azure/GCP)"]
     C["API Integration Layer"]
     D["Data Aggregation Service"]
-    E["Data Validation & Freshness Monitor"]
-    F["Encrypted Data Store"]
-    G["Dashboard Application"]
-    
+    E["Data Storage (Encrypted)"]
+    F["Data Freshness Monitor"]
+    G["Dashboard Backend"]
     A --> B
     B --> C
     C --> D
     D --> E
-    E --> F
+    D --> F
     F --> G
+    E --> G
 ```
 
-**Integration Points:**
-- **Upstream Systems:** AWS AI Services API, Azure AI Services API, GCP AI Services API
-- **Downstream Systems:** Dashboard Application (for data consumption), SSO Provider (for authentication during API access)
-- **External Dependencies:** Portfolio company cloud accounts must grant API access permissions
+- **Integration Points**: 
+  - **Upstream**: AWS, Azure, and GCP cloud provider APIs for AI service usage and billing data
+  - **Downstream**: Dashboard backend services for analytics and reporting features; SSO provider for user authentication
+  - **Internal**: Data freshness monitoring service alerts dashboard when data is missing or outdated beyond 24 hours
 
-**Key Assumptions:**
-- Portfolio companies will provide necessary API credentials and permissions within standard OAuth 2.0 or service account frameworks.
-- AI usage data from cloud providers follows standardized billing and usage metrics formats (e.g., AWS Cost Explorer, Azure Cost Management, GCP Billing APIs).
+- **Key Assumptions**: 
+  - Portfolio companies have already enabled appropriate API access permissions on their cloud provider accounts for data extraction
+  - AI usage data from cloud providers follows standardized schema formats that can be normalized across AWS, Azure, and GCP
 
-**NFR Highlights:** System must support 200 portfolio companies and 1,000 concurrent users; 3-second dashboard load time; 99.5% uptime with automated failover; TLS 1.2+ and AES-256 encryption; 95% of data updated within 24 hours.
+- **NFR Highlights**: System must achieve 99.5% uptime with automated failover, support 200 portfolio companies and 1,000 concurrent users, encrypt all data with TLS 1.2+ and AES-256, and maintain dashboard load times under 3 seconds for 95% of requests
 
-**Data Flow:** Portfolio company cloud accounts expose AI service usage and billing data through cloud provider APIs. The API Integration Layer authenticates securely and retrieves data in scheduled intervals (e.g., hourly or daily). The Data Aggregation Service normalizes data from different cloud providers into a unified schema. The Data Validation & Freshness Monitor checks for completeness, flags missing or stale data (>24 hours old), and triggers alerts. Validated data is encrypted and stored in the Data Store, where the Dashboard Application queries it for real-time visualization and reporting.
+- **Data Flow**: Cloud provider APIs expose AI service usage and billing data → API Integration Layer authenticates and fetches data via secure connections → Data Aggregation Service normalizes and consolidates multi-cloud data → Encrypted Data Storage persists aggregated records → Data Freshness Monitor tracks last update timestamps and triggers alerts if data exceeds 24-hour threshold → Dashboard Backend queries aggregated data to serve real-time views to authorized users
 
 #### 2. Validation Report
 
-**Requirements Coverage:** The high-level design fully addresses the epic's stated scope including secure API integration with AWS/Azure/GCP, automated data ingestion and synchronization, data freshness monitoring with alerts, encryption in transit and at rest, and scalability to support up to 200 portfolio companies. All non-functional requirements (performance, security, scalability, reliability) are incorporated into the architecture. The design provides the foundational data layer required for downstream analytics and reporting features as described in the epic's user value proposition.
+- **Requirements Coverage**: The high-level design fully covers the epic's stated scope including secure API integration with AWS/Azure/GCP, automated data ingestion and synchronization, data freshness monitoring with notifications, support for up to 50 portfolio companies (scalable to 200), encryption in transit and at rest, and the foundational data layer required for downstream analytics. All specified NFRs (uptime, load time, encryption standards, scalability, data freshness) are addressed in the architecture through dedicated components (failover mechanisms, encrypted storage, freshness monitor, scalable aggregation service).
