@@ -1,723 +1,859 @@
-# Low-Level Design (LLD) – Epic QE-4785
+# Low-Level Design (LLD) – QE-4785
+
+AI Portfolio Management Dashboard – Cloud Data Integration
+
+---
 
 ## 1. Application Architecture
 
-### 1.1 AngularJS MVC Architecture Mapping
+### 1.1 Overall AngularJS MVC Mapping
 
-This LLD describes the front-end and client-side integration layer of the AI Portfolio Management Dashboard for automated data integration from AWS, Azure, and GCP. The existing backend REST APIs (Integration Layer, Aggregation Service, Monitoring and Alerting Service, and Data Storage) are exposed as REST endpoints consumed by the AngularJS (1.x) web application.
+This LLD covers the front-end and client-side integration logic for connecting the AI Portfolio Management Dashboard to backend REST APIs that expose aggregated AI usage and spend data from AWS, Azure, and GCP. The backend integration to cloud providers is abstracted behind REST endpoints; the UI is responsible for visualization, data freshness display, and alert configuration/exposure.
 
-**High-level mapping:**
+**AngularJS application namespace:** `apmDashboard`
 
-- **Views (HTML5 + Bootstrap)**
-  - `cloud-integrations.html` – Cloud provider connection management, credentials configuration, and status overview.
-  - `portfolio-sync-status.html` – Data freshness monitoring, sync history, and per-company status.
-  - `usage-spend-dashboard.html` – Aggregated AI usage and spend visualization for portfolio companies.
-  - `alerts-center.html` – Listing of data-freshness alerts and notification status.
+**Key concerns:**
+- Display portfolio-level and company-level AI usage & spend metrics.
+- Show data freshness indicators at portfolio and company levels.
+- Enable manual refresh triggers (where allowed) and show status.
+- Expose notifications/alerts when data is stale (>24 hours).
+- Provide performant views for up to 50–200 portfolio companies.
+
+#### 1.1.1 AngularJS Modules
+
+- `apmDashboard` (root module)
+  - Depends on: `ngRoute`, `ngAnimate`, `ui.bootstrap`, `ngSanitize`, `apmDashboard.core`, `apmDashboard.portfolio`, `apmDashboard.company`, `apmDashboard.alerts`.
+
+- `apmDashboard.core`
+  - Shared services, interceptors, configuration, constants, filters.
+
+- `apmDashboard.portfolio`
+  - Portfolio-level dashboards (aggregations across all companies).
+
+- `apmDashboard.company`
+  - Company-level detail dashboards, including provider breakdown.
+
+- `apmDashboard.alerts`
+  - Data freshness indicators, alert lists, and alert configuration views.
+
+#### 1.1.2 AngularJS Artifacts
 
 - **Controllers**
-  - `CloudIntegrationsController` – Manages cloud account connections per portfolio company.
-  - `PortfolioSyncStatusController` – Displays and filters data freshness, sync status, and last updated timestamps.
-  - `UsageSpendDashboardController` – Orchestrates aggregated usage/spend visualization.
-  - `AlertsCenterController` – Manages alert listing, acknowledgment, and filtering.
+  - `PortfolioDashboardController`
+  - `CompanyDashboardController`
+  - `AlertsController`
+  - `HeaderController` (global nav and global freshness banner)
 
 - **Services / Factories**
-  - `CloudAccountService` – CRUD operations for cloud account configurations and credentials (front-end façade for Integration Layer APIs).
-  - `DataSyncService` – Initiates manual sync requests, retrieves sync status, and integrates with the Data Aggregation Service APIs.
-  - `UsageSpendService` – Fetches aggregated AI usage and spend metrics for various filters.
-  - `AlertService` – Manages retrieval and acknowledgment of alerts (e.g., stale data > 24h).
-  - `NotificationService` – Wraps notification APIs (email trigger status, preferences) where exposed.
-  - `ErrorHandlingService` – Centralized error translation, logging proxy, and user-friendly messaging.
-  - `ConfigService` – Provides environment-dependent configuration (API base URLs, feature flags, etc.).
+  - `ApiConfigService` – centralizes API base URLs and environment config.
+  - `PortfolioDataService` – gets aggregated portfolio metrics.
+  - `CompanyDataService` – gets per-company metrics and provider details.
+  - `FreshnessService` – computes and stores data freshness metadata.
+  - `AlertsService` – retrieves alert data, acknowledges/read statuses.
+  - `NotificationService` – wraps toast/banner notifications.
+  - `HttpErrorInterceptor` – HTTP interceptor for error handling.
+  - `LoggingService` – client-side telemetry and logging.
 
-- **Directives / Components**
-  - `cloudConnectionCard` – Reusable widget showing a portfolio company’s cloud connection status across AWS/Azure/GCP.
-  - `dataFreshnessBadge` – Displays freshness indicator (e.g., green/yellow/red with last-updated timestamp).
-  - `usageSpendChart` – Visualization wrapper for usage/spend charts.
-  - `spinnerOverlay` – Loading overlay for async operations.
+- **Directives / Components** (Angular 1.x custom directives)
+  - `apmPortfolioSummary` – reusable portfolio summary card.
+  - `apmCompanyList` – paginated list of portfolio companies.
+  - `apmCompanyDetail` – company details and provider breakdown.
+  - `apmFreshnessBadge` – visual indicator for data freshness.
+  - `apmStalenessBanner` – global banner when data is stale.
+  - `apmLoadingSpinner` – standard loading indicator.
 
 - **Filters**
-  - `durationAgo` – Formats timestamps into “x minutes/hours/days ago”.
-  - `currencyFormat` – Standardized currency formatting (e.g., USD with 2 decimal places).
-  - `providerLabel` – Converts provider codes (`AWS`, `AZURE`, `GCP`) to human-friendly labels.
+  - `currencyShort` – formats large currency values with suffixes (K, M, B).
+  - `durationFromNow` – converts timestamps to "x hours ago".
 
-- **Configuration Files**
-  - `app.js` – AngularJS module declaration, routing, and configuration.
-  - `app.config.js` – Environment configuration, constants, and HTTP interceptors.
-  - `app.routes.js` – Route definitions for integration, status, dashboard, and alerts views.
+- **Configuration files**
+  - Route configuration: `app.routes.js`.
+  - HTTP interceptor registration: `app.http.config.js`.
+  - Environment configuration: `app.config.env.js` (per environment overrides).
 
-### 1.2 Project Folder Structure
+### 1.2 Recommended Project Folder Structure
 
 ```text
 /webapp
   /app
-    app.js
-    app.config.js
+    app.module.js
     app.routes.js
+    app.http.config.js
+    app.config.env.js
 
     /core
-      /services
-        cloud-account.service.js
-        data-sync.service.js
-        usage-spend.service.js
-        alert.service.js
+      core.module.js
+      services
+        api-config.service.js
+        portfolio-data.service.js
+        company-data.service.js
+        freshness.service.js
+        alerts.service.js
         notification.service.js
-        error-handling.service.js
-        config.service.js
-
-      /interceptors
+        logging.service.js
+      interceptors
         http-error.interceptor.js
-        auth-token.interceptor.js
+      filters
+        currency-short.filter.js
+        duration-from-now.filter.js
 
-      /models
-        cloud-account.model.js
-        portfolio-company.model.js
-        data-sync-status.model.js
-        usage-spend.model.js
-        alert.model.js
+    /layout
+      header
+        header.controller.js
+        header.template.html
 
-      /filters
-        duration-ago.filter.js
-        currency-format.filter.js
-        provider-label.filter.js
+    /portfolio
+      portfolio.module.js
+      portfolio-dashboard.controller.js
+      portfolio-dashboard.template.html
+      directives
+        portfolio-summary.directive.js
+        portfolio-summary.template.html
+        company-list.directive.js
+        company-list.template.html
 
-      /directives
-        cloud-connection-card.directive.js
-        data-freshness-badge.directive.js
-        usage-spend-chart.directive.js
-        spinner-overlay.directive.js
+    /company
+      company.module.js
+      company-dashboard.controller.js
+      company-dashboard.template.html
+      directives
+        company-detail.directive.js
+        company-detail.template.html
 
-    /features
-      /cloud-integrations
-        cloud-integrations.controller.js
-        cloud-integrations.html
+    /alerts
+      alerts.module.js
+      alerts.controller.js
+      alerts.template.html
+      directives
+        freshness-badge.directive.js
+        freshness-badge.template.html
+        staleness-banner.directive.js
+        staleness-banner.template.html
 
-      /sync-status
-        portfolio-sync-status.controller.js
-        portfolio-sync-status.html
-
-      /usage-spend
-        usage-spend-dashboard.controller.js
-        usage-spend-dashboard.html
-
-      /alerts
-        alerts-center.controller.js
-        alerts-center.html
+    /shared
+      directives
+        loading-spinner.directive.js
+        loading-spinner.template.html
+      styles
+        dashboard.css
 
   /assets
     /css
+      bootstrap.min.css
       main.css
-      dashboard.css
-      integrations.css
-      alerts.css
-
+    /js
+      angular.js
+      angular-route.js
+      angular-animate.js
+      ui-bootstrap.js
     /img
-      provider-icons.png
-      logo.png
-
-  /config
-    env.dev.json
-    env.qa.json
-    env.prod.json
 
   index.html
 ```
 
+---
+
 ## 2. Component Specifications
 
-### 2.1 AngularJS Module – `apmDashboard` (root module)
+### 2.1 Modules
+
+#### 2.1.1 `apmDashboard` (root module)
 
 - **Type:** AngularJS Module
-- **File:** `app/app.js`
-- **Responsibility:**
-  - Declare root module `apmDashboard`.
-  - Register global dependencies: `ngRoute`, `ngAnimate`, `ngSanitize`, `ui.bootstrap`, custom modules.
-- **Public API:** N/A (module configuration only).
-- **Dependencies:** AngularJS core, route module, third-party libs (e.g., UI Bootstrap).
+- **File:** `app/app.module.js`
+- **Responsibilities:**
+  - Bootstrap AngularJS application.
+  - Declare dependencies on feature modules and third-party modules.
+- **Public API:** N/A (module declaration only).
+- **Dependencies:** `ngRoute`, `ngAnimate`, `ui.bootstrap`, `ngSanitize`, `apmDashboard.core`, `apmDashboard.portfolio`, `apmDashboard.company`, `apmDashboard.alerts`.
 
 ```javascript
 angular.module('apmDashboard', [
   'ngRoute',
   'ngAnimate',
-  'ngSanitize',
   'ui.bootstrap',
-  'apm.core',
-  'apm.features.cloudIntegrations',
-  'apm.features.syncStatus',
-  'apm.features.usageSpend',
-  'apm.features.alerts'
+  'ngSanitize',
+  'apmDashboard.core',
+  'apmDashboard.portfolio',
+  'apmDashboard.company',
+  'apmDashboard.alerts'
 ]);
 ```
 
-### 2.2 Core Module – `apm.core`
+#### 2.1.2 `apmDashboard.core`
 
 - **Type:** AngularJS Module
 - **File:** `app/core/core.module.js`
-- **Responsibility:**
-  - Encapsulate shared services, models, filters, directives.
-- **Dependencies:** `ngResource` (if used), `$http`, `$q`.
+- **Responsibilities:**
+  - Group core services, filters, interceptors, and shared utilities.
+- **Public API:** Module registration.
+- **Dependencies:** `ng`.
 
-```javascript
-angular.module('apm.core', ['ngResource']);
-```
+### 2.2 Controllers
 
-### 2.3 Feature Modules
-
-#### 2.3.1 `apm.features.cloudIntegrations`
-
-- **Type:** AngularJS Module
-- **File:** `app/features/cloud-integrations/cloud-integrations.module.js`
-- **Responsibility:**
-  - Define scope for cloud integration screens.
-- **Dependencies:** `apm.core`.
-
-#### 2.3.2 `apm.features.syncStatus`
-
-- **Type:** AngularJS Module
-- **File:** `app/features/sync-status/sync-status.module.js`
-
-#### 2.3.3 `apm.features.usageSpend`
-
-- **Type:** AngularJS Module
-- **File:** `app/features/usage-spend/usage-spend.module.js`
-
-#### 2.3.4 `apm.features.alerts`
-
-- **Type:** AngularJS Module
-- **File:** `app/features/alerts/alerts.module.js`
-
-Each feature module declares its controller and depends on `apm.core` for shared services.
-
-### 2.4 Controllers
-
-#### 2.4.1 `CloudIntegrationsController`
+#### 2.2.1 `PortfolioDashboardController`
 
 - **Type:** Controller
-- **File:** `app/features/cloud-integrations/cloud-integrations.controller.js`
-- **Responsibility:**
-  - Manage configuration and display of AWS/Azure/GCP integrations for each portfolio company.
-  - Handle connect, disconnect, and update actions for cloud accounts.
-  - Display connection status and last successful sync.
+- **File:** `app/portfolio/portfolio-dashboard.controller.js`
+- **View:** `app/portfolio/portfolio-dashboard.template.html`
+- **Responsibilities:**
+  - Load portfolio-level AI usage and spend metrics.
+  - Display aggregate metrics summarizing usage across all companies.
+  - Coordinate pagination/filtering of portfolio company list.
+  - Display portfolio-level freshness summary and highlight stale data.
+  - Trigger manual refresh requests (where supported) for portfolio data.
 - **Public Methods:**
-  - `vm.loadCompanies()` – Loads list of portfolio companies and their integration status.
-  - `vm.connectProvider(provider, company)` – Starts OAuth/API key setup for the selected provider.
-  - `vm.disconnectProvider(provider, company)` – Revokes or disables integration.
-  - `vm.testConnection(provider, company)` – Tests connectivity and reports results.
-  - `vm.saveCredentials(provider, company)` – Submits credentials/configurations to backend.
+  - `init()` – initialize controller state, load initial data.
+  - `loadPortfolioSummary()` – fetch portfolio-level metrics.
+  - `loadCompanyList()` – load paginated company list.
+  - `applyFilters(filterModel)` – update filters and reload data.
+  - `refreshData()` – trigger data refresh via backend API.
+  - `isPortfolioStale()` – returns boolean if portfolio-level data stale.
 - **Inputs:**
-  - Route params: optional `companyId`.
-  - User form inputs (API keys, tenant IDs, role ARNs, etc.).
+  - Route parameters: optional query params for view mode (e.g., `viewMode`).
+  - Filter model: date ranges, provider filters, company segments.
 - **Outputs:**
-  - Updates UI state: connection statuses, validation messages.
-  - Invokes `CloudAccountService` methods.
+  - View model (`vm`) containing:
+    - `vm.portfolioSummary`
+    - `vm.companyPage`
+    - `vm.filters`
+    - `vm.freshness` (portfolio-level freshness metrics)
+    - `vm.loadingState` flags
 - **Dependencies (DI):**
-  - `CloudAccountService`, `PortfolioCompanyModel`, `$routeParams`, `$uibModal`, `ErrorHandlingService`, `$log`.
+  - `PortfolioDataService`
+  - `FreshnessService`
+  - `NotificationService`
+  - `$log`
+  - `$q`
 
-#### 2.4.2 `PortfolioSyncStatusController`
-
-- **Type:** Controller
-- **File:** `app/features/sync-status/portfolio-sync-status.controller.js`
-- **Responsibility:**
-  - Display per-company data freshness, sync status, last sync timestamp, and errors.
-  - Support filters by provider, company, and staleness threshold.
-  - Allow manual sync trigger (if permitted by backend).
-- **Public Methods:**
-  - `vm.loadSyncStatuses()` – Fetch sync status list.
-  - `vm.filterByProvider(provider)` – Filter by AWS/Azure/GCP.
-  - `vm.filterByStaleness(stalenessBucket)` – Filter for data older than specific durations.
-  - `vm.triggerSync(companyId)` – Request immediate sync.
-- **Inputs:**
-  - Filter settings from UI.
-- **Outputs:**
-  - `syncStatuses` collection bound to `portfolio-sync-status.html`.
-- **Dependencies:**
-  - `DataSyncService`, `DataSyncStatusModel`, `ErrorHandlingService`, `$log`.
-
-#### 2.4.3 `UsageSpendDashboardController`
+#### 2.2.2 `CompanyDashboardController`
 
 - **Type:** Controller
-- **File:** `app/features/usage-spend/usage-spend-dashboard.controller.js`
-- **Responsibility:**
-  - Orchestrate retrieval of aggregated AI usage and spend data.
-  - Apply filters by company, provider, time range, and AI service type.
-  - Populate charts via `usageSpendChart` directive.
+- **File:** `app/company/company-dashboard.controller.js`
+- **View:** `app/company/company-dashboard.template.html`
+- **Responsibilities:**
+  - Load detailed metrics for a single portfolio company.
+  - Display provider-level breakdown (AWS, Azure, GCP) for AI usage/spend.
+  - Present company-specific freshness statuses and staleness indicators.
+  - Coordinate view tabs (overview, provider details, timeline trends).
+  - Allow user-triggered refresh for a specific company.
 - **Public Methods:**
-  - `vm.init()` – Initialize default filters and load data.
-  - `vm.onFilterChange()` – Re-query data when filters change.
-  - `vm.refresh()` – Manual refresh.
+  - `init()` – load company data using route param `companyId`.
+  - `loadCompanyDetail(companyId)` – fetch metrics and provider breakdown.
+  - `refreshCompany(companyId)` – call backend to refresh this company’s data.
+  - `getProviderIcon(provider)` – helper for UI icons.
+  - `isCompanyStale()` – check staleness.
 - **Inputs:**
-  - Filter model: `vm.filters = { companyId, provider, dateFrom, dateTo, metricType }`.
+  - Route parameter `companyId`.
 - **Outputs:**
-  - `vm.usageMetrics`, `vm.spendMetrics` collections.
+  - `vm.company` – company-level metrics model.
+  - `vm.providers` – list of provider-specific metrics.
+  - `vm.freshness` – freshness metadata.
+  - `vm.loadingState`.
 - **Dependencies:**
-  - `UsageSpendService`, `UsageSpendModel`, `ErrorHandlingService`, `$log`.
+  - `CompanyDataService`
+  - `FreshnessService`
+  - `NotificationService`
+  - `$routeParams`
+  - `$log`
 
-#### 2.4.4 `AlertsCenterController`
+#### 2.2.3 `AlertsController`
 
 - **Type:** Controller
-- **File:** `app/features/alerts/alerts-center.controller.js`
-- **Responsibility:**
-  - Display alerts about data staleness, integration failures, and SLA breaches.
-  - Allow filtering, pagination, and acknowledgment of alerts.
+- **File:** `app/alerts/alerts.controller.js`
+- **View:** `app/alerts/alerts.template.html`
+- **Responsibilities:**
+  - Display list of data freshness alerts.
+  - Provide filters (e.g., all alerts, only active, only resolved).
+  - Allow marking alerts as acknowledged/read.
 - **Public Methods:**
-  - `vm.loadAlerts()` – Fetch alerts.
-  - `vm.filterAlerts(filter)` – Apply filter (provider, company, severity, status).
-  - `vm.acknowledgeAlert(alertId)` – Mark alert as acknowledged.
-- **Inputs:**
-  - Filter settings.
-- **Outputs:**
-  - `vm.alerts` list.
-- **Dependencies:**
-  - `AlertService`, `NotificationService`, `AlertModel`, `ErrorHandlingService`, `$log`.
+  - `init()` – load alerts list.
+  - `loadAlerts()` – fetch alerts.
+  - `acknowledgeAlert(alertId)` – mark as acknowledged.
+  - `applyFilter(filter)` – filter view.
+- **Inputs:** Filter selection, user interactions.
+- **Outputs:** Alerts list & filter state.
+- **Dependencies:** `AlertsService`, `NotificationService`, `$log`.
 
-### 2.5 Services / Factories
+#### 2.2.4 `HeaderController`
 
-#### 2.5.1 `CloudAccountService`
-
-- **Type:** Service (factory)
-- **File:** `app/core/services/cloud-account.service.js`
-- **Responsibility:**
-  - Communicate with backend Integration Layer for CRUD of cloud account configurations.
+- **Type:** Controller
+- **File:** `app/layout/header/header.controller.js`
+- **View:** `app/layout/header/header.template.html`
+- **Responsibilities:**
+  - Control global navigation and show high-level freshness banner.
+  - Reflect any global alerts or system status.
 - **Public Methods:**
-  - `getCompaniesWithIntegrations()` – GET `/api/v1/portfolio/companies/integrations`.
-  - `getCompanyIntegrations(companyId)` – GET `/api/v1/portfolio/companies/{companyId}/integrations`.
-  - `saveIntegration(companyId, provider, payload)` – POST `/api/v1/portfolio/companies/{companyId}/integrations/{provider}`.
-  - `deleteIntegration(companyId, provider)` – DELETE `/api/v1/portfolio/companies/{companyId}/integrations/{provider}`.
-  - `testConnection(companyId, provider)` – POST `/api/v1/portfolio/companies/{companyId}/integrations/{provider}/test`.
-- **Inputs:**
-  - API payloads with authentication details and metadata.
-- **Outputs:**
-  - Promise resolving to normalized `CloudAccountModel` objects.
-- **Dependencies:**
-  - `$http`, `$q`, `ConfigService`, `CloudAccountModel`.
+  - `init()` – load global metadata (e.g., last sync time portfolio-wide).
+- **Dependencies:** `FreshnessService`, `AlertsService`, `$log`.
 
-#### 2.5.2 `DataSyncService`
+### 2.3 Services / Factories
+
+#### 2.3.1 `ApiConfigService`
 
 - **Type:** Service
-- **File:** `app/core/services/data-sync.service.js`
-- **Responsibility:**
-  - Interact with Data Aggregation Service for sync status and manual sync.
+- **File:** `app/core/services/api-config.service.js`
+- **Responsibilities:**
+  - Provide configured API base URLs and endpoints per environment.
+  - Centralize construction of endpoint URLs.
 - **Public Methods:**
-  - `getSyncStatuses(filters)` – GET `/api/v1/data-sync/status` with query params.
-  - `triggerSync(companyId)` – POST `/api/v1/data-sync/companies/{companyId}/trigger`.
-  - `getSyncHistory(companyId)` – GET `/api/v1/data-sync/companies/{companyId}/history`.
-- **Dependencies:**
-  - `$http`, `$q`, `ConfigService`, `DataSyncStatusModel`.
+  - `getBaseUrl()` – returns current API base URL.
+  - `getEndpoint(key)` – returns path for pre-defined endpoints.
+  - `getEnv()` – returns current environment metadata.
+- **Outputs:** Config object consumed by other services.
+- **Dependencies:** `$window` (for env variables injected at runtime).
 
-#### 2.5.3 `UsageSpendService`
+#### 2.3.2 `PortfolioDataService`
 
 - **Type:** Service
-- **File:** `app/core/services/usage-spend.service.js`
-- **Responsibility:**
-  - Retrieve aggregated AI usage and spend metrics.
-- **Public Methods:**
-  - `getAggregatedMetrics(filters)` – GET `/api/v1/analytics/usage-spend`.
-- **Dependencies:**
-  - `$http`, `$q`, `ConfigService`, `UsageSpendModel`.
+- **File:** `app/core/services/portfolio-data.service.js`
+- **Responsibilities:**
+  - Communicate with backend portfolio endpoints.
+  - Abstract REST API calls for portfolio metrics & company list.
+- **Public Methods (returning `$q` promises):**
+  - `getPortfolioSummary(filterModel)` -> `Promise<PortfolioSummary>`
+  - `getCompanyPage(pageRequest)` -> `Promise<Page<CompanySummary>>`
+  - `refreshPortfolio(filterModel)` -> `Promise<RefreshStatus>`
+- **Inputs:** Filter and paging models.
+- **Outputs:** Strongly structured JSON mapped to JS models (see section 4).
+- **Dependencies:** `$http`, `ApiConfigService`, `LoggingService`.
 
-#### 2.5.4 `AlertService`
+#### 2.3.3 `CompanyDataService`
 
 - **Type:** Service
-- **File:** `app/core/services/alert.service.js`
-- **Responsibility:**
-  - Retrieve and manage alerts (e.g., stale data, integration failures).
+- **File:** `app/core/services/company-data.service.js`
+- **Responsibilities:**
+  - Communicate with backend endpoints for a specific company.
 - **Public Methods:**
-  - `getAlerts(filters)` – GET `/api/v1/alerts`.
-  - `acknowledgeAlert(alertId)` – POST `/api/v1/alerts/{alertId}/acknowledge`.
-- **Dependencies:**
-  - `$http`, `$q`, `ConfigService`, `AlertModel`.
+  - `getCompanyDetail(companyId)` -> `Promise<CompanyDetail>`
+  - `refreshCompany(companyId)` -> `Promise<RefreshStatus>`
+- **Dependencies:** `$http`, `ApiConfigService`, `LoggingService`.
 
-#### 2.5.5 `NotificationService`
+#### 2.3.4 `FreshnessService`
+
+- **Type:** Service
+- **File:** `app/core/services/freshness.service.js`
+- **Responsibilities:**
+  - Compute staleness based on timestamps (e.g., >24 hours).
+  - Provide helper methods for UI to classify freshness levels.
+  - Maintain in-memory cache of last-refresh metadata.
+- **Public Methods:**
+  - `calculateStaleness(lastUpdatedUtc)` -> `{ hoursDiff, isStale, level }`
+  - `getFreshnessClass(level)` -> CSS class string.
+  - `updateCache(scopeKey, lastUpdatedUtc)` -> `void`.
+  - `getCached(scopeKey)` -> `FreshnessMetadata | null`.
+- **Dependencies:** `$window`, `$log`.
+
+#### 2.3.5 `AlertsService`
+
+- **Type:** Service
+- **File:** `app/core/services/alerts.service.js`
+- **Responsibilities:**
+  - Communicate with backend alerts endpoints.
+  - Provide typed access to data freshness alerts.
+- **Public Methods:**
+  - `getAlerts(filter)` -> `Promise<Array<Alert>>`
+  - `acknowledgeAlert(alertId)` -> `Promise<Alert>`
+- **Dependencies:** `$http`, `ApiConfigService`, `LoggingService`.
+
+#### 2.3.6 `NotificationService`
 
 - **Type:** Service
 - **File:** `app/core/services/notification.service.js`
-- **Responsibility:**
-  - Provide access to notification preferences and status of email alerts.
+- **Responsibilities:**
+  - Provide uniform way to show toast messages and banners.
 - **Public Methods:**
-  - `getNotificationSettings(userId)` – GET `/api/v1/notifications/settings/{userId}`.
-  - `updateNotificationSettings(userId, payload)` – PUT `/api/v1/notifications/settings/{userId}`.
-- **Dependencies:**
-  - `$http`, `$q`, `ConfigService`.
+  - `success(message, options)`
+  - `error(message, options)`
+  - `info(message, options)`
+  - `warning(message, options)`
+- **Dependencies:** `$window`, `$log`.
 
-#### 2.5.6 `ErrorHandlingService`
+#### 2.3.7 `HttpErrorInterceptor`
+
+- **Type:** Factory (interceptor)
+- **File:** `app/core/interceptors/http-error.interceptor.js`
+- **Responsibilities:**
+  - Intercept HTTP responses and handle common errors.
+  - Map API error codes to user-friendly messages.
+  - Log errors via `LoggingService`.
+- **Public Methods:**
+  - `responseError(rejection)` – AngularJS interceptor hook.
+- **Dependencies:** `$q`, `NotificationService`, `LoggingService`.
+
+#### 2.3.8 `LoggingService`
 
 - **Type:** Service
-- **File:** `app/core/services/error-handling.service.js`
-- **Responsibility:**
-  - Centralize handling of REST and client-side errors.
+- **File:** `app/core/services/logging.service.js`
+- **Responsibilities:**
+  - Wrap `$log` and optionally send logs to remote telemetry.
+  - Include correlation IDs (if provided via headers).
 - **Public Methods:**
-  - `handleHttpError(response)` – Converts HTTP error responses into user-facing messages and logs.
-  - `logClientError(error)` – Sends client-side errors to server logging endpoint.
-- **Dependencies:**
-  - `$log`, `$injector` (to lazy-get `$http` for logging), `ConfigService`.
+  - `debug(message, context)`
+  - `info(message, context)`
+  - `warn(message, context)`
+  - `error(message, context)`
+- **Dependencies:** `$log`, `$http`, `ApiConfigService` (for telemetry endpoint).
 
-#### 2.5.7 `ConfigService`
+### 2.4 Directives / Components
 
-- **Type:** Service
-- **File:** `app/core/services/config.service.js`
-- **Responsibility:**
-  - Provide environment-specific configurations: API base URL, feature flags, logging.
-- **Public Methods:**
-  - `getApiBaseUrl()` – Returns base URL per environment.
-  - `getFeatureFlag(flagName)` – Returns feature flag state.
-- **Dependencies:**
-  - `$http`, `$q`, `$window` (for global config injected on page load).
+#### 2.4.1 `apmPortfolioSummary`
 
-### 2.6 Directives
+- **Type:** Directive (element)
+- **File:** `app/portfolio/directives/portfolio-summary.directive.js`
+- **Template:** `app/portfolio/directives/portfolio-summary.template.html`
+- **Responsibilities:**
+  - Render aggregate portfolio metrics (total spend, total usage, etc.).
+  - Show global last updated time and staleness.
+- **Scope Bindings:**
+  - `summary` – `=` two-way binding of `PortfolioSummary`.
+  - `freshness` – `=` freshness metadata.
+- **Dependencies:** `FreshnessService` (in directive controller).
 
-#### 2.6.1 `cloudConnectionCard`
+#### 2.4.2 `apmCompanyList`
 
-- **Type:** Directive (component-style)
-- **File:** `app/core/directives/cloud-connection-card.directive.js`
-- **Responsibility:**
-  - Display and manage a single portfolio company’s integration state per provider.
-- **Bindings:**
-  - `company` (object, one-way binding).
-  - `onConnect` (callback).
-  - `onDisconnect` (callback).
-  - `onTestConnection` (callback).
-- **Template:** `cloud-connection-card.html` (inline or separate partial).
+- **Type:** Directive (element)
+- **File:** `app/portfolio/directives/company-list.directive.js`
+- **Template:** `app/portfolio/directives/company-list.template.html`
+- **Responsibilities:**
+  - Render a paginated list of portfolio companies.
+  - For each, show AI spend, last updated, and staleness badge.
+- **Scope Bindings:**
+  - `companies` – `=` list of `CompanySummary`.
+  - `page` – `=` page metadata.
+  - `onPageChange(pageNumber)` – `&` callback.
+- **Dependencies:** `FreshnessService` (for per-row freshness badges).
 
-#### 2.6.2 `dataFreshnessBadge`
+#### 2.4.3 `apmCompanyDetail`
 
-- **File:** `app/core/directives/data-freshness-badge.directive.js`
-- **Responsibility:**
-  - Visual representation of data freshness based on timestamp.
-- **Bindings:**
-  - `lastUpdated` (Date/string).
-- **Behavior:**
-  - Applies color coding: green (< 6h), yellow (6–24h), red (>24h).
+- **Type:** Directive (element)
+- **File:** `app/company/directives/company-detail.directive.js`
+- **Template:** `app/company/directives/company-detail.template.html`
+- **Responsibilities:**
+  - Render detailed view of a single company with provider breakdown.
+  - Show provider cards for AWS, Azure, GCP.
+- **Scope Bindings:**
+  - `company` – `=` `CompanyDetail`.
+  - `providers` – `=` provider metrics.
+  - `freshness` – `=` freshness metadata.
 
-#### 2.6.3 `usageSpendChart`
+#### 2.4.4 `apmFreshnessBadge`
 
-- **File:** `app/core/directives/usage-spend-chart.directive.js`
-- **Responsibility:**
-  - Wrap chart library (e.g., Chart.js) for usage/spend graphs.
-- **Bindings:**
-  - `metrics` (array), `type` (string), `onPointClick` (callback).
+- **Type:** Directive (attribute/element)
+- **File:** `app/alerts/directives/freshness-badge.directive.js`
+- **Template:** `app/alerts/directives/freshness-badge.template.html`
+- **Responsibilities:**
+  - Show color-coded freshness (e.g., green < 12h, amber 12–24h, red >24h).
+- **Scope Bindings:**
+  - `lastUpdatedUtc` – `@` string timestamp.
+- **Dependencies:** `FreshnessService`.
 
-#### 2.6.4 `spinnerOverlay`
+#### 2.4.5 `apmStalenessBanner`
 
-- **File:** `app/core/directives/spinner-overlay.directive.js`
-- **Responsibility:**
-  - Show overlay with spinner during async operations.
-- **Bindings:**
-  - `isLoading` (bool).
+- **Type:** Directive (element)
+- **File:** `app/alerts/directives/staleness-banner.directive.js`
+- **Template:** `app/alerts/directives/staleness-banner.template.html`
+- **Responsibilities:**
+  - Display high-visibility banner when global data staleness exceeds threshold.
+- **Scope Bindings:**
+  - `freshness` – `=` portfolio freshness.
 
-### 2.7 Filters
+#### 2.4.6 `apmLoadingSpinner`
 
-#### 2.7.1 `durationAgo`
+- **Type:** Directive (element)
+- **File:** `app/shared/directives/loading-spinner.directive.js`
+- **Template:** `app/shared/directives/loading-spinner.template.html`
+- **Responsibilities:**
+  - Standard loading spinner for all views.
+- **Scope Bindings:**
+  - `isLoading` – `=` boolean.
 
-- **File:** `app/core/filters/duration-ago.filter.js`
-- **Responsibility:**
-  - Convert timestamps to human-readable relative durations.
+### 2.5 Filters
 
-#### 2.7.2 `currencyFormat`
+#### 2.5.1 `currencyShort`
 
-- **File:** `app/core/filters/currency-format.filter.js`
+- **Type:** Filter
+- **File:** `app/core/filters/currency-short.filter.js`
+- **Responsibility:** Shorten large numeric currency values (e.g., 1,234,000 -> 1.23M).
 
-#### 2.7.3 `providerLabel`
+#### 2.5.2 `durationFromNow`
 
-- **File:** `app/core/filters/provider-label.filter.js`
+- **Type:** Filter
+- **File:** `app/core/filters/duration-from-now.filter.js`
+- **Responsibility:** Transform UTC timestamp into human-readable duration from now.
+
+---
 
 ## 3. Component Responsibilities
 
 ### 3.1 Business Logic Ownership
 
 - **Controllers**
-  - Own orchestration of user interactions, calling services, preparing view models.
-  - Do not contain low-level API details or transformation logic; delegate to services and models.
+  - Own view orchestration, user interaction handling, and coordination between services and directives.
+  - Controllers never embed HTTP logic directly; they call services.
 
 - **Services**
-  - Own communication with REST APIs and transformation into domain models.
-  - Enforce business rules like staleness thresholds (24h), provider-specific normalizations, and default filters.
-
-- **Models**
-  - Own representation and validation of data structures: cloud account configs, sync statuses, usage metrics, alerts.
+  - Own business rules related to fetching and transforming data before it reaches the UI.
+  - `FreshnessService` encapsulates the rules for determining staleness (>24h) per requirement.
 
 - **Directives**
-  - Own UI presentation, DOM interactions, and component-level event handling.
+  - Own UI composition and DOM-level responsibilities (e.g., layouts, applying Bootstrap classes, conditional markup for freshness badges).
 
-- **Filters**
-  - Own formatting for display; no mutation of underlying data.
+- **Models**
+  - Represent domain entities such as PortfolioSummary, CompanySummary, CompanyDetail, ProviderMetrics, Alert, etc., as plain JS objects.
 
-### 3.2 UI Handling
+- **Validation**
+  - Form-level validations for filters (date ranges, etc.) implemented via AngularJS form validation in templates and minimal controller logic.
 
-- View templates use Bootstrap for responsive layouts.
-- Controllers expose `vm` objects to templates using `controllerAs` syntax.
-- Directives encapsulate reusable components (cards, charts, badges).
+### 3.2 State Management
 
-### 3.3 State Management
+- Controllers maintain local view state (selected filters, loading flags) via `vm` pattern.
+- No global mutable singletons except for services; services are stateless or maintain only cache where required (FreshnessService caches last known timestamps).
+- UI state resets on route change; no implicit coupling between portfolio and company views beyond route navigation.
 
-- State is managed at controller level using plain JavaScript objects.
-- Persistent user preferences (filters, view modes) stored in `localStorage` via a small utility (within `ConfigService` or dedicated `UserPreferenceService` if needed).
-- URL query parameters used for bookmarkable filters and states (e.g., selected company, provider).
-
-### 3.4 API Communication
-
-- All HTTP communication goes via `$http` with base URLs from `ConfigService`.
-- HTTP interceptors add auth tokens, trace IDs, and handle generic errors.
-- Retry logic for transient errors implemented in services or interceptors.
+---
 
 ## 4. Interface Specifications
 
 ### 4.1 REST API Interfaces
 
-> Note: Exact backend implementation is not in scope; this section defines contracts expected by the AngularJS application.
+The UI will integrate with backend REST APIs that abstract cloud provider data aggregation. Endpoints follow REST principles and use JSON payloads. All requests must include authentication headers (e.g., bearer token) configured via HTTP interceptors.
 
-#### 4.1.1 Cloud Account Integration APIs
+#### 4.1.1 Get Portfolio Summary
 
-- **GET** `/api/v1/portfolio/companies/integrations`
-  - **Description:** Returns list of portfolio companies with summarized integration status.
-  - **Response 200:**
-    ```json
-    [
-      {
-        "companyId": "PCO-001",
-        "companyName": "Example Portfolio Co 1",
-        "integrations": {
-          "AWS": { "status": "CONNECTED", "lastSync": "2024-08-23T12:00:00Z" },
-          "AZURE": { "status": "DISCONNECTED", "lastSync": null },
-          "GCP": { "status": "CONNECTED", "lastSync": "2024-08-23T11:30:00Z" }
-        }
-      }
-    ]
-    ```
-  - **Error Responses:**
-    - `401 Unauthorized` – Missing/invalid token.
-    - `500 Internal Server Error` – Unexpected errors.
+- **Endpoint:** `/api/portfolio/summary`
+- **Method:** `GET`
+- **Query Parameters:**
+  - `fromDate` (optional, ISO-8601)
+  - `toDate` (optional, ISO-8601)
+  - `providers` (optional, CSV: `aws,azure,gcp`)
+- **Request Headers:**
+  - `Authorization: Bearer <token>`
+  - `X-Correlation-Id: <uuid>`
+- **Response 200 (application/json):**
 
-- **GET** `/api/v1/portfolio/companies/{companyId}/integrations`
-  - Returns detailed integration configuration for the company.
+```json
+{
+  "totalSpendUsd": 1578900.25,
+  "totalUsageHours": 48302,
+  "companiesCount": 120,
+  "lastUpdatedUtc": "2024-05-16T10:15:00Z",
+  "providerBreakdown": {
+    "aws": { "spendUsd": 900000.5, "usageHours": 29000 },
+    "azure": { "spendUsd": 450000.0, "usageHours": 15000 },
+    "gcp": { "spendUsd": 228900.75, "usageHours": 4302 }
+  }
+}
+```
 
-- **POST** `/api/v1/portfolio/companies/{companyId}/integrations/{provider}`
-  - **Description:** Create or update integration configuration for provider.
-  - **Request Payload:**
-    ```json
+- **Error Responses:**
+  - `401 Unauthorized` – missing/invalid token.
+  - `500 Internal Server Error` – generic server error; UI shows toast "Unable to load portfolio summary. Try again later".
+
+#### 4.1.2 Get Portfolio Company Page
+
+- **Endpoint:** `/api/portfolio/companies`
+- **Method:** `GET`
+- **Query Parameters:**
+  - `page` (1-based int)
+  - `pageSize`
+  - `sortBy` (e.g., `name`, `spend`, `lastUpdated`)
+  - `sortDir` (`asc` | `desc`)
+  - `filterText` (optional search)
+- **Response 200:**
+
+```json
+{
+  "items": [
     {
-      "authType": "API_KEY|ROLE|OAUTH",
-      "credentials": {
-        "accessKeyId": "...",
-        "secretAccessKey": "...",
-        "roleArn": "...",
-        "tenantId": "...",
-        "subscriptionId": "..."
-      },
-      "metadata": {
-        "region": "us-east-1",
-        "description": "Primary AWS account"
-      }
+      "id": "pc-001",
+      "name": "Acme AI Labs",
+      "segment": "Enterprise",
+      "totalSpendUsd": 120000.5,
+      "lastUpdatedUtc": "2024-05-16T09:15:00Z",
+      "providers": ["aws", "azure"]
     }
-    ```
-  - **Response 200/201:** Normalized `CloudAccountModel`.
-  - **Error Responses:** `400` (validation failures), `403` (insufficient rights).
+  ],
+  "page": 1,
+  "pageSize": 25,
+  "totalItems": 120,
+  "totalPages": 5
+}
+```
 
-- **DELETE** `/api/v1/portfolio/companies/{companyId}/integrations/{provider}`
+- **Errors:**
+  - `400 Bad Request` – invalid paging parameters.
 
-- **POST** `/api/v1/portfolio/companies/{companyId}/integrations/{provider}/test`
-  - Tests connectivity and permissions.
+#### 4.1.3 Refresh Portfolio Data
 
-#### 4.1.2 Data Sync & Freshness APIs
+- **Endpoint:** `/api/portfolio/refresh`
+- **Method:** `POST`
+- **Request Body (optional filters):**
 
-- **GET** `/api/v1/data-sync/status`
-  - **Query Params:**
-    - `provider` (optional)
-    - `companyId` (optional)
-    - `stalenessGtHours` (optional)
-  - **Response 200:**
-    ```json
-    [
-      {
-        "companyId": "PCO-001",
-        "provider": "AWS",
-        "lastSync": "2024-08-23T12:00:00Z",
-        "status": "SUCCESS",
-        "stalenessHours": 2.5,
-        "errorCode": null,
-        "errorMessage": null
-      }
-    ]
-    ```
+```json
+{
+  "fromDate": "2024-05-01",
+  "toDate": "2024-05-16",
+  "providers": ["aws", "azure", "gcp"]
+}
+```
 
-- **POST** `/api/v1/data-sync/companies/{companyId}/trigger`
-  - **Description:** Initiates on-demand sync for a company.
+- **Response 202 (Accepted):**
 
-- **GET** `/api/v1/data-sync/companies/{companyId}/history`
-  - **Description:** Returns last N sync attempts, their outcome, and durations.
+```json
+{
+  "status": "IN_PROGRESS",
+  "jobId": "refresh-job-20240516-001"
+}
+```
 
-#### 4.1.3 Usage & Spend Analytics APIs
+- **Errors:**
+  - `409 Conflict` – refresh already in progress.
 
-- **GET** `/api/v1/analytics/usage-spend`
-  - **Query Params:**
-    - `companyId` (optional)
-    - `provider` (optional)
-    - `dateFrom`, `dateTo`
-    - `metricType` (`USAGE`, `SPEND`)
-  - **Response 200:**
-    ```json
+#### 4.1.4 Get Company Detail
+
+- **Endpoint:** `/api/companies/{companyId}`
+- **Method:** `GET`
+- **Response 200:**
+
+```json
+{
+  "id": "pc-001",
+  "name": "Acme AI Labs",
+  "segment": "Enterprise",
+  "lastUpdatedUtc": "2024-05-16T09:15:00Z",
+  "providers": [
     {
-      "timeGranularity": "DAY",
-      "currency": "USD",
-      "points": [
-        { "timestamp": "2024-08-22", "usageHours": 120, "spendAmount": 450.25 },
-        { "timestamp": "2024-08-23", "usageHours": 135, "spendAmount": 470.75 }
-      ],
-      "totals": {
-        "usageHours": 255,
-        "spendAmount": 921.00
-      }
+      "provider": "aws",
+      "spendUsd": 80000.5,
+      "usageHours": 20000,
+      "lastUpdatedUtc": "2024-05-16T09:00:00Z"
+    },
+    {
+      "provider": "azure",
+      "spendUsd": 40000,
+      "usageHours": 10000,
+      "lastUpdatedUtc": "2024-05-15T20:00:00Z"
     }
-    ```
+  ]
+}
+```
 
-#### 4.1.4 Alerts & Notifications APIs
+#### 4.1.5 Refresh Company Data
 
-- **GET** `/api/v1/alerts`
-  - **Query Params:** `companyId`, `provider`, `severity`, `status` (NEW, ACKNOWLEDGED).
-  - **Response 200:**
-    ```json
-    [
-      {
-        "alertId": "AL-1001",
-        "type": "DATA_STALE",
-        "companyId": "PCO-001",
-        "provider": "AWS",
-        "createdAt": "2024-08-23T14:00:00Z",
-        "severity": "HIGH",
-        "status": "NEW",
-        "details": {
-          "lastSync": "2024-08-22T10:00:00Z",
-          "stalenessHours": 28
-        }
-      }
-    ]
-    ```
+- **Endpoint:** `/api/companies/{companyId}/refresh`
+- **Method:** `POST`
+- **Response 202:**
 
-- **POST** `/api/v1/alerts/{alertId}/acknowledge`
-  - **Description:** Marks alert as acknowledged and records user & timestamp.
+```json
+{
+  "status": "IN_PROGRESS",
+  "jobId": "company-001-refresh-job-20240516-001"
+}
+```
 
-- **GET** `/api/v1/notifications/settings/{userId}`
+#### 4.1.6 Get Alerts
 
-- **PUT** `/api/v1/notifications/settings/{userId}`
+- **Endpoint:** `/api/alerts`
+- **Method:** `GET`
+- **Query Parameters:**
+  - `status` (optional: `ACTIVE`, `ACKNOWLEDGED`)
+- **Response 200:**
 
-### 4.2 External System Interfaces
+```json
+[
+  {
+    "id": "alert-001",
+    "type": "DATA_STALENESS",
+    "scope": "COMPANY",
+    "companyId": "pc-001",
+    "thresholdHours": 24,
+    "actualHours": 36,
+    "createdUtc": "2024-05-16T11:15:00Z",
+    "status": "ACTIVE"
+  }
+]
+```
 
-- **Cloud Providers:** AWS, Azure, GCP APIs are accessed by backend; UI only sees normalized data via REST APIs above.
-- **Email Notification Service:** UI receives derived alert data; may show whether email was sent successfully via `AlertService` if backend exposes fields like `notificationStatus`.
+#### 4.1.7 Acknowledge Alert
+
+- **Endpoint:** `/api/alerts/{alertId}/acknowledge`
+- **Method:** `POST`
+- **Response 200:**
+
+```json
+{
+  "id": "alert-001",
+  "status": "ACKNOWLEDGED",
+  "acknowledgedBy": "user@company.com",
+  "acknowledgedUtc": "2024-05-16T12:00:00Z"
+}
+```
+
+---
 
 ## 5. Data Model Design
 
-### 5.1 `CloudAccountModel`
+### 5.1 PortfolioSummary
 
-- **File:** `app/core/models/cloud-account.model.js`
-- **Structure (JS Object):**
-  ```javascript
-  function CloudAccountModel(data) {
-    this.companyId = data.companyId || null;
-    this.companyName = data.companyName || '';
-    this.provider = data.provider || null; // 'AWS' | 'AZURE' | 'GCP'
-    this.status = data.status || 'DISCONNECTED'; // CONNECTED, DISCONNECTED, ERROR
-    this.lastSync = data.lastSync ? new Date(data.lastSync) : null;
-    this.metadata = data.metadata || {};
+- **Object Name:** `PortfolioSummary`
+- **Type:** JS object
+
+```javascript
+{
+  totalSpendUsd: Number,       // >= 0
+  totalUsageHours: Number,     // >= 0
+  companiesCount: Number,      // integer >= 0
+  lastUpdatedUtc: String,      // ISO-8601
+  providerBreakdown: {
+    aws: ProviderAggregate,
+    azure: ProviderAggregate,
+    gcp: ProviderAggregate
   }
-  ```
-- **Attributes:**
-  - `companyId` (string)
-  - `companyName` (string)
-  - `provider` (enum)
-  - `status` (enum)
-  - `lastSync` (Date|null)
-  - `metadata` (object – region, tags).
-- **Validation Rules:**
-  - `provider` must be one of allowed enum.
-  - `status` must be one of `CONNECTED`, `DISCONNECTED`, `ERROR`.
-- **State Transitions:**
-  - `DISCONNECTED` → `CONNECTED` (upon successful save & test).
-  - `CONNECTED` → `ERROR` (if repeated failures detected).
-  - `CONNECTED` → `DISCONNECTED` (user disconnect).
+}
+```
 
-### 5.2 `PortfolioCompanyModel`
-
-- **Attributes:** `companyId`, `companyName`, `industry`, `region`.
-- **Usage:**
-  - Provide metadata for grouping/filters.
-
-### 5.3 `DataSyncStatusModel`
-
-- **Structure:**
-  ```javascript
-  function DataSyncStatusModel(data) {
-    this.companyId = data.companyId;
-    this.provider = data.provider;
-    this.lastSync = data.lastSync ? new Date(data.lastSync) : null;
-    this.status = data.status; // SUCCESS, FAILED, IN_PROGRESS
-    this.stalenessHours = data.stalenessHours || 0;
-    this.errorCode = data.errorCode || null;
-    this.errorMessage = data.errorMessage || null;
-  }
-  ```
 - **Validation:**
-  - `stalenessHours` ≥ 0.
-  - `status` in allowed values.
-- **State Transitions:**
-  - `IN_PROGRESS` → `SUCCESS` or `FAILED`.
+  - `totalSpendUsd >= 0`, `totalUsageHours >= 0`.
+  - `lastUpdatedUtc` must be a valid date; invalid => treated as stale.
 
-### 5.4 `UsageSpendModel`
+### 5.2 ProviderAggregate
 
-- **Structure:**
-  ```javascript
-  function UsageSpendModel(data) {
-    this.timeGranularity = data.timeGranularity || 'DAY';
-    this.currency = data.currency || 'USD';
-    this.points = data.points || [];
-    this.totals = data.totals || { usageHours: 0, spendAmount: 0 };
-  }
-  ```
-- **Validation:**
-  - `points` must be an array with `timestamp`, `usageHours`, `spendAmount`.
+```javascript
+{
+  spendUsd: Number,     // >= 0
+  usageHours: Number    // >= 0
+}
+```
 
-### 5.5 `AlertModel`
+### 5.3 CompanySummary
 
-- **Structure:**
-  ```javascript
-  function AlertModel(data) {
-    this.alertId = data.alertId;
-    this.type = data.type; // e.g., DATA_STALE, SYNC_FAILURE
-    this.companyId = data.companyId;
-    this.provider = data.provider;
-    this.createdAt = new Date(data.createdAt);
-    this.severity = data.severity; // LOW, MEDIUM, HIGH, CRITICAL
-    this.status = data.status; // NEW, ACKNOWLEDGED
-    this.details = data.details || {};
-  }
-  ```
+```javascript
+{
+  id: String,                       // non-empty
+  name: String,                     // non-empty
+  segment: String,                  // optional classification
+  totalSpendUsd: Number,            // >= 0
+  lastUpdatedUtc: String,           // ISO-8601
+  providers: Array<String>          // subset of ['aws', 'azure', 'gcp']
+}
+```
+
+### 5.4 CompanyDetail
+
+```javascript
+{
+  id: String,
+  name: String,
+  segment: String,
+  lastUpdatedUtc: String,
+  providers: Array<ProviderMetrics>
+}
+```
+
+### 5.5 ProviderMetrics
+
+```javascript
+{
+  provider: String,          // 'aws' | 'azure' | 'gcp'
+  spendUsd: Number,
+  usageHours: Number,
+  lastUpdatedUtc: String
+}
+```
+
+### 5.6 Alert
+
+```javascript
+{
+  id: String,
+  type: String,          // 'DATA_STALENESS', extendable
+  scope: String,         // 'PORTFOLIO' | 'COMPANY'
+  companyId: String | null,
+  thresholdHours: Number,
+  actualHours: Number,
+  createdUtc: String,
+  status: String         // 'ACTIVE' | 'ACKNOWLEDGED'
+}
+```
+
+### 5.7 Page<T>
+
+```javascript
+{
+  items: Array<any>,
+  page: Number,
+  pageSize: Number,
+  totalItems: Number,
+  totalPages: Number
+}
+```
+
+### 5.8 State Transitions
+
+- **Alert.status**
+  - `ACTIVE` -> `ACKNOWLEDGED` (user action via AlertsController).
+
+- **RefreshStatus.status**
+
+```javascript
+{
+  status: String,    // 'IN_PROGRESS' | 'COMPLETED' | 'FAILED'
+  jobId: String
+}
+```
+
+---
 
 ## 6. Data Flow
 
-### 6.1 End-to-End Data Flow (Typical Scenario)
+### 6.1 Portfolio Dashboard Load
 
-1. **User Action** – User opens `Usage & Spend Dashboard`.
-2. **View → Controller** – `usage-spend-dashboard.html` is loaded, initializing `UsageSpendDashboardController`.
-3. **Controller → Service** – `vm.init()` calls `UsageSpendService.getAggregatedMetrics(filters)`.
-4. **Service → REST API** – Service composes query parameters, uses `$http.get` with base URL from `ConfigService`.
-5. **REST API → Backend** – Backend Aggregation Service reads encrypted data from storage.
-6. **Backend → Service** – Response is returned in unified schema.
-7. **Service → Model** – `UsageSpendModel` instantiated.
-8. **Service → Controller** – Promise resolves with model, controller assigns to `vm.usageMetrics` and `vm.spendMetrics`.
-9. **Controller → View** – Data bound to `usageSpendChart` directive.
-10. **Directive → UI** – Chart library renders UI elements.
+**Flow:**
 
-### 6.2 Data Freshness Monitoring Flow
+1. User navigates to `/#/portfolio`.
+2. `$routeProvider` resolves route to `PortfolioDashboardController`.
+3. `PortfolioDashboardController.init()` is invoked.
+4. Controller sets `vm.loadingState.summary = true`, `vm.loadingState.companyList = true`.
+5. Controller calls `PortfolioDataService.getPortfolioSummary(vm.filters)`.
+6. Service builds URL with `ApiConfigService.getBaseUrl()` and invokes `$http.get`.
+7. HTTP response is returned; interceptor checks for errors.
+8. On `200`, `PortfolioDataService` maps JSON to `PortfolioSummary` model and resolves promise.
+9. Controller stores response in `vm.portfolioSummary`.
+10. Controller calls `FreshnessService.calculateStaleness(portfolioSummary.lastUpdatedUtc)`.
+11. Result is assigned to `vm.freshness.portfolio`, `FreshnessService.updateCache('portfolio', lastUpdatedUtc)`.
+12. `vm.loadingState.summary` set to `false`.
+13. In parallel, `PortfolioDataService.getCompanyPage(vm.pageRequest)` is called.
+14. Response mapped into `vm.companyPage`; each company’s `lastUpdatedUtc` used for `apmFreshnessBadge` with `FreshnessService`.
+15. View templates update via bindings; `apmPortfolioSummary`, `apmCompanyList`, and `apmFreshnessBadge` render data.
 
-1. User navigates to `Sync Status` screen.
-2. `PortfolioSyncStatusController` calls `DataSyncService.getSyncStatuses(...)`.
-3. API returns list of `DataSyncStatusModel` objects including `stalenessHours`.
-4. Each row includes `dataFreshnessBadge` directive that decides color state.
-5. For statuses where `stalenessHours > 24`, UI highlights row and optionally links to corresponding alert in `Alerts` page.
+### 6.2 Company Detail Load
 
-### 6.3 Manual Sync Trigger Flow
+1. User clicks company row, router navigates to `/#/companies/:companyId`.
+2. `CompanyDashboardController` initialized with `$routeParams.companyId`.
+3. `init()` sets loading flags and calls `CompanyDataService.getCompanyDetail(companyId)`.
+4. `$http.get` to `/api/companies/{companyId}`.
+5. On success, data mapped to `CompanyDetail` model.
+6. `FreshnessService.calculateStaleness(company.lastUpdatedUtc)`; stored in `vm.freshness.company`.
+7. View uses `apmCompanyDetail` directive to display provider cards, each with `apmFreshnessBadge`.
 
-1. From `Sync Status` page, user clicks “Sync Now” for a company.
-2. Controller calls `DataSyncService.triggerSync(companyId)`.
-3. On success, UI shows toast and optionally polls `getSyncStatuses` until status changes from `IN_PROGRESS`.
+### 6.3 Alert List Load
+
+1. User navigates to `/#/alerts`.
+2. `AlertsController.init()` calls `AlertsService.getAlerts(vm.filter)`.
+3. `$http.get` to `/api/alerts?status=ACTIVE`.
+4. Response mapped to `Alert[]` and assigned to `vm.alerts`.
+5. Template displays list with sorting and status indicators.
+
+### 6.4 Manual Refresh
+
+1. User clicks "Refresh Portfolio Data".
+2. Controller calls `PortfolioDataService.refreshPortfolio(vm.filters)`.
+3. `$http.post` to `/api/portfolio/refresh`.
+4. On `202`, UI shows informational toast via `NotificationService.info`.
+5. Optional: Polling via `setInterval`/`$timeout` or SSE/WebSockets not handled here; controllers rely on periodic manual reload or backend-driven UI update triggers.
+
+---
 
 ## 7. Sequence Diagrams (Mermaid)
 
@@ -725,277 +861,312 @@ Each feature module declares its controller and depends on `apm.core` for shared
 
 ```mermaid
 sequenceDiagram
-  participant U as User
-  participant B as Browser
-  participant NG as AngularJS App
-  participant CS as ConfigService
+  participant Browser
+  participant AngularApp as AngularJS App
+  participant ApiConfig as ApiConfigService
+  participant PortfolioCtrl as PortfolioDashboardController
+  participant PortfolioSvc as PortfolioDataService
+  participant Backend as REST API
 
-  U->>B: Navigate to Dashboard URL
-  B->>NG: Load index.html & app.js
-  NG->>CS: loadEnvironmentConfig()
-  CS-->>NG: API base URLs, feature flags
-  NG->>NG: Configure routes, interceptors
-  U->>NG: Select "Usage & Spend Dashboard"
-  NG->>NG: Route to UsageSpendDashboardController
+  Browser->>AngularApp: Load index.html, JS, CSS
+  AngularApp->>AngularApp: angular.bootstrap()
+  AngularApp->>Browser: Render shell (header, router-outlet)
+  Browser->>AngularApp: Navigate to #/portfolio
+  AngularApp->>PortfolioCtrl: Instantiate controller
+  PortfolioCtrl->>ApiConfig: getBaseUrl()
+  PortfolioCtrl->>PortfolioSvc: getPortfolioSummary(filters)
+  PortfolioSvc->>ApiConfig: getBaseUrl()
+  PortfolioSvc->>Backend: GET /api/portfolio/summary
+  Backend-->>PortfolioSvc: 200 OK (summary JSON)
+  PortfolioSvc-->>PortfolioCtrl: PortfolioSummary
+  PortfolioCtrl->>Browser: Bind vm.portfolioSummary to view
 ```
 
-### 7.2 Primary User Workflow – Viewing Usage & Spend
+### 7.2 Primary Workflow – Portfolio Dashboard Load
 
 ```mermaid
 sequenceDiagram
-  participant U as User
-  participant C as UsageSpendDashboardController
-  participant S as UsageSpendService
-  participant API as Analytics API
+  participant User
+  participant PortfolioCtrl
+  participant PortfolioSvc
+  participant FreshnessSvc as FreshnessService
+  participant Backend
 
-  U->>C: Open Usage & Spend page
-  C->>C: init() with default filters
-  C->>S: getAggregatedMetrics(filters)
-  S->>API: GET /api/v1/analytics/usage-spend
-  API-->>S: 200 OK + metrics JSON
-  S->>S: Map to UsageSpendModel
-  S-->>C: Promise resolved with model
-  C->>C: Update vm.usageMetrics & vm.spendMetrics
-  C-->>U: Render charts via usageSpendChart
+  User->>PortfolioCtrl: Open Portfolio Dashboard
+  PortfolioCtrl->>PortfolioSvc: getPortfolioSummary(filters)
+  PortfolioCtrl->>PortfolioSvc: getCompanyPage(pageRequest)
+  PortfolioSvc->>Backend: GET /api/portfolio/summary
+  PortfolioSvc->>Backend: GET /api/portfolio/companies
+  Backend-->>PortfolioSvc: 200 OK (summary)
+  Backend-->>PortfolioSvc: 200 OK (companies)
+  PortfolioSvc-->>PortfolioCtrl: PortfolioSummary
+  PortfolioSvc-->>PortfolioCtrl: Page<CompanySummary>
+  PortfolioCtrl->>FreshnessSvc: calculateStaleness(lastUpdatedUtc)
+  FreshnessSvc-->>PortfolioCtrl: FreshnessMetadata
+  PortfolioCtrl->>User: Render summary, companies list, freshness badges
 ```
 
-### 7.3 Service/API Interaction – Viewing Sync Status
+### 7.3 Service/API Interaction – Company Detail
 
 ```mermaid
 sequenceDiagram
-  participant U as User
-  participant C as PortfolioSyncStatusController
-  participant S as DataSyncService
-  participant API as Data Sync API
+  participant User
+  participant Router as $routeProvider
+  participant CompanyCtrl as CompanyDashboardController
+  participant CompanySvc as CompanyDataService
+  participant Backend
 
-  U->>C: Open Sync Status page
-  C->>S: getSyncStatuses(filters)
-  S->>API: GET /api/v1/data-sync/status
-  API-->>S: 200 OK + statuses JSON
-  S->>S: Map to DataSyncStatusModel
-  S-->>C: Promise resolved
-  C-->>U: Update table & freshness badges
+  User->>Router: Navigate to #/companies/pc-001
+  Router->>CompanyCtrl: Instantiate with companyId=pc-001
+  CompanyCtrl->>CompanySvc: getCompanyDetail("pc-001")
+  CompanySvc->>Backend: GET /api/companies/pc-001
+  Backend-->>CompanySvc: 200 OK (CompanyDetail)
+  CompanySvc-->>CompanyCtrl: CompanyDetail
+  CompanyCtrl->>User: Render company detail view
 ```
 
-### 7.4 Error Handling Scenario – Stale Data Alert
+### 7.4 Error Handling Scenario – API Failure
 
 ```mermaid
 sequenceDiagram
-  participant Monitor as Monitoring Service (backend)
-  participant API as Alerts API
-  participant C as AlertsCenterController
-  participant S as AlertService
-  participant U as User
+  participant User
+  participant PortfolioCtrl
+  participant PortfolioSvc
+  participant HttpInt as HttpErrorInterceptor
+  participant Notification
+  participant Backend
 
-  Monitor->>API: Create DATA_STALE alert (>24h)
-  U->>C: Open Alerts page
-  C->>S: getAlerts(filters)
-  S->>API: GET /api/v1/alerts
-  API-->>S: 200 OK + alerts JSON
-  S-->>C: Alerts list
-  C-->>U: Render alerts table
-  U->>C: Acknowledge alert
-  C->>S: acknowledgeAlert(alertId)
-  S->>API: POST /api/v1/alerts/{id}/acknowledge
-  API-->>S: 200 OK
-  S-->>C: Success
-  C-->>U: Update alert status to ACKNOWLEDGED
+  User->>PortfolioCtrl: Load portfolio dashboard
+  PortfolioCtrl->>PortfolioSvc: getPortfolioSummary()
+  PortfolioSvc->>Backend: GET /api/portfolio/summary
+  Backend-->>PortfolioSvc: 500 Internal Server Error
+  PortfolioSvc-->>HttpInt: responseError(rejection)
+  HttpInt->>Notification: error("Unable to load portfolio summary")
+  Notification-->>User: Show error toast
+  HttpInt-->>PortfolioCtrl: Rejected promise
+  PortfolioCtrl->>User: Show fallback UI (empty state)
 ```
+
+---
 
 ## 8. Implementation Details
 
 ### 8.1 AngularJS Implementation Approach
 
-- Use **controllerAs** syntax.
-- Modularize by feature and core shared modules.
-- Use promises and `$q` for async chaining.
-- Use `$routeProvider` for navigation.
+- Use AngularJS 1.x with component-style directives to structure UI.
+- Follow `controllerAs vm` pattern to avoid `$scope` where possible.
+- Use `$routeProvider` for route-based view composition.
+- Use services to encapsulate REST calls, with `$http` returning promises.
 
 ### 8.2 JavaScript ES6 Patterns
 
-- Use ES6 features where compatible (transpiling optional):
-  - `const` and `let` for variable declarations.
-  - Arrow functions for callbacks (caution with `this` in AngularJS).
-  - Template literals for logging and URL composition.
-- Use factory functions and prototypes for models;
-  optionally use ES6 classes compiled with Babel if project supports.
+- Use `const` and `let` instead of `var` in all new JS files (transpilation if necessary).
+- Use arrow functions for short callbacks (e.g., `.then(response => ...)`).
+- Use template literals for string interpolation when building log messages.
+- Avoid ES6 class syntax inside AngularJS services for compatibility with older tooling unless transpiled.
 
 ### 8.3 Dependency Injection
 
-- All controllers/services explicitly list dependencies for minification compatibility:
+- Use explicit annotation for minification safety:
 
 ```javascript
-CloudIntegrationsController.$inject = ['CloudAccountService', 'PortfolioCompanyModel', '$routeParams', '$uibModal', 'ErrorHandlingService', '$log'];
+PortfolioDashboardController.$inject = ['PortfolioDataService', 'FreshnessService', 'NotificationService', '$log', '$q'];
 ```
 
-- Use AngularJS DI to inject `$http`, `$q`, `$log`, etc.
+- For services/interceptors, follow same pattern.
 
 ### 8.4 Business Logic Flow
 
-- Business rules mainly reside in services:
-  - `DataSyncService` interprets staleness thresholds and may flag warnings.
-  - `UsageSpendService` normalizes metrics into unified time-series structures.
-  - `AlertService` ensures correct ordering (e.g., newest first, severity grouping).
+- `FreshnessService` decides if data is stale:
+  - Convert `lastUpdatedUtc` to Date, compare to current UTC time.
+  - If `diffHours > 24` -> `isStale = true`, `level = 'CRITICAL'`.
+  - 12 < `diffHours <= 24` -> `level = 'WARNING'`.
+  - `diffHours <= 12` -> `level = 'OK'`.
+
+- Controllers use this metadata to:
+  - Display banners.
+  - Add CSS classes to rows/cards (e.g., `stale`, `warning`).
 
 ### 8.5 Validation Logic
 
-- **Form-level:** Use AngularJS form validation to ensure required credential fields and valid patterns (e.g., AWS account IDs, Azure subscription IDs).
-- **Client-side:** Basic checks (non-empty strings, lengths) before sending API requests.
-- **Server-side:** Enforced by backend; client displays error messages from backend using `ErrorHandlingService`.
+- Client-side validation of filter date ranges:
+  - `fromDate <= toDate`.
+  - Dates must be valid; invalid => show error message and disable Apply.
+
+- Paging inputs validated to positive integers; fallback to default page size.
 
 ### 8.6 State Management Approach
 
-- Use simple controller-level state; avoid `$rootScope` global variables.
-- Use `$routeParams` and query strings for context (e.g., selected companyId).
+- `vm.loadingState = { summary: false, companyList: false, detail: false }` used in controllers.
+- `apmLoadingSpinner` bound to these flags to show/hide spinners.
+- Staleness state not persisted across sessions; computed from returned timestamps.
 
 ### 8.7 DOM Interaction Approach
 
-- No direct DOM manipulation via `document` or jQuery; use directives and AngularJS bindings.
-- `spinnerOverlay` directive watches `isLoading` to show/hide overlay.
+- Avoid direct DOM manipulation in controllers.
+- If needed (for charts), wrap JS libraries (e.g., D3, Chart.js) in dedicated directives.
+- Use Bootstrap grid and components for responsive layout.
 
 ### 8.8 API Integration Approach
 
-- `$http` configured with base URL and default headers (auth token, content-type JSON).
-- HTTP interceptors handle global error codes (401, 403, 500) and redirect to login or show generic errors.
+- All `$http` calls pass through the error interceptor.
+- Base URL and paths defined in `ApiConfigService` and/or environment config.
+- Use consistent header injection for authentication via another interceptor (not detailed here, but hook exists).
+
+---
 
 ## 9. Configuration
 
 ### 9.1 AngularJS Configuration Files
 
-- `app.config.js` – Registers:
-  - `$httpProvider` interceptors.
-  - Route-level resolves for pre-fetching configuration.
-
-- `app.routes.js` – Defines routes:
+- **`app.routes.js`**
+  - Defines routes:
 
 ```javascript
-$routeProvider
-  .when('/integrations', {
-    templateUrl: 'app/features/cloud-integrations/cloud-integrations.html',
-    controller: 'CloudIntegrationsController',
-    controllerAs: 'vm'
-  })
-  .when('/sync-status', {
-    templateUrl: 'app/features/sync-status/portfolio-sync-status.html',
-    controller: 'PortfolioSyncStatusController',
-    controllerAs: 'vm'
-  })
-  .when('/usage-spend', {
-    templateUrl: 'app/features/usage-spend/usage-spend-dashboard.html',
-    controller: 'UsageSpendDashboardController',
-    controllerAs: 'vm'
-  })
-  .when('/alerts', {
-    templateUrl: 'app/features/alerts/alerts-center.html',
-    controller: 'AlertsCenterController',
-    controllerAs: 'vm'
-  })
-  .otherwise('/usage-spend');
+angular
+  .module('apmDashboard')
+  .config(['$routeProvider', function($routeProvider) {
+    $routeProvider
+      .when('/portfolio', {
+        templateUrl: 'app/portfolio/portfolio-dashboard.template.html',
+        controller: 'PortfolioDashboardController',
+        controllerAs: 'vm'
+      })
+      .when('/companies/:companyId', {
+        templateUrl: 'app/company/company-dashboard.template.html',
+        controller: 'CompanyDashboardController',
+        controllerAs: 'vm'
+      })
+      .when('/alerts', {
+        templateUrl: 'app/alerts/alerts.template.html',
+        controller: 'AlertsController',
+        controllerAs: 'vm'
+      })
+      .otherwise({ redirectTo: '/portfolio' });
+  }]);
+```
+
+- **`app.http.config.js`**
+  - Registers `HttpErrorInterceptor`.
+
+```javascript
+angular
+  .module('apmDashboard.core')
+  .config(['$httpProvider', function($httpProvider) {
+    $httpProvider.interceptors.push('HttpErrorInterceptor');
+  }]);
 ```
 
 ### 9.2 Environment-Specific Properties
 
-- JSON configs (`env.dev.json`, etc.) loaded at startup.
-- Structure:
+- File: `app/app.config.env.js` per environment (dev, test, prod) loaded via server-side templating or build-time replacement.
 
-```json
-{
-  "apiBaseUrl": "https://dev-api.apm.example.com",
-  "loggingLevel": "DEBUG",
-  "featureFlags": {
-    "manualSyncEnabled": true,
-    "advancedAnalytics": false
-  }
-}
+```javascript
+angular
+  .module('apmDashboard.core')
+  .constant('ENV_CONFIG', {
+    name: 'dev',
+    apiBaseUrl: 'https://dev-api.apm.example.com',
+    loggingLevel: 'DEBUG'
+  });
 ```
 
-- `ConfigService` reads from these configs and exposes typed getters.
+- `ApiConfigService` reads `ENV_CONFIG.apiBaseUrl`.
 
 ### 9.3 API Base URLs
 
-- Derived from environment config.
-- All services compose URLs using `ConfigService.getApiBaseUrl()`.
+- `ApiConfigService.getBaseUrl()` must always return HTTPS URLs.
 
 ### 9.4 Feature Flags
 
-- Example flags:
-  - `manualSyncEnabled` – Show/hide “Sync Now” button.
-  - `advancedAnalytics` – Toggle advanced usage/spend graphs.
+- Supported flags via `ENV_CONFIG.featureFlags` object:
 
-### 9.5 Logging & Telemetry
+```javascript
+featureFlags: {
+  enableManualRefresh: true,
+  showExperimentalCharts: false
+}
+```
 
-- Client-side logging via `$log` and `ErrorHandlingService.logClientError`.
-- Optional integration with external telemetry (e.g., Azure App Insights) via an additional `TelemetryService`.
+- Controllers check flags before rendering certain UI elements.
+
+### 9.5 Logging and Telemetry
+
+- `LoggingService` sends error-level events to `/api/telemetry/logs` if enabled.
+- Include correlation IDs from server responses (`X-Correlation-Id` header) when present.
+
+---
 
 ## 10. Error Handling and Resiliency
 
 ### 10.1 Client-Side Exception Handling
 
-- Global `$exceptionHandler` override logs unexpected errors to server.
-- Controllers/services catch specific errors and provide fallback messages.
+- Global `$exceptionHandler` override (not detailed in components) to log unhandled errors via `LoggingService` and show generic error message.
+- Controllers use `.catch()` on all promises to handle local errors.
 
 ### 10.2 REST API Error Handling
 
-- `http-error.interceptor.js` intercepts responses:
-  - On `401`, redirect to login.
-  - On `403`, show “access denied”.
-  - On `5xx`, show “temporary issue; please try again.”
-- `ErrorHandlingService.handleHttpError` further refines messages per endpoint.
+- `HttpErrorInterceptor` handles common status codes:
+  - `401` – redirect to login page or show session timeout message.
+  - `403` – show "access denied" toast.
+  - `404` – show "data not found" message for relevant view.
+  - `500` – show generic error toast.
+- Errors include structured messages where backend provides them.
 
 ### 10.3 Retry Mechanisms
 
-- Implement simple retry for transient network issues:
-  - For idempotent GET requests (status or metrics), retry up to 2 times with exponential backoff.
-  - Implemented within services using `$q` and `$timeout`.
+- Non-idempotent operations (e.g., refresh) are not automatically retried.
+- Idempotent GET requests may be retried once for transient network failures (e.g., status codes 502/503/504), implemented in `HttpErrorInterceptor` with exponential backoff (simple 1s, 2s delays).
 
 ### 10.4 Logging Strategy
 
-- Log key events:
-  - Integration connect/disconnect success/failure.
-  - Manual sync triggers and outcomes.
-  - Alert acknowledgement actions.
-- Logs include user ID, company ID, provider, timestamp, and correlation IDs.
+- Log levels:
+  - `debug` – only in non-production environments.
+  - `info` – view loads, refresh initiation.
+  - `warn` – near-stale states (e.g., >20h).
+  - `error` – HTTP errors, exceptions.
 
-### 10.5 Recovery and Fallback Behavior
+### 10.5 Recovery and Fallback
 
-- If metrics fetch fails, show previous successful data if available (cached in memory for session duration or via localStorage).
-- If sync status fetch fails, show last known statuses with banner indicating they may be outdated.
+- On API failure, display last known data (if cached) and mark as potentially outdated.
+- UI clearly marks data as "Not available" or "Failed to load" when no data exists.
+
+---
 
 ## 11. Security Considerations
 
-### 11.1 Input Validation & Sanitization
+### 11.1 Input Validation and Sanitization
 
-- AngularJS form validation for all user inputs.
-- Client-side regex checks for IDs and keys.
-- Backend validation is authoritative; client surfaces error messages.
+- All user inputs (filters, search text) validated on client before sending to server.
+- Use AngularJS built-in input validation directives (`ng-pattern`, `ng-required`).
+- Use `ngSanitize` for any HTML bindings; avoid `ng-bind-html` with untrusted content.
 
 ### 11.2 XSS Prevention
 
-- Use `ng-bind` instead of interpolation in sensitive areas.
-- Sanitize any HTML content using `ngSanitize`.
-- No untrusted HTML inserted into DOM.
+- Escape all user-facing values in templates (default AngularJS behavior).
+- Do not use `ng-bind-html` unless content is sanitized.
 
 ### 11.3 CSRF Protection
 
-- AngularJS `$http` includes XSRF token support; configure token cookie (`XSRF-TOKEN`) and header (`X-XSRF-TOKEN`).
+- Configure `$http` to include CSRF token header (e.g., `X-XSRF-TOKEN`) from cookie.
+- Backend must issue CSRF token cookie on authenticated sessions.
 
 ### 11.4 Secure API Communication
 
-- Enforce HTTPS for all API calls.
-- `ConfigService` ensures all base URLs are `https://`.
+- All API calls must use HTTPS; `ApiConfigService` disallows non-HTTPS base URLs in production.
+- HSTS is enforced at server-level (outside scope of UI).
 
 ### 11.5 Authentication and Authorization
 
-- Auth token (e.g., JWT) injected into headers by `auth-token.interceptor.js`.
-- UI elements like manual sync or integration configuration visible only if user has required roles (provided via claims or user role service on frontend).
+- Authentication handled via tokens (e.g., JWT) stored in HTTP-only cookies or secure storage.
+- Authorization enforced server-side; UI hides navigation elements for which user lacks permissions where possible (requires roles metadata in a user profile service, not detailed here).
 
 ### 11.6 Sensitive Data Handling
 
-- API keys and secrets are never logged or stored on client side beyond input fields.
-- Credential fields use masked input controls and cleared from scope after submission.
+- UI does not log raw sensitive identifiers in browser console (e.g., avoid logging full tokens or internal IDs in `LoggingService`).
+- Use masked IDs in logs where necessary.
 
 ### 11.7 Audit Logging
 
-- For actions like connect/disconnect, manual sync, alert acknowledgment:
-  - Frontend sends `X-Audit-Action` header with action name.
-  - Backend persists audit trail; UI can display audit info if relevant APIs exist.
+- Important user actions (acknowledging alerts, manual refresh) send audit events to backend audit endpoint if exposed.
+- Include `userId`, `timestamp`, `action`, `targetId` in payload.
