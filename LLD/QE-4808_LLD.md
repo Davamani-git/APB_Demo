@@ -1,130 +1,125 @@
-# LLD – Credit Card Analysis Dashboard (Epic QE-4808)
+# Credit Card Analysis Dashboard - LLD (Epic QE-4808)
 
 ## a. Architecture Mapping (brief)
-- Dashboard Overview → AngularJS Module `ccDashboard` with root Controller `DashboardController`.
-- Cards List View → Controller `CardsController` and directive `ccCardList` for card tiles.
-- Transactions View → Controller `TransactionsController` with directive `ccTransactionTable`.
-- KPI Widgets (Monthly Spend, Limits) → Directive `ccKpiWidget` with Service `KpiService`.
-- Analytics Charts (Category-wise Spend, Trends) → Directive `ccAnalyticsChart` using Service `AnalyticsService`.
-- Card Data Management → Service `CardService` (REST integration) and Factory `CardModelFactory`.
-- Transaction Data Management → Service `TransactionService` (REST integration).
-- Layout & Navigation → Directive `ccLayout` using Bootstrap grid and routing config in `appRoutes`.
+- Dashboard KPIs → AngularJS Module `ccDashboard` with Controller `DashboardController` and Service `DashboardService`.
+- Multiple Credit Cards Management → Controller `CardListController`, Service `CardService`.
+- Monthly Spend Trends Visualization → Directive `monthlyTrendsChart`, Service `AnalyticsService`.
+- Card-wise Spend Analysis → Directive `cardSpendChart`, Service `AnalyticsService`.
+- Transactions Listing → Controller `TransactionController`, Service `TransactionService`.
+- Category-wise Spending Analytics → Directive `categorySpendChart`, Service `AnalyticsService`.
 
-Recommended folder structure:
-- `app/`
-  - `app.module.js`
-  - `app.routes.js`
-  - `dashboard/` (controllers, views, directives for dashboard)
-  - `cards/` (card list, details components)
-  - `transactions/` (transaction list components)
-  - `services/` (`card.service.js`, `transaction.service.js`, `kpi.service.js`, `analytics.service.js`)
-  - `models/` (`card.model.js`, `transaction.model.js`)
-  - `assets/css/` (custom styles over Bootstrap)
+**Recommended Folder Structure**
+- `/app/modules/dashboard/` (dashboard module, controllers, views)
+- `/app/services/` (card, transaction, analytics services)
+- `/app/directives/` (chart directives)
+- `/app/assets/css/` (CSS, Bootstrap overrides)
+- `/app/assets/templates/` (HTML partials for views)
 
-## b. Component Specifications (table)
+## b. Component Specifications
 
-| Name                   | Artifact Type | Responsibility (1 line)                                                 | Key Dependencies                            |
-|------------------------|--------------|---------------------------------------------------------------------------|---------------------------------------------|
-| ccDashboard            | Module       | Root module wiring dashboard, cards, transactions, analytics features.   | AngularJS, ui-router/ngRoute                |
-| DashboardController    | Controller   | Orchestrates loading KPIs, cards, and charts for main dashboard view.    | KpiService, CardService, AnalyticsService   |
-| CardsController        | Controller   | Manages list of credit cards, selection, and card-level metrics.         | CardService, CardModelFactory               |
-| TransactionsController | Controller   | Loads and filters transactions by card, date, and category.              | TransactionService, CardService             |
-| ccCardList             | Directive    | Renders responsive card tiles showing key card metrics.                  | CardsController, Bootstrap grid             |
-| ccTransactionTable     | Directive    | Displays paginated, filterable transaction table.                        | TransactionsController, Bootstrap table     |
-| ccKpiWidget            | Directive    | Renders KPI widgets (spend, limits, outstanding) as responsive tiles.    | KpiService                                  |
-| ccAnalyticsChart       | Directive    | Renders category-wise and trend charts using chart library.              | AnalyticsService, external chart lib        |
-| ccLayout               | Directive    | Provides common layout shell with navbar and responsive containers.      | Bootstrap, AngularJS templates              |
-| CardService            | Service      | Fetches card list, limits, and balances via REST APIs.                   | $http, REST endpoints `/api/cards`          |
-| TransactionService     | Service      | Fetches transactions, supports filters by card and date.                 | $http, REST endpoints `/api/transactions`   |
-| KpiService             | Service      | Aggregates KPIs like monthly spend, available credit, outstanding.       | $http, REST endpoints `/api/kpi`            |
-| AnalyticsService       | Service      | Provides data series for category spend and monthly trends.              | $http, REST endpoints `/api/analytics`      |
-| CardModelFactory       | Factory      | Normalizes raw card API responses into Card model objects.               | None (pure JS)                              |
-| appRoutes              | Config       | Defines routes/states for dashboard, cards, and transactions views.      | $routeProvider or $stateProvider            |
+| Name                   | Artifact Type  | Responsibility (1 line)                                           | Key Dependencies                          |
+|------------------------|----------------|--------------------------------------------------------------------|--------------------------------------------|
+| ccDashboard            | AngularJS Module | Root module wiring dashboard controllers, services, and routes.   | AngularJS, `ui.router`/`ngRoute`          |
+| DashboardController    | Controller     | Aggregate KPIs (monthly spend, limits, outstanding) for dashboard. | `DashboardService`, `$scope`, `$q`        |
+| CardListController     | Controller     | Manage list of credit cards and selected card state.              | `CardService`, `$scope`                   |
+| TransactionController  | Controller     | Fetch and display transaction list with filters and pagination.   | `TransactionService`, `$scope`            |
+| DashboardService       | Service        | Orchestrate dashboard API calls and map responses to KPI model.   | `$http`, `CardService`, `TransactionService` |
+| CardService            | Service        | CRUD-style operations for cards and card metadata.                | `$http`                                   |
+| TransactionService     | Service        | Retrieve transactions by card, date range, and category.          | `$http`                                   |
+| AnalyticsService       | Service        | Transform raw spend data into chart-ready series by month/card.   | `$http`, `$q`                             |
+| monthlyTrendsChart     | Directive      | Render monthly spend trends using a chart library.                | `AnalyticsService`, chart library         |
+| cardSpendChart         | Directive      | Render per-card spend comparison chart.                           | `AnalyticsService`, chart library         |
+| categorySpendChart     | Directive      | Render category-wise spending chart.                              | `AnalyticsService`, chart library         |
+| cardSummaryPanel.html  | HTML Template  | Present card KPIs (limit, available, outstanding) per card.       | `DashboardController`, Bootstrap CSS      |
+| dashboard.html         | HTML Template  | Main dashboard view with KPIs and charts layout.                  | `DashboardController`, directives         |
+| card-list.html         | HTML Template  | Card listing and selection UI.                                    | `CardListController`                      |
+| transactions.html      | HTML Template  | Transactions table with filters and responsive layout.            | `TransactionController`, Bootstrap table  |
 
 ## c. Data Model (brief)
 
-- `Card` (object)
-  - `id: string`
-  - `cardNumberMasked: string`
-  - `cardName: string`
-  - `issuer: string`
-  - `totalCreditLimit: number`
-  - `availableCredit: number`
-  - `outstandingAmount: number`
-  - `billingCycleStart: string` (ISO date)
-  - `billingCycleEnd: string` (ISO date)
+- `Card` (Object)
+  - `id`: String
+  - `cardNumberMasked`: String
+  - `issuer`: String
+  - `cardType`: String
+  - `creditLimit`: Number
+  - `availableCredit`: Number
+  - `outstandingAmount`: Number
+  - `billingCycleDay`: Number
 
-- `Transaction` (object)
-  - `id: string`
-  - `cardId: string`
-  - `date: string` (ISO date)
-  - `description: string`
-  - `category: string` (e.g., Food, Fuel, Shopping)
-  - `amount: number`
-  - `currency: string`
-  - `merchant: string`
+- `Transaction` (Object)
+  - `id`: String
+  - `cardId`: String
+  - `date`: String (ISO-8601)
+  - `amount`: Number
+  - `category`: String
+  - `merchant`: String
+  - `description`: String
 
-- `DashboardKpi` (object)
-  - `monthlySpend: number`
-  - `totalCreditLimit: number`
-  - `availableCredit: number`
-  - `outstandingAmount: number`
-  - `month: string` (YYYY-MM)
+- `MonthlySpend` (Object)
+  - `month`: String (e.g., `2025-01`)
+  - `totalSpend`: Number
+  - `cardId`: String (optional for card-wise trends)
 
-- `CategorySpend` (object)
-  - `category: string`
-  - `totalAmount: number`
+- `CategorySpend` (Object)
+  - `category`: String
+  - `totalAmount`: Number
+  - `cardId`: String (optional)
+  - `month`: String (optional)
 
-- `MonthlyTrendPoint` (object)
-  - `month: string` (YYYY-MM)
-  - `totalSpend: number`
+- `DashboardKPI` (Object)
+  - `monthlySpend`: Number
+  - `totalCreditLimit`: Number
+  - `availableCredit`: Number
+  - `outstandingAmount`: Number
 
 ## d. Data Flow (one paragraph)
 
-User opens the dashboard route, the view initializes `DashboardController`, which invokes `CardService`, `KpiService`, and `AnalyticsService` to fetch cards, KPIs, and analytics via REST APIs; responses are mapped into `Card`, `DashboardKpi`, and chart-ready series, then bound to directives (`ccCardList`, `ccKpiWidget`, `ccAnalyticsChart`) that update the UI, while user interactions such as selecting a card or filtering transactions trigger controller methods that call `TransactionService`/`AnalyticsService` and refresh the view models for immediate UI updates.
+User selects or views the dashboard, which loads the `dashboard.html` view bound to `DashboardController`; the controller invokes `DashboardService` and related services (`CardService`, `TransactionService`, `AnalyticsService`) to call REST APIs for cards, transactions, and analytics, and once the promises resolve, the controller updates scoped models that drive KPIs and chart directives, causing the AngularJS bindings to update the UI with refreshed metrics, tables, and charts in a single-page flow.
 
-## e. Primary Sequence Diagram (one workflow – user views dashboard and card-wise spend)
+## e. Primary Sequence Diagram (ONE only)
 
 ```mermaid
 sequenceDiagram
     participant U as User
-    participant V as Dashboard View (HTML)
+    participant V as dashboard.html (View)
     participant C as DashboardController
+    participant S as DashboardService
     participant CS as CardService
-    participant KS as KpiService
+    participant TS as TransactionService
     participant AS as AnalyticsService
-    participant API as REST API Layer
+    participant API as REST APIs
 
-    U->>V: Navigate to /dashboard
-    V->>C: ng-init() dashboard load
-    C->>CS: getCards()
+    U->>V: Load Credit Card Dashboard
+    V->>C: ng-init() / controller init
+    C->>S: loadDashboardData()
+    S->>CS: getCards()
     CS->>API: GET /api/cards
     API-->>CS: 200 OK (Card list)
-    CS-->>C: Card[]
-    C->>KS: getDashboardKpis()
-    KS->>API: GET /api/kpi
-    API-->>KS: 200 OK (KPI data)
-    KS-->>C: DashboardKpi
-    C->>AS: getCategorySpend(cardId)
-    AS->>API: GET /api/analytics/categorySpend?cardId=...
-    API-->>AS: 200 OK (CategorySpend[])
-    AS-->>C: CategorySpend[]
-    C-->>V: Bind cards, KPIs, charts (scope)
-    V-->>U: Render dashboard with KPIs, card tiles, category chart
+    CS-->>S: Card list
+    S->>TS: getTransactionsSummary()
+    TS->>API: GET /api/transactions/summary
+    API-->>TS: 200 OK (Monthly and category data)
+    TS-->>S: Transaction summary
+    S->>AS: buildAnalytics(cardData, txnSummary)
+    AS-->>S: Chart data + KPIs
+    S-->>C: DashboardKPI + analytics models
+    C-->>V: Bind KPIs and chart models
+    V-->>U: Render cards, KPIs, and charts
 ```
 
 ## f. Implementation Notes (brief)
 
-- Use AngularJS 1.x module `ccDashboard` with dependency injection for all services and controllers.
-- Implement controllers using ES6 classes transpiled/bundled where needed, keeping logic thin and delegating to services.
-- Configure `$http` defaults and a base URL service for consistent REST API integration.
-- Use reusable directives for KPIs and charts, isolating scope and passing data via attributes.
-- Apply Bootstrap grid and responsive utilities to ensure dashboard adapts to different screen sizes.
+- Use a single AngularJS module `ccDashboard` with dependency injection for all controllers and services.
+- Implement services as ES6 classes wrapped in AngularJS services/factories to keep logic modular.
+- Use `$http` with a centralized configuration service for base URLs and headers to call REST APIs.
+- Leverage promises (`$q`) or `$http` directly in controllers, keeping controllers thin and delegating logic to services.
+- Integrate chart library (e.g., Chart.js) via lightweight directives that accept data via isolated scope bindings.
 
 ## g. Error Handling (ONE line)
 
-Use a centralized `$http` interceptor for API errors combined with controller-level fallbacks to show non-blocking user notifications.
+Use an `$http` interceptor to catch API errors globally and surface concise user notifications via a shared alert component.
 
 ## h. Security Notes (ONE line)
 
-Standard input validation and secure API calls assumed, with no storage of full card numbers or sensitive data on the client.
+Standard input validation and secure API calls assumed.
