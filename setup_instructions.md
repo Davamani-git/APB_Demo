@@ -4,11 +4,12 @@ This is a pure front-end application built with AngularJS and requires no backen
 
 **Prerequisites:**
 - A modern web browser (e.g., Chrome, Firefox, Edge, Safari).
+- An internet connection: Bootstrap, Font Awesome, Chart.js, AngularJS, and the Work Sans Google Font are all loaded from CDNs — nothing is bundled locally.
 
 **Steps to Run the Application:**
 
 1.  **Extract Files:**
-    -   Create a root folder for the project (e.g., `credit-card-dashboard`).
+    -   Create a root folder for the project (e.g., `santander-banking-dashboard`).
     -   Inside the root folder, create a `src` directory.
     -   Place the provided files into their respective locations within the `src` directory:
         ```

@@ -27,28 +27,28 @@
                     label: function(tooltipItem, data) {
                         var dataset = data.datasets[tooltipItem.datasetIndex];
                         var value = dataset.data[tooltipItem.index];
-                        // Format tooltip values as Indian Rupees (INR)
-                        return ' ' + new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(value);
+                        // Format tooltip values as Euros (EUR)
+                        return ' ' + new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(value);
                     }
                 }
             }
         });
     }]);
 
-    // 3. Create a custom filter for INR currency formatting
+    // 3. Create a custom filter for EUR currency formatting
     // This allows for easy currency formatting throughout the application's views.
-    // Usage: {{ someValue | INR }}
-    app.filter('INR', ['$filter', function ($filter) {
+    // Usage: {{ someValue | EUR }}
+    app.filter('EUR', ['$filter', function ($filter) {
         return function (input) {
             if (isNaN(input)) {
                 return input;
             }
             // Using Intl.NumberFormat for robust, locale-aware currency formatting.
-            return new Intl.NumberFormat('en-IN', { 
-                style: 'currency', 
-                currency: 'INR', 
-                minimumFractionDigits: 0, 
-                maximumFractionDigits: 0 
+            return new Intl.NumberFormat('es-ES', {
+                style: 'currency',
+                currency: 'EUR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
             }).format(input);
         };
     }]);

@@ -905,7 +905,7 @@ For each component, detailed design is provided in sections 9–17.
 - number.
 
 **Output**:
-- string (e.g., "₹45,872.00" or "$45,872.00").
+- string (e.g., "45.872,00 €" or "$45,872.00").
 
 ### 13.2 dateFormat Filter
 
