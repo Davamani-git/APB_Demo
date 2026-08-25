@@ -22,6 +22,10 @@
         // --- ViewModel Properties ---
         vm.loading = true;
         vm.isDarkMode = false;
+
+        // Banking menu: which top-level section is active ('accounts' or 'cards')
+        vm.activeSection = 'accounts';
+
         vm.cards = [];
         vm.transactions = [];
         vm.filteredTransactions = [];
@@ -42,8 +46,26 @@
         vm.categoryChart = {};
         vm.monthlyTrendChart = {};
 
+        // Accounts section state
+        vm.accounts = [];
+        vm.accountTransactions = [];
+        vm.filteredAccountTransactions = [];
+        vm.accountsSummary = {};
+        vm.accountFilters = {
+            description: '',
+            category: '',
+            accountId: '',
+            startDate: null,
+            endDate: null
+        };
+        vm.accountFilterOptions = {};
+        vm.accountSortColumn = 'date';
+        vm.accountSortReverse = true;
+        vm.selectedAccountTransaction = null;
+
         // --- ViewModel Functions ---
         vm.init = init;
+        vm.setActiveSection = setActiveSection;
         vm.applyFilters = applyFilters;
         vm.getCardById = getCardById;
         vm.sortData = sortData;
@@ -51,6 +73,13 @@
         vm.exportToCSV = exportToCSV;
         vm.toggleDarkMode = toggleDarkMode;
         vm.showTransactionDetails = showTransactionDetails;
+
+        vm.applyAccountFilters = applyAccountFilters;
+        vm.getAccountById = getAccountById;
+        vm.sortAccountData = sortAccountData;
+        vm.getAccountSortIcon = getAccountSortIcon;
+        vm.exportAccountsToCSV = exportAccountsToCSV;
+        vm.showAccountTransactionDetails = showAccountTransactionDetails;
 
         // --- Initialization ---
         vm.init();
@@ -67,7 +96,7 @@
                 vm.cards = dataService.getCards();
                 vm.transactions = dataService.getTransactions();
                 vm.filterOptions.categories = dataService.getUniqueCategories();
-                
+
                 // Set initial date filters to the last 30 days
                 var today = new Date();
                 var lastMonth = new Date();
@@ -76,8 +105,26 @@
                 vm.filters.endDate = today;
 
                 vm.applyFilters(); // Apply initial filters and calculate all metrics
+
+                vm.accounts = dataService.getAccounts();
+                vm.accountTransactions = dataService.getAccountTransactions();
+                vm.accountFilterOptions.categories = dataService.getUniqueAccountCategories();
+
+                vm.accountFilters.startDate = lastMonth;
+                vm.accountFilters.endDate = today;
+
+                vm.applyAccountFilters(); // Apply initial filters and calculate account metrics
+
                 vm.loading = false;
             }, 1000); // 1-second loading simulation
+        }
+
+        /**
+         * Switches the active top-level banking section (e.g. 'accounts' or 'cards').
+         * @param {string} section - The section identifier to activate.
+         */
+        function setActiveSection(section) {
+            vm.activeSection = section;
         }
 
         /**
@@ -108,7 +155,7 @@
             vm.categoryChart.labels = categoryData.labels;
             vm.categoryChart.data = categoryData.data;
             vm.categoryChart.options = { legend: { display: true, position: 'right' } };
-            vm.categoryChart.colors = ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796', '#5a5c69'];
+            vm.categoryChart.colors = ['#EC0000', '#1A1A1A', '#EE9CA7', '#666666', '#FF6B5B', '#B3B3B3', '#8B0000'];
 
             // Monthly Spending Trend (Line Chart)
             var monthlyData = dataService.getMonthlySpendingTrend(vm.transactions);
@@ -120,7 +167,7 @@
                     yAxes: [{
                         ticks: {
                             beginAtZero: true,
-                            callback: function(value) { return '₹' + value / 1000 + 'k'; }
+                            callback: function(value) { return '€' + value; }
                         }
                     }]
                 }
@@ -195,6 +242,78 @@
         function showTransactionDetails(transaction) {
             vm.selectedTransaction = transaction;
             var modal = new bootstrap.Modal(document.getElementById('transactionDetailModal'));
+            modal.show();
+        }
+
+        // --- Accounts: Function Implementations ---
+
+        /**
+         * Applies all active account filters and recalculates the accounts summary.
+         */
+        function applyAccountFilters() {
+            vm.filteredAccountTransactions = dataService.getFilteredAccountTransactions(vm.accountFilters);
+            vm.accountsSummary = dataService.getAccountsSummary(vm.accounts, vm.filteredAccountTransactions);
+        }
+
+        /**
+         * Retrieves an account object by its ID.
+         * @param {number} accountId - The ID of the account to find.
+         * @returns {object} The account object or an empty object if not found.
+         */
+        function getAccountById(accountId) {
+            return vm.accounts.find(function(account) { return account.id === accountId; }) || {};
+        }
+
+        /**
+         * Toggles the sort order for a given account transactions table column.
+         * @param {string} column - The name of the column to sort by.
+         */
+        function sortAccountData(column) {
+            vm.accountSortReverse = (vm.accountSortColumn === column) ? !vm.accountSortReverse : false;
+            vm.accountSortColumn = column;
+        }
+
+        /**
+         * Determines which sort icon to display next to the account transactions table headers.
+         * @param {string} column - The name of the column.
+         * @returns {string} The Font Awesome icon class.
+         */
+        function getAccountSortIcon(column) {
+            if (vm.accountSortColumn === column) {
+                return vm.accountSortReverse ? 'fa-sort-down' : 'fa-sort-up';
+            }
+            return 'fa-sort';
+        }
+
+        /**
+         * Exports the currently filtered account transactions to a CSV file.
+         */
+        function exportAccountsToCSV() {
+            var csvContent = 'data:text/csv;charset=utf-8,';
+            csvContent += 'Date,Description,Category,Type,Amount,Account,Balance After\r\n';
+
+            vm.filteredAccountTransactions.forEach(function(tx) {
+                var accountType = vm.getAccountById(tx.accountId).accountType;
+                var row = [tx.date.toISOString().split('T')[0], tx.description, tx.category, tx.type, tx.amount, accountType, tx.balanceAfter].join(',');
+                csvContent += row + '\r\n';
+            });
+
+            var encodedUri = encodeURI(csvContent);
+            var link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', 'account_transactions.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        /**
+         * Sets the selected account transaction and opens the detail modal.
+         * @param {object} transaction - The account transaction object to display.
+         */
+        function showAccountTransactionDetails(transaction) {
+            vm.selectedAccountTransaction = transaction;
+            var modal = new bootstrap.Modal(document.getElementById('accountTransactionDetailModal'));
             modal.show();
         }
     }

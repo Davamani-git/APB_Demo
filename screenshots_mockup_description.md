@@ -1,49 +1,33 @@
 ### Screenshots Mockup Description
 
-This document describes the visual layout and key components of the Credit Card Expenditure Dashboard application as it would appear on a desktop screen.
+This document describes the visual layout and key components of the Santander Banking Dashboard application as it would appear on a desktop screen. The app covers two banking domains — **Accounts** and **Cards** — reached via a top-level banking menu.
 
 **1. Overall Layout & Theme:**
-- The application uses a clean, modern interface with a light theme by default. A dark mode is available via a toggle in the header.
+- The application uses a clean, modern interface inspired by Santander's brand system: signature red (`#EC0000`) accents, bold Work Sans typography, and a light theme by default. A dark mode is available via a toggle in the header, fully re-themed to keep the red accent consistent.
 - The layout is fully responsive, built on the Bootstrap 5 grid system.
-- The primary font is a standard sans-serif for readability, with a monospace font used for the credit card numbers to give a classic digital look.
+- All monetary values are displayed in Euros (e.g. "€95.700"), formatted with Spanish (`es-ES`) locale grouping.
+- Credit card widgets and bank account widgets are visually distinguished: cards use a red gradient (Santander red → dark red), accounts use a dark charcoal/black gradient (evoking a premium/Select account line).
 
 **2. Header:**
 - A fixed navigation bar at the top of the screen.
-- **Left Side:** The application title, "Credit Card Expenditure Dashboard," preceded by a credit card icon (`<i class="fa-solid fa-credit-card"></i>`).
+- **Left Side:** "Santander" wordmark preceded by a landmark/bank icon (`<i class="fa-solid fa-building-columns"></i>`) — no proprietary logo asset is used.
+- **Center:** The **Banking Menu** — two pill-shaped nav items, "Accounts" (bank icon) and "Cards" (credit-card icon). The active section is filled solid red; the inactive one is muted gray. Clicking a pill switches the entire page content below without a full reload.
 - **Right Side:** A toggle button with a moon icon (`<i class="fa-solid fa-moon"></i>`) for switching to dark mode. In dark mode, this icon changes to a sun (`<i class="fa-solid fa-sun"></i>`).
 
-**3. Summary Metrics Section:**
-- A row of six responsive cards located just below the header.
-- Each card has a subtle shadow and a hover effect. It contains:
-    - An icon in a colored circle on the left (e.g., a wallet for Total Limit).
-    - A title in muted text (e.g., "Total Outstanding").
-    - The corresponding value in a large, bold font, formatted as INR (e.g., "₹10,00,000").
-- The "Overall Utilization" card additionally features a horizontal progress bar visually representing the percentage.
+**3. Accounts Section (default landing view):**
+- **Summary Metrics:** A row of six responsive cards — Total Balance, Total Accounts, Credits (This Month), Debits (This Month), Net Flow, and Transactions — each with a colored circular icon and a bold Euro-formatted value.
+- **Bank Account Widgets:** A row of dark, card-styled widgets (one per account: Santander Cuenta 1|2|3, Current Account, Select Account), each showing the bank name, masked account number, account type, branch (Madrid, Barcelona, Valencia), balance, and masked IBAN.
+- **Account Transactions:** A large card titled "Account Transactions" with an "Export to CSV" button and a "Toggle Filters" button. The collapsible filter panel offers a description search box, a category dropdown (Salary Credit, ATM Withdrawal, Fund Transfer, Bill Payment, Bizum Payment, POS Purchase, etc.), an account dropdown, and a date range. The table lists Date, Description, Category, Amount (green "+" for credits, red "−" for debits), Account, and a colored Credit/Debit badge. Clicking a row opens the Account Transaction Detail Modal.
 
-**4. Credit Cards Section:**
-- A row displaying three distinct credit card widgets.
-- Each widget is designed to look like a physical credit card, with a dark blue/black gradient background and white text.
-- It shows the Bank Name, a masked Card Number, Card Name, and Due Date.
-- The bottom part of the card widget displays the current Outstanding and Available credit for that specific card.
+**4. Cards Section:**
+- **Summary Metrics:** A row of six cards — Total Limit, Total Outstanding, Available Credit, Overall Utilization (with a red progress bar), Monthly Spend, and Transactions — all Euro-formatted.
+- **Credit Cards Section:** A row displaying three Santander card products (Santander 123 Credit Card, Santander World Elite Mastercard, Santander Zero Credit Card) styled as physical cards with a red gradient background, white text, and the correct network mark (Visa or Mastercard) per product. Each shows the masked card number, card name, due date, current outstanding, and available credit.
+- **Analytics & Charts:**
+    - **Category-wise Spending:** A doughnut chart (Santander red/black/gray palette) showing spend distribution across categories like Shopping, Food & Dining, Travel, etc.
+    - **Monthly Spending Trend:** A line chart plotting total expenditure over the last 12 months in Euros.
+    - **Top Spending Categories** and **Top Merchants:** Ranked lists (e.g. Zalando, Deliveroo, Carrefour, MediaMarkt) with Euro-amount badges.
+    - **Monthly Spend Forecast:** A card with a "magic wand" icon showing a projected spend figure for the current month.
+- **Transactions:** A large card titled "Transactions" with the same Export-to-CSV / Toggle-Filters / sortable-table / row-click-to-modal pattern as the Accounts section, filtered by merchant, category, card, and date range.
 
-**5. Analytics & Charts Section:**
-- This section is split into two rows to present data visualizations effectively.
-- **First Row:**
-    - **Category-wise Spending:** A doughnut chart on the left (approx. 1/3 width) showing the spending distribution across different categories like 'Shopping', 'Food & Dining', etc. A legend is displayed to the right of the chart.
-    - **Monthly Spending Trend:** A line chart on the right (approx. 2/3 width) plotting the total expenditure over the last 12 months, showing seasonal trends.
-- **Second Row:**
-    - **Top Spending Categories:** A card containing a simple list of the top 5 categories by spend, with the total amount for each displayed in a badge.
-    - **Top Merchants:** A similar card listing the top 5 merchants by spend.
-    - **Monthly Spend Forecast:** A prominent card featuring a "magic wand" icon and displaying a large, bold forecasted spending amount for the current month.
-
-**6. Transactions Section:**
-- A large card that dominates the lower half of the page, titled "Transactions."
-- **Header Area:** Contains an "Export to CSV" button and a "Toggle Filters" button.
-- **Filter Panel:** A collapsible panel appears when the toggle is clicked, offering inputs to filter by Merchant, Category, Card, and a Date Range.
-- **Table:** A responsive, striped table lists the transactions. 
-    - **Headers:** Date, Merchant, Category, Amount, Card, Status. Each header has a sort icon, indicating it's clickable for sorting.
-    - **Rows:** Each row represents a transaction. Clicking a row opens the Transaction Detail Modal. Amounts are right-aligned and formatted as INR. The 'Status' is shown as a colored badge (e.g., green for 'Completed').
-
-**7. Transaction Detail Modal:**
-- When a transaction row is clicked, a modal window overlays the screen.
-- It presents a clean, detailed breakdown of the selected transaction, including Transaction ID, full date, merchant, amount, category, card used (with masked number), and status.
+**5. Transaction Detail Modals:**
+- Two equivalent modals — one for card transactions, one for account transactions — opened by clicking a table row. Each presents a clean breakdown: transaction ID, full date, merchant/description, Euro amount, category, card or account used (with masked number/IBAN), and status/type. The account version additionally shows the post-transaction balance.
