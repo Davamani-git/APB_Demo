@@ -1,31 +1,40 @@
 #### 1. High-Level Design
-- Summary: Deliver a modern, responsive dashboard that consolidates all user credit cards and key KPIs (monthly spend, total credit limit, available credit, outstanding amounts) into a single, intuitive view, using internal/mock data sources rather than real bank integrations.
-- Component Flow:
-  ```mermaid
-  flowchart TD
-    U["User (Web/Mobile Client)"]
-    UI["Dashboard UI Layer"]
-    SVC["Dashboard Service & Aggregation"]
-    DS["Card & Transaction Data Store (Mock/Internal)"]
-    VIS["KPI & Charting Library"]
+- Summary: Deliver a modern, responsive dashboard that consolidates all user credit cards and key KPIs (monthly spend, total credit limit, available credit, outstanding amounts) into a single, intuitive view of overall credit exposure and financial standing.
 
-    U --> UI
-    UI --> SVC
+- Component Flow:
+
+```mermaid
+flowchart TD
+    U["User (Web/Mobile Client)"]
+    FE["Dashboard UI Layer"]
+    SVC["Card & KPI Aggregation Service"]
+    DS["Internal Card & Transaction Data Store"]
+    VIS["Charting/KPI Visualization Library"]
+
+    U --> FE
+    FE --> SVC
     SVC --> DS
-    SVC --> VIS
-    VIS --> UI
-  ```
+    SVC --> FE
+    FE --> VIS
+```
+
 - Integration Points:
   - Internal card data store or mock data services for card details, balances, limits, and transactions.
-  - Front-end charting/UI component libraries to render KPIs, summary tiles, and visualizations.
+  - Front-end charting or UI component libraries to render KPIs and summary tiles.
+  - Internal services providing multi-card portfolio metrics (limits, available credit, outstanding amounts).
+
 - Key Assumptions:
-  - Card and transaction data are exposed via internal APIs or services with stable schemas (e.g., JSON over HTTPS).
-  - KPI refresh is invoked on user navigation/load, with near real-time calculations based on the latest available internal/mock data.
-- NFR Highlights: Dashboard must be responsive across modern web and mobile browsers; KPI calculations should update within acceptable UI latency while avoiding exposure of sensitive information beyond what is necessary for card-level analytics.
+  - Card and transaction data is exposed via internal APIs or services with stable schemas (no direct real bank integration).
+  - KPI refresh is near real-time or on user-triggered refresh, aligned with typical consumer dashboard expectations.
+
+- NFR Highlights:
+  - Dashboard must be responsive across modern web and mobile browsers, with KPI calculations updating within acceptable UI latency and avoiding exposure of unnecessary sensitive information.
+
 - Data Flow:
-  - Inputs: The user accesses the dashboard via a web or mobile client, which calls dashboard APIs to retrieve card and transaction data from internal/mock data stores.
-  - Processing: The dashboard service aggregates per-card limits, available credit, outstanding amounts, and monthly spend into portfolio-level KPIs and prepares view models for UI consumption; charting/KPI libraries render these metrics.
-  - Outputs: The UI presents consolidated KPIs, per-card details, and summary views in a responsive layout, updating values within acceptable latency while redacting or omitting any data not required for analytics display.
+  - User accesses the dashboard via the web/mobile client, which calls the Dashboard UI Layer.
+  - The Dashboard UI Layer invokes the Card & KPI Aggregation Service to fetch card details, limits, balances, and transaction summaries from the Internal Card & Transaction Data Store.
+  - The Aggregation Service computes consolidated metrics (monthly spend, total credit limit, available credit, outstanding amounts) and returns them to the UI.
+  - The Dashboard UI Layer uses the Charting/KPI Visualization Library to render KPIs and summary tiles, presenting the consolidated view back to the user. 
 
 #### 2. Validation Report
-- Requirements Coverage: The high-level design covers the epic’s stated scope by providing a consolidated, responsive dashboard, computing and displaying the required KPIs from internal/mock data sources, integrating with charting/UI libraries, and aligning with the specified non-functional constraints on responsiveness, KPI update latency, and data sensitivity.
+- Requirements Coverage: The proposed design supports a responsive, consolidated dashboard that displays multiple cards and key KPIs (monthly spend, total credit limit, available credit, outstanding amount) using internal data sources and visualization libraries, aligning with the epic’s described scope and user value.
