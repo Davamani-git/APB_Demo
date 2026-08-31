@@ -1,0 +1,1 @@
+angular.module('app',['toastr']).config(['$locationProvider',function($locationProvider){$locationProvider.hashPrefix('');}]).run(['AuthService','$window',function(AuthService,$window){AuthService.validateSession().catch(function(){console.warn('Session validation failed');});}]);

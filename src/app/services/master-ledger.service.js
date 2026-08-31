@@ -1,0 +1,2 @@
+angular.module('app').service('MasterLedgerService',['$http','$cacheFactory','$q',function($http,$cacheFactory,$q){var cache=$cacheFactory('masterLedgerCache');var CACHE_KEY='masterLedger';var CACHE_TTL=3600000;this.getMasterLedger=function(){var cached=cache.get(CACHE_KEY);if(cached&&cached.timestamp&&(Date.now()-cached.timestamp<CACHE_TTL)){return $q.resolve(cached.data);}
+return $http.get('/api/ledger/master').then(function(response){var data={data:response.data,timestamp:Date.now()};cache.put(CACHE_KEY,data);return response.data;});};}]);

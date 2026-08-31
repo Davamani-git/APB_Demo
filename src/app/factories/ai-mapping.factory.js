@@ -1,0 +1,1 @@
+angular.module('app').factory('AIMappingFactory',['$http','$q',function($http,$q){return{getMappingSuggestions:function(sessionId){return $http.get('/api/mapping/results/'+sessionId).then(function(response){return response.data;});},processMappings:function(accounts){return $http.post('/api/mapping/ai',{accounts:accounts}).then(function(response){return response.data;});}};}]);

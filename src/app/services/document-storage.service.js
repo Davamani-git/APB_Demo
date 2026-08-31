@@ -1,0 +1,2 @@
+angular.module('app').service('DocumentStorageService',['$http','$cacheFactory',function($http,$cacheFactory){var cache=$cacheFactory('documentCache');this.getDownloadUrl=function(reportId){return $http.get('/api/reports/download/'+reportId).then(function(response){return response.data.downloadUrl;});};this.getPreviousReports=function(){var cached=cache.get('previousReports');if(cached){return Promise.resolve(cached);}
+return $http.get('/api/reports/history').then(function(response){cache.put('previousReports',response.data);return response.data;});};}]);

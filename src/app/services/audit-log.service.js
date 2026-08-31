@@ -1,0 +1,1 @@
+angular.module('app').service('AuditLogService',['$http',function($http){this.logTransaction=function(result){return $http.post('/api/audit/log',{eventType:'INTEGRATION',result:result,timestamp:new Date().toISOString()},{timeout:5000}).then(function(response){return response.data;}).catch(function(error){console.error('Audit log failed:',error);});};}]);

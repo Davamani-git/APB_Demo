@@ -1,0 +1,1 @@
+angular.module('app').service('RuleEngineService',['$http','MasterLedgerService',function($http,MasterLedgerService){this.applyRules=function(accounts){return $http.post('/api/mapping/rules',{accounts:accounts}).then(function(response){return response.data;});};}]);

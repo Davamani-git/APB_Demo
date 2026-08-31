@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Automated Ledger Mapping Tool</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-toastr/2.1.1/angular-toastr.min.css">
+<style>
+body{font-family:Arial,sans-serif;margin:0;padding:20px;background:#f5f5f5}
+.container{max-width:1200px;margin:0 auto;background:#fff;padding:20px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
+h1,h2{color:#333}
+.btn{padding:10px 20px;margin:5px;border:none;border-radius:4px;cursor:pointer;font-size:14px}
+.btn-primary{background:#007bff;color:#fff}
+.btn-success{background:#28a745;color:#fff}
+.btn-danger{background:#dc3545;color:#fff}
+.btn:hover{opacity:0.9}
+.upload-area{border:2px dashed #ccc;padding:40px;text-align:center;margin:20px 0;border-radius:8px}
+.upload-area.dragover{border-color:#007bff;background:#f0f8ff}
+table{width:100%;border-collapse:collapse;margin:20px 0}
+table th,table td{padding:12px;text-align:left;border-bottom:1px solid #ddd}
+table th{background:#f8f9fa;font-weight:600}
+.ambiguous{background:#fff3cd}
+.status-badge{padding:4px 8px;border-radius:4px;font-size:12px;font-weight:600}
+.status-auto{background:#d4edda;color:#155724}
+.status-manual{background:#cce5ff;color:#004085}
+.status-pending{background:#fff3cd;color:#856404}
+.form-group{margin:15px 0}
+label{display:block;margin-bottom:5px;font-weight:600}
+input[type="file"]{display:block;margin:10px 0}
+select,input[type="text"]{width:100%;padding:8px;border:1px solid #ccc;border-radius:4px}
+.notification{padding:15px;margin:10px 0;border-radius:4px}
+.notification-success{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
+.notification-error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
+.nav-tabs{display:flex;border-bottom:2px solid #dee2e6;margin-bottom:20px}
+.nav-tabs button{padding:10px 20px;border:none;background:none;cursor:pointer;border-bottom:3px solid transparent}
+.nav-tabs button.active{border-bottom-color:#007bff;color:#007bff;font-weight:600}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.grid-container{overflow-x:auto}
+.report-list{list-style:none;padding:0}
+.report-list li{padding:15px;margin:10px 0;background:#f8f9fa;border-radius:4px;display:flex;justify-content:space-between;align-items:center}
+.loader{border:4px solid #f3f3f3;border-top:4px solid #007bff;border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite;margin:20px auto}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Automated Ledger Mapping Tool</h1>
+<div class="nav-tabs">
+<button ng-click="setTab('upload')" ng-class="{active: currentTab === 'upload'}">Upload</button>
+<button ng-click="setTab('review')" ng-class="{active: currentTab === 'review'}">Review & Approve</button>
+<button ng-click="setTab('reports')" ng-class="{active: currentTab === 'reports'}">Reports</button>
+<button ng-click="setTab('approval')" ng-class="{active: currentTab === 'approval'}">Cozone Integration</button>
+</div>
+<div class="tab-content" ng-class="{active: currentTab === 'upload'}" ng-controller="UploadController as uploadCtrl">
+<h2>Upload Legacy Account Structure</h2>
+<div class="upload-area" ng-class="{dragover: uploadCtrl.isDragOver}" ng-drop="uploadCtrl.handleDrop($event)" ng-dragover="uploadCtrl.handleDragOver($event)" ng-dragleave="uploadCtrl.handleDragLeave($event)">
+<p>Drag and drop your file here or click to browse</p>
+<input type="file" id="fileInput" ng-model="uploadCtrl.file" accept=".csv,.xlsx,.xml" onchange="angular.element(this).scope().uploadCtrl.handleFileSelect(this.files)">
+<p>Supported formats: CSV, XLSX, XML (Max 10,000 accounts)</p>
+</div>
+<div ng-if="uploadCtrl.uploading">
+<div class="loader"></div>
+<p style="text-align:center">Processing file...</p>
+</div>
+<div ng-if="uploadCtrl.uploadSuccess" class="notification notification-success">
+<strong>Success!</strong> File processed successfully. {{uploadCtrl.accountCount}} accounts uploaded.
+</div>
+<div ng-if="uploadCtrl.uploadError" class="notification notification-error">
+<strong>Error!</strong> {{uploadCtrl.errorMessage}}
+</div>
+</div>
+<div class="tab-content" ng-class="{active: currentTab === 'review'}" ng-controller="ReviewController as reviewCtrl">
+<h2>Review AI-Driven Mapping Suggestions</h2>
+<div ng-if="reviewCtrl.loading">
+<div class="loader"></div>
+<p style="text-align:center">Loading mapping results...</p>
+</div>
+<div ng-if="!reviewCtrl.loading && reviewCtrl.mappings.length > 0">
+<p><strong>Session ID:</strong> {{reviewCtrl.sessionId}}</p>
+<p><strong>Total Mappings:</strong> {{reviewCtrl.mappings.length}} | <strong>Ambiguous:</strong> {{reviewCtrl.ambiguousCount}}</p>
+<mapping-grid mappings="reviewCtrl.mappings" on-override="reviewCtrl.handleOverride(mapping)"></mapping-grid>
+<button class="btn btn-success" ng-click="reviewCtrl.approveAll()" ng-disabled="reviewCtrl.approving">Approve All Mappings</button>
+</div>
+<div ng-if="!reviewCtrl.loading && reviewCtrl.mappings.length === 0">
+<p>No mappings available. Please upload a file first.</p>
+</div>
+</div>
+<div class="tab-content" ng-class="{active: currentTab === 'reports'}" ng-controller="ReportController as reportCtrl">
+<h2>Generate Audit-Ready Mapping Reports</h2>
+<div class="form-group">
+<label>Session ID:</label>
+<input type="text" ng-model="reportCtrl.sessionId" placeholder="Enter session ID">
+</div>
+<div class="form-group">
+<label>Report Format:</label>
+<select ng-model="reportCtrl.reportFormat">
+<option value="PDF">PDF</option>
+<option value="CSV">CSV</option>
+</select>
+</div>
+<button class="btn btn-primary" ng-click="reportCtrl.generateReport()" ng-disabled="reportCtrl.generating">Generate Report</button>
+<div ng-if="reportCtrl.generating">
+<div class="loader"></div>
+<p style="text-align:center">Generating report...</p>
+</div>
+<div ng-if="reportCtrl.reportReady" class="notification notification-success">
+<strong>Report Ready!</strong> <a ng-href="{{reportCtrl.downloadUrl}}" download>Download Report</a>
+</div>
+<h3>Previous Reports</h3>
+<ul class="report-list" ng-if="reportCtrl.previousReports.length > 0">
+<li ng-repeat="report in reportCtrl.previousReports">
+<div>
+<strong>{{report.reportFormat}}</strong> - Generated: {{report.generatedAt | date:'short'}}
+<br><small>Session: {{report.sessionId}}</small>
+</div>
+<a ng-href="{{report.downloadUrl}}" download class="btn btn-primary">Download</a>
+</li>
+</ul>
+<p ng-if="reportCtrl.previousReports.length === 0">No previous reports found.</p>
+</div>
+<div class="tab-content" ng-class="{active: currentTab === 'approval'}" ng-controller="ApprovalController as approvalCtrl">
+<h2>Synchronize Mapped Accounts to Cozone</h2>
+<div class="form-group">
+<label>Session ID:</label>
+<input type="text" ng-model="approvalCtrl.sessionId" placeholder="Enter session ID">
+</div>
+<button class="btn btn-success" ng-click="approvalCtrl.syncToCozone()" ng-disabled="approvalCtrl.syncing">Sync to Cozone</button>
+<div ng-if="approvalCtrl.syncing">
+<div class="loader"></div>
+<p style="text-align:center">Synchronizing with Cozone...</p>
+</div>
+<div ng-if="approvalCtrl.syncSuccess" class="notification notification-success">
+<strong>Success!</strong> {{approvalCtrl.successCount}} accounts synchronized to Cozone.
+</div>
+<div ng-if="approvalCtrl.syncError" class="notification notification-error">
+<strong>Error!</strong> {{approvalCtrl.errorMessage}}
+<br><small>Failed accounts: {{approvalCtrl.failureCount}}</small>
+</div>
+<h3>Mapping History</h3>
+<ul class="report-list" ng-if="approvalCtrl.history.length > 0">
+<li ng-repeat="session in approvalCtrl.history">
+<div>
+<strong>Session {{session.sessionId}}</strong> - {{session.timestamp | date:'short'}}
+<br><small>Status: {{session.status}}</small>
+</div>
+<button class="btn btn-primary" ng-click="approvalCtrl.viewDetails(session.sessionId)">View Details</button>
+</li>
+</ul>
+<p ng-if="approvalCtrl.history.length === 0">No mapping history available.</p>
+</div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-toastr/2.1.1/angular-toastr.tpls.min.js"></script>
+<script src="src/app/app.module.js"></script>
+<script src="src/app/services/file-parser.service.js"></script>
+<script src="src/app/services/master-ledger.service.js"></script>
+<script src="src/app/services/rule-engine.service.js"></script>
+<script src="src/app/services/notification.service.js"></script>
+<script src="src/app/services/audit-log.service.js"></script>
+<script src="src/app/services/audit-logging.service.js"></script>
+<script src="src/app/services/document-storage.service.js"></script>
+<script src="src/app/services/auth.service.js"></script>
+<script src="src/app/services/integration-orchestrator.service.js"></script>
+<script src="src/app/factories/ai-mapping.factory.js"></script>
+<script src="src/app/factories/cozone-api.factory.js"></script>
+<script src="src/app/factories/report-generator.factory.js"></script>
+<script src="src/app/modules/upload/upload.controller.js"></script>
+<script src="src/app/modules/review/review.controller.js"></script>
+<script src="src/app/modules/reports/report.controller.js"></script>
+<script src="src/app/modules/approval/approval.controller.js"></script>
+<script src="src/app/directives/mapping-grid.directive.js"></script>
+<script src="src/app/app.controller.js"></script>
+</body>
+</html>
