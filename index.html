@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ascendion Portal</title>
+  <style>
+    :root {
+      --primary-purple: #6D1F73;
+      --magenta-accent: #97186F;
+      --dark-purple: #4D1A5D;
+      --plum: #35113D;
+      --main-text: #25212A;
+      --secondary-text: #6C6570;
+      --main-bg: #FFFFFF;
+      --alt-bg: #F5F4F5;
+      --footer-bg: #281F2C;
+      --border: #DED9E1;
+      --surface: #FFFFFF;
+      --surface-alt: #F5F4F5;
+      --header-text: #FFFFFF;
+      --footer-text: #FFFFFF;
+      --tab-text: #6C6570;
+      --tab-active: #6D1F73;
+      --card-shadow: none;
+      --content-width: 1180px;
+      --radius: 0;
+      --transition: background-color .2s ease, color .2s ease, border-color .2s ease;
+    }
+
+    html[data-theme="dark"] {
+      --main-bg: #1D1820;
+      --alt-bg: #241D28;
+      --surface: #241D28;
+      --surface-alt: #2A2230;
+      --main-text: #F5F1F6;
+      --secondary-text: #C8BFCC;
+      --border: #4E4256;
+      --footer-bg: #160F18;
+      --footer-text: #FFFFFF;
+      --tab-text: #C8BFCC;
+      --tab-active: #C987D0;
+      --card-shadow: none;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--main-bg);
+      color: var(--main-text);
+      transition: var(--transition);
+    }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    .container { width: min(var(--content-width), calc(100% - 32px)); margin: 0 auto; }
+
+    .site-header {
+      background: linear-gradient(90deg, var(--dark-purple) 0%, var(--primary-purple) 55%, var(--magenta-accent) 100%);
+      color: var(--header-text);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(255,255,255,.14);
+    }
+    .header-inner {
+      width: min(var(--content-width), calc(100% - 32px));
+      margin: 0 auto;
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .brand {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: .2px;
+      color: #fff;
+      white-space: nowrap;
+    }
+    .main-nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      margin-left: auto;
+    }
+    .main-nav a {
+      color: #fff;
+      font-size: 15px;
+      opacity: .96;
+    }
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+    .icon-btn, .theme-toggle {
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.35);
+      background: transparent;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+    }
+    .theme-toggle-label { display: none; }
+
+    .hero {
+      padding: 42px 0 18px;
+      background: var(--main-bg);
+    }
+    .hero h1 {
+      text-align: center;
+      font-size: 34px;
+      line-height: 1.2;
+      margin: 0 0 30px;
+      font-weight: 600;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 34px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 34px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      border: 0;
+      background: transparent;
+      color: var(--tab-text);
+      font-size: 16px;
+      padding: 0 2px 14px;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      color: var(--main-text);
+      border-bottom-color: var(--tab-active);
+    }
+
+    .section {
+      padding: 26px 0 34px;
+      background: var(--main-bg);
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+    .section-copy .eyebrow {
+      color: var(--secondary-text);
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    .section-copy h2 {
+      font-size: 34px;
+      margin: 0 0 14px;
+      line-height: 1.15;
+      font-weight: 600;
+    }
+    .section-copy p {
+      margin: 0 0 18px;
+      color: var(--secondary-text);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 12px;
+    }
+    .feature-list li {
+      padding-left: 18px;
+      position: relative;
+      color: var(--main-text);
+      font-size: 15px;
+    }
+    .feature-list li::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--magenta-accent);
+      position: absolute;
+      left: 0;
+      top: 9px;
+    }
+    .visual-panel img {
+      width: 100%;
+      height: 360px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+    }
+    .link-arrow {
+      color: var(--primary-purple);
+      font-weight: 600;
+    }
+
+    .accordion-wrap {
+      border-top: 1px solid var(--border);
+      margin-top: 24px;
+    }
+    .accordion-item {
+      border-bottom: 1px solid var(--border);
+    }
+    .accordion-btn {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 18px 0;
+      color: var(--main-text);
+      cursor: pointer;
+      text-align: left;
+      font-size: 16px;
+    }
+    .accordion-icon {
+      width: 28px;
+      height: 28px;
+      min-width: 28px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-purple);
+      font-size: 17px;
+      line-height: 1;
+    }
+    .accordion-panel {
+      display: none;
+      padding: 0 0 18px;
+      color: var(--secondary-text);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+    .accordion-item.open .accordion-panel { display: block; }
+
+    .pillars {
+      padding: 22px 0 34px;
+    }
+    .pillar-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      border-top: 1px solid var(--border);
+      padding-top: 26px;
+    }
+    .pillar {
+      padding-right: 8px;
+    }
+    .pillar-mark {
+      width: 34px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary-purple), var(--magenta-accent));
+      margin-bottom: 16px;
+    }
+    .pillar h3 {
+      margin: 0 0 10px;
+      font-size: 21px;
+      font-weight: 600;
+    }
+    .pillar p {
+      margin: 0;
+      color: var(--secondary-text);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .story-feature {
+      background: var(--alt-bg);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 30px 0;
+      margin: 8px 0 10px;
+    }
+    .story-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+      flex-wrap: wrap;
+    }
+    .story-card h3 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      font-weight: 600;
+    }
+    .story-card p {
+      margin: 0;
+      color: var(--secondary-text);
+      line-height: 1.7;
+    }
+    .theme-toggle-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      padding: 10px 12px;
+    }
+    .theme-chip {
+      font-size: 14px;
+      color: var(--secondary-text);
+    }
+    .switch {
+      position: relative;
+      width: 56px;
+      height: 30px;
+      border: 1px solid var(--border);
+      background: #fff;
+      cursor: pointer;
+      padding: 0;
+    }
+    html[data-theme="dark"] .switch { background: #2E2434; }
+    .switch::after {
+      content: "";
+      width: 22px;
+      height: 22px;
+      background: linear-gradient(180deg, var(--primary-purple), var(--magenta-accent));
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      transition: transform .2s ease;
+    }
+    html[data-theme="dark"] .switch::after { transform: translateX(26px); }
+
+    .disclaimer {
+      padding: 14px 0 26px;
+      color: var(--secondary-text);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .site-footer {
+      background: var(--footer-bg);
+      color: var(--footer-text);
+      padding: 42px 0 22px;
+      margin-top: 10px;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1fr;
+      gap: 32px;
+      padding-bottom: 22px;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+    .footer-brand {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .footer-col h4 {
+      margin: 0 0 12px;
+      font-size: 14px;
+      opacity: .8;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .footer-col a, .footer-col p {
+      display: block;
+      color: rgba(255,255,255,.88);
+      font-size: 14px;
+      margin: 0 0 10px;
+      line-height: 1.7;
+    }
+    .footer-note {
+      padding-top: 18px;
+      color: rgba(255,255,255,.72);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--magenta-accent);
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 900px) {
+      .two-col, .footer-grid, .pillar-grid { grid-template-columns: 1fr; }
+      .main-nav { display: none; }
+      .hero h1 { font-size: 28px; }
+      .section-copy h2 { font-size: 30px; }
+      .visual-panel img { height: 280px; }
+      .story-card { align-items: flex-start; }
+    }
+
+    @media (max-width: 600px) {
+      .header-inner { min-height: 64px; }
+      .brand, .footer-brand { font-size: 24px; }
+      .tabs { justify-content: flex-start; gap: 20px; }
+      .hero { padding-top: 28px; }
+      .hero h1 { font-size: 24px; }
+      .section-copy h2 { font-size: 26px; }
+      .container, .header-inner { width: min(var(--content-width), calc(100% - 24px)); }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">Ascendion Portal</div>
+      <nav class="main-nav" aria-label="Primary">
+        <a href="#insights">Insights</a>
+        <a href="#company-info">Company info</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-btn" aria-label="Search">⌕</button>
+        <button id="header-theme-toggle" class="theme-toggle" aria-label="Switch to dark mode" aria-pressed="false" title="Toggle theme">◐</button>
+        <button class="icon-btn" aria-label="Menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <h1>Learn more about our technology platforms</h1>
+        <div class="tabs" role="tablist" aria-label="Technology platforms">
+          <button class="tab-btn active" role="tab" aria-selected="true">For shareholders</button>
+          <button class="tab-btn" role="tab" aria-selected="false">For employee share plan holders</button>
+          <button class="tab-btn" role="tab" aria-selected="false">About us</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container two-col">
+        <div class="section-copy">
+          <div class="eyebrow">For shareholders</div>
+          <h2>Investor Centre</h2>
+          <p>Introducing the new Investor Centre experience. A modern, intuitive and seamless way to manage your investments online.</p>
+          <ul class="feature-list">
+            <li>Portfolio holdings and price history</li>
+            <li>Monitor recent activity</li>
+            <li>Download documents instantly</li>
+            <li>Virtual assistance</li>
+          </ul>
+        </div>
+        <div class="visual-panel">
+          <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80" alt="Investor Centre technology platform" />
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container two-col">
+        <div class="section-copy">
+          <div class="eyebrow">Employee share plans</div>
+          <h2>EmpShare</h2>
+          <p>Simplified employee share plan management for global participants.</p>
+          <ul class="feature-list">
+            <li>Intuitive and user-friendly</li>
+            <li>Real-time data</li>
+            <li>Simplify tax calculations</li>
+            <li>Mobile app</li>
+          </ul>
+        </div>
+        <div class="visual-panel">
+          <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80" alt="Employee share plan holder experience" />
+        </div>
+      </div>
+    </section>
+
+    <section class="story-feature" aria-labelledby="theme-feature-heading">
+      <div class="container">
+        <div class="story-card">
+          <div>
+            <h3 id="theme-feature-heading">Personalize your interface</h3>
+            <p>Switch between light and dark themes to tailor the Ascendion Portal experience to your viewing preference while preserving the current design, layout, branding, and functionality.</p>
+          </div>
+          <div class="theme-toggle-group" aria-label="Theme preference controls">
+            <span class="theme-chip">Light</span>
+            <button id="content-theme-toggle" class="switch" type="button" aria-label="Switch to dark mode" aria-pressed="false"></button>
+            <span class="theme-chip">Dark</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container two-col">
+        <div class="section-copy">
+          <div class="eyebrow">About us</div>
+          <h2>About us</h2>
+          <p>We bring our expertise and experience in financial services to create dynamic partnerships that lead to advanced, compliant and people-focused solutions.</p>
+          <a class="link-arrow" href="#company-info">Learn more →</a>
+        </div>
+        <div class="visual-panel">
+          <img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1200&q=80" alt="Business professionals collaborating" />
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="accordion-wrap">
+          <div class="accordion-item open">
+            <button class="accordion-btn" type="button" aria-expanded="true">
+              <span>Investor Centre platform details</span>
+              <span class="accordion-icon">−</span>
+            </button>
+            <div class="accordion-panel">A streamlined digital experience focused on intuitive portfolio visibility, document access, and virtual assistance with clear, corporate financial-services presentation.</div>
+          </div>
+          <div class="accordion-item">
+            <button class="accordion-btn" type="button" aria-expanded="false">
+              <span>EmpShare platform details</span>
+              <span class="accordion-icon">+</span>
+            </button>
+            <div class="accordion-panel">A simple and responsive employee share plan experience that emphasizes usability, real-time access, tax simplification, and mobile support without altering the established website design.</div>
+          </div>
+          <div class="accordion-item">
+            <button class="accordion-btn" type="button" aria-expanded="false">
+              <span>Theme personalization support</span>
+              <span class="accordion-icon">+</span>
+            </button>
+            <div class="accordion-panel">Your selected visual mode is remembered locally in the browser so the interface opens in your preferred light or dark theme on future visits.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pillars" id="insights">
+      <div class="container">
+        <div class="pillar-grid">
+          <article class="pillar">
+            <div class="pillar-mark"></div>
+            <h3>Experience</h3>
+            <p>Grounded in practical delivery and a customer-first digital journey.</p>
+          </article>
+          <article class="pillar">
+            <div class="pillar-mark"></div>
+            <h3>Expertise</h3>
+            <p>Built with financial-services knowledge and compliance-minded execution.</p>
+          </article>
+          <article class="pillar">
+            <div class="pillar-mark"></div>
+            <h3>Innovation</h3>
+            <p>Focused on modern platform capabilities with minimal and clean presentation.</p>
+          </article>
+          <article class="pillar">
+            <div class="pillar-mark"></div>
+            <h3>Technology</h3>
+            <p>Designed to support intuitive digital products across web and mobile experiences.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="disclaimer">
+      <div class="container">This page is a visual demonstration of Ascendion Portal and contains no authentication, account access, forms, personal-data collection, transactions, or financial functionality.</div>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="contact">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">Ascendion Portal</div>
+          <p>Clean, white-and-purple corporate financial-services presentation with preserved structure, spacing, and responsive behavior.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Personal</h4>
+          <a href="#">Investor Centre</a>
+          <a href="#">Employee share plans</a>
+          <a href="#company-info">About us</a>
+        </div>
+        <div class="footer-col" id="company-info">
+          <h4>Company</h4>
+          <a href="#company-info">Company information</a>
+          <a href="#insights">Insights</a>
+        </div>
+      </div>
+      <div class="footer-note">Ascendion Portal demonstration experience. No authentication, account access, or personal-data collection is enabled in this demo.</div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const root = document.documentElement;
+      const storageKey = 'ascendion-portal-theme';
+      const toggles = [document.getElementById('header-theme-toggle'), document.getElementById('content-theme-toggle')].filter(Boolean);
+
+      const getInitialTheme = () => {
+        const saved = localStorage.getItem(storageKey);
+        if (saved === 'light' || saved === 'dark') return saved;
+        return 'light';
+      };
+
+      const syncToggles = (theme) => {
+        toggles.forEach((btn) => {
+          btn.setAttribute('aria-pressed', String(theme === 'dark'));
+          btn.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+          if (btn.id === 'header-theme-toggle') btn.textContent = theme === 'dark' ? '◑' : '◐';
+        });
+      };
+
+      const applyTheme = (theme) => {
+        root.setAttribute('data-theme', theme);
+        localStorage.setItem(storageKey, theme);
+        syncToggles(theme);
+      };
+
+      applyTheme(getInitialTheme());
+
+      toggles.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const nextTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+          applyTheme(nextTheme);
+        });
+      });
+
+      document.querySelectorAll('.accordion-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+          const item = button.parentElement;
+          const open = item.classList.contains('open');
+          item.classList.toggle('open', !open);
+          button.setAttribute('aria-expanded', String(!open));
+          const icon = button.querySelector('.accordion-icon');
+          if (icon) icon.textContent = open ? '+' : '−';
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
