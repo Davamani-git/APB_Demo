@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Equity Master</title>
+  <style>
+    :root {
+      --primary-purple: #6D1F73;
+      --magenta-accent: #97186F;
+      --dark-purple: #4D1A5D;
+      --plum: #35113D;
+      --text-main: #25212A;
+      --text-secondary: #6C6570;
+      --bg-main: #FFFFFF;
+      --bg-alt: #F5F4F5;
+      --footer: #281F2C;
+      --border: #DED9E1;
+      --max-width: 1180px;
+      --shadow-soft: 0 1px 2px rgba(53, 17, 61, 0.04);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text-main);
+      background: var(--bg-main);
+      line-height: 1.5;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    .container { width: min(var(--max-width), calc(100% - 40px)); margin: 0 auto; }
+    .site-header {
+      background: linear-gradient(135deg, var(--primary-purple) 0%, var(--dark-purple) 55%, var(--plum) 100%);
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      min-height: 84px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: #fff;
+      white-space: nowrap;
+    }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border: 2px solid rgba(255,255,255,0.85);
+      border-radius: 50%;
+      position: relative;
+      flex: 0 0 auto;
+    }
+    .brand-mark::before,
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      inset: 7px;
+      border: 2px solid rgba(255,255,255,0.65);
+      border-radius: 50%;
+    }
+    .brand-mark::after { inset: 13px; }
+    .main-nav ul {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      margin: 0;
+      padding: 0;
+      flex-wrap: wrap;
+    }
+    .main-nav a {
+      color: #fff;
+      font-size: 0.98rem;
+      padding: 8px 0;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.2s ease, opacity 0.2s ease;
+      opacity: 0.96;
+    }
+    .main-nav a:hover,
+    .main-nav a:focus,
+    .main-nav a.active {
+      border-bottom-color: #fff;
+      opacity: 1;
+      outline: none;
+    }
+    .hero-space { height: 18px; background: var(--bg-main); }
+    .tabs-wrap { padding: 26px 0 0; }
+    .page-heading {
+      text-align: center;
+      font-size: 1.9rem;
+      line-height: 1.2;
+      margin: 0 0 26px;
+      color: var(--text-main);
+      font-weight: 700;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 26px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 38px;
+      flex-wrap: wrap;
+    }
+    .tab-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 2px 14px;
+      font-size: 1rem;
+      color: var(--text-secondary);
+      border-bottom: 2px solid transparent;
+    }
+    .tab-link.active {
+      color: var(--primary-purple);
+      border-bottom-color: var(--primary-purple);
+      font-weight: 700;
+    }
+    .section {
+      padding: 8px 0 44px;
+    }
+    .feature-section {
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      gap: 42px;
+      align-items: center;
+      padding: 28px 0 22px;
+    }
+    .feature-copy .eyebrow {
+      color: var(--magenta-accent);
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .feature-copy h2 {
+      margin: 0 0 14px;
+      font-size: 2rem;
+      line-height: 1.15;
+      color: var(--text-main);
+    }
+    .feature-copy p {
+      margin: 0 0 16px;
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+    .feature-list {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--text-main);
+    }
+    .feature-list li { margin-bottom: 10px; }
+    .visual-panel img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+    }
+    .about-copy p:last-child { margin-bottom: 0; }
+    .pillars {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      padding-top: 10px;
+    }
+    .pillar {
+      border-top: 3px solid var(--primary-purple);
+      padding-top: 16px;
+    }
+    .pillar:nth-child(2) { border-top-color: var(--magenta-accent); }
+    .pillar:nth-child(3) { border-top-color: var(--dark-purple); }
+    .pillar:nth-child(4) { border-top-color: var(--plum); }
+    .pillar h3 {
+      margin: 0 0 10px;
+      font-size: 1.12rem;
+      color: var(--text-main);
+    }
+    .pillar p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 0.98rem;
+    }
+    .help-center {
+      padding: 30px 0 10px;
+    }
+    .help-center-header {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 42px;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    .help-center-copy .eyebrow {
+      color: var(--magenta-accent);
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .help-center-copy h2 {
+      margin: 0 0 14px;
+      font-size: 1.9rem;
+      line-height: 1.2;
+    }
+    .help-center-copy p {
+      margin: 0 0 12px;
+      color: var(--text-secondary);
+    }
+    .help-center-search {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .help-center-search input {
+      flex: 1 1 320px;
+      min-height: 48px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.98rem;
+      color: var(--text-main);
+      background: #fff;
+    }
+    .help-center-search button,
+    .download-link,
+    .chat-launch,
+    .back-top {
+      min-height: 48px;
+      padding: 12px 18px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--primary-purple);
+      background: var(--primary-purple);
+      color: #fff;
+      font-size: 0.96rem;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .help-center-search button:hover,
+    .download-link:hover,
+    .chat-launch:hover,
+    .back-top:hover { background: var(--dark-purple); border-color: var(--dark-purple); }
+    .help-category-tabs {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 28px;
+    }
+    .help-category-tab {
+      background: transparent;
+      border: 0;
+      border-bottom: 2px solid transparent;
+      color: var(--text-secondary);
+      padding: 0 0 12px;
+      font-size: 0.98rem;
+      cursor: pointer;
+    }
+    .help-category-tab.active {
+      color: var(--primary-purple);
+      border-bottom-color: var(--primary-purple);
+      font-weight: 700;
+    }
+    .help-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 34px;
+      align-items: start;
+    }
+    .help-panel {
+      border-top: 1px solid var(--border);
+      padding-top: 18px;
+    }
+    .help-panel-title {
+      margin: 0 0 14px;
+      font-size: 1.3rem;
+      color: var(--text-main);
+    }
+    .help-articles,
+    .help-materials,
+    .help-videos,
+    .help-chat {
+      display: grid;
+      gap: 14px;
+    }
+    .help-item {
+      padding: 0 0 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .help-item:last-child { border-bottom: 1px solid var(--border); }
+    .help-item h4 {
+      margin: 0 0 8px;
+      font-size: 1.02rem;
+      color: var(--text-main);
+    }
+    .help-item p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 0.96rem;
+    }
+    .download-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 10px 14px;
+      margin-top: 10px;
+      font-size: 0.92rem;
+      text-decoration: none;
+    }
+    .video-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: #fff;
+    }
+    .video-card iframe {
+      width: 100%;
+      height: 240px;
+      border: 0;
+      display: block;
+    }
+    .video-card .video-meta { padding: 14px; }
+    .help-accordion {
+      margin-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+    .accordion-item {
+      border-bottom: 1px solid var(--border);
+    }
+    .accordion-trigger {
+      width: 100%;
+      background: transparent;
+      border: 0;
+      padding: 16px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      text-align: left;
+      cursor: pointer;
+      color: var(--text-main);
+      font-size: 1rem;
+    }
+    .accordion-label { flex: 1; }
+    .accordion-icon {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-purple);
+      font-weight: 700;
+      flex: 0 0 auto;
+      position: relative;
+    }
+    .accordion-icon::before,
+    .accordion-icon::after {
+      content: "";
+      position: absolute;
+      background: currentColor;
+      border-radius: 1px;
+    }
+    .accordion-icon::before { width: 12px; height: 2px; }
+    .accordion-icon::after { width: 2px; height: 12px; }
+    .accordion-item.open .accordion-icon::after { display: none; }
+    .accordion-content {
+      display: none;
+      padding: 0 0 16px;
+      color: var(--text-secondary);
+      font-size: 0.96rem;
+    }
+    .accordion-item.open .accordion-content { display: block; }
+    .help-chat-box {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-alt);
+      padding: 18px;
+    }
+    .help-chat-window {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: #fff;
+      min-height: 230px;
+      padding: 14px;
+      overflow: auto;
+    }
+    .chat-message {
+      max-width: 88%;
+      margin-bottom: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.94rem;
+      border: 1px solid var(--border);
+    }
+    .chat-message.bot { background: #fff; color: var(--text-main); }
+    .chat-message.user {
+      background: rgba(109,31,115,0.08);
+      color: var(--text-main);
+      margin-left: auto;
+      border-color: rgba(109,31,115,0.18);
+    }
+    .chat-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .chat-controls input {
+      flex: 1 1 220px;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+    .chat-status,
+    .resource-message,
+    .search-message {
+      margin-top: 10px;
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+    }
+    .site-footer {
+      background: var(--footer);
+      color: #fff;
+      margin-top: 46px;
+      padding: 36px 0 24px;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: end;
+      border-bottom: 1px solid rgba(255,255,255,0.14);
+      padding-bottom: 22px;
+      margin-bottom: 18px;
+    }
+    .footer-title {
+      font-size: 1.2rem;
+      margin: 0 0 6px;
+      font-weight: 700;
+    }
+    .footer-copy,
+    .footer-contact a,
+    .footer-bottom {
+      color: rgba(255,255,255,0.84);
+      font-size: 0.95rem;
+    }
+    .footer-contact { text-align: right; }
+    .footer-contact strong { display: block; color: #fff; margin-bottom: 8px; }
+    .footer-actions {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .back-top {
+      background: transparent;
+      color: #fff;
+      border-color: rgba(255,255,255,0.34);
+      min-height: 40px;
+      padding: 9px 14px;
+    }
+    .back-top:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.52); }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+    [hidden] { display: none !important; }
+    @media (max-width: 980px) {
+      .feature-section,
+      .help-center-header,
+      .help-grid,
+      .footer-grid { grid-template-columns: 1fr; }
+      .pillars { grid-template-columns: repeat(2, 1fr); }
+      .footer-contact { text-align: left; }
+      .footer-actions { justify-content: flex-start; }
+    }
+    @media (max-width: 720px) {
+      .container { width: min(var(--max-width), calc(100% - 24px)); }
+      .header-inner { flex-direction: column; align-items: flex-start; padding: 16px 0; }
+      .main-nav ul { gap: 16px 18px; }
+      .page-heading { font-size: 1.5rem; }
+      .feature-copy h2,
+      .help-center-copy h2 { font-size: 1.55rem; }
+      .pillars { grid-template-columns: 1fr; }
+      .tabs,
+      .help-category-tabs { justify-content: flex-start; gap: 18px; }
+      .video-card iframe { height: 210px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header" id="top">
+    <div class="container header-inner">
+      <a href="#home" class="brand" aria-label="Equity Master home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>Equity Master</span>
+      </a>
+      <nav class="main-nav" aria-label="Primary navigation">
+        <ul>
+          <li><a href="#investor-centre" class="active">Investor Centre</a></li>
+          <li><a href="#empshare">EmpShare</a></li>
+          <li><a href="#about-us">About us</a></li>
+          <li><a href="#insights">Insights</a></li>
+          <li><a href="#help-center">Help Center</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="home">
+    <div class="hero-space" aria-hidden="true"></div>
+
+    <section class="tabs-wrap container" aria-label="Technology platforms overview">
+      <h1 class="page-heading">Learn more about our technology platforms</h1>
+      <div class="tabs" role="tablist" aria-label="Platform sections">
+        <a class="tab-link active" href="#investor-centre" role="tab" aria-selected="true">Investor Centre</a>
+        <a class="tab-link" href="#empshare" role="tab" aria-selected="false">EmpShare</a>
+        <a class="tab-link" href="#about-us" role="tab" aria-selected="false">About us</a>
+        <a class="tab-link" href="#help-center" role="tab" aria-selected="false">Help Center</a>
+      </div>
+    </section>
+
+    <section class="section container feature-section" id="investor-centre">
+      <div class="feature-copy">
+        <div class="eyebrow">For shareholders</div>
+        <h2>Investor Centre</h2>
+        <p>Introducing the new Investor Centre experience. A modern, intuitive and seamless way to manage your investments online.</p>
+        <ul class="feature-list">
+          <li>Portfolio holdings and price history</li>
+          <li>Monitor recent activity</li>
+          <li>Download documents instantly</li>
+          <li>Virtual assistance</li>
+        </ul>
+      </div>
+      <div class="visual-panel">
+        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80" alt="Investor technology platform dashboard" />
+      </div>
+    </section>
+
+    <section class="section container feature-section" id="empshare">
+      <div class="feature-copy">
+        <div class="eyebrow">For employee share plan holders</div>
+        <h2>EmpShare</h2>
+        <p>EmpShare provides a clear and accessible experience for plan holders, helping them stay informed and act with confidence.</p>
+        <ul class="feature-list">
+          <li>Intuitive and user-friendly</li>
+          <li>Real-time data</li>
+          <li>Simplify tax calculations</li>
+          <li>Mobile app</li>
+        </ul>
+      </div>
+      <div class="visual-panel">
+        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80" alt="Employee share plan experience and collaboration" />
+      </div>
+    </section>
+
+    <section class="section container feature-section" id="about-us">
+      <div class="feature-copy about-copy">
+        <div class="eyebrow">About us</div>
+        <h2>Purpose-built digital experiences for financial services</h2>
+        <p>Equity Master delivers practical, enterprise-focused platforms that support investors, employees and organisations with secure, approachable digital journeys.</p>
+        <p>We combine domain understanding, scalable technology and user-centred delivery to create experiences that feel simple while handling complex business needs.</p>
+      </div>
+      <div class="visual-panel">
+        <img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1200&q=80" alt="Business professionals collaborating in a modern office" />
+      </div>
+    </section>
+
+    <section class="section container" id="insights" aria-label="Company value pillars">
+      <div class="pillars">
+        <article class="pillar">
+          <h3>Experience</h3>
+          <p>Focused on intuitive digital journeys that support confidence and clarity across every interaction.</p>
+        </article>
+        <article class="pillar">
+          <h3>Expertise</h3>
+          <p>Built with practical knowledge of shareholder, employee plan and enterprise servicing needs.</p>
+        </article>
+        <article class="pillar">
+          <h3>Innovation</h3>
+          <p>Modern platform thinking applied carefully to existing business workflows without unnecessary complexity.</p>
+        </article>
+        <article class="pillar">
+          <h3>Technology</h3>
+          <p>Scalable delivery patterns, responsive experiences and maintainable solutions for evolving products.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section container help-center" id="help-center" aria-labelledby="help-center-title">
+      <div class="help-center-header">
+        <div class="help-center-copy">
+          <div class="eyebrow">Help Center</div>
+          <h2 id="help-center-title">Find product guidance, training, materials and support</h2>
+          <p>Access self-service support directly from the Home Page. Browse by category, search for topics, watch tutorials, download resources, and contact the interactive help assistant without disrupting the existing experience.</p>
+          <p>All Help Center content follows the existing Equity Master design, spacing, branding and responsive patterns.</p>
+          <form class="help-center-search" id="helpSearchForm" role="search" aria-label="Search Help Center">
+            <label class="sr-only" for="helpSearchInput">Search help topics</label>
+            <input id="helpSearchInput" type="search" placeholder="Search help topics, guides, FAQs or videos" aria-describedby="searchMessage" />
+            <button type="submit">Search Help</button>
+          </form>
+          <div id="searchMessage" class="search-message" aria-live="polite">Search across getting started guides, FAQs, how-to content, videos, materials, troubleshooting and chat topics.</div>
+        </div>
+        <div class="visual-panel help-center-visual">
+          <img src="https://images.unsplash.com/photo-1531497865144-0464ef8fb9a9?auto=format&fit=crop&w=1200&q=80" alt="Professional support and help center team" />
+        </div>
+      </div>
+
+      <div class="help-category-tabs" role="tablist" aria-label="Help Center categories">
+        <button class="help-category-tab active" type="button" data-category="all" aria-selected="true">All</button>
+        <button class="help-category-tab" type="button" data-category="getting-started" aria-selected="false">Getting Started</button>
+        <button class="help-category-tab" type="button" data-category="faqs" aria-selected="false">FAQs</button>
+        <button class="help-category-tab" type="button" data-category="how-to" aria-selected="false">How-to Guides</button>
+        <button class="help-category-tab" type="button" data-category="videos" aria-selected="false">Video Tutorials</button>
+        <button class="help-category-tab" type="button" data-category="materials" aria-selected="false">Help Materials</button>
+        <button class="help-category-tab" type="button" data-category="troubleshooting" aria-selected="false">Troubleshooting</button>
+        <button class="help-category-tab" type="button" data-category="chat" aria-selected="false">Chat Support</button>
+      </div>
+
+      <div class="help-grid">
+        <div>
+          <div class="help-panel" data-section="articles faqs getting-started how-to troubleshooting all">
+            <h3 class="help-panel-title">Text help articles and FAQs</h3>
+            <div class="help-articles" id="helpArticles">
+              <article class="help-item" data-keywords="getting started onboarding login navigation dashboard investor centre empshare">
+                <h4>Getting started with Equity Master</h4>
+                <p>Learn the basic navigation patterns, where to access Investor Centre and EmpShare, and how to move confidently through the experience.</p>
+              </article>
+              <article class="help-item" data-keywords="faq password account access profile sign in security">
+                <h4>How do I reset my access credentials?</h4>
+                <p>Use the account access flow from your sign-in screen. If self-service recovery is unavailable, contact support for secure identity verification assistance.</p>
+              </article>
+              <article class="help-item" data-keywords="how-to download documents statements files pdf guides">
+                <h4>How to download documents instantly</h4>
+                <p>Open your relevant platform area, select the needed document type, then choose download to save a local copy for review or sharing.</p>
+              </article>
+              <article class="help-item" data-keywords="troubleshooting mobile responsive browser compatibility performance loading">
+                <h4>Troubleshooting browser and device issues</h4>
+                <p>If content does not load as expected, refresh the page, confirm your network connection, and use a supported browser version on desktop, tablet or mobile.</p>
+              </article>
+            </div>
+          </div>
+
+          <div class="help-panel" data-section="faqs all">
+            <h3 class="help-panel-title">Frequently asked questions</h3>
+            <div class="help-accordion" id="faqAccordion">
+              <div class="accordion-item open" data-keywords="faq investor centre what is investor centre">
+                <button class="accordion-trigger" type="button" aria-expanded="true">
+                  <span class="accordion-label">What is Investor Centre?</span>
+                  <span class="accordion-icon" aria-hidden="true"></span>
+                </button>
+                <div class="accordion-content">Investor Centre is the shareholder experience designed to help users review holdings, monitor activity, and access important documents online.</div>
+              </div>
+              <div class="accordion-item" data-keywords="faq empshare what is empshare employee share plan">
+                <button class="accordion-trigger" type="button" aria-expanded="false">
+                  <span class="accordion-label">What can I do in EmpShare?</span>
+                  <span class="accordion-icon" aria-hidden="true"></span>
+                </button>
+                <div class="accordion-content">EmpShare helps plan holders review information clearly, stay informed using real-time data, and complete common share-plan tasks with confidence.</div>
+              </div>
+              <div class="accordion-item" data-keywords="faq responsive mobile tablet desktop help center">
+                <button class="accordion-trigger" type="button" aria-expanded="false">
+                  <span class="accordion-label">Can I use Help Center on mobile devices?</span>
+                  <span class="accordion-icon" aria-hidden="true"></span>
+                </button>
+                <div class="accordion-content">Yes. The Help Center is designed to work across desktop, tablet and mobile layouts while keeping the same lightweight visual style and navigation structure.</div>
+              </div>
+              <div class="accordion-item" data-keywords="faq missing unavailable materials broken link support">
+                <button class="accordion-trigger" type="button" aria-expanded="false">
+                  <span class="accordion-label">What happens if a help resource is unavailable?</span>
+                  <span class="accordion-icon" aria-hidden="true"></span>
+                </button>
+                <div class="accordion-content">You will receive a meaningful message indicating the resource is temporarily unavailable, along with alternative guidance rather than a broken link or blank page.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="help-panel" data-section="videos all">
+            <h3 class="help-panel-title">Video tutorials</h3>
+            <div class="help-videos" id="helpVideos">
+              <article class="video-card" data-keywords="video tutorial onboarding navigation getting started walkthrough">
+                <iframe src="https://www.youtube.com/embed/tgbNymZ7vqY" title="Getting started walkthrough video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <div class="video-meta">
+                  <h4>Getting Started Walkthrough</h4>
+                  <p>Overview of navigation, key sections and how to begin using the platform with confidence.</p>
+                </div>
+              </article>
+              <article class="video-card" data-keywords="video tutorial documents downloads support help materials">
+                <iframe src="https://www.youtube.com/embed/sBws8MSXN7A" title="Managing documents tutorial video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <div class="video-meta">
+                  <h4>Managing Documents and Resources</h4>
+                  <p>Watch how to locate support information, open help topics and access downloadable resources.</p>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+
+        <aside>
+          <div class="help-panel" data-section="materials all">
+            <h3 class="help-panel-title">Help materials</h3>
+            <div class="help-materials">
+              <article class="help-item" data-keywords="user guide pdf onboarding materials getting started">
+                <h4>User guide</h4>
+                <p>Download a concise product guide covering navigation, sections and common tasks.</p>
+                <a class="download-link resource-link" href="#" data-resource="user-guide">Download PDF</a>
+              </article>
+              <article class="help-item" data-keywords="quick reference guide faq document support materials">
+                <h4>Quick reference guide</h4>
+                <p>A practical summary for frequent actions and key support routes.</p>
+                <a class="download-link resource-link" href="#" data-resource="quick-reference">Download Guide</a>
+              </article>
+              <article class="help-item" data-keywords="training document walkthrough learning materials">
+                <h4>Training document</h4>
+                <p>Review a structured training handout for onboarding and team enablement.</p>
+                <a class="download-link resource-link" href="#" data-resource="training-doc">Download Document</a>
+              </article>
+            </div>
+            <div class="resource-message" id="resourceMessage" aria-live="polite">Help materials can be viewed or downloaded when available.</div>
+          </div>
+
+          <div class="help-panel" data-section="chat all">
+            <h3 class="help-panel-title">Chat support</h3>
+            <div class="help-chat">
+              <div class="help-chat-box">
+                <div class="help-chat-window" id="chatWindow" aria-live="polite" aria-label="Chat conversation">
+                  <div class="chat-message bot">Hello. I'm your Help Assistant. Ask about getting started, FAQs, videos, troubleshooting or downloadable materials.</div>
+                </div>
+                <div class="chat-controls">
+                  <label class="sr-only" for="chatInput">Type your message</label>
+                  <input id="chatInput" type="text" placeholder="Ask a help question" />
+                  <button class="chat-launch" type="button" id="chatSend">Send</button>
+                </div>
+                <div class="chat-status" id="chatStatus">Interactive help is available in-page for quick assistance.</div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h2 class="footer-title">Equity Master</h2>
+          <div class="footer-copy">Equity Master demonstration experience.</div>
+        </div>
+        <div class="footer-contact">
+          <strong>Contact</strong>
+          <a href="mailto:support@equitymaster.demo">support@equitymaster.demo</a>
+          <div class="footer-actions">
+            <a href="#top" class="back-top">Back to top</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">© Equity Master</div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const categoryTabs = Array.from(document.querySelectorAll('.help-category-tab'));
+      const panels = Array.from(document.querySelectorAll('.help-panel'));
+      const helpSearchForm = document.getElementById('helpSearchForm');
+      const helpSearchInput = document.getElementById('helpSearchInput');
+      const searchMessage = document.getElementById('searchMessage');
+      const accordionItems = Array.from(document.querySelectorAll('.accordion-item'));
+      const resourceLinks = Array.from(document.querySelectorAll('.resource-link'));
+      const resourceMessage = document.getElementById('resourceMessage');
+      const chatWindow = document.getElementById('chatWindow');
+      const chatInput = document.getElementById('chatInput');
+      const chatSend = document.getElementById('chatSend');
+      const chatStatus = document.getElementById('chatStatus');
+
+      function normalize(value) {
+        return (value || '').toLowerCase().trim();
+      }
+
+      function setActiveCategory(category) {
+        categoryTabs.forEach(tab => {
+          const active = tab.dataset.category === category;
+          tab.classList.toggle('active', active);
+          tab.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+
+        panels.forEach(panel => {
+          const sections = normalize(panel.dataset.section);
+          const show = category === 'all' || sections.indexOf(category) > -1;
+          panel.hidden = !show;
+        });
+
+        searchMessage.textContent = category === 'all'
+          ? 'Showing all Help Center content.'
+          : 'Filtered Help Center content for ' + category.replace('-', ' ') + '.';
+      }
+
+      categoryTabs.forEach(tab => {
+        tab.addEventListener('click', () => setActiveCategory(tab.dataset.category));
+      });
+
+      accordionItems.forEach(item => {
+        const trigger = item.querySelector('.accordion-trigger');
+        trigger.addEventListener('click', () => {
+          const open = item.classList.toggle('open');
+          trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+      });
+
+      function getSearchableItems() {
+        return Array.from(document.querySelectorAll('.help-item, .video-card, .accordion-item'));
+      }
+
+      function searchHelp(query) {
+        const term = normalize(query);
+        const items = getSearchableItems();
+        let matches = 0;
+
+        items.forEach(item => {
+          const text = normalize(item.textContent + ' ' + (item.dataset.keywords || ''));
+          const match = !term || text.includes(term);
+          item.hidden = !match;
+          if (match) matches += 1;
+        });
+
+        searchMessage.textContent = term
+          ? (matches > 0 ? matches + ' help result(s) found for "' + query.trim() + '".' : 'No matching help content found. Try another keyword or use Chat Support.')
+          : 'Search cleared. Browse all Help Center content.';
+      }
+
+      helpSearchForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        searchHelp(helpSearchInput.value);
+      });
+
+      resourceLinks.forEach(link => {
+        link.addEventListener('click', function (event) {
+          event.preventDefault();
+          const name = this.dataset.resource || 'resource';
+          resourceMessage.textContent = 'The ' + name.replace('-', ' ') + ' is currently unavailable. Please use Chat Support or contact support@equitymaster.demo for assistance.';
+        });
+      });
+
+      function appendMessage(type, text) {
+        const el = document.createElement('div');
+        el.className = 'chat-message ' + type;
+        el.textContent = text;
+        chatWindow.appendChild(el);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      }
+
+      function getBotResponse(message) {
+        const msg = normalize(message);
+        if (!msg) return 'Please enter a question so I can help.';
+        if (msg.includes('video')) return 'Open the Video Tutorials section to play embedded walkthroughs directly on the page.';
+        if (msg.includes('download') || msg.includes('material') || msg.includes('pdf')) return 'Use the Help Materials section to access guides. If a file is unavailable, a message will guide you to alternate support.';
+        if (msg.includes('faq') || msg.includes('question')) return 'Check the FAQ accordion for quick answers about Investor Centre, EmpShare, device support and unavailable resources.';
+        if (msg.includes('start') || msg.includes('onboard') || msg.includes('login') || msg.includes('navigation')) return 'Begin with the Getting Started article and then explore Investor Centre or EmpShare based on your needs.';
+        if (msg.includes('trouble') || msg.includes('issue') || msg.includes('browser') || msg.includes('mobile')) return 'For troubleshooting, refresh the page, confirm network access and use a supported browser on desktop, tablet or mobile.';
+        return 'I can help with getting started, FAQs, tutorials, downloadable materials and troubleshooting. Try asking about one of those topics.';
+      }
+
+      function sendChat() {
+        const text = chatInput.value.trim();
+        if (!text) {
+          chatStatus.textContent = 'Enter a question to use chat support.';
+          return;
+        }
+        appendMessage('user', text);
+        const response = getBotResponse(text);
+        window.setTimeout(() => appendMessage('bot', response), 180);
+        chatInput.value = '';
+        chatStatus.textContent = 'Response delivered in chat.';
+      }
+
+      chatSend.addEventListener('click', sendChat);
+      chatInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          sendChat();
+        }
+      });
+    }());
+  </script>
+</body>
+</html>
