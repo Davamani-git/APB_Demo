@@ -1,0 +1,1 @@
+(function(){'use strict';angular.module('paymentAcceptance').directive('paymentForm',[function(){return{restrict:'E',templateUrl:'src/app/paymentAcceptance/views/payment-form.view.html',controller:'PaymentController',controllerAs:'payCtrl',scope:{}};}]);})();

@@ -1,0 +1,1 @@
+(function(){'use strict';angular.module('mpspApp',['ui.router','ngMessages','chart.js','merchantOnboarding','paymentAcceptance','settlement','reconciliation','disputes','reporting']);})();

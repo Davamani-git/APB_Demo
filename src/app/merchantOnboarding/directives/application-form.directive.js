@@ -1,0 +1,1 @@
+(function(){'use strict';angular.module('merchantOnboarding').directive('applicationForm',function(){return{restrict:'E',templateUrl:'src/app/merchantOnboarding/views/application-form.view.html',controller:'ApplicationController',controllerAs:'appCtrl',scope:{}};});})();

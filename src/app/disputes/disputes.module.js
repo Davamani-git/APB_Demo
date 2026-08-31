@@ -1,0 +1,1 @@
+(function(){'use strict';angular.module('disputes',['ui.router','chart.js']);})();

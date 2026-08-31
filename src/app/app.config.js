@@ -1,0 +1,1 @@
+(function(){'use strict';angular.module('mpspApp').constant('API_CONFIG',{baseUrl:'/api/v1',timeout:30000,idpUrl:'/auth',retryAttempts:3,retryDelay:1000}).config(['$httpProvider',function($httpProvider){$httpProvider.interceptors.push('AuthInterceptor');$httpProvider.interceptors.push('ApiGatewayInterceptor');}]);})();

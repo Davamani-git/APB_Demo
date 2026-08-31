@@ -1,0 +1,1 @@
+(function(){'use strict';angular.module('paymentAcceptance',['ui.router','ngMessages']);})();

@@ -1,0 +1,1 @@
+(function(){'use strict';angular.module('merchantOnboarding',['ui.router','ngMessages']);})();

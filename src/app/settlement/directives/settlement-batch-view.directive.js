@@ -1,0 +1,1 @@
+(function(){'use strict';angular.module('settlement').directive('settlementBatchView',[function(){return{restrict:'E',templateUrl:'src/app/settlement/views/settlement-batch-view.view.html',scope:{batch:'='},controller:['$scope',function($scope){}]};}]);})();

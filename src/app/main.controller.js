@@ -1,0 +1,1 @@
+(function(){'use strict';angular.module('mpspApp').controller('MainController',['$window','$location',function($window,$location){var vm=this;vm.logout=function(){$window.sessionStorage.removeItem('jwt_token');$location.path('/onboarding');};}]);})();

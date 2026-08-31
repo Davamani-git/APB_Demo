@@ -1,0 +1,1 @@
+(function(){'use strict';angular.module('reconciliation').directive('threeWayMatchWidget',[function(){return{restrict:'E',templateUrl:'src/app/reconciliation/views/three-way-match-widget.view.html',scope:{matchResults:'='},controller:['$scope',function($scope){}]};}]);})();

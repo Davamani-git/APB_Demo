@@ -1,0 +1,1 @@
+<div><span ng-if="getDaysUntilDeadline()!==null"><span ng-class="{'text-danger':isDeadlinePassed(),'text-warning':isDeadlineNear(),'text-success':!isDeadlineNear()&&!isDeadlinePassed()}">{{dispute.deadline|date:'short'}} <span ng-if="!isDeadlinePassed()">({{getDaysUntilDeadline()}} days)</span><span ng-if="isDeadlinePassed()">(OVERDUE)</span></span></span></div>

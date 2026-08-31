@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html ng-app="mpspApp">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MPSP - Merchant Payments & Settlement Platform</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="src/app/assets/styles.css">
+</head>
+<body>
+<div class="container-fluid" ng-controller="MainController as main">
+<nav class="navbar navbar-default">
+<div class="container-fluid">
+<div class="navbar-header">
+<span class="navbar-brand">MPSP</span>
+</div>
+<ul class="nav navbar-nav navbar-right">
+<li><a href="#/onboarding">Onboarding</a></li>
+<li><a href="#/payments">Payments</a></li>
+<li><a href="#/settlement">Settlement</a></li>
+<li><a href="#/reconciliation">Reconciliation</a></li>
+<li><a href="#/disputes">Disputes</a></li>
+<li><a href="#/reports">Reports</a></li>
+<li><a ng-click="main.logout()">Logout</a></li>
+</ul>
+</div>
+</nav>
+<div ui-view></div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-messages.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.30/angular-ui-router.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-chart.js/1.1.1/angular-chart.min.js"></script>
+<script src="src/app/app.module.js"></script>
+<script src="src/app/app.config.js"></script>
+<script src="src/app/app.routes.js"></script>
+<script src="src/app/main.controller.js"></script>
+<script src="src/app/shared/interceptors/auth.interceptor.js"></script>
+<script src="src/app/shared/interceptors/api-gateway.interceptor.js"></script>
+<script src="src/app/services/ledger.service.js"></script>
+<script src="src/app/merchantOnboarding/merchant-onboarding.module.js"></script>
+<script src="src/app/merchantOnboarding/controllers/application.controller.js"></script>
+<script src="src/app/merchantOnboarding/controllers/compliance-case.controller.js"></script>
+<script src="src/app/merchantOnboarding/services/application-intake.service.js"></script>
+<script src="src/app/merchantOnboarding/services/kyb-verification.service.js"></script>
+<script src="src/app/merchantOnboarding/services/sanctions-screening.service.js"></script>
+<script src="src/app/merchantOnboarding/services/risk-decision.service.js"></script>
+<script src="src/app/merchantOnboarding/services/compliance-case.service.js"></script>
+<script src="src/app/merchantOnboarding/services/merchant-provisioning.service.js"></script>
+<script src="src/app/merchantOnboarding/directives/application-form.directive.js"></script>
+<script src="src/app/merchantOnboarding/directives/dual-approval-widget.directive.js"></script>
+<script src="src/app/paymentAcceptance/payment-acceptance.module.js"></script>
+<script src="src/app/paymentAcceptance/controllers/payment.controller.js"></script>
+<script src="src/app/paymentAcceptance/services/payment.service.js"></script>
+<script src="src/app/paymentAcceptance/services/compliance.service.js"></script>
+<script src="src/app/paymentAcceptance/services/tokenization.service.js"></script>
+<script src="src/app/paymentAcceptance/services/payment-rail.service.js"></script>
+<script src="src/app/paymentAcceptance/factories/payment-state-machine.factory.js"></script>
+<script src="src/app/paymentAcceptance/directives/payment-form.directive.js"></script>
+<script src="src/app/paymentAcceptance/directives/sca-challenge.directive.js"></script>
+<script src="src/app/paymentAcceptance/directives/transaction-status.directive.js"></script>
+<script src="src/app/settlement/settlement.module.js"></script>
+<script src="src/app/settlement/controllers/settlement.controller.js"></script>
+<script src="src/app/settlement/services/transaction-capture.service.js"></script>
+<script src="src/app/settlement/services/settlement-batch.service.js"></script>
+<script src="src/app/settlement/services/funding-calculator.service.js"></script>
+<script src="src/app/settlement/services/fee-engine.service.js"></script>
+<script src="src/app/settlement/services/payout-scheduler.service.js"></script>
+<script src="src/app/settlement/services/bank-adapter.service.js"></script>
+<script src="src/app/settlement/directives/settlement-batch-view.directive.js"></script>
+<script src="src/app/settlement/directives/payout-status-widget.directive.js"></script>
+<script src="src/app/reconciliation/reconciliation.module.js"></script>
+<script src="src/app/reconciliation/controllers/break-queue.controller.js"></script>
+<script src="src/app/reconciliation/services/bank-statement.service.js"></script>
+<script src="src/app/reconciliation/services/reconciliation.service.js"></script>
+<script src="src/app/reconciliation/services/break-queue.service.js"></script>
+<script src="src/app/reconciliation/directives/three-way-match-widget.directive.js"></script>
+<script src="src/app/disputes/disputes.module.js"></script>
+<script src="src/app/disputes/controllers/dispute.controller.js"></script>
+<script src="src/app/disputes/services/dispute.service.js"></script>
+<script src="src/app/disputes/directives/dispute-timeline.directive.js"></script>
+<script src="src/app/reporting/reporting.module.js"></script>
+<script src="src/app/reporting/controllers/reporting.controller.js"></script>
+<script src="src/app/reporting/services/reporting.service.js"></script>
+</body>
+</html>
