@@ -1,0 +1,838 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Equity Portal</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+      :root {
+        --primary-purple: #6D1F73;
+        --magenta-accent: #97186F;
+        --dark-purple: #4D1A5D;
+        --plum: #35113D;
+        --main-text: #25212A;
+        --secondary-text: #6C6570;
+        --main-background: #FFFFFF;
+        --alternate-background: #F5F4F5;
+        --footer: #281F2C;
+        --borders: #DED9E1;
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        color: var(--main-text);
+        background: var(--main-background);
+        line-height: 1.5;
+      }
+
+      a { color: inherit; text-decoration: none; }
+      img { max-width: 100%; display: block; }
+      button, input { font: inherit; }
+
+      .page-shell { min-height: 100vh; }
+      .container {
+        width: min(1180px, calc(100% - 40px));
+        margin: 0 auto;
+      }
+
+      .site-header {
+        background: linear-gradient(135deg, var(--plum), var(--primary-purple));
+        color: #fff;
+      }
+      .header-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 22px 0;
+        flex-wrap: wrap;
+      }
+      .brand {
+        font-size: 1.35rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+      .primary-nav {
+        display: flex;
+        gap: 22px;
+        flex-wrap: wrap;
+      }
+      .primary-nav a {
+        color: #fff;
+        font-size: 0.96rem;
+        opacity: 0.95;
+      }
+      .primary-nav a:hover,
+      .primary-nav a:focus { opacity: 1; text-decoration: underline; }
+
+      .content-section {
+        padding: 72px 0;
+      }
+      .section-grid {
+        display: grid;
+        grid-template-columns: 1.05fr 1fr;
+        gap: 48px;
+        align-items: center;
+      }
+      .section-grid.reverse {
+        grid-template-columns: 1fr 1.05fr;
+      }
+      .section-text h2 {
+        margin: 0 0 16px;
+        font-size: 2rem;
+        color: var(--plum);
+      }
+      .section-text p {
+        margin: 0 0 14px;
+        color: var(--secondary-text);
+        font-size: 1rem;
+      }
+      .section-label {
+        color: var(--magenta-accent);
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        margin-bottom: 10px;
+      }
+      .section-image img {
+        width: 100%;
+        height: 360px;
+        object-fit: cover;
+        border: 1px solid var(--borders);
+      }
+      .alternate-bg { background: var(--alternate-background); }
+
+      .technology-section h2 {
+        margin: 0 0 28px;
+        font-size: 1.9rem;
+        color: var(--plum);
+      }
+      .technology-columns {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+      }
+      .tech-item {
+        border-top: 3px solid var(--magenta-accent);
+        padding-top: 16px;
+      }
+      .tech-item h3 {
+        margin: 0 0 10px;
+        color: var(--primary-purple);
+        font-size: 1.08rem;
+      }
+      .tech-item p {
+        margin: 0;
+        color: var(--secondary-text);
+        font-size: 0.95rem;
+      }
+
+      .help-center {
+        padding: 72px 0 84px;
+      }
+      .help-center-intro {
+        margin-bottom: 24px;
+      }
+      .help-center-intro .section-label { margin-bottom: 8px; }
+      .help-center-intro h2 {
+        margin: 0 0 12px;
+        color: var(--plum);
+        font-size: 2rem;
+      }
+      .help-center-intro p {
+        margin: 0;
+        color: var(--secondary-text);
+        max-width: 760px;
+      }
+
+      .help-center-search {
+        display: flex;
+        gap: 12px;
+        margin: 24px 0 30px;
+      }
+      .help-center-search input {
+        flex: 1;
+        min-width: 0;
+        height: 48px;
+        border: 1px solid var(--borders);
+        padding: 0 14px;
+        color: var(--main-text);
+        background: #fff;
+      }
+      .help-center-search button {
+        height: 48px;
+        padding: 0 22px;
+        border: 1px solid var(--primary-purple);
+        background: var(--primary-purple);
+        color: #fff;
+        cursor: pointer;
+      }
+
+      .help-center-layout {
+        display: grid;
+        grid-template-columns: 260px minmax(0, 1fr);
+        gap: 36px;
+        align-items: start;
+      }
+      .help-center-nav {
+        border-top: 1px solid var(--borders);
+      }
+      .help-center-nav-item {
+        width: 100%;
+        text-align: left;
+        background: transparent;
+        border: 0;
+        border-bottom: 1px solid var(--borders);
+        padding: 16px 0;
+        color: var(--main-text);
+        cursor: pointer;
+        position: relative;
+      }
+      .help-center-nav-item.active {
+        color: var(--primary-purple);
+        font-weight: 700;
+      }
+      .help-center-nav-item.active::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -1px;
+        height: 2px;
+        background: var(--primary-purple);
+      }
+
+      .help-center-main h3 {
+        margin: 0 0 10px;
+        color: var(--plum);
+        font-size: 1.55rem;
+      }
+      .help-center-main p {
+        margin: 0;
+        color: var(--secondary-text);
+      }
+      .help-divider {
+        height: 1px;
+        background: var(--borders);
+        margin: 18px 0 8px;
+      }
+
+      .faq-list { margin-top: 8px; }
+      .faq-item {
+        border-bottom: 1px solid var(--borders);
+        padding: 0;
+      }
+      .faq-question {
+        width: 100%;
+        background: transparent;
+        border: 0;
+        padding: 18px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        text-align: left;
+        cursor: pointer;
+        color: var(--main-text);
+      }
+      .faq-toggle {
+        width: 30px;
+        height: 30px;
+        min-width: 30px;
+        border: 1px solid var(--borders);
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-purple);
+        font-size: 1.2rem;
+      }
+      .faq-answer {
+        padding: 0 0 18px;
+        color: var(--secondary-text);
+        max-width: 760px;
+      }
+
+      .help-empty,
+      .help-copy,
+      .help-search-results {
+        color: var(--secondary-text);
+      }
+      .help-search-results h4,
+      .help-video-list h4,
+      .help-materials h4,
+      .help-chat h4 {
+        margin: 0 0 12px;
+        color: var(--primary-purple);
+        font-size: 1.05rem;
+      }
+      .search-result-list,
+      .materials-list,
+      .video-grid {
+        display: grid;
+        gap: 16px;
+      }
+      .search-result-item,
+      .material-item {
+        padding: 0 0 14px;
+        border-bottom: 1px solid var(--borders);
+      }
+      .search-result-item strong,
+      .material-item strong {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--main-text);
+      }
+      .material-link {
+        display: inline-block;
+        margin-top: 8px;
+        color: var(--primary-purple);
+        text-decoration: underline;
+      }
+      .video-card {
+        border-bottom: 1px solid var(--borders);
+        padding-bottom: 18px;
+      }
+      .video-frame {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        border: 1px solid var(--borders);
+      }
+      .video-unavailable {
+        border: 1px solid var(--borders);
+        padding: 18px;
+        color: var(--secondary-text);
+        background: var(--alternate-background);
+      }
+
+      .chat-panel {
+        border: 1px solid var(--borders);
+        padding: 18px;
+        background: #fff;
+      }
+      .chat-messages {
+        display: grid;
+        gap: 12px;
+        margin: 16px 0;
+      }
+      .chat-message {
+        padding: 12px 14px;
+        border: 1px solid var(--borders);
+      }
+      .chat-message.user {
+        border-left: 3px solid var(--primary-purple);
+      }
+      .chat-message.bot {
+        border-left: 3px solid var(--magenta-accent);
+        background: var(--alternate-background);
+      }
+      .chat-form {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .chat-form input {
+        flex: 1;
+        min-width: 220px;
+        height: 44px;
+        padding: 0 12px;
+        border: 1px solid var(--borders);
+      }
+      .chat-form button {
+        height: 44px;
+        padding: 0 18px;
+        border: 1px solid var(--primary-purple);
+        background: var(--primary-purple);
+        color: #fff;
+        cursor: pointer;
+      }
+
+      .site-footer {
+        background: var(--footer);
+        color: #fff;
+        padding: 26px 0;
+      }
+      .footer-inner {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .footer-copy {
+        color: rgba(255,255,255,0.82);
+        font-size: 0.92rem;
+      }
+
+      @media (max-width: 960px) {
+        .section-grid,
+        .section-grid.reverse,
+        .technology-columns,
+        .help-center-layout {
+          grid-template-columns: 1fr;
+        }
+        .section-image img { height: 300px; }
+      }
+
+      @media (max-width: 640px) {
+        .container { width: min(100% - 24px, 1180px); }
+        .content-section,
+        .help-center { padding: 56px 0; }
+        .header-inner { align-items: flex-start; }
+        .primary-nav { gap: 14px; }
+        .section-text h2,
+        .help-center-intro h2 { font-size: 1.7rem; }
+        .help-center-search { flex-direction: column; }
+        .help-center-search button,
+        .help-center-search input { width: 100%; }
+        .chat-form { flex-direction: column; }
+        .chat-form input,
+        .chat-form button { width: 100%; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useMemo, useState } = React;
+
+      function App() {
+        const categories = [
+          'Getting Started',
+          'FAQs',
+          'How-To Guides',
+          'Video Tutorials',
+          'Help Materials',
+          'Troubleshooting',
+          'Chat Support'
+        ];
+
+        const faqItems = [
+          {
+            question: 'How do I access my shareholder or employee information?',
+            answer: 'Use the relevant Equity Portal section to review your account-related information and support resources. The platform is structured so investor and employee-share content can be reached directly from the home page and Help Center.'
+          },
+          {
+            question: 'Where can I download my documents?',
+            answer: 'Documents and reference files are available under Help Materials in the Help Center. Select the file you need and open the provided download link for offline access.'
+          },
+          {
+            question: 'Can I get help without leaving the website?',
+            answer: 'Yes. The Help Center includes searchable support, categorized content, embedded tutorials and an automated chat support area so you can stay on the same website.'
+          },
+          {
+            question: 'Is the Help Center available on mobile?',
+            answer: 'Yes. The Help Center is designed to remain usable and visually consistent across desktop and mobile devices, including navigation, search and content access.'
+          }
+        ];
+
+        const allSearchable = [
+          {
+            category: 'Getting Started',
+            title: 'Start using the Equity Portal',
+            text: 'Find an overview of investor, employee-share and support resources available across the site.'
+          },
+          {
+            category: 'FAQs',
+            title: 'Frequently Asked Questions',
+            text: 'Browse common questions about the platform, access, documents and support options.'
+          },
+          {
+            category: 'How-To Guides',
+            title: 'Step-by-step support guides',
+            text: 'Use clear guidance for navigation, document access and practical support tasks inside the portal.'
+          },
+          {
+            category: 'Video Tutorials',
+            title: 'Watch embedded tutorial videos',
+            text: 'Learn visually through in-page videos without navigating away to external sites.'
+          },
+          {
+            category: 'Help Materials',
+            title: 'Download user guides and PDFs',
+            text: 'Access employee-share document and reference materials for offline use.'
+          },
+          {
+            category: 'Troubleshooting',
+            title: 'Resolve common access issues',
+            text: 'Review practical troubleshooting guidance for search, navigation and support access.'
+          },
+          {
+            category: 'Chat Support',
+            title: 'Receive immediate chat assistance',
+            text: 'Ask a question and receive an automated support response on the Help Center landing page.'
+          }
+        ];
+
+        const [selectedCategory, setSelectedCategory] = useState('FAQs');
+        const [expandedFaq, setExpandedFaq] = useState(null);
+        const [searchInput, setSearchInput] = useState('');
+        const [searchTerm, setSearchTerm] = useState('');
+        const [chatInput, setChatInput] = useState('');
+        const [chatMessages, setChatMessages] = useState([
+          { role: 'bot', text: 'Hello. I can help with access, documents, tutorials and support topics.' }
+        ]);
+
+        const searchResults = useMemo(() => {
+          const term = searchTerm.trim().toLowerCase();
+          if (!term) return [];
+          return allSearchable.filter(item =>
+            item.category.toLowerCase().includes(term) ||
+            item.title.toLowerCase().includes(term) ||
+            item.text.toLowerCase().includes(term)
+          );
+        }, [searchTerm]);
+
+        const handleSearch = (e) => {
+          e.preventDefault();
+          setSearchTerm(searchInput);
+        };
+
+        const handleChatSubmit = (e) => {
+          e.preventDefault();
+          const value = chatInput.trim();
+          if (!value) return;
+          const lower = value.toLowerCase();
+          let response = 'Please explore the Help Center categories for practical guidance, support content, video tutorials and downloadable materials.';
+          if (lower.includes('document') || lower.includes('pdf') || lower.includes('download')) {
+            response = 'You can find downloadable guides in Help Materials, including employee-share document and vesting references.';
+          } else if (lower.includes('video') || lower.includes('tutorial')) {
+            response = 'Video Tutorials contains embedded training content so you can learn without leaving the Help Center.';
+          } else if (lower.includes('access') || lower.includes('login') || lower.includes('information')) {
+            response = 'For account and information-related guidance, review Getting Started and FAQs for platform access and support options.';
+          } else if (lower.includes('mobile') || lower.includes('phone')) {
+            response = 'The Help Center is responsive and designed to remain usable on mobile devices as well as desktop.';
+          }
+
+          setChatMessages(prev => [
+            ...prev,
+            { role: 'user', text: value },
+            { role: 'bot', text: response }
+          ]);
+          setChatInput('');
+        };
+
+        const renderDefaultCopy = (heading, description) => (
+          <div className="help-copy">
+            <h3>{heading}</h3>
+            <p>{description}</p>
+          </div>
+        );
+
+        const renderHelpContent = () => {
+          if (searchTerm.trim()) {
+            return (
+              <div className="help-search-results">
+                <h3>Search Results</h3>
+                <p>Showing matches for "{searchTerm}".</p>
+                <div className="help-divider"></div>
+                {searchResults.length ? (
+                  <div className="search-result-list">
+                    {searchResults.map((item, index) => (
+                      <div className="search-result-item" key={index}>
+                        <strong>{item.title}</strong>
+                        <div>{item.category}</div>
+                        <p>{item.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="help-empty">No Help Center content matched your search.</p>
+                )}
+              </div>
+            );
+          }
+
+          if (selectedCategory === 'FAQs') {
+            return (
+              <div>
+                <h3>Frequently Asked Questions</h3>
+                <p>Browse common questions about the platform, access, documents and support options.</p>
+                <div className="help-divider"></div>
+                <div className="faq-list">
+                  {faqItems.map((item, index) => {
+                    const isOpen = expandedFaq === index;
+                    return (
+                      <div className="faq-item" key={index}>
+                        <button
+                          className="faq-question"
+                          onClick={() => setExpandedFaq(isOpen ? null : index)}
+                          aria-expanded={isOpen}
+                        >
+                          <span>{item.question}</span>
+                          <span className="faq-toggle">{isOpen ? '−' : '+'}</span>
+                        </button>
+                        {isOpen && <div className="faq-answer">{item.answer}</div>}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          }
+
+          if (selectedCategory === 'Video Tutorials') {
+            const videos = [
+              { title: 'Video Tutorial 1', embed: 'https://www.youtube.com/embed/Mt0Y5X6885I' },
+              { title: 'Video Tutorial 2', embed: 'https://www.youtube.com/embed/6dSVaAaKWSQ' },
+              { title: 'Video Tutorial 3', embed: 'https://www.youtube.com/embed/8qaLG730bDw' }
+            ];
+            return (
+              <div className="help-video-list">
+                <h3>Video Tutorials</h3>
+                <p>Watch support videos directly in the Help Center.</p>
+                <div className="help-divider"></div>
+                <div className="video-grid">
+                  {videos.map((video, index) => (
+                    <div className="video-card" key={index}>
+                      <h4>{video.title}</h4>
+                      {video.embed ? (
+                        <iframe
+                          className="video-frame"
+                          src={video.embed}
+                          title={video.title}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        ></iframe>
+                      ) : (
+                        <div className="video-unavailable">This tutorial is currently unavailable for embedded playback.</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          }
+
+          if (selectedCategory === 'Help Materials') {
+            const materials = [
+              {
+                title: 'Employee Share Document Guide',
+                href: 'https://drive.google.com/file/d/1HqLeSEbVZz3JWwxSX5TgsJd7Q0x3xdVk/view?usp=drive_link'
+              },
+              {
+                title: 'Employee Share Vesting Guide',
+                href: 'https://drive.google.com/file/d/1Uc5E21E6CIummBqCDs5zYk2mLbZ_ur5y/view?usp=drive_link'
+              },
+              {
+                title: 'Employee Quick Reference',
+                href: 'https://drive.google.com/file/d/1ErTOSOIThyzHUCLz8QilIwZ3u5A6ENk9/view?usp=drive_link'
+              }
+            ];
+            return (
+              <div className="help-materials">
+                <h3>Help Materials</h3>
+                <p>Download user guides and PDF reference files for offline support.</p>
+                <div className="help-divider"></div>
+                <div className="materials-list">
+                  {materials.map((item, index) => (
+                    <div className="material-item" key={index}>
+                      <strong>{item.title}</strong>
+                      <p>Open the support file and download it for offline use.</p>
+                      <a className="material-link" href={item.href} target="_blank" rel="noreferrer">Download file</a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          }
+
+          if (selectedCategory === 'Chat Support') {
+            return (
+              <div className="help-chat">
+                <h3>Chat Support</h3>
+                <p>Receive immediate assistance through the automated chat assistant.</p>
+                <div className="help-divider"></div>
+                <div className="chat-panel">
+                  <h4>Automated Assistant</h4>
+                  <div className="chat-messages">
+                    {chatMessages.map((message, index) => (
+                      <div className={`chat-message ${message.role}`} key={index}>{message.text}</div>
+                    ))}
+                  </div>
+                  <form className="chat-form" onSubmit={handleChatSubmit}>
+                    <input
+                      type="text"
+                      value={chatInput}
+                      onChange={(e) => setChatInput(e.target.value)}
+                      placeholder="Ask a support question"
+                      aria-label="Ask a support question"
+                    />
+                    <button type="submit">Send</button>
+                  </form>
+                </div>
+              </div>
+            );
+          }
+
+          if (selectedCategory === 'Getting Started') {
+            return renderDefaultCopy(
+              'Getting Started',
+              'Begin with an overview of the Equity Portal and use the Home Page Help Center entry point to quickly reach categorized support resources.'
+            );
+          }
+
+          if (selectedCategory === 'How-To Guides') {
+            return renderDefaultCopy(
+              'How-To Guides',
+              'Follow concise guidance for using the site structure, locating relevant support content and finding practical platform assistance.'
+            );
+          }
+
+          if (selectedCategory === 'Troubleshooting') {
+            return renderDefaultCopy(
+              'Troubleshooting',
+              'Review practical support guidance to resolve common issues with access, navigation and locating the right help content.'
+            );
+          }
+
+          return null;
+        };
+
+        return (
+          <div className="page-shell">
+            <header className="site-header">
+              <div className="container header-inner">
+                <div className="brand">Equity Portal</div>
+                <nav className="primary-nav" aria-label="Primary navigation">
+                  <a href="#investor-centre">Investor Centre</a>
+                  <a href="#empshare">EmpShare / Employee Share</a>
+                  <a href="#about-us">About Us</a>
+                  <a href="#technology-platforms">Technology Platforms</a>
+                  <a href="#help-center">Help Center</a>
+                </nav>
+              </div>
+            </header>
+
+            <main>
+              <section id="investor-centre" className="content-section">
+                <div className="container section-grid">
+                  <div className="section-text">
+                    <div className="section-label">INVESTOR CENTRE</div>
+                    <h2>Investor Centre</h2>
+                    <p>Access a clean and structured experience designed to support investor communication, information discovery and practical self-service navigation.</p>
+                    <p>The Equity Portal presents investor-related content in a clear corporate layout with responsive behaviour across desktop and mobile devices.</p>
+                  </div>
+                  <div className="section-image">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80" alt="Technology and investor data presentation" />
+                  </div>
+                </div>
+              </section>
+
+              <section id="empshare" className="content-section alternate-bg">
+                <div className="container section-grid reverse">
+                  <div className="section-image">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80" alt="Employee collaboration and share program discussion" />
+                  </div>
+                  <div className="section-text">
+                    <div className="section-label">EMPSHARE / EMPLOYEE SHARE</div>
+                    <h2>EmpShare / Employee Share</h2>
+                    <p>Explore employee-share information in a spacious two-column layout that aligns visually with the broader Equity Portal experience.</p>
+                    <p>Designed for clarity and accessibility, this area supports employees who need quick pathways to guidance, materials and support content.</p>
+                  </div>
+                </div>
+              </section>
+
+              <section id="about-us" className="content-section">
+                <div className="container section-grid">
+                  <div className="section-text">
+                    <div className="section-label">ABOUT US</div>
+                    <h2>About Us</h2>
+                    <p>Equity Portal reflects a professional financial-services style focused on clear communication, responsive layouts and lightweight user experiences.</p>
+                    <p>Our approach combines practical support, straightforward navigation and reliable content presentation for investors and employee-share participants.</p>
+                  </div>
+                  <div className="section-image">
+                    <img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1200&q=80" alt="Business professionals collaborating" />
+                  </div>
+                </div>
+              </section>
+
+              <section id="technology-platforms" className="content-section alternate-bg technology-section">
+                <div className="container">
+                  <h2>Learn more about our technology platforms</h2>
+                  <div className="technology-columns">
+                    <div className="tech-item">
+                      <h3>Experience</h3>
+                      <p>Responsive, minimal interfaces that support clear journeys across investor and employee-share content.</p>
+                    </div>
+                    <div className="tech-item">
+                      <h3>Expertise</h3>
+                      <p>Corporate presentation standards aligned to dependable content access and consistent usability.</p>
+                    </div>
+                    <div className="tech-item">
+                      <h3>Innovation</h3>
+                      <p>Integrated support features such as search, FAQs, embedded tutorials and immediate chat assistance.</p>
+                    </div>
+                    <div className="tech-item">
+                      <h3>Technology</h3>
+                      <p>Lightweight implementation patterns that keep the overall experience clean, stable and easy to use.</p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section id="help-center" className="help-center">
+                <div className="container">
+                  <div className="help-center-intro">
+                    <div className="section-label">SUPPORT</div>
+                    <h2>Help Center</h2>
+                    <p>Find practical guidance, searchable support content, video tutorials and immediate chat assistance.</p>
+                  </div>
+
+                  <form className="help-center-search" onSubmit={handleSearch}>
+                    <input
+                      type="text"
+                      value={searchInput}
+                      onChange={(e) => setSearchInput(e.target.value)}
+                      placeholder="Search Help Center content"
+                      aria-label="Search Help Center content"
+                    />
+                    <button type="submit">Search</button>
+                  </form>
+
+                  <div className="help-center-layout">
+                    <div className="help-center-nav" role="tablist" aria-label="Help Center categories">
+                      {categories.map((category) => (
+                        <button
+                          key={category}
+                          className={`help-center-nav-item ${selectedCategory === category ? 'active' : ''}`}
+                          onClick={() => {
+                            setSelectedCategory(category);
+                            setSearchTerm('');
+                          }}
+                          role="tab"
+                          aria-selected={selectedCategory === category}
+                        >
+                          {category}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="help-center-main">
+                      {renderHelpContent()}
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </main>
+
+            <footer className="site-footer">
+              <div className="container footer-inner">
+                <div className="brand">Equity Portal</div>
+                <div className="footer-copy">© 2026 Equity Portal. Corporate support resources for investors and employee-share participants.</div>
+              </div>
+            </footer>
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+  </body>
+</html>
