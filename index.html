@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Equity Portal</title>
+  <style>
+    :root {
+      --primary-purple: #6D1F73;
+      --magenta-accent: #97186F;
+      --dark-purple: #4D1A5D;
+      --plum: #35113D;
+      --main-text: #25212A;
+      --secondary-text: #6C6570;
+      --main-background: #FFFFFF;
+      --alternate-background: #F5F4F5;
+      --footer: #281F2C;
+      --borders: #DED9E1;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--main-text);
+      background: var(--main-background);
+      line-height: 1.5;
+    }
+
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+
+    .container {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .site-header {
+      background: linear-gradient(135deg, var(--plum) 0%, var(--dark-purple) 48%, var(--primary-purple) 100%);
+      color: #fff;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .main-nav {
+      display: flex;
+      gap: 22px;
+      flex-wrap: wrap;
+    }
+
+    .main-nav a {
+      color: rgba(255,255,255,0.92);
+      font-size: 0.96rem;
+      padding-bottom: 2px;
+      border-bottom: 1px solid transparent;
+    }
+
+    .main-nav a:hover,
+    .main-nav a:focus {
+      border-color: rgba(255,255,255,0.75);
+      outline: none;
+    }
+
+    main section {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--borders);
+    }
+
+    .two-column {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    .section-label {
+      color: var(--magenta-accent);
+      font-size: 0.8rem;
+      letter-spacing: 0.14em;
+      font-weight: 700;
+      margin: 0 0 14px;
+    }
+
+    h1, h2, h3 {
+      margin: 0 0 16px;
+      line-height: 1.2;
+      font-weight: 700;
+      color: var(--main-text);
+    }
+
+    h2 { font-size: 2rem; }
+    h3 { font-size: 1.1rem; }
+
+    p {
+      margin: 0 0 16px;
+      color: var(--secondary-text);
+      font-size: 1rem;
+    }
+
+    .feature-image {
+      width: 100%;
+      height: 360px;
+      object-fit: cover;
+      border: 1px solid var(--borders);
+    }
+
+    .platforms-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-top: 28px;
+    }
+
+    .platform-item {
+      padding: 0 4px 0 0;
+      border-top: 3px solid var(--magenta-accent);
+      padding-top: 18px;
+    }
+
+    .platform-item h3 {
+      color: var(--dark-purple);
+      margin-bottom: 10px;
+    }
+
+    .help-center {
+      background: var(--main-background);
+    }
+
+    .help-center-search {
+      display: flex;
+      gap: 14px;
+      margin: 28px 0 34px;
+    }
+
+    .help-center-search input {
+      flex: 1;
+      min-width: 0;
+      border: 1px solid var(--borders);
+      padding: 15px 16px;
+      color: var(--main-text);
+      background: #fff;
+    }
+
+    .help-center-search button,
+    .chat-send,
+    .resource-link {
+      border: 1px solid var(--primary-purple);
+      background: var(--primary-purple);
+      color: #fff;
+      padding: 14px 22px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      display: inline-block;
+    }
+
+    .help-center-search button:hover,
+    .chat-send:hover,
+    .resource-link:hover {
+      background: var(--dark-purple);
+    }
+
+    .help-center-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 36px;
+      align-items: start;
+    }
+
+    .help-nav {
+      border-top: 1px solid var(--borders);
+    }
+
+    .help-nav-item {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: 0;
+      border-bottom: 1px solid var(--borders);
+      padding: 16px 0;
+      color: var(--main-text);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .help-nav-item.active {
+      color: var(--primary-purple);
+      font-weight: 700;
+    }
+
+    .help-nav-item.active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -1px;
+      width: 72px;
+      height: 2px;
+      background: var(--primary-purple);
+    }
+
+    .help-panel h3 {
+      font-size: 1.55rem;
+      margin-bottom: 10px;
+    }
+
+    .panel-divider {
+      height: 1px;
+      background: var(--borders);
+      margin: 18px 0 8px;
+    }
+
+    .search-results-summary {
+      color: var(--dark-purple);
+      font-weight: 700;
+      margin: 0 0 18px;
+    }
+
+    .faq-list,
+    .result-list,
+    .resource-list,
+    .article-list,
+    .chat-links {
+      width: 100%;
+    }
+
+    .faq-item,
+    .result-item,
+    .resource-item,
+    .article-item,
+    .video-item {
+      border-bottom: 1px solid var(--borders);
+      padding: 16px 0;
+    }
+
+    .faq-question {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      text-align: left;
+      color: var(--main-text);
+      cursor: pointer;
+    }
+
+    .faq-icon {
+      width: 28px;
+      height: 28px;
+      min-width: 28px;
+      border: 1px solid var(--borders);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-purple);
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    .faq-answer {
+      display: none;
+      color: var(--secondary-text);
+      padding: 12px 40px 0 0;
+    }
+
+    .faq-item.open .faq-answer { display: block; }
+
+    .videos-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .video-frame-wrap {
+      border: 1px solid var(--borders);
+      background: var(--alternate-background);
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+    }
+
+    .video-frame-wrap iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .video-links,
+    .resource-meta,
+    .article-meta,
+    .result-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .inline-link {
+      color: var(--primary-purple);
+      font-weight: 700;
+    }
+
+    .chat-box {
+      border: 1px solid var(--borders);
+      background: #fff;
+    }
+
+    .chat-messages {
+      max-height: 320px;
+      overflow-y: auto;
+      padding: 18px;
+      border-bottom: 1px solid var(--borders);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .chat-message {
+      padding: 12px 14px;
+      border: 1px solid var(--borders);
+      max-width: 88%;
+    }
+
+    .chat-message.user {
+      align-self: flex-end;
+      border-color: var(--primary-purple);
+      color: var(--main-text);
+      background: #fff;
+    }
+
+    .chat-message.bot {
+      align-self: flex-start;
+      background: var(--alternate-background);
+    }
+
+    .chat-message p { margin-bottom: 8px; }
+    .chat-message p:last-child { margin-bottom: 0; }
+
+    .chat-input-row {
+      display: flex;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .chat-input-row input {
+      flex: 1;
+      min-width: 0;
+      border: 1px solid var(--borders);
+      padding: 13px 14px;
+    }
+
+    .support-image {
+      margin-top: 24px;
+      height: 240px;
+      object-fit: cover;
+      width: 100%;
+      border: 1px solid var(--borders);
+    }
+
+    .site-footer {
+      background: var(--footer);
+      color: rgba(255,255,255,0.92);
+      padding: 26px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .muted { color: var(--secondary-text); }
+    .hidden { display: none !important; }
+
+    @media (max-width: 980px) {
+      .two-column,
+      .help-center-layout,
+      .videos-grid,
+      .platforms-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .help-center-layout { gap: 28px; }
+      .feature-image { height: 300px; }
+    }
+
+    @media (max-width: 720px) {
+      .container { width: min(100% - 28px, 1180px); }
+      .header-inner { align-items: flex-start; }
+      .main-nav { gap: 14px 18px; }
+      main section { padding: 56px 0; }
+      h2 { font-size: 1.7rem; }
+      .help-center-search,
+      .chat-input-row {
+        flex-direction: column;
+      }
+      .help-center-search button,
+      .chat-send,
+      .resource-link { width: 100%; }
+      .feature-image { height: 250px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">Equity Portal</div>
+      <nav class="main-nav" aria-label="Primary navigation">
+        <a href="#investor-centre">Investor Centre</a>
+        <a href="#empshare">EmpShare</a>
+        <a href="#about-us">About Us</a>
+        <a href="#technology-platforms">Technology Platforms</a>
+        <a href="#help-center">Help Center</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="investor-centre">
+      <div class="container two-column">
+        <div>
+          <p class="section-label">INVESTOR CENTRE</p>
+          <h2>Clear access to shareholder information and support resources</h2>
+          <p>Equity Portal helps investors locate practical information, review available documents and move directly into support pathways without navigating multiple pages.</p>
+          <p>Designed with a clean financial-services experience, the Investor Centre keeps information accessible and structured for efficient self-service.</p>
+        </div>
+        <div>
+          <img class="feature-image" src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Analytics dashboard and business technology display" />
+        </div>
+      </div>
+    </section>
+
+    <section id="empshare">
+      <div class="container two-column">
+        <div>
+          <img class="feature-image" src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Business team collaborating in a meeting" />
+        </div>
+        <div>
+          <p class="section-label">EMPSHARE</p>
+          <h2>Employee share support built for practical day-to-day use</h2>
+          <p>EmpShare provides straightforward access to employee-related information, reference materials and guided support content that can be searched, browsed and opened when needed.</p>
+          <p>The section aligns with the wider portal experience to support onboarding, document access and independent help discovery.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="about-us">
+      <div class="container two-column">
+        <div>
+          <p class="section-label">ABOUT US</p>
+          <h2>A professional portal focused on service, clarity and responsive support</h2>
+          <p>Equity Portal combines investor information, employee share access and practical support content into one connected experience.</p>
+          <p>Our approach emphasizes simple navigation, reliable self-service pathways and immediate access to relevant materials across devices.</p>
+        </div>
+        <div>
+          <img class="feature-image" src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Business professionals collaborating in an office" />
+        </div>
+      </div>
+    </section>
+
+    <section id="technology-platforms">
+      <div class="container">
+        <p class="section-label">TECHNOLOGY PLATFORMS</p>
+        <h2>Learn more about our technology platforms</h2>
+        <div class="platforms-grid">
+          <div class="platform-item">
+            <h3>Experience</h3>
+            <p>Structured digital journeys built to help users move quickly from navigation to support content.</p>
+          </div>
+          <div class="platform-item">
+            <h3>Expertise</h3>
+            <p>Focused content organization that supports investor and employee information needs with clarity.</p>
+          </div>
+          <div class="platform-item">
+            <h3>Innovation</h3>
+            <p>Search, categorized help and chat assistance designed to improve self-service without complexity.</p>
+          </div>
+          <div class="platform-item">
+            <h3>Technology</h3>
+            <p>Responsive platform patterns that keep documents, tutorials and support materials easy to access.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="help-center" class="help-center">
+      <div class="container">
+        <p class="section-label">SUPPORT</p>
+        <h2>Help Center</h2>
+        <p>Find practical guidance, searchable support content, video tutorials and immediate chat assistance.</p>
+
+        <div class="help-center-search">
+          <input id="helpSearchInput" type="text" placeholder="Search Help Center content" aria-label="Search Help Center content" />
+          <button id="helpSearchButton" type="button">Search</button>
+        </div>
+
+        <div class="help-center-layout">
+          <aside>
+            <nav class="help-nav" aria-label="Help Center categories">
+              <button class="help-nav-item active" type="button" data-category="getting-started">Getting Started</button>
+              <button class="help-nav-item" type="button" data-category="faqs">FAQs</button>
+              <button class="help-nav-item" type="button" data-category="how-to-guides">How-To Guides</button>
+              <button class="help-nav-item" type="button" data-category="video-tutorials">Video Tutorials</button>
+              <button class="help-nav-item" type="button" data-category="help-materials">Help Materials</button>
+              <button class="help-nav-item" type="button" data-category="troubleshooting">Troubleshooting</button>
+              <button class="help-nav-item" type="button" data-category="chat-support">Chat Support</button>
+            </nav>
+          </aside>
+
+          <div class="help-panel">
+            <div id="searchResultsContainer" class="hidden"></div>
+
+            <div class="help-category-panel" data-panel="getting-started">
+              <h3>Getting Started</h3>
+              <p>Use the Help Center to browse practical support topics, open tutorials, review materials and connect with automated assistance from one place.</p>
+              <div class="panel-divider"></div>
+              <div class="article-list">
+                <div class="article-item">
+                  <div class="article-meta">
+                    <strong>Access the Help Center from the Home Page</strong>
+                    <p>Select the Help Center entry point in the main navigation to open categorized support content quickly.</p>
+                  </div>
+                </div>
+                <div class="article-item">
+                  <div class="article-meta">
+                    <strong>Browse by category</strong>
+                    <p>Choose a support category on the left to display relevant articles, videos and materials within the main content area.</p>
+                  </div>
+                </div>
+                <div class="article-item">
+                  <div class="article-meta">
+                    <strong>Use search for faster discovery</strong>
+                    <p>Enter keywords such as documents, mobile, employee or troubleshooting to find matching help content.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="help-category-panel hidden" data-panel="faqs">
+              <h3>Frequently Asked Questions</h3>
+              <p>Browse common questions about the platform, access, documents and support options.</p>
+              <div class="panel-divider"></div>
+              <div class="faq-list">
+                <div class="faq-item">
+                  <button class="faq-question" type="button">
+                    <span>How do I access my shareholder or employee information?</span>
+                    <span class="faq-icon">+</span>
+                  </button>
+                  <div class="faq-answer">Use the relevant navigation section from the home page and then open Help Center resources for guided support, access information and next steps.</div>
+                </div>
+                <div class="faq-item">
+                  <button class="faq-question" type="button">
+                    <span>Where can I download my documents?</span>
+                    <span class="faq-icon">+</span>
+                  </button>
+                  <div class="faq-answer">Open Help Materials to access PDF guides and reference documents. Each item includes a direct Open PDF link in a new browser tab.</div>
+                </div>
+                <div class="faq-item">
+                  <button class="faq-question" type="button">
+                    <span>Can I get help without leaving the website?</span>
+                    <span class="faq-icon">+</span>
+                  </button>
+                  <div class="faq-answer">Yes. Use Chat Support to ask a question and receive an automated response with relevant guidance and links to helpful resources.</div>
+                </div>
+                <div class="faq-item">
+                  <button class="faq-question" type="button">
+                    <span>Is the Help Center available on mobile?</span>
+                    <span class="faq-icon">+</span>
+                  </button>
+                  <div class="faq-answer">Yes. The Help Center is responsive and can be used on smaller screens for browsing, searching and opening support content.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="help-category-panel hidden" data-panel="how-to-guides">
+              <h3>How-To Guides</h3>
+              <p>Step-by-step guidance to help you move through common support tasks and platform actions.</p>
+              <div class="panel-divider"></div>
+              <div class="article-list">
+                <div class="article-item">
+                  <div class="article-meta">
+                    <strong>How to find onboarding resources</strong>
+                    <p>Open the Help Center from the home page and begin with Getting Started for entry-level guidance.</p>
+                  </div>
+                </div>
+                <div class="article-item">
+                  <div class="article-meta">
+                    <strong>How to search across support content</strong>
+                    <p>Use specific keywords to locate articles, videos and downloadable materials related to your issue.</p>
+                  </div>
+                </div>
+                <div class="article-item">
+                  <div class="article-meta">
+                    <strong>How to open support material links</strong>
+                    <p>Go to Help Materials and select Open PDF for the resource you want to review in a new browser tab.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="help-category-panel hidden" data-panel="video-tutorials">
+              <h3>Video Tutorials</h3>
+              <p>Watch configured tutorial content below. If embedded playback is unavailable, use the Open Video links.</p>
+              <div class="panel-divider"></div>
+              <div class="videos-grid">
+                <div class="video-item">
+                  <div class="video-frame-wrap">
+                    <iframe src="https://www.youtube.com/embed/Mt0Y5X6885I" title="Video Tutorial 1" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                  </div>
+                  <div class="video-links" style="margin-top:10px;">
+                    <strong>Video 1</strong>
+                    <a class="inline-link" href="https://youtu.be/Mt0Y5X6885I" target="_blank" rel="noopener noreferrer">Open Video</a>
+                  </div>
+                </div>
+                <div class="video-item">
+                  <div class="video-frame-wrap">
+                    <iframe src="https://www.youtube.com/embed/6dSVaAaKWSQ" title="Video Tutorial 2" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                  </div>
+                  <div class="video-links" style="margin-top:10px;">
+                    <strong>Video 2</strong>
+                    <a class="inline-link" href="https://www.youtube.com/watch?v=6dSVaAaKWSQ" target="_blank" rel="noopener noreferrer">Open Video</a>
+                  </div>
+                </div>
+                <div class="video-item">
+                  <div class="video-frame-wrap">
+                    <iframe src="https://www.youtube.com/embed/8qaLG730bDw" title="Video Tutorial 3" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                  </div>
+                  <div class="video-links" style="margin-top:10px;">
+                    <strong>Video 3</strong>
+                    <a class="inline-link" href="https://www.youtube.com/watch?v=8qaLG730bDw&amp;t=20s&amp;pp=ygUWbWFzaGFibGUgbW9ybmluZyB3aSBLS9IHCQkaDAGHKiGM7w%3D%3D" target="_blank" rel="noopener noreferrer">Open Video</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="help-category-panel hidden" data-panel="help-materials">
+              <h3>Help Materials</h3>
+              <p>Open available reference materials and guides in a new browser tab for offline review and later access.</p>
+              <div class="panel-divider"></div>
+              <div class="resource-list">
+                <div class="resource-item">
+                  <div class="resource-meta">
+                    <strong>Employee Share Document Guide</strong>
+                    <p>Overview of key document types and where to find the information you need.</p>
+                    <div><a class="resource-link" href="https://drive.google.com/file/d/1HqLeSEbVZz3JWwxSX5TgsJd7Q0x3xdVk/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Open PDF</a></div>
+                  </div>
+                </div>
+                <div class="resource-item">
+                  <div class="resource-meta">
+                    <strong>Employee Share Vesting Guide</strong>
+                    <p>Practical guidance to help users understand vesting-related support information.</p>
+                    <div><a class="resource-link" href="https://drive.google.com/file/d/1Uc5E21E6CIummBqCDs5zYk2mLbZ_ur5y/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Open PDF</a></div>
+                  </div>
+                </div>
+                <div class="resource-item">
+                  <div class="resource-meta">
+                    <strong>Employee Quick Reference</strong>
+                    <p>A concise reference document for common actions, support pathways and document access.</p>
+                    <div><a class="resource-link" href="https://drive.google.com/file/d/1ErTOSOIThyzHUCLz8QilIwZ3u5A6ENk9/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Open PDF</a></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="help-category-panel hidden" data-panel="troubleshooting">
+              <h3>Troubleshooting</h3>
+              <p>Review support guidance for common access, navigation and content-discovery issues.</p>
+              <div class="panel-divider"></div>
+              <div class="article-list">
+                <div class="article-item">
+                  <div class="article-meta">
+                    <strong>Unable to find support content</strong>
+                    <p>Use narrower keywords in search or switch to a category such as FAQs, Help Materials or Video Tutorials.</p>
+                  </div>
+                </div>
+                <div class="article-item">
+                  <div class="article-meta">
+                    <strong>Video does not play in embedded mode</strong>
+                    <p>Use the Open Video link below the tutorial to continue in YouTube directly.</p>
+                  </div>
+                </div>
+                <div class="article-item">
+                  <div class="article-meta">
+                    <strong>Need more direct guidance</strong>
+                    <p>Open Chat Support and ask a specific question to receive automated guidance and related resource links.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="help-category-panel hidden" data-panel="chat-support">
+              <h3>Chat Support</h3>
+              <p>Ask a question and receive an automated response with relevant help guidance and links to related content.</p>
+              <div class="panel-divider"></div>
+              <div class="chat-box">
+                <div id="chatMessages" class="chat-messages">
+                  <div class="chat-message bot">
+                    <p>Hello. I can help with documents, access, mobile use, tutorials and troubleshooting.</p>
+                    <p>Try asking: <span class="muted">Where can I find documents?</span></p>
+                  </div>
+                </div>
+                <div class="chat-input-row">
+                  <input id="chatInput" type="text" placeholder="Type your question" aria-label="Type your question" />
+                  <button id="chatSendButton" class="chat-send" type="button">Send</button>
+                </div>
+              </div>
+              <img class="support-image" src="https://images.unsplash.com/photo-1531497865144-0464ef8fb9a9?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Support team using headsets in a help center" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>Equity Portal</div>
+      <div>Investor support, employee share access and practical guidance in one place.</div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var navItems = document.querySelectorAll('.help-nav-item');
+      var panels = document.querySelectorAll('.help-category-panel');
+      var searchInput = document.getElementById('helpSearchInput');
+      var searchButton = document.getElementById('helpSearchButton');
+      var searchResultsContainer = document.getElementById('searchResultsContainer');
+      var chatInput = document.getElementById('chatInput');
+      var chatSendButton = document.getElementById('chatSendButton');
+      var chatMessages = document.getElementById('chatMessages');
+
+      var searchData = [
+        { title: 'Getting Started: Access the Help Center from the Home Page', description: 'Open categorized support content directly from the main navigation.', type: 'Article', category: 'getting-started', keywords: ['home', 'navigation', 'onboarding', 'getting started', 'access'] },
+        { title: 'Frequently Asked Questions', description: 'Common answers about platform access, documents, support and mobile use.', type: 'Article', category: 'faqs', keywords: ['faq', 'questions', 'documents', 'mobile', 'support'] },
+        { title: 'How to search across support content', description: 'Use keywords to locate articles, videos and materials quickly.', type: 'Article', category: 'how-to-guides', keywords: ['search', 'keywords', 'find', 'guides'] },
+        { title: 'Video Tutorial 1', description: 'Configured YouTube tutorial with Open Video fallback.', type: 'Video', category: 'video-tutorials', keywords: ['video', 'tutorial', 'youtube', 'training'] },
+        { title: 'Video Tutorial 2', description: 'Configured YouTube tutorial with Open Video fallback.', type: 'Video', category: 'video-tutorials', keywords: ['video', 'tutorial', 'youtube', 'training'] },
+        { title: 'Video Tutorial 3', description: 'Configured YouTube tutorial with Open Video fallback.', type: 'Video', category: 'video-tutorials', keywords: ['video', 'tutorial', 'youtube', 'training'] },
+        { title: 'Employee Share Document Guide', description: 'PDF resource for document-related support.', type: 'Material', category: 'help-materials', keywords: ['pdf', 'document', 'materials', 'employee', 'guide'] },
+        { title: 'Employee Share Vesting Guide', description: 'PDF resource for vesting-related support guidance.', type: 'Material', category: 'help-materials', keywords: ['pdf', 'vesting', 'employee', 'guide'] },
+        { title: 'Employee Quick Reference', description: 'PDF quick reference for common support actions.', type: 'Material', category: 'help-materials', keywords: ['pdf', 'reference', 'employee', 'quick'] },
+        { title: 'Troubleshooting support guidance', description: 'Help for search, video playback fallback and direct guidance.', type: 'Article', category: 'troubleshooting', keywords: ['troubleshooting', 'issue', 'problem', 'support'] },
+        { title: 'Chat Support', description: 'Automated chat assistance with relevant guidance and article links.', type: 'Article', category: 'chat-support', keywords: ['chat', 'assistant', 'support', 'help'] }
+      ];
+
+      function activateCategory(category) {
+        navItems.forEach(function (item) {
+          item.classList.toggle('active', item.getAttribute('data-category') === category);
+        });
+        panels.forEach(function (panel) {
+          panel.classList.toggle('hidden', panel.getAttribute('data-panel') !== category);
+        });
+        searchResultsContainer.classList.add('hidden');
+      }
+
+      navItems.forEach(function (item) {
+        item.addEventListener('click', function () {
+          activateCategory(item.getAttribute('data-category'));
+        });
+      });
+
+      document.querySelectorAll('.faq-question').forEach(function (button) {
+        button.addEventListener('click', function () {
+          var faqItem = button.parentElement;
+          var isOpen = faqItem.classList.contains('open');
+          faqItem.classList.toggle('open');
+          button.querySelector('.faq-icon').textContent = isOpen ? '+' : '−';
+        });
+      });
+
+      function renderSearchResults(query) {
+        var normalized = query.trim().toLowerCase();
+        if (!normalized) {
+          searchResultsContainer.innerHTML = '';
+          searchResultsContainer.classList.add('hidden');
+          return;
+        }
+
+        var matches = searchData.filter(function (item) {
+          var haystack = [item.title, item.description].concat(item.keywords).join(' ').toLowerCase();
+          return haystack.indexOf(normalized) !== -1;
+        });
+
+        var html = '<h3>Search Results</h3>' +
+          '<p>Relevant results including articles, videos, and downloadable materials are displayed below.</p>' +
+          '<div class="panel-divider"></div>' +
+          '<p class="search-results-summary">' + matches.length + ' result' + (matches.length === 1 ? '' : 's') + ' found for "' + escapeHtml(query.trim()) + '"</p>';
+
+        if (!matches.length) {
+          html += '<div class="result-list"><div class="result-item"><div class="result-meta"><strong>No matching help content found</strong><p>Try a different keyword such as documents, mobile, video, employee, onboarding or troubleshooting.</p></div></div></div>';
+        } else {
+          html += '<div class="result-list">';
+          matches.forEach(function (item) {
+            html += '<div class="result-item"><div class="result-meta"><strong>' + escapeHtml(item.title) + '</strong><p>' + escapeHtml(item.description) + '</p><a class="inline-link search-result-link" href="#" data-category="' + item.category + '">Open ' + escapeHtml(item.type) + '</a></div></div>';
+          });
+          html += '</div>';
+        }
+
+        searchResultsContainer.innerHTML = html;
+        searchResultsContainer.classList.remove('hidden');
+        panels.forEach(function (panel) { panel.classList.add('hidden'); });
+
+        searchResultsContainer.querySelectorAll('.search-result-link').forEach(function (link) {
+          link.addEventListener('click', function (event) {
+            event.preventDefault();
+            activateCategory(link.getAttribute('data-category'));
+          });
+        });
+      }
+
+      function escapeHtml(text) {
+        var div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      searchButton.addEventListener('click', function () {
+        renderSearchResults(searchInput.value);
+      });
+
+      searchInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          renderSearchResults(searchInput.value);
+        }
+      });
+
+      function addChatMessage(text, type, htmlLinks) {
+        var message = document.createElement('div');
+        message.className = 'chat-message ' + type;
+        if (htmlLinks) {
+          message.innerHTML = '<p>' + text + '</p>' + htmlLinks;
+        } else {
+          var p = document.createElement('p');
+          p.textContent = text;
+          message.appendChild(p);
+        }
+        chatMessages.appendChild(message);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      function buildBotResponse(query) {
+        var q = query.toLowerCase();
+        if (q.indexOf('document') !== -1 || q.indexOf('pdf') !== -1 || q.indexOf('material') !== -1) {
+          return {
+            text: 'You can open the Help Materials section for document-based support.',
+            links: '<div class="chat-links"><a class="inline-link" href="#" data-chat-category="help-materials">Open Help Materials</a></div>'
+          };
+        }
+        if (q.indexOf('video') !== -1 || q.indexOf('tutorial') !== -1) {
+          return {
+            text: 'Video Tutorials contains the configured training videos with Open Video links.',
+            links: '<div class="chat-links"><a class="inline-link" href="#" data-chat-category="video-tutorials">Open Video Tutorials</a></div>'
+          };
+        }
+        if (q.indexOf('mobile') !== -1 || q.indexOf('phone') !== -1) {
+          return {
+            text: 'The Help Center is available on mobile with responsive browsing, search and support access.',
+            links: '<div class="chat-links"><a class="inline-link" href="#" data-chat-category="faqs">Open FAQs</a></div>'
+          };
+        }
+        if (q.indexOf('access') !== -1 || q.indexOf('login') !== -1 || q.indexOf('shareholder') !== -1 || q.indexOf('employee') !== -1) {
+          return {
+            text: 'For access and information guidance, start with Getting Started and FAQs.',
+            links: '<div class="chat-links"><a class="inline-link" href="#" data-chat-category="getting-started">Open Getting Started</a><br><a class="inline-link" href="#" data-chat-category="faqs">Open FAQs</a></div>'
+          };
+        }
+        if (q.indexOf('trouble') !== -1 || q.indexOf('issue') !== -1 || q.indexOf('problem') !== -1) {
+          return {
+            text: 'Troubleshooting includes guidance for common support issues and fallback steps.',
+            links: '<div class="chat-links"><a class="inline-link" href="#" data-chat-category="troubleshooting">Open Troubleshooting</a></div>'
+          };
+        }
+        return {
+          text: 'I found related support areas that may help with your question.',
+          links: '<div class="chat-links"><a class="inline-link" href="#" data-chat-category="faqs">Open FAQs</a><br><a class="inline-link" href="#" data-chat-category="how-to-guides">Open How-To Guides</a><br><a class="inline-link" href="#" data-chat-category="help-materials">Open Help Materials</a></div>'
+        };
+      }
+
+      function attachChatLinks(container) {
+        container.querySelectorAll('[data-chat-category]').forEach(function (link) {
+          link.addEventListener('click', function (event) {
+            event.preventDefault();
+            activateCategory(link.getAttribute('data-chat-category'));
+          });
+        });
+      }
+
+      function sendChat() {
+        var message = chatInput.value.trim();
+        if (!message) return;
+        addChatMessage(message, 'user');
+        chatInput.value = '';
+        var response = buildBotResponse(message);
+        addChatMessage(response.text, 'bot', response.links);
+        attachChatLinks(chatMessages.lastElementChild);
+      }
+
+      chatSendButton.addEventListener('click', sendChat);
+      chatInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          sendChat();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
