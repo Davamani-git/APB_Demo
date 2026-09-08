@@ -3,22 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Transaction Analytics Dashboard</title>
+  <title>Credit Card Analysis Dashboard</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="src/app/assets/css/transaction-analytics.css">
 </head>
 <body>
-  <div ng-controller="TransactionAnalyticsController as vm">
-    <div class="container-fluid">
-      <h1>Transaction Analytics Dashboard</h1>
-      <div ng-include="'src/app/modules/transaction-analytics/views/transaction-analytics.html'"></div>
-    </div>
+  <div class="container-fluid">
+    <div ng-view></div>
   </div>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+  <script src="src/app/app.module.js"></script>
   <script src="src/app/modules/transaction-analytics/transaction-analytics.module.js"></script>
-  <script src="src/app/modules/transaction-analytics/services/transaction.service.js"></script>
-  <script src="src/app/modules/transaction-analytics/services/analytics.service.js"></script>
+  <script src="src/app/services/transaction.service.js"></script>
+  <script src="src/app/services/analytics.service.js"></script>
   <script src="src/app/modules/transaction-analytics/factories/categorization.factory.js"></script>
   <script src="src/app/modules/transaction-analytics/controllers/transaction-analytics.controller.js"></script>
   <script src="src/app/modules/transaction-analytics/directives/spending-chart.directive.js"></script>
