@@ -1,0 +1,78 @@
+<div class="transaction-analytics">
+  <div ng-if="vm.loading" class="alert alert-info">Loading transactions...</div>
+  <div ng-if="vm.error" class="alert alert-danger">{{vm.error}}</div>
+  <div ng-if="!vm.loading && !vm.error">
+    <div class="row">
+      <div class="col-md-6">
+        <h2>Transaction List</h2>
+        <div class="form-group">
+          <label>Filter by Category:</label>
+          <select class="form-control" ng-model="vm.selectedCategory" ng-change="vm.updateFilter(vm.selectedCategory)">
+            <option value="">All Categories</option>
+            <option value="Food & Dining">Food & Dining</option>
+            <option value="Fuel">Fuel</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Travel">Travel</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Utilities">Utilities</option>
+            <option value="Healthcare">Healthcare</option>
+            <option value="Education">Education</option>
+            <option value="Miscellaneous">Miscellaneous</option>
+          </select>
+        </div>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Card</th>
+              <th>Merchant</th>
+              <th>Category</th>
+              <th>Amount</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="txn in vm.filteredTransactions">
+              <td>{{txn.cardName}}</td>
+              <td>{{txn.merchantName}}</td>
+              <td>{{txn.category}}</td>
+              <td>{{txn.currency}} {{txn.amount | number:2}}</td>
+              <td>{{txn.transactionDate | date:'short'}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-md-6">
+        <h2>Spending Analytics</h2>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <p><strong>Total Spending:</strong> {{vm.analyticsData.totalSpending | number:2}}</p>
+            <p><strong>Top Category:</strong> {{vm.analyticsData.topCategory}}</p>
+            <p><strong>Date Range:</strong> {{vm.analyticsData.dateRange.startDate | date:'short'}} - {{vm.analyticsData.dateRange.endDate | date:'short'}}</p>
+          </div>
+        </div>
+        <spending-chart analytics-data="vm.analyticsData"></spending-chart>
+        <div class="category-breakdown">
+          <h3>Category Breakdown</h3>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Transactions</th>
+                <th>Percentage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="cat in vm.analyticsData.categoryBreakdown">
+                <td>{{cat.categoryName}}</td>
+                <td>{{cat.totalAmount | number:2}}</td>
+                <td>{{cat.transactionCount}}</td>
+                <td>{{cat.percentage}}%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

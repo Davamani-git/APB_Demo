@@ -1,0 +1,8 @@
+body { padding: 20px; font-family: Arial, sans-serif; }
+h1 { color: #333; margin-bottom: 30px; }
+.transaction-analytics { margin-top: 20px; }
+.panel { margin-bottom: 20px; }
+.category-breakdown { margin-top: 30px; }
+table { margin-top: 15px; }
+canvas { max-width: 100%; height: auto; margin: 20px 0; }
+.alert { margin: 20px 0; }
