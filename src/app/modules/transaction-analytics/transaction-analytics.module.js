@@ -1,1 +1,4 @@
-angular.module('transactionAnalyticsModule');
+(function() {
+  'use strict';
+  angular.module('transactionAnalyticsModule', []);
+})();

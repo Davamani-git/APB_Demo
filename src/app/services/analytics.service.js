@@ -1,36 +1,49 @@
-angular.module('transactionAnalyticsModule').service('AnalyticsService', ['CategorizationFactory', function(CategorizationFactory) {
-  this.aggregateByCategory = function(transactions) {
-    if (!transactions || !Array.isArray(transactions)) {
-      return { totalSpending: 0, categoryBreakdown: [], dateRange: null, topCategory: null };
-    }
-    const categoryMap = {};
-    let totalSpending = 0;
-    let minDate = null;
-    let maxDate = null;
-    transactions.forEach(function(txn) {
-      const category = CategorizationFactory.getCategory(txn);
-      const amount = parseFloat(txn.amount) || 0;
-      totalSpending += amount;
-      if (!categoryMap[category]) {
-        categoryMap[category] = { categoryName: category, totalAmount: 0, transactionCount: 0, percentage: 0 };
-      }
-      categoryMap[category].totalAmount += amount;
-      categoryMap[category].transactionCount++;
-      const txnDate = new Date(txn.transactionDate);
-      if (!minDate || txnDate < minDate) minDate = txnDate;
-      if (!maxDate || txnDate > maxDate) maxDate = txnDate;
-    });
-    const categoryBreakdown = Object.values(categoryMap);
-    categoryBreakdown.forEach(function(cat) {
-      cat.percentage = totalSpending > 0 ? (cat.totalAmount / totalSpending * 100).toFixed(2) : 0;
-    });
-    categoryBreakdown.sort(function(a, b) { return b.totalAmount - a.totalAmount; });
-    const topCategory = categoryBreakdown.length > 0 ? categoryBreakdown[0].categoryName : null;
-    return {
-      totalSpending: totalSpending,
-      categoryBreakdown: categoryBreakdown,
-      dateRange: { startDate: minDate, endDate: maxDate },
-      topCategory: topCategory
-    };
-  };
-}]);
+(function() {
+  'use strict';
+  angular.module('transactionAnalyticsModule')
+    .service('AnalyticsService', ['CategorizationFactory', function(CategorizationFactory) {
+      var service = this;
+      service.aggregateByCategory = function(transactions) {
+        var categoryMap = {};
+        var totalSpending = 0;
+        transactions.forEach(function(txn) {
+          var category = CategorizationFactory.getCategory(txn);
+          if (!categoryMap[category]) {
+            categoryMap[category] = {
+              categoryName: category,
+              totalAmount: 0,
+              transactionCount: 0,
+              percentage: 0
+            };
+          }
+          categoryMap[category].totalAmount += txn.amount;
+          categoryMap[category].transactionCount += 1;
+          totalSpending += txn.amount;
+        });
+        var categoryBreakdown = Object.keys(categoryMap).map(function(key) {
+          var cat = categoryMap[key];
+          cat.percentage = totalSpending > 0 ? (cat.totalAmount / totalSpending * 100).toFixed(2) : 0;
+          return cat;
+        });
+        categoryBreakdown.sort(function(a, b) { return b.totalAmount - a.totalAmount; });
+        var topCategory = categoryBreakdown.length > 0 ? categoryBreakdown[0].categoryName : 'N/A';
+        var dateRange = service.getDateRange(transactions);
+        return {
+          totalSpending: totalSpending,
+          categoryBreakdown: categoryBreakdown,
+          dateRange: dateRange,
+          topCategory: topCategory
+        };
+      };
+      service.getDateRange = function(transactions) {
+        if (transactions.length === 0) {
+          return { startDate: null, endDate: null };
+        }
+        var dates = transactions.map(function(txn) { return new Date(txn.transactionDate); });
+        return {
+          startDate: new Date(Math.min.apply(null, dates)),
+          endDate: new Date(Math.max.apply(null, dates))
+        };
+      };
+    }]);
+})();
