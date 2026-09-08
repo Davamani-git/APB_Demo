@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Credit Card Analysis Dashboard</title>
+  <title>Transaction Analytics Dashboard</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="src/app/assets/css/transaction-analytics.css">
 </head>
 <body>
-  <div class="container" ng-controller="TransactionAnalyticsController as vm">
-    <h1>Credit Card Analysis Dashboard</h1>
-    <div ng-include="'src/app/modules/transaction-analytics/views/transaction-analytics.html'"></div>
+  <div ng-controller="TransactionAnalyticsController as vm">
+    <div class="container-fluid">
+      <h1>Transaction Analytics Dashboard</h1>
+      <div ng-include="'src/app/modules/transaction-analytics/views/transaction-analytics.html'"></div>
+    </div>
   </div>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
