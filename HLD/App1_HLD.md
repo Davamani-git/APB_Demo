@@ -1,172 +1,281 @@
+# High-Level Design (HLD) – Online Shopping Platform (App1)
+
 ---
-# High-Level Design (HLD): AI Portfolio Management Dashboard (App1)
 
 ## 1. Validation Report
 
 ### Requirements Coverage Checklist
-- [x] Centralized dashboard for AI adoption and usage across portfolio companies
-- [x] Role-based access control (RBAC) for secure, compliant access
-- [x] Integration with AWS, Azure, GCP (automated, secure APIs)
-- [x] Real-time, consolidated AI usage and spend view
-- [x] Automated alerts for budget threshold breaches
-- [x] Export reports (PDF, Excel)
-- [x] Data freshness indicators, notifications for missing/outdated data
-- [x] Drill-down analytics by company/department/project
-- [x] Benchmarking tools (industry/company comparisons)
-- [x] Customizable dashboard widgets/views
-- [x] AI-driven recommendations for cost optimization
-- [x] SSO integration for authentication
-- [x] Compliance: audit logging, encryption (AES-256/TLS 1.3), data retention, consent management, data lineage, reporting
+- [x] User registration and authentication for buyers and sellers
+- [x] Product catalog with search, filter, and sorting
+- [x] Shopping cart and secure checkout
+- [x] Order management for buyers and sellers
+- [x] Role-based access control (RBAC) for consumers, sellers, admins
+- [x] Seller dashboard (listing, inventory, analytics)
+- [x] Admin dashboard (analytics, dispute resolution, user mgmt)
+- [x] Real-time notifications
+- [x] Multiple payment methods
+- [x] Product reviews and ratings
+- [x] Order cancellation/refund processing
+- [x] Personalized recommendations (optional)
+- [x] Wishlist functionality (optional)
+- [x] Third-party logistics integration (optional)
+- [x] Security: PCI DSS, encryption (AES-256/TLS 1.3), fraud detection, account lockout
+- [x] Audit logging, data retention, compliance reporting
 - [x] Accessibility (WCAG 2.1 AA)
-- [x] Performance, scalability, reliability (3s load, 99.5% uptime, 200 companies/1,000 users)
-- [x] User lockout recovery
+- [x] Error handling: retries, logging, circuit breaker patterns
 
-### Compliance & Error Handling
-- [x] Input validation, output filtering
-- [x] Circuit breaker, retry, and logging patterns for integrations
-- [x] Audit logging for RBAC and data access
-- [x] Data encryption in transit and at rest
-- [x] Data retention and consent management (GDPR, CCPA readiness)
-- [x] Accessibility and usability testing
+### Compliance
+- PCI DSS for payment
+- AES-256 encryption at rest, TLS 1.3 in transit
+- Role-based access control
+- Audit logging for all critical actions
+- Data retention policies configurable per compliance (GDPR/CCPA ready)
+- Consent management for buyers and sellers
+- Data lineage and reporting supported
+
+### Error Handling
+- Retry on failed API calls (idempotent)
+- Centralized error logging (SIEM integration)
+- Circuit breaker for downstream payment/logistics APIs
+- User-friendly error messages for payment failures, inventory issues, etc.
 
 ---
+
 ## 2. Domain Model (UML Class Diagram)
 
 ```plantuml
 @startuml
-entity PortfolioCompany {
-  * companyId : UUID
-  * name : String
-  * cloudProviders : List<String>
-  * aiSpend : Decimal
-  * aiUsageData : Map
-  * dataFreshness : DateTime
-}
-
 entity User {
-  * userId : UUID
-  * name : String
-  * email : String
-  * role : Role
-  * assignedCompanies : List<PortfolioCompany>
-  * lastLogin : DateTime
+  userId: UUID
+  email: String
+  passwordHash: String
+  role: enum {Consumer, Seller, Admin}
+  status: enum {Active, Locked, Suspended}
+  createdAt: DateTime
+  updatedAt: DateTime
 }
-
-entity Role {
-  * roleId : UUID
-  * name : String [Admin, OperatingPartner, DealPartner, GeneralPartner]
-  * permissions : List<String>
+entity Profile {
+  profileId: UUID
+  userId: UUID
+  name: String
+  address: String
+  phone: String
+  preferences: JSON
 }
-
-entity Alert {
-  * alertId : UUID
-  * companyId : UUID
-  * type : String [BudgetThreshold, DataFreshness]
-  * triggeredAt : DateTime
-  * resolved : Boolean
+entity Product {
+  productId: UUID
+  sellerId: UUID
+  name: String
+  description: String
+  category: String
+  price: Decimal
+  stock: Integer
+  status: enum {Active, Inactive, OutOfStock}
+  createdAt: DateTime
 }
-
-entity Report {
-  * reportId : UUID
-  * generatedBy : UUID
-  * companyId : UUID
-  * reportType : String [ExecutiveSummary, Usage, Benchmark]
-  * generatedAt : DateTime
-  * format : String [PDF, Excel]
+entity Cart {
+  cartId: UUID
+  userId: UUID
+  createdAt: DateTime
 }
-
+entity CartItem {
+  cartItemId: UUID
+  cartId: UUID
+  productId: UUID
+  quantity: Integer
+}
+entity Order {
+  orderId: UUID
+  userId: UUID
+  totalAmount: Decimal
+  status: enum {Pending, Paid, Shipped, Delivered, Cancelled, Refunded}
+  paymentId: UUID
+  shippingAddress: String
+  createdAt: DateTime
+}
+entity OrderItem {
+  orderItemId: UUID
+  orderId: UUID
+  productId: UUID
+  quantity: Integer
+  price: Decimal
+}
+entity Payment {
+  paymentId: UUID
+  orderId: UUID
+  method: String
+  status: enum {Pending, Completed, Failed, Refunded}
+  transactionRef: String
+  createdAt: DateTime
+}
+entity Review {
+  reviewId: UUID
+  productId: UUID
+  userId: UUID
+  rating: Integer
+  comment: String
+  createdAt: DateTime
+}
+entity Wishlist {
+  wishlistId: UUID
+  userId: UUID
+}
+entity WishlistItem {
+  wishlistItemId: UUID
+  wishlistId: UUID
+  productId: UUID
+}
+entity Notification {
+  notificationId: UUID
+  userId: UUID
+  type: String
+  content: String
+  status: enum {Sent, Read}
+  createdAt: DateTime
+}
+entity Dispute {
+  disputeId: UUID
+  orderId: UUID
+  userId: UUID
+  status: enum {Open, Resolved, Escalated}
+  description: String
+  createdAt: DateTime
+}
 entity AuditLog {
-  * logId : UUID
-  * userId : UUID
-  * action : String
-  * timestamp : DateTime
-  * details : String
+  logId: UUID
+  entity: String
+  entityId: UUID
+  action: String
+  userId: UUID
+  timestamp: DateTime
+  details: JSON
 }
-
-PortfolioCompany "1..*" -- "*" User : assigned
-User "1" -- "1" Role : has
-PortfolioCompany "1" -- "*" Alert : triggers
-PortfolioCompany "1" -- "*" Report : generates
-User "1" -- "*" AuditLog : logs
+User ||--o{ Profile : has
+User ||--o{ Cart : owns
+User ||--o{ Order : places
+User ||--o{ Review : writes
+User ||--o{ Wishlist : owns
+User ||--o{ Notification : receives
+User ||--o{ Dispute : raises
+User ||--o{ AuditLog : triggers
+Seller ||--o{ Product : lists
+Cart ||--o{ CartItem : contains
+Order ||--o{ OrderItem : contains
+Order ||--o{ Payment : has
+Wishlist ||--o{ WishlistItem : contains
+Product ||--o{ Review : receives
+Order ||--o{ Dispute : mayHave
 @enduml
 ```
 
 ---
+
 ## 3. Architecture Overview
 
-### Architecture Diagram
+### 3.1 Diagram
+
 ```
-[User] -> [SSO/Auth Service] -> [AI Dashboard UI]
-[AI Dashboard UI] <-> [Dashboard API Gateway]
-[Dashboard API Gateway] <-> [Portfolio Data Aggregator]
-[Portfolio Data Aggregator] <-> [Cloud Provider Integrations (AWS, Azure, GCP)]
-[Portfolio Data Aggregator] <-> [Data Lake / Storage]
-[Dashboard API Gateway] <-> [Alerting Engine]
-[Dashboard API Gateway] <-> [Reporting Engine]
-[Dashboard API Gateway] <-> [RBAC/ABAC Service]
-[Dashboard API Gateway] <-> [Audit Logging Service]
+[Client Apps]
+  |— Web UI (React/Angular/Vue)
+  |— Mobile Web (PWA)
+      |
+      v
+[API Gateway] — [Authentication Service (OAuth2/OIDC, SSO, RBAC)]
+      |
+      v
+[Microservices Layer]
+  |— User Service
+  |— Product Catalog Service
+  |— Cart Service
+  |— Order/Payment Service
+  |— Notification Service
+  |— Review Service
+  |— Analytics Service
+  |— Admin Service
+      |
+      v
+[Integration Layer]
+  |— Payment Gateway APIs (PCI DSS)
+  |— Notification APIs (Email/SMS/Web Push)
+  |— Third-party Logistics APIs
+      |
+      v
+[Data Layer]
+  |— RDBMS (PostgreSQL/MySQL)
+  |— NoSQL (for logs, notifications, recommendations)
+  |— Object Storage (images/docs)
+
+[Security]
+  |— API Gateway: Input validation, rate limiting, JWT validation
+  |— Encryption: TLS 1.3, AES-256 for DB/files
+  |— RBAC/ABAC (Attribute-based access control)
+  |— Secrets Management (Vault/KMS)
+  |— Audit Logging
+
+[Compliance]
+  |— Data retention policies
+  |— Consent management
+  |— Data lineage and reporting
 ```
 
-### Major Components
-- **AI Dashboard UI**: Web app (WCAG 2.1 AA compliant)
-- **SSO/Auth Service**: Integrates with enterprise SSO (OIDC/SAML)
-- **Dashboard API Gateway**: Central entry point for all dashboard features
-- **Portfolio Data Aggregator**: ETL microservice for automated AI usage collection from cloud APIs
-- **Cloud Provider Integrations**: Secure connectors for AWS, Azure, GCP
-- **Data Lake / Storage**: Encrypted data store for aggregated portfolio data
-- **Alerting Engine**: Monitors spend, data freshness, triggers alerts
-- **Reporting Engine**: Generates and exports reports
-- **RBAC/ABAC Service**: Role and attribute-based access control
-- **Audit Logging Service**: Tracks access and actions for compliance
+### 3.2 Major Components
+- **Web/Mobile UI**: Responsive, accessible user interface for shoppers, sellers, admins.
+- **API Gateway**: Central entry, security enforcement, routing.
+- **Authentication Service**: OAuth2/OIDC, SSO, RBAC, account lockout, password resets.
+- **Microservices**: User, Catalog, Cart, Order, Payment, Notification, Review, Analytics, Admin.
+- **Data Layer**: Relational DB for core, NoSQL for logs/notifications, Object storage for files/images.
+- **Integration Layer**: Payment gateways (PCI DSS), logistics, notifications.
+- **Security/Compliance**: Input/output filtering, encryption, RBAC/ABAC, audit logging, consent, data retention, compliance reporting.
 
-### Integration Points
-- Cloud AI APIs (AWS, Azure, GCP)
-- Enterprise SSO (OIDC/SAML)
-- PDF/Excel export libraries
-- Monitoring and logging frameworks
+### 3.3 Integration Points
+- Payment gateways (Stripe, PayPal, etc.)
+- Notification services (Twilio, SendGrid, FCM)
+- Third-party logistics (FedEx, UPS, DHL)
+- SSO/Identity providers (Azure AD, Okta)
 
----
-## 4. Security & Compliance Features
-
-### Security
-- Input validation and output filtering at API boundaries
+### 3.4 Security & Compliance Features
+- Input validation and output filtering at API gateway and services
 - AES-256 encryption at rest, TLS 1.3 in transit
-- RBAC/ABAC for user access
-- Audit logging (every access, permission change)
-- Secure secrets management (vault, KMS)
-- Automated failover, daily data backups
+- PCI DSS for payments; RBAC/ABAC for all resources
+- Audit logs for every critical event (user actions, payments, disputes)
+- Secrets managed via HashiCorp Vault/AWS KMS
+- Consent management and data retention policies (configurable)
+- Data lineage tracking for compliance reporting
 
-### Compliance
-- Data retention per regulatory policy (GDPR, CCPA, SOX)
-- Consent management for portfolio company data
-- Data lineage tracking (source, transformation, destination)
-- Compliance reporting for audit and regulator review
-- Accessibility (WCAG 2.1 AA)
-
----
-## 5. Data Flow (Sequence)
-
-1. User authenticates via SSO
-2. Dashboard UI requests aggregated AI usage via API Gateway
-3. Data Aggregator fetches portfolio AI data from cloud providers
-4. Data is stored encrypted in Data Lake
-5. Dashboard UI displays real-time and historical analytics
-6. Alerting Engine triggers notifications for budget/data issues
-7. Reporting Engine exports requested data
-8. Audit Logging Service records all access/actions
+### 3.5 Error Handling & Resilience
+- Centralized error logging
+- Retry logic for transient failures (API, payment, notification)
+- Circuit breaker for external API failures
+- Graceful user messaging for errors (e.g., payment failure, item out of stock)
 
 ---
-## 6. Error Handling Patterns
-- Circuit breaker for external API integrations
-- Retries with exponential backoff for cloud data fetches
-- Logging of errors and user actions for traceability
-- Notification to admins for unresolved issues or missing data
+
+## 4. Data Flow (Typical Order Placement)
+1. Consumer searches for products (UI → API Gateway → Product Catalog Service)
+2. Consumer adds products to cart (UI → API Gateway → Cart Service)
+3. Consumer checks out (Cart Service → Order/Payment Service)
+4. Payment processed securely (Order/Payment Service → Payment Gateway)
+5. Order confirmation/notification (Order Service → Notification Service)
+6. Seller receives order (Notification Service → Seller UI)
+7. Consumer and seller track status (UI → Order Service)
+8. Admin and analytics services monitor platform
 
 ---
-## 7. HLD Summary
-- Cloud-native, microservices architecture
-- Security, compliance, and accessibility prioritized
-- Real-time analytics, alerts, and reporting for actionable insights
-- Scalable to 200 companies, 1,000 users
-- Automated, auditable, and user-friendly
+
+## 5. Compliance Matrix
+| Requirement           | Control/Implementation                          |
+|-----------------------|------------------------------------------------|
+| PCI DSS               | Payment gateway integration, no card storage   |
+| Data encryption       | AES-256 (at rest), TLS 1.3 (in transit)        |
+| Role-based access     | RBAC/ABAC, SSO, OAuth2/OIDC                   |
+| Data retention        | Configurable policies, scheduled purges        |
+| Consent management    | UI consent, tracking in user profile           |
+| Audit logging         | Centralized, immutable logs, SIEM integration |
+| Data lineage          | Event sourcing, data flow tracking             |
+| Accessibility         | WCAG 2.1 AA, UI/UX audits                     |
+
 ---
+
+## 6. Appendix
+- Sequence diagrams, detailed microservice APIs, sample API contracts (available upon request)
+- Further expansion: Mobile apps, advanced recommendations, additional payment/logistics integrations
