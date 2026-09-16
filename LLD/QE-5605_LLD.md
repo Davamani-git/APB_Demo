@@ -1,40 +1,36 @@
-# a. Architecture Mapping (brief)
-- Transaction Ingestion screen → `FraudEventsController` + `fraud-events.html` view.
-- Fraud Risk Engine view (risk summary dashboard) → `FraudRiskEngineController` + `fraud-risk-engine.html`.
-- Policy Decision configuration page → `PolicyDecisionController` + `policy-decision.html`.
-- Alert Creation review screen → `FraudAlertController` + `fraud-alert.html`.
-- Audit trail viewer → `FraudAuditController` + `fraud-audit.html`.
-- Fraud core services → `FraudRiskService`, `FraudPolicyService`, `FraudAlertService`, `FraudAuditService`.
-- Shared risk state/cache → `FraudStateFactory`.
-- Cross-cutting logging & auth → `$http` interceptor `fraudHttpInterceptor`.
+# a. Architecture Mapping
+- Transaction Ingestion → app.fraudEngine module, FraudIngestionController + fraudIngestion.html, FraudIngestionService
+- Fraud Risk Engine → FraudRiskService (risk scoring logic) within app.fraudEngine, used by controllers/services
+- Policy Decision Engine → PolicyDecisionService (threshold evaluation and action mapping)
+- Alert Creation → AlertCreationService + AlertCreationController + alertCreation.html
+- Audit Service → AuditLogService (shared service in app.shared)
 
-Recommended folder structure:
-- `app/fraud/` (module, controllers, services, routes)
-- `app/fraud/views/` (HTML templates)
-- `app/shared/services/` (shared audit/logging services)
-- `app/shared/interceptors/` (HTTP interceptors)
+Recommended folders:
+- app/fraudEngine/fraudEngine.module.js
+- app/fraudEngine/fraudIngestion.controller.js
+- app/fraudEngine/fraudRisk.service.js
+- app/fraudEngine/policyDecision.service.js
+- app/fraudEngine/alertCreation.controller.js
+- app/fraudEngine/views/fraudIngestion.html
+- app/fraudEngine/views/alertCreation.html
+- app/shared/services/auditLog.service.js
 
 # b. Component Specifications
 
-| Name | Artifact Type | Responsibility | Key Dependencies |
-|---|---|---|---|
-| `app.fraud` | Module | Groups fraud engine UI components and config | `ui.router`, shared modules |
-| `FraudEventsController` | Controller | Displays ingested transaction events and basic filters | `FraudRiskService`, `FraudPolicyService` |
-| `FraudRiskEngineController` | Controller | Shows risk scores, model versions, and risk band summaries | `FraudRiskService` |
-| `PolicyDecisionController` | Controller | Manages threshold and policy mappings for actions | `FraudPolicyService` |
-| `FraudAlertController` | Controller | Lists and drills into created fraud alerts | `FraudAlertService` |
-| `FraudAuditController` | Controller | Renders audit trails for fraud decisions | `FraudAuditService` |
-| `FraudRiskService` | Service | Calls REST APIs for risk scoring and risk band evaluation | `$http`, `FraudStateFactory` |
-| `FraudPolicyService` | Service | Manages policy/threshold configs and decision rules | `$http`, `FraudStateFactory` |
-| `FraudAlertService` | Service | Retrieves and persists fraud alert records | `$http` |
-| `FraudAuditService` | Service | Fetches audit logs and decision histories | `$http` |
-| `FraudStateFactory` | Factory | Holds shared risk configs, thresholds, cache of latest scores | none |
-| `fraudHttpInterceptor` | Interceptor | Adds auth headers and logs API errors for fraud APIs | `$q`, `$injector` |
+| Name                   | Artifact Type | Responsibility                                                     | Dependencies                          |
+|------------------------|--------------|--------------------------------------------------------------------|---------------------------------------|
+| app.fraudEngine        | Module       | Group fraud engine controllers and services                       | ui.router, app.shared                 |
+| FraudIngestionController | Controller | Manage transaction ingestion view, trigger risk evaluation        | FraudIngestionService, $state         |
+| FraudIngestionService  | Service      | Receive transaction payloads, normalize schema, call FraudRiskService | $http, FraudRiskService, AuditLogService |
+| FraudRiskService       | Service      | Calculate risk score using models and signals                     | $http, PolicyDecisionService          |
+| PolicyDecisionService  | Service      | Map risk scores to policies, decide actions based on thresholds   | $http, AuditLogService                |
+| AlertCreationController | Controller  | Orchestrate alert creation UI for risk decisions                  | AlertCreationService, $state          |
+| AlertCreationService   | Service      | Create alerts and send to downstream systems                      | $http, AuditLogService                |
+| AuditLogService        | Service      | Capture audit events for ingestion, risk, policy, and alerts      | $http                                 |
 
-# c. Data Model (brief)
-
+# c. Data Model
 ```js
-TransactionEvent = {
+Transaction = {
   transactionId: String,
   accountId: String,
   cardId: String,
@@ -43,96 +39,79 @@ TransactionEvent = {
   currency: String,
   timestamp: String,
   channel: String,
-  location: String,
-  rawPayload: Object
-};
-
-RiskSignal = {
-  name: String,
-  value: Number,
-  weight: Number,
-  source: String
+  geoLocation: String,
+  deviceId: String
 };
 
 RiskScore = {
   transactionId: String,
+  modelId: String,
   score: Number,
-  band: String,
+  riskBand: String,
+  signalsUsed: Array<String>,
   modelVersion: String,
-  evaluatedAt: String,
-  signals: Array<RiskSignal>
+  evaluatedAt: String
 };
 
-PolicyConfig = {
-  id: String,
-  name: String,
-  minScore: Number,
-  maxScore: Number,
-  action: String,
-  enabled: Boolean,
-  lastUpdatedBy: String,
-  lastUpdatedAt: String
-};
-
-FraudAlert = {
-  alertId: String,
+PolicyDecision = {
   transactionId: String,
-  accountId: String,
-  riskScore: Number,
   riskBand: String,
   action: String,
-  createdAt: String,
-  status: String
+  thresholdConfigId: String,
+  createdAt: String
 };
 
-AuditRecord = {
-  id: String,
+Alert = {
+  alertId: String,
+  transactionId: String,
+  riskBand: String,
+  action: String,
+  status: String,
+  createdAt: String,
+  createdBy: String
+};
+
+AuditEvent = {
+  eventId: String,
+  transactionId: String,
   entityType: String,
   entityId: String,
   eventType: String,
   createdAt: String,
-  createdBy: String,
-  details: Object
+  createdBy: String
 };
 ```
 
-# d. Data Flow (one paragraph)
-User selects a transaction event from the Transaction Ingestion view, the `FraudEventsController` loads event details and calls `FraudRiskService`, which invokes the risk engine REST API; the controller then calls `FraudPolicyService` to evaluate the returned `RiskScore` against configured `PolicyConfig`, receives the decision and forwards it to `FraudAlertService` to create a `FraudAlert`, and finally triggers `FraudAuditService` to log an `AuditRecord`, with the view updating in real time to show risk band, decision, and alert status.
+# d. Data Flow
+User or upstream system submits a transaction event, the fraudIngestion.html view (or API-driven trigger) binds to FraudIngestionController, which forwards normalized transaction data to FraudIngestionService; FraudIngestionService calls FraudRiskService to compute the risk score, then PolicyDecisionService evaluates policies and thresholds via REST APIs, after which AlertCreationService persists any required alerts and AuditLogService records audit events; controllers update the scope/model and UI to reflect risk decisions and generated alerts.
 
 # e. Primary Sequence Diagram
-
 ```mermaid
 sequenceDiagram
-  participant User
-  participant View as TransactionView
-  participant Controller as FraudEventsController
-  participant Service as FraudRiskService
-  participant Policy as FraudPolicyService
-  participant Alert as FraudAlertService
-  participant API as FraudEngineAPI
+    participant User
+    participant View as fraudIngestion.html
+    participant Controller as FraudIngestionController
+    participant Service as FraudIngestionService
+    participant RiskAPI as FraudRiskAPI
 
-  User->>View: Select transaction for risk evaluation
-  View->>Controller: ng-click evaluateTransaction(event)
-  Controller->>Service: getRiskScore(transactionId)
-  Service->>API: GET /fraud/risk?transactionId
-  API-->>Service: RiskScore JSON
-  Service-->>Controller: RiskScore
-  Controller->>Policy: evaluatePolicy(RiskScore)
-  Policy-->>Controller: Decision (riskBand, action)
-  Controller->>Alert: createAlert(TransactionEvent, RiskScore, Decision)
-  Alert-->>Controller: FraudAlert
-  Controller-->>View: Update UI with risk band and alert status
+    User->>View: Submit transaction event
+    View->>Controller: ng-submit(transaction)
+    Controller->>Service: evaluateTransaction(transaction)
+    Service->>RiskAPI: POST /risk/score
+    RiskAPI-->>Service: riskScore + riskBand
+    Service->>Controller: decision + alertInfo
+    Controller->>View: Update UI with risk and alert status
 ```
 
-# f. Implementation Notes (brief)
-- Use `app.fraud` module with `ui-router` states for each fraud screen (events, risk, policy, alerts, audit).
-- Define services using ES6 `class` syntax wrapped in AngularJS service registration with `$inject` for dependencies.
-- Centralize all fraud-related API endpoints in `FraudRiskService`, `FraudPolicyService`, `FraudAlertService`, and `FraudAuditService` using `$http`.
-- Use promises with `.then()` and `.catch()` to handle async responses and update controllers.
-- Configure `fraudHttpInterceptor` to inject auth tokens and handle error logging for fraud APIs.
+# f. Implementation Notes
+- Use app.fraudEngine module with ui-router state for ingestion and alert screens.
+- Apply `$inject` arrays for controllers/services and use ES6 `const`/`let` with transpilation.
+- Centralize REST calls in FraudIngestionService, FraudRiskService, PolicyDecisionService, and AlertCreationService using `$http` promises.
+- Use AuditLogService as a shared singleton for audit events across fraud engine components.
+- Handle asynchronous flows with `$q` or native promises, avoiding nested callbacks.
 
-# g. Error Handling (ONE line)
-Client-side errors are handled via `$http` interceptor for API failures and controller-level `.catch()` blocks that surface concise notifications to the user.
+# g. Error Handling
+Use centralized `$http` interceptor for API errors with user-friendly notifications on the UI.
 
-# h. Security Notes (ONE line)
-Requires token-based authentication with least-privilege access to fraud APIs and secure handling of transaction data.
+# h. Security Notes
+Standard input validation and secure API calls assumed.

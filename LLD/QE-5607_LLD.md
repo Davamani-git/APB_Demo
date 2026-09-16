@@ -1,53 +1,56 @@
-# a. Architecture Mapping (brief)
-- Unauthorized transaction report screen → `UnauthorizedReportController` + `unauthorized-report.html` view.
-- Protection workflow status dashboard → `ProtectionWorkflowController` + `protection-workflow.html`.
-- Fraud case detail and tracking screen → `FraudCaseController` + `fraud-case.html`.
-- Card block/replacement screen → `CardProtectionController` + `card-protection.html`.
-- Shared protection services → `ProtectionWorkflowService`, `CardManagementService`, `FraudCaseService`, `AuditTrailService`.
-- Shared security state → `ProtectionStateFactory`.
-- Cross-cutting auth/logging → `$http` interceptor `securityHttpInterceptor`.
+# a. Architecture Mapping
+- Customer Unauthorized Response flow → app.securityResponse module, UnauthorizedResponseController + unauthorizedResponse.html
+- Authentication Service integration → AuthService (shared) used by UnauthorizedResponseController
+- Protection Workflow Engine → ProtectionWorkflowService coordinating downstream calls
+- Card Management Service → CardManagementService handling block and replacement requests
+- Fraud Case Management → FraudCaseService handling case creation and tracking
+- Audit Trail → SecurityAuditService logging security events
 
-Recommended folder structure:
-- `app/security/` (module, controllers, services, routes)
-- `app/security/views/` (HTML templates)
-- `app/shared/services/` (shared auth and audit services)
-- `app/shared/interceptors/` (HTTP interceptors)
+Recommended folders:
+- app/securityResponse/securityResponse.module.js
+- app/securityResponse/unauthorizedResponse.controller.js
+- app/securityResponse/protectionWorkflow.service.js
+- app/securityResponse/cardManagement.service.js
+- app/securityResponse/fraudCase.service.js
+- app/securityResponse/views/unauthorizedResponse.html
+- app/shared/services/auth.service.js
+- app/shared/services/securityAudit.service.js
 
 # b. Component Specifications
 
-| Name | Artifact Type | Responsibility | Key Dependencies |
-|---|---|---|---|
-| `app.security` | Module | Groups security response workflows and configs | `ui.router`, shared modules |
-| `UnauthorizedReportController` | Controller | Captures customer reports of unauthorized transactions | `ProtectionWorkflowService`, `ProtectionStateFactory` |
-| `ProtectionWorkflowController` | Controller | Shows end-to-end protection workflow status | `ProtectionWorkflowService` |
-| `FraudCaseController` | Controller | Displays fraud case details and investigation status | `FraudCaseService`, `AuditTrailService` |
-| `CardProtectionController` | Controller | Manages card block and replacement actions | `CardManagementService`, `ProtectionWorkflowService` |
-| `ProtectionWorkflowService` | Service | Orchestrates protection workflows and status updates | `$http`, `ProtectionStateFactory` |
-| `CardManagementService` | Service | Calls card-management APIs to block and replace cards | `$http` |
-| `FraudCaseService` | Service | Integrates with fraud case-management APIs | `$http` |
-| `AuditTrailService` | Service | Fetches and records audit trail events | `$http` |
-| `ProtectionStateFactory` | Factory | Maintains shared protection state and workflow context | none |
-| `securityHttpInterceptor` | Interceptor | Applies auth headers and logs security API errors | `$q`, `$injector` |
+| Name                          | Artifact Type | Responsibility                                                             | Dependencies                      |
+|-------------------------------|--------------|----------------------------------------------------------------------------|-----------------------------------|
+| app.securityResponse          | Module       | Group unauthorized response and protection workflow components            | ui.router, app.shared             |
+| UnauthorizedResponseController| Controller   | Drive UI for reporting unauthorized transactions and tracking progress    | ProtectionWorkflowService, AuthService, $state |
+| ProtectionWorkflowService     | Service      | Orchestrate card blocking, account protection, case creation, and disputes| $http, CardManagementService, FraudCaseService, SecurityAuditService |
+| CardManagementService         | Service      | Call card-management APIs for blocking and replacement                    | $http, SecurityAuditService       |
+| FraudCaseService              | Service      | Integrate with fraud case-management system for case lifecycle operations | $http, SecurityAuditService       |
+| AuthService                   | Service      | Handle step-up authentication checks for sensitive actions                | $http                             |
+| SecurityAuditService          | Service      | Record protection workflow and security events into audit infrastructure  | $http                             |
 
-# c. Data Model (brief)
-
+# c. Data Model
 ```js
 UnauthorizedReport = {
   reportId: String,
   customerId: String,
   transactionId: String,
-  reportedAt: String,
-  channel: String,
-  description: String
+  reason: String,
+  reportedAt: String
 };
 
-ProtectionWorkflow = {
-  workflowId: String,
-  customerId: String,
+ProtectionAction = {
+  actionId: String,
+  reportId: String,
+  type: String,
   status: String,
-  startedAt: String,
-  updatedAt: String,
-  steps: Array<String>
+  executedAt: String
+};
+
+CardBlockRequest = {
+  requestId: String,
+  cardId: String,
+  reason: String,
+  requestedAt: String
 };
 
 FraudCase = {
@@ -55,69 +58,49 @@ FraudCase = {
   customerId: String,
   transactionId: String,
   status: String,
-  investigator: String,
-  openedAt: String,
-  updatedAt: String
-};
-
-CardProtection = {
-  cardId: String,
-  blockStatus: String,
-  replacementRequested: Boolean,
-  replacementCardId: String,
-  updatedAt: String
-};
-
-SecurityAuditRecord = {
-  id: String,
-  entityType: String,
-  entityId: String,
-  eventType: String,
   createdAt: String,
-  createdBy: String,
-  details: Object
+  investigatorId: String
+};
+
+SecurityAuditEvent = {
+  eventId: String,
+  eventType: String,
+  entityId: String,
+  createdAt: String,
+  createdBy: String
 };
 ```
 
-# d. Data Flow (one paragraph)
-When a customer reports an unauthorized transaction from the report screen, `UnauthorizedReportController` posts an `UnauthorizedReport` via `ProtectionWorkflowService` to the protection workflow API, which returns a `ProtectionWorkflow` identifier; the controller then triggers `CardManagementService` to initiate `CardProtection` actions as needed, and `FraudCaseService` to create a `FraudCase`, with `ProtectionWorkflowController` and `FraudCaseController` polling or subscribing via services to update views as workflow and case statuses change.
+# d. Data Flow
+Customer opens unauthorizedResponse.html to report an unauthorized transaction, UnauthorizedResponseController first uses AuthService to ensure step-up authentication, then invokes ProtectionWorkflowService with the report payload; ProtectionWorkflowService calls CardManagementService and FraudCaseService via REST APIs to block cards, protect accounts, and create fraud cases, while SecurityAuditService records each action, and the controller updates the UI as workflow steps complete or fail.
 
 # e. Primary Sequence Diagram
-
 ```mermaid
 sequenceDiagram
-  participant User
-  participant View as UnauthorizedReportView
-  participant Controller as UnauthorizedReportController
-  participant Service as ProtectionWorkflowService
-  participant Card as CardManagementService
-  participant Case as FraudCaseService
-  participant API as ProtectionAPI
+    participant User
+    participant View as unauthorizedResponse.html
+    participant Controller as UnauthorizedResponseController
+    participant Service as ProtectionWorkflowService
+    participant API as ProtectionAPI
 
-  User->>View: Submit unauthorized transaction report
-  View->>Controller: ng-submit submitReport(formData)
-  Controller->>Service: createWorkflow(UnauthorizedReport)
-  Service->>API: POST /security/workflows
-  API-->>Service: ProtectionWorkflow JSON
-  Service-->>Controller: ProtectionWorkflow
-  Controller->>Card: blockCard(cardId)
-  Card->>API: POST /cards/{cardId}/block
-  API-->>Card: BlockStatus
-  Controller->>Case: createCase(FraudCase)
-  Case->>API: POST /fraud/cases
-  API-->>Case: CaseDetails
-  Controller-->>View: Update UI with workflow, card, and case status
+    User->>View: Report unauthorized transaction
+    View->>Controller: submit(report)
+    Controller->>Service: startWorkflow(report)
+    Service->>API: POST /protection/workflow
+    API-->>Service: workflowId + actions
+    Service->>Controller: workflow status
+    Controller->>View: Show protection actions and status
 ```
 
-# f. Implementation Notes (brief)
-- Implement `app.security` module with `ui-router` states for report, workflow, case, and card protection views.
-- Use ES6 classes for services with `$inject` metadata to keep DI minification-safe.
-- Centralize calls to protection, card-management, and case-management APIs in `ProtectionWorkflowService`, `CardManagementService`, and `FraudCaseService`.
-- Use promises to chain workflow creation, card blocking, and case creation, updating controllers when results resolve.
-- Configure `securityHttpInterceptor` to enforce auth headers and log security-related API errors.
+# f. Implementation Notes
+- Implement app.securityResponse module with ui-router state for unauthorized response screen.
+- Use `$inject` and ES6 syntax for all controllers and services with transpilation support.
+- Centralize workflow orchestration in ProtectionWorkflowService, keeping controllers thin.
+- Perform step-up auth checks via AuthService before invoking protection workflows.
+- Log key security events via SecurityAuditService for audit and compliance.
 
-# g. Error Handling (ONE line)
-Client-side error handling uses `$http` interceptors and controller-level `.catch()` to show concise error messages for protection, card, and case operations.
+# g. Error Handling
+Use `$http` interceptor plus controller-level fallbacks to display concise error banners.
 
-# h. Security Notes (ONE line)
-Requires strong step-up authentication, least-privilege API access, and secure handling of security and fraud case data.
+# h. Security Notes
+Requires strong authentication with step-up verification and least-privilege access to protection APIs.

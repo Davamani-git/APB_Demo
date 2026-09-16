@@ -1,112 +1,101 @@
-# a. Architecture Mapping (brief)
-- Fraud Alert list and detail screens → `FraudNotificationController` + `fraud-notification.html` view.
-- Notification preference settings page → `NotificationPreferenceController` + `notification-preference.html`.
-- Alert grouping/prioritization view → `AlertInboxController` + `alert-inbox.html`.
-- Customer response capture screen → `FraudResponseController` + `fraud-response.html`.
-- Shared notification services → `NotificationRouterService`, `NotificationProviderService`, `CustomerResponseService`, `AlertStateService`.
-- Shared preference state → `NotificationPreferenceFactory`.
-- Cross-cutting auth/logging → `$http` interceptor `notificationHttpInterceptor`.
+# a. Architecture Mapping
+- Notification Router and channels (push/SMS/email) → app.fraudNotification module, NotificationController + notification.html, NotificationService
+- Alert Service integration → AlertService (shared service) consumed by NotificationController
+- Customer Response Service → CustomerResponseController + CustomerResponseService + customerResponse.html
+- Alert State Manager → AlertStateService managing lifecycle transitions
+- Analytics tracking → NotificationAnalyticsService in shared services
 
-Recommended folder structure:
-- `app/notifications/` (module, controllers, services, routes)
-- `app/notifications/views/` (HTML templates)
-- `app/shared/services/` (customer and analytics services)
-- `app/shared/interceptors/` (HTTP interceptors)
+Recommended folders:
+- app/fraudNotification/fraudNotification.module.js
+- app/fraudNotification/notification.controller.js
+- app/fraudNotification/notification.service.js
+- app/fraudNotification/customerResponse.controller.js
+- app/fraudNotification/customerResponse.service.js
+- app/fraudNotification/alertState.service.js
+- app/fraudNotification/views/notification.html
+- app/fraudNotification/views/customerResponse.html
+- app/shared/services/alert.service.js
+- app/shared/services/notificationAnalytics.service.js
 
 # b. Component Specifications
 
-| Name | Artifact Type | Responsibility | Key Dependencies |
-|---|---|---|---|
-| `app.notifications` | Module | Groups notification and alert response components | `ui.router`, shared modules |
-| `FraudNotificationController` | Controller | Displays list of fraud alerts and details with masked card data | `AlertStateService`, `NotificationRouterService` |
-| `NotificationPreferenceController` | Controller | Manages customer notification channel preferences | `NotificationPreferenceFactory`, `NotificationRouterService` |
-| `AlertInboxController` | Controller | Provides grouped/prioritized alert inbox view | `AlertStateService` |
-| `FraudResponseController` | Controller | Captures confirm/deny responses for alerts | `CustomerResponseService`, `AlertStateService` |
-| `NotificationRouterService` | Service | Chooses delivery channels based on preferences and security flags | `$http`, `NotificationPreferenceFactory` |
-| `NotificationProviderService` | Service | Wraps push/SMS/email provider REST APIs | `$http` |
-| `CustomerResponseService` | Service | Sends customer responses to backend and retrieves statuses | `$http` |
-| `AlertStateService` | Service | Maintains alert lifecycle state and unread counts | `$http`, `NotificationPreferenceFactory` |
-| `NotificationPreferenceFactory` | Factory | Caches customer preferences and overrides | none |
-| `notificationHttpInterceptor` | Interceptor | Adds auth headers and logs notification API errors | `$q`, `$injector` |
+| Name                         | Artifact Type | Responsibility                                                            | Dependencies                                |
+|------------------------------|--------------|---------------------------------------------------------------------------|---------------------------------------------|
+| app.fraudNotification        | Module       | Group fraud notification and response components                         | ui.router, app.shared                       |
+| NotificationController       | Controller   | Manage alert list and trigger multi-channel notification sending         | NotificationService, AlertService, $state   |
+| NotificationService          | Service      | Route alerts to push/SMS/email providers via REST APIs                   | $http, NotificationAnalyticsService         |
+| CustomerResponseController   | Controller   | Present alert details and capture customer confirm/report actions        | CustomerResponseService, AlertStateService  |
+| CustomerResponseService      | Service      | Submit customer responses to backend and fetch alert context             | $http, AlertService                         |
+| AlertStateService            | Service      | Track and update alert lifecycle states                                  | $http                                       |
+| AlertService                 | Service      | Provide canonical alert data retrieval shared across modules             | $http                                       |
+| NotificationAnalyticsService | Service      | Send notification and response events to analytics backend               | $http                                       |
 
-# c. Data Model (brief)
-
+# c. Data Model
 ```js
-FraudAlertSummary = {
+Alert = {
   alertId: String,
   transactionId: String,
-  merchant: String,
-  amount: Number,
-  currency: String,
-  time: String,
-  maskedCard: String,
+  customerId: String,
   channel: String,
   status: String,
-  priority: String
+  createdAt: String,
+  deliveredAt: String,
+  resolvedAt: String
 };
 
 NotificationPreference = {
   customerId: String,
-  allowPush: Boolean,
-  allowSms: Boolean,
-  allowEmail: Boolean,
-  fallbackChannel: String,
-  lastUpdatedAt: String,
-  securityOverride: Boolean
+  preferredChannels: Array<String>,
+  overridesEnabled: Boolean
 };
 
 CustomerResponse = {
+  responseId: String,
   alertId: String,
   customerId: String,
-  responseType: String,
+  action: String,
   respondedAt: String,
-  deviceInfo: String
+  channel: String
 };
 
 AlertState = {
   alertId: String,
-  status: String,
-  createdAt: String,
+  state: String,
   updatedAt: String,
-  unread: Boolean,
-  groupId: String
+  updatedBy: String
 };
 ```
 
-# d. Data Flow (one paragraph)
-User opens the fraud alerts inbox view, the `AlertInboxController` loads `FraudAlertSummary` items via `AlertStateService`, which calls backend REST APIs; when the user selects an alert, `FraudNotificationController` fetches full details and masks card data in the view, and if the user confirms or denies the transaction, `FraudResponseController` sends a `CustomerResponse` via `CustomerResponseService` to the response API, which updates `AlertStateService` and triggers the UI to refresh alert status and unread counts.
+# d. Data Flow
+An alert created upstream is loaded into notification.html via NotificationController, which calls NotificationService to resolve appropriate channels and send notifications through REST APIs; customer receives the notification and opens customerResponse.html, where CustomerResponseController uses CustomerResponseService to load alert details and submit confirmation or report actions, AlertStateService updates alert lifecycle state via backend APIs, and NotificationAnalyticsService records delivery and response events, updating the UI with the current status.
 
 # e. Primary Sequence Diagram
-
 ```mermaid
 sequenceDiagram
-  participant User
-  participant View as AlertInboxView
-  participant Controller as FraudResponseController
-  participant Service as CustomerResponseService
-  participant State as AlertStateService
-  participant API as AlertResponseAPI
+    participant User
+    participant View as notification.html
+    participant Controller as NotificationController
+    participant Service as NotificationService
+    participant API as NotificationAPI
 
-  User->>View: Click "This was me" or "Not me" on alert
-  View->>Controller: ng-click submitResponse(alertId, responseType)
-  Controller->>Service: sendResponse(CustomerResponse)
-  Service->>API: POST /alerts/{alertId}/response
-  API-->>Service: ResponseStatus JSON
-  Service-->>Controller: ResponseStatus
-  Controller->>State: updateAlertState(alertId, status)
-  State-->>View: Updated AlertState
-  View-->>User: Show updated status and unread count
+    User->>View: View new fraud alert
+    View->>Controller: init(alertId)
+    Controller->>Service: sendNotifications(alert)
+    Service->>API: POST /notifications
+    API-->>Service: 202 Accepted + deliveryIds
+    Service->>Controller: delivery status
+    Controller->>View: Update UI with channel statuses
 ```
 
-# f. Implementation Notes (brief)
-- Define `app.notifications` module with `ui-router` states for inbox, detail, preferences, and response screens.
-- Implement services using ES6 classes registered as AngularJS services with `$inject` arrays for DI.
-- Route all notification and response-related HTTP calls through `NotificationRouterService`, `NotificationProviderService`, and `CustomerResponseService` using `$http`.
-- Use promises to chain alert loading and response submission, updating `AlertStateService` and controllers upon resolve.
-- Configure `notificationHttpInterceptor` to inject auth tokens, handle rate-limit responses, and log failures.
+# f. Implementation Notes
+- Use app.fraudNotification module with ui-router states for notification and response views.
+- Apply `$inject` for all controllers/services and structure REST calls with `$http` promises.
+- Encapsulate multi-channel routing logic inside NotificationService, not in controllers.
+- Use shared AlertService for canonical alert retrieval across notification and response flows.
+- Capture analytics via NotificationAnalyticsService using non-blocking calls.
 
-# g. Error Handling (ONE line)
-Errors are managed via `$http` interceptor for notification APIs and controller-level `.catch()` paths that surface concise error banners in the views.
+# g. Error Handling
+Use `$http` interceptor to handle notification API errors and surface concise messages to users.
 
-# h. Security Notes (ONE line)
-Requires strong authentication for response actions with encrypted transport, masked card details, and secure notification links.
+# h. Security Notes
+Requires token-based auth for alert and response APIs with no full card numbers shown in the UI.
