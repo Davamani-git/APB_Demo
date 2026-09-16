@@ -1,18 +1,31 @@
 #### 1. High-Level Design
-- Summary: This epic focuses on enabling users to add multiple credit cards to their profile and view high-level details for all of them in a single, centralized interface.
-- Component Flow: 
+- Summary: Allow users to add and view multiple credit cards in a single interface, providing high-level card details and card-wise spend analysis.
+- Component Flow:
+
 ```mermaid
 flowchart TD
-    A["User Interface"]
-    B["Card Management Service"]
-    C["User Profile Database"]
-    D["Spend Data Service"]
+    U["User (Multi-Card View)"]
+    A["Card Management & Viewing UI"]
+    B["Card Registry (Mock Data)"]
+    C["Card Spend Aggregator"]
+    D["Responsive Layout Engine"]
+
+    U --> A
     A --> B
-    B --> C
+    A --> C
+    C --> B
     A --> D
 ```
-- Integration Points: Not specified in epic.
-- Key Assumptions: Assumes users will manually input their credit card information. Assumes the system will store a non-sensitive representation of the card (e.g., last 4 digits, card type).
-- NFR Highlights: The interface must have a responsive layout.
+
+- Integration Points:
+  - Internal card registry (mock data) for storing and retrieving card definitions
+  - Card spend aggregation logic to compute card-wise spend
+- Key Assumptions:
+  - Card-level spending is derived from a shared transaction dataset linked by card identifiers.
+  - Multi-card view reuses a common responsive layout engine to ensure consistent viewing across form factors.
+- NFR Highlights: Interface must have a responsive layout; other non-functional constraints are not specified in this epic.
+
 #### 2. Validation Report
-- Requirements Coverage: The design covers the core scope of adding "Multiple Credit Cards" and enabling "Card-wise Spend Analysis" by providing a central point of management.
+- Requirements Coverage: The design supports multi-card viewing, card-wise spend analysis, and a responsive interface, consistent with the epic’s scope and noted NFR.
+
+---
