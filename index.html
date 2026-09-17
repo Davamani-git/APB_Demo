@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html ng-app="fraudAlertModule">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Credit Card Fraud Alert System</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;padding:20px;background:#f5f5f5}
+.container{max-width:1200px;margin:0 auto;background:#fff;padding:20px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
+h1{color:#333;margin-bottom:20px}
+.transaction-list{list-style:none;padding:0}
+.transaction-item{border:1px solid #ddd;padding:15px;margin-bottom:10px;border-radius:4px;display:flex;justify-content:space-between;align-items:center}
+.transaction-info{flex:1}
+.transaction-id{font-weight:bold;color:#333}
+.merchant{color:#666;margin:5px 0}
+.amount{font-size:1.2em;color:#2c3e50}
+.risk-badge{padding:5px 10px;border-radius:4px;font-size:0.9em;font-weight:bold}
+.risk-low{background:#d4edda;color:#155724}
+.risk-medium{background:#fff3cd;color:#856404}
+.risk-high{background:#f8d7da;color:#721c24}
+.risk-critical{background:#721c24;color:#fff}
+.status-badge{padding:5px 10px;border-radius:4px;font-size:0.85em;margin-left:10px}
+.status-pending{background:#ffc107;color:#000}
+.status-approved{background:#28a745;color:#fff}
+.status-declined{background:#dc3545;color:#fff}
+.status-hold{background:#fd7e14;color:#fff}
+.loading{text-align:center;padding:20px;color:#666}
+.error{background:#f8d7da;color:#721c24;padding:15px;border-radius:4px;margin-bottom:20px}
+.btn{padding:8px 16px;border:none;border-radius:4px;cursor:pointer;margin-left:5px}
+.btn-primary{background:#007bff;color:#fff}
+.btn-danger{background:#dc3545;color:#fff}
+.btn:hover{opacity:0.9}
+.transaction-detail{margin-top:20px}
+.detail-section{margin-bottom:15px}
+.detail-label{font-weight:bold;color:#555}
+.alert-actions{margin-top:15px}
+</style>
+</head>
+<body>
+<div class="container">
+<div ng-view></div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-resource.min.js"></script>
+<script src="src/app/app.module.js"></script>
+<script src="src/app/fraud-alert/fraud-alert.module.js"></script>
+<script src="src/app/services/transaction-ingestion.service.js"></script>
+<script src="src/app/services/policy-decision.service.js"></script>
+<script src="src/app/services/alert-record.service.js"></script>
+<script src="src/app/services/audit-log.service.js"></script>
+<script src="src/app/services/auth.service.js"></script>
+<script src="src/app/services/toast.service.js"></script>
+<script src="src/app/fraud-alert/factories/fraud-risk.factory.js"></script>
+<script src="src/app/fraud-alert/controllers/transaction-dashboard.controller.js"></script>
+<script src="src/app/fraud-alert/controllers/transaction-detail.controller.js"></script>
+<script src="src/app/shared/interceptors/http.interceptor.js"></script>
+</body>
+</html>

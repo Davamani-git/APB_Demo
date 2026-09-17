@@ -1,0 +1,60 @@
+<div>
+<h1>Transaction Details</h1>
+<button class="btn" ng-click="vm.goBack()">Back to Dashboard</button>
+<div ng-if="vm.loading" class="loading">Loading transaction details...</div>
+<div ng-if="!vm.loading && vm.transaction" class="transaction-detail">
+<div class="detail-section">
+<span class="detail-label">Transaction ID:</span> {{vm.transaction.transactionId}}
+</div>
+<div class="detail-section">
+<span class="detail-label">Card:</span> {{vm.transaction.cardIdentifier}}
+</div>
+<div class="detail-section">
+<span class="detail-label">Amount:</span> {{vm.transaction.amount}} {{vm.transaction.currency}}
+</div>
+<div class="detail-section">
+<span class="detail-label">Merchant:</span> {{vm.transaction.merchantName}} ({{vm.transaction.merchantCategory}})
+</div>
+<div class="detail-section">
+<span class="detail-label">Time:</span> {{vm.transaction.timestamp | date:'medium'}}
+</div>
+<div class="detail-section" ng-if="vm.transaction.location">
+<span class="detail-label">Location:</span> {{vm.transaction.location.latitude}}, {{vm.transaction.location.longitude}}
+</div>
+<div class="detail-section">
+<span class="detail-label">Status:</span> {{vm.transaction.status}}
+</div>
+<div ng-if="vm.alerts.length>0">
+<h2>Fraud Alerts</h2>
+<div ng-repeat="alert in vm.alerts">
+<div class="detail-section">
+<span class="detail-label">Alert ID:</span> {{alert.alertId}}
+</div>
+<div class="detail-section">
+<span class="detail-label">Risk Score:</span> {{alert.riskScore}}
+</div>
+<div class="detail-section">
+<span class="detail-label">Decision:</span> {{alert.decision}}
+</div>
+<div class="detail-section">
+<span class="detail-label">Reason:</span> {{alert.reason}}
+</div>
+<div class="detail-section">
+<span class="detail-label">Created:</span> {{alert.createdAt | date:'medium'}}
+</div>
+<div class="alert-actions">
+<button class="btn btn-primary" ng-click="vm.confirmTransaction()">Yes, this was me</button>
+<button class="btn btn-danger" ng-click="vm.reportTransaction()">No, I don't recognize this</button>
+</div>
+</div>
+</div>
+<div ng-if="vm.auditLogs.length>0">
+<h2>Audit Trail</h2>
+<ul>
+<li ng-repeat="log in vm.auditLogs">
+{{log.timestamp | date:'medium'}} - {{log.eventType}}
+</li>
+</ul>
+</div>
+</div>
+</div>

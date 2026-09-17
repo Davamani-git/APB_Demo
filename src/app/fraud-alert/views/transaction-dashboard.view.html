@@ -1,0 +1,27 @@
+<div>
+<h1>Credit Card Fraud Alert Dashboard</h1>
+<div ng-if="vm.loading" class="loading">Loading transactions...</div>
+<div ng-if="vm.error" class="error">{{vm.error}}</div>
+<div ng-if="!vm.loading && !vm.error">
+<ul class="transaction-list">
+<li ng-repeat="txn in vm.transactions" class="transaction-item">
+<div class="transaction-info">
+<div class="transaction-id">Transaction ID: {{txn.transactionId}}</div>
+<div class="merchant">Merchant: {{txn.merchantName}} ({{txn.merchantCategory}})</div>
+<div class="amount">Amount: {{txn.amount}} {{txn.currency}}</div>
+<div>Time: {{txn.timestamp | date:'medium'}}</div>
+<div ng-if="txn.location">Location: {{txn.location.latitude}}, {{txn.location.longitude}}</div>
+<div ng-if="txn.riskScore">
+<span class="risk-badge" ng-class="vm.getRiskClass(txn.riskScore.riskLevel)">Risk: {{txn.riskScore.riskLevel}} ({{txn.riskScore.score}})</span>
+<span class="status-badge" ng-class="vm.getStatusClass(txn.status)">{{txn.status}}</span>
+</div>
+<div ng-if="txn.decision">Decision: {{txn.decision.action}} - {{txn.decision.reason}}</div>
+<div ng-if="txn.error" class="error">{{txn.error}}</div>
+</div>
+<div>
+<button class="btn btn-primary" ng-click="vm.viewDetail(txn.transactionId)" onclick="window.location.href='#/transaction/'+this.getAttribute('data-id')" data-id="{{txn.transactionId}}">View Details</button>
+</div>
+</li>
+</ul>
+</div>
+</div>
