@@ -1,0 +1,41 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>Fraud Detection Dashboard</h2>
+    <button class="btn btn-primary" ng-click="vm.refresh()" ng-disabled="vm.loading">Refresh</button>
+    <hr>
+  </div>
+</div>
+<div class="row" ng-if="vm.loading">
+  <div class="col-md-12">
+    <p>Loading dashboard data...</p>
+  </div>
+</div>
+<div class="row" ng-if="vm.error">
+  <div class="col-md-12">
+    <div class="alert alert-danger">{{ vm.error }}</div>
+  </div>
+</div>
+<div class="row" ng-if="!vm.loading && !vm.error">
+  <div class="col-md-6">
+    <h3>Transaction Risk Summary</h3>
+    <div ng-if="vm.processedTransactions.length === 0">
+      <p>No transactions to display.</p>
+    </div>
+    <transaction-card ng-repeat="txn in vm.processedTransactions" transaction="txn"></transaction-card>
+  </div>
+  <div class="col-md-6">
+    <h3>Active Alerts</h3>
+    <div ng-if="vm.alerts.length === 0">
+      <p>No active alerts.</p>
+    </div>
+    <div ng-repeat="alert in vm.alerts" class="transaction-card" ng-class="'risk-' + alert.riskLevel.toLowerCase()">
+      <div><strong>Alert ID:</strong> {{ alert.alertId }}</div>
+      <div><strong>Transaction ID:</strong> {{ alert.transactionId }}</div>
+      <div><strong>Risk Score:</strong> {{ alert.riskScore }}</div>
+      <div><strong>Risk Level:</strong> <span class="alert-badge" ng-class="'badge-' + alert.riskLevel.toLowerCase()">{{ alert.riskLevel }}</span></div>
+      <div><strong>Decision:</strong> {{ alert.decision }}</div>
+      <div><strong>Status:</strong> {{ alert.status }}</div>
+      <div><strong>Created:</strong> {{ alert.createdAt | date:'short' }}</div>
+    </div>
+  </div>
+</div>

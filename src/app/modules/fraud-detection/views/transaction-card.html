@@ -1,0 +1,18 @@
+<div class="transaction-card" ng-class="getRiskClass()">
+  <div class="row">
+    <div class="col-md-8">
+      <div><strong>Transaction ID:</strong> {{ transaction.transactionId }}</div>
+      <div ng-if="transaction.merchantName"><strong>Merchant:</strong> {{ transaction.merchantName }}</div>
+      <div ng-if="transaction.amount"><strong>Amount:</strong> {{ transaction.amount | currency:transaction.currency }}</div>
+      <div ng-if="transaction.timestamp"><strong>Time:</strong> {{ transaction.timestamp | date:'short' }}</div>
+      <div ng-if="transaction.cardId"><strong>Card:</strong> **** {{ transaction.cardId.slice(-4) }}</div>
+    </div>
+    <div class="col-md-4 text-right">
+      <div ng-if="transaction.riskScore != null">
+        <div><strong>Risk Score:</strong> {{ transaction.riskScore }}</div>
+        <div><span class="alert-badge" ng-class="getRiskBadgeClass()">{{ formatRiskLevel() }}</span></div>
+      </div>
+      <div ng-if="transaction.decision"><strong>Decision:</strong> {{ transaction.decision }}</div>
+    </div>
+  </div>
+</div>

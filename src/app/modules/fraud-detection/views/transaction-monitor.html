@@ -1,0 +1,22 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>Real-Time Transaction Monitor</h2>
+    <button class="btn btn-default" ng-click="vm.toggleAutoRefresh()">{{ vm.autoRefresh ? 'Disable' : 'Enable' }} Auto-Refresh</button>
+    <button class="btn btn-primary" ng-click="vm.loadTransactions()" ng-disabled="vm.loading">Refresh Now</button>
+    <hr>
+  </div>
+</div>
+<div class="row" ng-if="vm.loading">
+  <div class="col-md-12">
+    <p>Loading transactions...</p>
+  </div>
+</div>
+<div class="row" ng-if="!vm.loading">
+  <div class="col-md-12">
+    <h3>Incoming Transaction Events</h3>
+    <div ng-if="vm.transactions.length === 0">
+      <p>No transactions to monitor.</p>
+    </div>
+    <transaction-card ng-repeat="txn in vm.transactions" transaction="txn"></transaction-card>
+  </div>
+</div>

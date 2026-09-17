@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html ng-app="fraudDetectionApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credit Card Fraud Alert System</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <style>
+    body { padding: 20px; background: #f5f5f5; }
+    .transaction-card { margin-bottom: 15px; padding: 15px; background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .risk-low { border-left: 4px solid #5cb85c; }
+    .risk-medium { border-left: 4px solid #f0ad4e; }
+    .risk-high { border-left: 4px solid #d9534f; }
+    .risk-confirmed { border-left: 4px solid #c9302c; }
+    .alert-badge { display: inline-block; padding: 4px 8px; border-radius: 3px; font-size: 12px; font-weight: bold; }
+    .badge-low { background: #d4edda; color: #155724; }
+    .badge-medium { background: #fff3cd; color: #856404; }
+    .badge-high { background: #f8d7da; color: #721c24; }
+    .badge-confirmed { background: #d32f2f; color: white; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div ng-view></div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/services/http-interceptor.service.js"></script>
+  <script src="src/app/services/audit.service.js"></script>
+  <script src="src/app/services/alert.service.js"></script>
+  <script src="src/app/modules/fraud-detection/factories/fraud-risk.factory.js"></script>
+  <script src="src/app/modules/fraud-detection/services/transaction-ingestion.service.js"></script>
+  <script src="src/app/modules/fraud-detection/services/decision-engine.service.js"></script>
+  <script src="src/app/modules/fraud-detection/controllers/fraud-dashboard.controller.js"></script>
+  <script src="src/app/modules/fraud-detection/controllers/transaction-monitor.controller.js"></script>
+  <script src="src/app/modules/fraud-detection/directives/transaction-card.directive.js"></script>
+  <script src="src/app/shared/filters/risk-level.filter.js"></script>
+</body>
+</html>
