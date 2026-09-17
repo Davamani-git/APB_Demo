@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html ng-app="fraudDetectionModule">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credit Card Fraud Alert System</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <style>
+    body { padding: 20px; font-family: Arial, sans-serif; }
+    .metric-card { border: 1px solid #ddd; border-radius: 4px; padding: 15px; margin: 10px 0; background: #f9f9f9; }
+    .metric-value { font-size: 2em; font-weight: bold; color: #337ab7; }
+    .alert-table { margin-top: 20px; }
+    .risk-high { color: #d9534f; font-weight: bold; }
+    .risk-medium { color: #f0ad4e; font-weight: bold; }
+    .risk-low { color: #5cb85c; font-weight: bold; }
+    .risk-confirmed { color: #c9302c; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Credit Card Fraud Alert System</h1>
+    <div ng-view></div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-resource.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/fraud-detection/models/transaction.model.js"></script>
+  <script src="src/app/fraud-detection/models/alert.model.js"></script>
+  <script src="src/app/fraud-detection/models/policy.model.js"></script>
+  <script src="src/app/services/auth.service.js"></script>
+  <script src="src/app/services/analytics.service.js"></script>
+  <script src="src/app/fraud-detection/services/transactionIngestionService.js"></script>
+  <script src="src/app/fraud-detection/services/policyDecisionService.js"></script>
+  <script src="src/app/fraud-detection/services/alertCandidateService.js"></script>
+  <script src="src/app/fraud-detection/services/configService.js"></script>
+  <script src="src/app/fraud-detection/factories/fraudRiskFactory.js"></script>
+  <script src="src/app/fraud-detection/controllers/analyticsController.js"></script>
+  <script src="src/app/fraud-detection/controllers/alertManagementController.js"></script>
+  <script src="src/app/fraud-detection/directives/fraudMetricsWidget.js"></script>
+  <script src="src/app/common/interceptors/authInterceptor.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<div class="fraud-metrics-widget">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4>Real-Time Fraud Metrics</h4>
+    </div>
+    <div class="panel-body">
+      <div ng-if="loading" class="text-center">Loading...</div>
+      <div ng-if="!loading" class="row">
+        <div class="col-xs-3 text-center">
+          <div class="metric-card">
+            <h5>Approved</h5>
+            <div class="metric-value" style="font-size: 1.5em;">{{ metrics.approve }}</div>
+          </div>
+        </div>
+        <div class="col-xs-3 text-center">
+          <div class="metric-card">
+            <h5>Alerts</h5>
+            <div class="metric-value" style="font-size: 1.5em;">{{ metrics.alert }}</div>
+          </div>
+        </div>
+        <div class="col-xs-3 text-center">
+          <div class="metric-card">
+            <h5>Holds</h5>
+            <div class="metric-value" style="font-size: 1.5em;">{{ metrics.hold }}</div>
+          </div>
+        </div>
+        <div class="col-xs-3 text-center">
+          <div class="metric-card">
+            <h5>Declined</h5>
+            <div class="metric-value" style="font-size: 1.5em;">{{ metrics.decline }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

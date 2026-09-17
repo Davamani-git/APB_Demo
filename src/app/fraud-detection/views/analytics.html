@@ -1,0 +1,61 @@
+<div class="analytics-dashboard">
+  <div class="page-header">
+    <h2>Fraud Analytics Dashboard</h2>
+    <button class="btn btn-primary" ng-click="vm.refresh()">Refresh</button>
+  </div>
+  <div ng-if="vm.loading" class="alert alert-info">Loading metrics...</div>
+  <div ng-if="vm.error" class="alert alert-danger">{{ vm.error }}</div>
+  <div ng-if="!vm.loading && !vm.error">
+    <fraud-metrics-widget refresh-interval="30000"></fraud-metrics-widget>
+    <div class="row">
+      <div class="col-md-3">
+        <div class="metric-card">
+          <h4>Approved</h4>
+          <div class="metric-value">{{ vm.metrics.approveCount || 0 }}</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="metric-card">
+          <h4>Alerts</h4>
+          <div class="metric-value">{{ vm.metrics.alertCount || 0 }}</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="metric-card">
+          <h4>Holds</h4>
+          <div class="metric-value">{{ vm.metrics.holdCount || 0 }}</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="metric-card">
+          <h4>Declined</h4>
+          <div class="metric-value">{{ vm.metrics.declineCount || 0 }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 20px;">
+      <div class="col-md-6">
+        <div class="metric-card">
+          <h4>Average Risk Score</h4>
+          <div class="metric-value">{{ vm.metrics.avgRiskScore || 0 | number:2 }}</div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="metric-card">
+          <h4>Model Accuracy</h4>
+          <div class="metric-value">{{ vm.metrics.modelAccuracy || 0 | number:2 }}%</div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 20px;">
+      <div class="col-md-12">
+        <div class="metric-card">
+          <h4>Performance Stats</h4>
+          <p><strong>Average Latency:</strong> {{ vm.performanceStats.avgLatency || 0 }} ms</p>
+          <p><strong>Throughput:</strong> {{ vm.performanceStats.throughput || 0 }} transactions/sec</p>
+          <p><strong>Error Rate:</strong> {{ vm.performanceStats.errorRate || 0 | number:2 }}%</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

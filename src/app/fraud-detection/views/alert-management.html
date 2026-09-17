@@ -1,0 +1,68 @@
+<div class="alert-management">
+  <div class="page-header">
+    <h2>Alert Management</h2>
+  </div>
+  <div class="filters" style="margin-bottom: 20px;">
+    <form class="form-inline">
+      <div class="form-group">
+        <label>Status:</label>
+        <select class="form-control" ng-model="vm.filters.status" ng-change="vm.applyFilters()">
+          <option value="">All</option>
+          <option value="pending">Pending</option>
+          <option value="reviewed">Reviewed</option>
+          <option value="resolved">Resolved</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-left: 15px;">
+        <label>Risk Band:</label>
+        <select class="form-control" ng-model="vm.filters.riskBand" ng-change="vm.applyFilters()">
+          <option value="">All</option>
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+          <option value="confirmed-fraud">Confirmed Fraud</option>
+        </select>
+      </div>
+    </form>
+  </div>
+  <div ng-if="vm.loading" class="alert alert-info">Loading alerts...</div>
+  <div ng-if="vm.error" class="alert alert-danger">{{ vm.error }}</div>
+  <div ng-if="!vm.loading && !vm.error">
+    <table class="table table-striped alert-table">
+      <thead>
+        <tr>
+          <th>Alert ID</th>
+          <th>Transaction ID</th>
+          <th>Card ID</th>
+          <th>Risk Score</th>
+          <th>Risk Band</th>
+          <th>Decision</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="alert in vm.alerts">
+          <td>{{ alert.alertId }}</td>
+          <td>{{ alert.transactionId }}</td>
+          <td>{{ alert.cardId }}</td>
+          <td>{{ alert.riskScore | number:2 }}</td>
+          <td ng-class="{'risk-low': alert.riskBand === 'low', 'risk-medium': alert.riskBand === 'medium', 'risk-high': alert.riskBand === 'high', 'risk-confirmed': alert.riskBand === 'confirmed-fraud'}">{{ alert.riskBand }}</td>
+          <td>{{ alert.decision }}</td>
+          <td>{{ alert.status }}</td>
+          <td>{{ alert.createdAt | date:'short' }}</td>
+          <td>
+            <button class="btn btn-sm btn-success" ng-click="vm.reviewAlert(alert, 'approve', 'Reviewed and approved')" ng-disabled="alert.status !== 'pending'">Approve</button>
+            <button class="btn btn-sm btn-warning" ng-click="vm.reviewAlert(alert, 'hold', 'Needs further review')" ng-disabled="alert.status !== 'pending'">Hold</button>
+            <button class="btn btn-sm btn-danger" ng-click="vm.reviewAlert(alert, 'decline', 'Confirmed fraud')" ng-disabled="alert.status !== 'pending'">Decline</button>
+            <button class="btn btn-sm btn-default" ng-click="vm.deleteAlert(alert)">Delete</button>
+          </td>
+        </tr>
+        <tr ng-if="vm.alerts.length === 0">
+          <td colspan="9" class="text-center">No alerts found</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
