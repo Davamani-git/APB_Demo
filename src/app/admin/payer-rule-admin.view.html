@@ -1,0 +1,63 @@
+<div class="payer-rule-admin-container">
+  <div class="page-header">
+    <h2>Payer Rule Set Administration</h2>
+    <button class="btn btn-success" ng-click="vm.addNewRuleSet()">Add New Rule Set</button>
+  </div>
+  <div ng-if="vm.loading" class="text-center">
+    <p>Loading rule sets...</p>
+  </div>
+  <div ng-if="!vm.loading" class="row">
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">Rule Sets</div>
+        <div class="list-group">
+          <a href="#" class="list-group-item" ng-repeat="rs in vm.ruleSets" ng-click="vm.selectRuleSet(rs)" ng-class="{'active': vm.selectedRuleSet && vm.selectedRuleSet.id === rs.id}">
+            {{rs.payerName}} <span class="badge">v{{rs.version}}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-8">
+      <div ng-if="vm.selectedRuleSet" class="panel panel-default">
+        <div class="panel-heading">
+          <h4>{{vm.selectedRuleSet.payerName}} <span ng-if="!vm.editMode" class="pull-right"><button class="btn btn-xs btn-primary" ng-click="vm.editRuleSet()">Edit</button> <button class="btn btn-xs btn-danger" ng-click="vm.deactivateRuleSet(vm.selectedRuleSet.id)">Deactivate</button></span></h4>
+        </div>
+        <div class="panel-body">
+          <form ng-if="vm.editMode">
+            <div class="form-group">
+              <label>Payer Name:</label>
+              <input type="text" class="form-control" ng-model="vm.selectedRuleSet.payerName" required>
+            </div>
+            <div class="form-group">
+              <label>Effective Date:</label>
+              <input type="date" class="form-control" ng-model="vm.selectedRuleSet.effectiveDate" required>
+            </div>
+            <div class="form-group">
+              <label>Required Documents (comma-separated):</label>
+              <textarea class="form-control" ng-model="vm.selectedRuleSet.requiredDocumentsText" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Required Fields (comma-separated):</label>
+              <textarea class="form-control" ng-model="vm.selectedRuleSet.requiredFieldsText" rows="3"></textarea>
+            </div>
+            <button type="button" class="btn btn-success" ng-click="vm.saveRuleSet()">Save</button>
+            <button type="button" class="btn btn-default" ng-click="vm.cancelEdit()">Cancel</button>
+          </form>
+          <div ng-if="!vm.editMode">
+            <p><strong>Effective Date:</strong> {{vm.selectedRuleSet.effectiveDate | date:'MM/dd/yyyy'}}</p>
+            <p><strong>Version:</strong> {{vm.selectedRuleSet.version}}</p>
+            <p><strong>Status:</strong> {{vm.selectedRuleSet.active ? 'Active' : 'Inactive'}}</p>
+            <h5>Required Documents:</h5>
+            <ul>
+              <li ng-repeat="doc in vm.selectedRuleSet.requiredDocuments">{{doc}}</li>
+            </ul>
+            <h5>Required Fields:</h5>
+            <ul>
+              <li ng-repeat="field in vm.selectedRuleSet.requiredFields">{{field}}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

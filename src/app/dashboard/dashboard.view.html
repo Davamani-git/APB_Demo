@@ -1,0 +1,66 @@
+<div class="dashboard-container">
+  <div class="page-header">
+    <h2>Enrollment Manager Dashboard</h2>
+  </div>
+  <div class="filter-panel panel panel-default">
+    <div class="panel-body">
+      <form class="form-inline">
+        <div class="form-group">
+          <label>Coordinator:</label>
+          <input type="text" class="form-control" ng-model="vm.filters.coordinator" placeholder="Filter by coordinator">
+        </div>
+        <div class="form-group">
+          <label>Payer:</label>
+          <input type="text" class="form-control" ng-model="vm.filters.payer" placeholder="Filter by payer">
+        </div>
+        <div class="form-group">
+          <label>Date Range:</label>
+          <input type="text" class="form-control" ng-model="vm.filters.dateRange" placeholder="YYYY-MM-DD to YYYY-MM-DD">
+        </div>
+        <button type="button" class="btn btn-primary" ng-click="vm.applyFilters()">Apply</button>
+      </form>
+    </div>
+  </div>
+  <div ng-if="vm.loading" class="text-center">
+    <p>Loading dashboard metrics...</p>
+  </div>
+  <div ng-if="!vm.loading" class="row">
+    <div class="col-md-3">
+      <div class="panel panel-success">
+        <div class="panel-heading">Ready to Submit</div>
+        <div class="panel-body text-center">
+          <h1>{{vm.metrics.readyCount}}</h1>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="panel panel-danger">
+        <div class="panel-heading">Incomplete</div>
+        <div class="panel-body text-center">
+          <h1>{{vm.metrics.incompleteCount}}</h1>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="panel panel-warning">
+        <div class="panel-heading">Expiring Soon</div>
+        <div class="panel-body text-center">
+          <h1>{{vm.metrics.expiringCount}}</h1>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="panel panel-info">
+        <div class="panel-heading">Total Applications</div>
+        <div class="panel-body text-center">
+          <h1>{{vm.metrics.totalCount}}</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="export-panel">
+    <h4>Export Reports</h4>
+    <button class="btn btn-default" ng-click="vm.exportReport('csv')">Export CSV</button>
+    <button class="btn btn-default" ng-click="vm.exportReport('pdf')">Export PDF</button>
+  </div>
+</div>

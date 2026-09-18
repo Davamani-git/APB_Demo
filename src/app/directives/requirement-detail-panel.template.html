@@ -1,0 +1,28 @@
+<div class="requirement-detail-panel">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Requirement</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Expiration Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="req in requirements" ng-class="getStatusClass(req.status)">
+        <td>{{req.requirementName}}</td>
+        <td>{{req.requirementType}}</td>
+        <td><readiness-status-badge status="req.status"></readiness-status-badge></td>
+        <td>{{req.expirationDate | date:'MM/dd/yyyy'}}</td>
+        <td>
+          <button class="btn btn-xs btn-primary" ng-click="selectRequirement(req)">Upload</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div ng-if="selectedRequirement" class="well">
+    <h5>Upload Document for: {{selectedRequirement.requirementName}}</h5>
+    <document-upload-widget application-id="applicationId" requirement-id="selectedRequirement.id" on-upload="onUpload()"></document-upload-widget>
+  </div>
+</div>

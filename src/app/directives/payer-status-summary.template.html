@@ -1,0 +1,16 @@
+<div class="payer-status-summary">
+  <div class="row">
+    <div class="col-md-4" ng-repeat="ps in payerStatuses">
+      <div class="panel panel-default" ng-click="selectPayer(ps)" style="cursor:pointer;">
+        <div class="panel-heading">
+          <h5>{{ps.payerName}}</h5>
+        </div>
+        <div class="panel-body text-center">
+          <readiness-status-badge status="ps.status"></readiness-status-badge>
+          <p class="text-muted" ng-if="ps.missingCount > 0">{{ps.missingCount}} missing</p>
+          <p class="text-muted" ng-if="ps.expiringCount > 0">{{ps.expiringCount}} expiring</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

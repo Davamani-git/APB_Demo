@@ -1,0 +1,35 @@
+<div class="document-upload-widget">
+  <form>
+    <div class="form-group">
+      <label>Select File:</label>
+      <input type="file" class="form-control" onchange="angular.element(this).scope().vm.onFileSelected(this.files[0])">
+    </div>
+    <div class="form-group">
+      <label>Document Type:</label>
+      <select class="form-control" ng-model="vm.metadata.documentType" required>
+        <option value="">-- Select Type --</option>
+        <option value="DEA Certificate">DEA Certificate</option>
+        <option value="Medical License">Medical License</option>
+        <option value="Malpractice Insurance">Malpractice Insurance</option>
+        <option value="Board Certification">Board Certification</option>
+        <option value="Work History">Work History</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Expiration Date:</label>
+      <input type="date" class="form-control" ng-model="vm.metadata.expirationDate" required>
+    </div>
+    <div ng-if="vm.showOcrConfirmation" class="alert alert-info">
+      <p>OCR extracted expiration date: <strong>{{vm.ocrExtractedDate}}</strong></p>
+      <button type="button" class="btn btn-xs btn-success" ng-click="vm.confirmOcrDate()">Confirm</button>
+      <button type="button" class="btn btn-xs btn-default" ng-click="vm.overrideOcrDate()">Override</button>
+    </div>
+    <div class="form-group">
+      <label>Notes (optional):</label>
+      <textarea class="form-control" ng-model="vm.metadata.notes" rows="2"></textarea>
+    </div>
+    <div ng-if="vm.errorMessage" class="alert alert-danger">{{vm.errorMessage}}</div>
+    <button type="button" class="btn btn-primary" ng-click="vm.uploadDocument()" ng-disabled="vm.uploading">{{vm.uploading ? 'Uploading...' : 'Upload Document'}}</button>
+  </form>
+</div>
