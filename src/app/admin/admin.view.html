@@ -1,0 +1,83 @@
+<div class="card">
+<h2>System Administration</h2>
+<div ng-if="vm.loading">Loading administration panel...</div>
+<div ng-if="vm.error" class="alert alert-error">{{vm.error}}</div>
+<div ng-if="vm.successMessage" class="alert alert-success">{{vm.successMessage}}</div>
+<div ng-if="!vm.loading">
+<h3>Payer Rule Set Management</h3>
+<button class="btn btn-success" ng-click="vm.openCreateRuleModal()" style="margin-bottom:20px">Create New Rule Set</button>
+<table class="table">
+<thead>
+<tr>
+<th>Payer Name</th>
+<th>Payer ID</th>
+<th>Version</th>
+<th>Effective Date</th>
+<th>Last Review</th>
+<th>Requirements</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+<tr ng-repeat="ruleSet in vm.ruleSets">
+<td>{{ruleSet.payerName}}</td>
+<td>{{ruleSet.payerId}}</td>
+<td>{{ruleSet.version}}</td>
+<td>{{ruleSet.effectiveDate}}</td>
+<td>{{ruleSet.lastReviewDate}}</td>
+<td>{{ruleSet.requirements.length}}</td>
+<td>
+<button class="btn btn-primary" style="padding:6px 12px;font-size:12px" ng-click="vm.openEditRuleModal(ruleSet)">Edit</button>
+<button class="btn btn-danger" style="padding:6px 12px;font-size:12px;margin-left:5px" ng-click="vm.deleteRuleSet(ruleSet.id)">Delete</button>
+</td>
+</tr>
+</tbody>
+</table>
+<h3 style="margin-top:40px">System Configuration</h3>
+<div class="form-group" style="max-width:400px">
+<label>Expiration Alert Threshold (days):</label>
+<input type="number" ng-model="vm.expirationThreshold" min="1" max="365">
+<button class="btn btn-primary" ng-click="vm.updateExpirationThreshold()" style="margin-top:10px">Update Threshold</button>
+</div>
+</div>
+</div>
+<div class="modal" ng-class="{active:vm.showRuleModal}">
+<div class="modal-content">
+<div class="modal-header">
+<h2>{{vm.editMode?'Edit':'Create'}} Rule Set</h2>
+<button class="close-btn" ng-click="vm.closeRuleModal()">&times;</button>
+</div>
+<div ng-if="vm.error" class="alert alert-error">{{vm.error}}</div>
+<div class="form-group">
+<label>Payer ID:</label>
+<input type="text" ng-model="vm.ruleFormData.payerId" ng-disabled="vm.editMode">
+</div>
+<div class="form-group">
+<label>Payer Name:</label>
+<input type="text" ng-model="vm.ruleFormData.payerName">
+</div>
+<div class="form-group">
+<label>Effective Date:</label>
+<input type="date" ng-model="vm.ruleFormData.effectiveDate">
+</div>
+<div class="form-group">
+<label>Requirements:</label>
+<div ng-repeat="req in vm.ruleFormData.requirements" style="display:flex;gap:10px;margin-bottom:10px;align-items:center">
+<input type="text" ng-model="req.name" placeholder="Requirement name" style="flex:1">
+<select ng-model="req.type" style="width:120px">
+<option value="document">Document</option>
+<option value="data">Data Field</option>
+</select>
+<label style="display:flex;align-items:center;margin:0">
+<input type="checkbox" ng-model="req.required" style="width:auto;margin-right:5px">Required
+</label>
+<button class="btn btn-danger" style="padding:6px 12px;font-size:12px" ng-click="vm.removeRequirement($index)">Remove</button>
+</div>
+<button class="btn btn-secondary" ng-click="vm.addRequirement()" style="margin-top:10px">Add Requirement</button>
+</div>
+<div style="margin-top:20px">
+<button class="btn btn-primary" ng-click="vm.saveRuleSet()">{{vm.editMode?'Update':'Create'}} Rule Set</button>
+<button class="btn btn-secondary" ng-click="vm.closeRuleModal()">Cancel</button>
+</div>
+</div>
+</div>

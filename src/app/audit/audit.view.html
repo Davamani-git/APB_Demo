@@ -1,0 +1,30 @@
+<div class="card">
+<h2>Audit Log</h2>
+<div class="filter-bar">
+<select ng-model="vm.filters.eventType" ng-change="vm.applyFilters()">
+<option value="">All Event Types</option>
+<option value="Application Created">Application Created</option>
+<option value="Application Updated">Application Updated</option>
+<option value="Document Uploaded">Document Uploaded</option>
+<option value="Document Deleted">Document Deleted</option>
+<option value="Status Recalculated">Status Recalculated</option>
+<option value="Rule Set Created">Rule Set Created</option>
+<option value="Rule Set Updated">Rule Set Updated</option>
+<option value="Rule Set Deleted">Rule Set Deleted</option>
+</select>
+<input type="date" ng-model="vm.filters.startDate" ng-change="vm.applyFilters()" placeholder="Start Date">
+<input type="date" ng-model="vm.filters.endDate" ng-change="vm.applyFilters()" placeholder="End Date">
+<button class="btn btn-secondary" ng-click="vm.clearFilters()">Clear Filters</button>
+<button class="btn btn-primary" ng-click="vm.exportAuditLog()">Export CSV</button>
+</div>
+<div ng-if="vm.loading">Loading audit log...</div>
+<div ng-if="vm.error" class="alert alert-error">{{vm.error}}</div>
+<div ng-if="!vm.loading" class="audit-log" style="max-height:600px">
+<div ng-repeat="entry in vm.filteredLog" class="audit-entry">
+<div><strong>{{entry.eventType}}</strong> <span ng-if="entry.applicationId">({{entry.applicationId}})</span></div>
+<div class="timestamp">{{entry.timestamp}} by {{entry.userName}}</div>
+<div>{{entry.details}}</div>
+</div>
+<div ng-if="vm.filteredLog.length===0">No audit entries found matching the selected filters.</div>
+</div>
+</div>

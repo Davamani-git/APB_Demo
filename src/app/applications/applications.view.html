@@ -1,0 +1,56 @@
+<div class="card">
+<h2>Provider Enrollment Applications</h2>
+<div class="filter-bar">
+<select ng-model="vm.filters.status" ng-change="vm.applyFilters()">
+<option value="">All Statuses</option>
+<option value="Ready to Submit">Ready to Submit</option>
+<option value="Incomplete">Incomplete</option>
+<option value="Expiring Soon">Expiring Soon</option>
+</select>
+<select ng-model="vm.filters.payer" ng-change="vm.applyFilters()">
+<option value="">All Payers</option>
+<option value="BCBS">BCBS</option>
+<option value="Medicare">Medicare</option>
+<option value="Aetna">Aetna</option>
+<option value="UnitedHealthcare">UnitedHealthcare</option>
+<option value="Cigna">Cigna</option>
+</select>
+<select ng-model="vm.filters.applicationType" ng-change="vm.applyFilters()">
+<option value="">All Types</option>
+<option value="New Enrollment">New Enrollment</option>
+<option value="Re-credentialing">Re-credentialing</option>
+</select>
+<button class="btn btn-secondary" ng-click="vm.clearFilters()">Clear Filters</button>
+<button class="btn btn-primary" ng-click="vm.exportCSV()">Export CSV</button>
+<button class="btn btn-primary" ng-click="vm.exportPDF()">Export PDF</button>
+</div>
+<div ng-if="vm.loading">Loading applications...</div>
+<div ng-if="vm.error" class="alert alert-error">{{vm.error}}</div>
+<table class="table" ng-if="!vm.loading&&vm.filteredApplications.length>0">
+<thead>
+<tr>
+<th ng-click="vm.sortApplications('providerName')" style="cursor:pointer">Provider Name</th>
+<th ng-click="vm.sortApplications('npi')" style="cursor:pointer">NPI</th>
+<th ng-click="vm.sortApplications('applicationType')" style="cursor:pointer">Type</th>
+<th>Target Payers</th>
+<th ng-click="vm.sortApplications('overallStatus')" style="cursor:pointer">Status</th>
+<th ng-click="vm.sortApplications('startDate')" style="cursor:pointer">Start Date</th>
+<th>Coordinator</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+<tr ng-repeat="app in vm.filteredApplications">
+<td>{{app.providerName}}</td>
+<td>{{app.npi}}</td>
+<td>{{app.applicationType}}</td>
+<td>{{app.targetPayers.join(', ')}}</td>
+<td><span class="status-badge" ng-class="vm.getStatusClass(app.overallStatus)">{{app.overallStatus}}</span></td>
+<td>{{app.startDate}}</td>
+<td>{{app.assignedCoordinator}}</td>
+<td><button class="btn btn-primary" ng-click="vm.viewApplication(app.id)">View Details</button></td>
+</tr>
+</tbody>
+</table>
+<div ng-if="!vm.loading&&vm.filteredApplications.length===0">No applications found matching the selected filters.</div>
+</div>

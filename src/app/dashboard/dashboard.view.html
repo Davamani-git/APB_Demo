@@ -1,0 +1,77 @@
+<div class="card">
+<h2>Enrollment Manager Dashboard</h2>
+<button class="btn btn-primary" ng-click="vm.refreshDashboard()" style="margin-bottom:20px">Refresh Dashboard</button>
+<div ng-if="vm.loading">Loading dashboard...</div>
+<div ng-if="vm.error" class="alert alert-error">{{vm.error}}</div>
+<div ng-if="!vm.loading">
+<div class="dashboard-stats">
+<div class="stat-card">
+<h3>{{vm.stats.total}}</h3>
+<p>Total Applications</p>
+</div>
+<div class="stat-card" style="border-left:4px solid #27ae60">
+<h3>{{vm.stats.readyToSubmit}}</h3>
+<p>Ready to Submit</p>
+</div>
+<div class="stat-card" style="border-left:4px solid #e74c3c">
+<h3>{{vm.stats.incomplete}}</h3>
+<p>Incomplete</p>
+</div>
+<div class="stat-card" style="border-left:4px solid #f39c12">
+<h3>{{vm.stats.expiringSoon}}</h3>
+<p>Expiring Soon</p>
+</div>
+</div>
+<div class="filter-bar">
+<select ng-model="vm.filters.status" ng-change="vm.applyFilters()">
+<option value="">All Statuses</option>
+<option value="Ready to Submit">Ready to Submit</option>
+<option value="Incomplete">Incomplete</option>
+<option value="Expiring Soon">Expiring Soon</option>
+</select>
+<select ng-model="vm.filters.payer" ng-change="vm.applyFilters()">
+<option value="">All Payers</option>
+<option value="BCBS">BCBS</option>
+<option value="Medicare">Medicare</option>
+<option value="Aetna">Aetna</option>
+<option value="UnitedHealthcare">UnitedHealthcare</option>
+<option value="Cigna">Cigna</option>
+</select>
+</div>
+<h3 style="margin-top:30px">Expiring Documents Alert</h3>
+<div ng-if="vm.expiringDocuments.length>0" class="alert alert-warning">
+<strong>{{vm.expiringDocuments.length}} document(s) expiring soon:</strong>
+<ul style="margin:10px 0 0 20px">
+<li ng-repeat="doc in vm.expiringDocuments">
+{{doc.providerName}} - {{doc.documentType}} (expires {{doc.expirationDate}})
+</li>
+</ul>
+</div>
+<div ng-if="vm.expiringDocuments.length===0">
+No documents expiring within the threshold period.
+</div>
+<h3 style="margin-top:30px">Applications by Status</h3>
+<table class="table">
+<thead>
+<tr>
+<th>Provider Name</th>
+<th>Type</th>
+<th>Target Payers</th>
+<th>Status</th>
+<th>Start Date</th>
+<th>Coordinator</th>
+</tr>
+</thead>
+<tbody>
+<tr ng-repeat="app in vm.applications">
+<td>{{app.providerName}}</td>
+<td>{{app.applicationType}}</td>
+<td>{{app.targetPayers.join(', ')}}</td>
+<td><span class="status-badge" ng-class="{'status-ready':app.overallStatus==='Ready to Submit','status-incomplete':app.overallStatus==='Incomplete','status-expiring':app.overallStatus==='Expiring Soon'}">{{app.overallStatus}}</span></td>
+<td>{{app.startDate}}</td>
+<td>{{app.assignedCoordinator}}</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>

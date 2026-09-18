@@ -1,0 +1,112 @@
+<div ng-if="vm.loading">Loading application details...</div>
+<div ng-if="vm.error" class="alert alert-error">{{vm.error}}</div>
+<div ng-if="!vm.loading&&vm.application">
+<div class="card">
+<h2>{{vm.application.providerName}} - {{vm.application.applicationType}}</h2>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-top:20px">
+<div><strong>NPI:</strong> {{vm.application.npi}}</div>
+<div><strong>Application Type:</strong> {{vm.application.applicationType}}</div>
+<div><strong>Start Date:</strong> {{vm.application.startDate}}</div>
+<div><strong>Coordinator:</strong> {{vm.application.assignedCoordinator}}</div>
+<div><strong>Overall Status:</strong> <span class="status-badge" ng-class="vm.getStatusClass(vm.application.overallStatus)">{{vm.application.overallStatus}}</span></div>
+</div>
+<div style="margin-top:20px">
+<button class="btn btn-secondary" ng-click="vm.openAuditModal()">View Audit Log</button>
+<button class="btn btn-secondary" onclick="history.back()">Back to List</button>
+</div>
+</div>
+<div class="card">
+<h3>Per-Payer Readiness Status</h3>
+<div ng-repeat="payerStatus in vm.application.payerStatuses" class="payer-section">
+<div class="payer-header">
+<h4>{{payerStatus.payerName}}</h4>
+<span class="status-badge" ng-class="vm.getStatusClass(payerStatus.status)">{{payerStatus.status}}</span>
+</div>
+<ul class="requirement-list">
+<li ng-repeat="req in payerStatus.requirements">
+<div>
+<strong>{{req.name}}</strong> ({{req.type}})
+<span class="status-badge" ng-class="vm.getRequirementStatusClass(req.status)" style="margin-left:10px;font-size:11px">{{req.status}}</span>
+<div ng-if="req.expirationDate" style="font-size:12px;color:#7f8c8d;margin-top:5px">Expires: {{req.expirationDate}}</div>
+</div>
+<div>
+<button class="btn btn-primary" style="padding:6px 12px;font-size:12px" ng-click="vm.openUploadModal(req,payerStatus)" ng-if="req.type==='document'">{{req.documentId?'Replace':'Upload'}}</button>
+<button class="btn btn-danger" style="padding:6px 12px;font-size:12px;margin-left:5px" ng-click="vm.deleteDocument(req.documentId,req)" ng-if="req.documentId">Delete</button>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="card">
+<h3>Uploaded Documents</h3>
+<table class="table" ng-if="vm.application.documents.length>0">
+<thead>
+<tr>
+<th>Document Name</th>
+<th>Type</th>
+<th>Upload Date</th>
+<th>Uploaded By</th>
+<th>Expiration Date</th>
+</tr>
+</thead>
+<tbody>
+<tr ng-repeat="doc in vm.application.documents">
+<td>{{doc.name}}</td>
+<td>{{doc.type}}</td>
+<td>{{doc.uploadDate}}</td>
+<td>{{doc.uploadedBy}}</td>
+<td>{{doc.expirationDate||'N/A'}}</td>
+</tr>
+</tbody>
+</table>
+<div ng-if="vm.application.documents.length===0">No documents uploaded yet.</div>
+</div>
+</div>
+<div class="modal" ng-class="{active:vm.showUploadModal}">
+<div class="modal-content">
+<div class="modal-header">
+<h2>Upload Document: {{vm.uploadData.type}}</h2>
+<button class="close-btn" ng-click="vm.closeUploadModal()">&times;</button>
+</div>
+<div ng-if="vm.error" class="alert alert-error">{{vm.error}}</div>
+<div class="form-group">
+<label>Document Name:</label>
+<input type="text" ng-model="vm.uploadData.name" placeholder="e.g., Medical_License_2024.pdf">
+</div>
+<div class="form-group">
+<label>Document Type:</label>
+<input type="text" ng-model="vm.uploadData.type" readonly>
+</div>
+<div class="form-group">
+<label>Expiration Date (if applicable):</label>
+<input type="date" ng-model="vm.uploadData.expirationDate">
+</div>
+<div class="form-group">
+<label>File:</label>
+<input type="file" ng-model="vm.uploadData.file">
+</div>
+<div>
+<button class="btn btn-primary" ng-click="vm.uploadDocument()" ng-disabled="vm.uploadingDocument">{{vm.uploadingDocument?'Uploading...':'Upload Document'}}</button>
+<button class="btn btn-secondary" ng-click="vm.closeUploadModal()" ng-disabled="vm.uploadingDocument">Cancel</button>
+</div>
+</div>
+</div>
+<div class="modal" ng-class="{active:vm.showAuditModal}">
+<div class="modal-content">
+<div class="modal-header">
+<h2>Audit Log</h2>
+<button class="close-btn" ng-click="vm.closeAuditModal()">&times;</button>
+</div>
+<div class="audit-log">
+<div ng-repeat="entry in vm.auditLog" class="audit-entry">
+<div><strong>{{entry.eventType}}</strong></div>
+<div class="timestamp">{{entry.timestamp}} by {{entry.userName}}</div>
+<div>{{entry.details}}</div>
+</div>
+<div ng-if="vm.auditLog.length===0">No audit entries found.</div>
+</div>
+<div style="margin-top:20px">
+<button class="btn btn-secondary" ng-click="vm.closeAuditModal()">Close</button>
+</div>
+</div>
+</div>
