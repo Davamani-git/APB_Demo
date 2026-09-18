@@ -1,0 +1,89 @@
+<div class="alert-dashboard">
+  <div class="page-header">
+    <h1>Fraud Alert Dashboard</h1>
+  </div>
+  
+  <div class="alert alert-danger" ng-if="vm.error">
+    {{vm.error}}
+  </div>
+  
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <div class="row">
+        <div class="col-md-4">
+          <input type="text" class="form-control" placeholder="Search alerts..." ng-model="vm.searchText">
+        </div>
+        <div class="col-md-3">
+          <select class="form-control" ng-model="vm.statusFilter">
+            <option value="all">All Statuses</option>
+            <option value="open">Open</option>
+            <option value="reviewed">Reviewed</option>
+            <option value="resolved">Resolved</option>
+            <option value="false_positive">False Positive</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <button class="btn btn-primary" ng-click="vm.loadAlerts()">
+            <span class="glyphicon glyphicon-refresh"></span> Refresh
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="panel-body" ng-if="vm.loading">
+      <div class="text-center">
+        <span class="glyphicon glyphicon-refresh spinning"></span> Loading alerts...
+      </div>
+    </div>
+    
+    <div class="panel-body" ng-if="!vm.loading && vm.filteredAlerts.length === 0">
+      <div class="text-center text-muted">
+        <p>No alerts found.</p>
+      </div>
+    </div>
+    
+    <div class="table-responsive" ng-if="!vm.loading && vm.filteredAlerts.length > 0">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>Alert ID</th>
+            <th>Transaction ID</th>
+            <th>Card ID</th>
+            <th>Risk Score</th>
+            <th>Risk Level</th>
+            <th>Treatment</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="alert in vm.filteredAlerts | orderBy:'createdAt':true | limitTo:vm.itemsPerPage:(vm.currentPage-1)*vm.itemsPerPage">
+            <td><a href="#!/alert/{{alert.alertId}}">{{alert.alertId}}</a></td>
+            <td>{{alert.transactionId}}</td>
+            <td>{{alert.cardId}}</td>
+            <td>{{alert.riskScore}}</td>
+            <td><risk-badge level="{{alert.riskLevel}}"></risk-badge></td>
+            <td><span class="label label-info">{{alert.treatment}}</span></td>
+            <td><span class="label label-{{alert.status === 'open' ? 'warning' : 'default'}}">{{alert.status}}</span></td>
+            <td>{{alert.createdAt | date:'short'}}</td>
+            <td>
+              <div class="btn-group btn-group-xs">
+                <button class="btn btn-success" ng-click="vm.updateStatus(alert, 'resolved')" ng-disabled="alert.status === 'resolved'">
+                  Resolve
+                </button>
+                <button class="btn btn-warning" ng-click="vm.updateStatus(alert, 'false_positive')" ng-disabled="alert.status === 'false_positive'">
+                  False Positive
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="panel-footer" ng-if="vm.filteredAlerts.length > vm.itemsPerPage">
+      <uib-pagination total-items="vm.filteredAlerts.length" ng-model="vm.currentPage" items-per-page="vm.itemsPerPage" max-size="5" boundary-links="true"></uib-pagination>
+    </div>
+  </div>
+</div>

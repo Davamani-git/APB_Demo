@@ -1,0 +1,36 @@
+<div class="alert-list-directive">
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th ng-click="sortBy('alertId')" style="cursor: pointer;">
+          Alert ID {{getSortIcon('alertId')}}
+        </th>
+        <th ng-click="sortBy('transactionId')" style="cursor: pointer;">
+          Transaction ID {{getSortIcon('transactionId')}}
+        </th>
+        <th ng-click="sortBy('riskScore')" style="cursor: pointer;">
+          Risk Score {{getSortIcon('riskScore')}}
+        </th>
+        <th ng-click="sortBy('riskLevel')" style="cursor: pointer;">
+          Risk Level {{getSortIcon('riskLevel')}}
+        </th>
+        <th ng-click="sortBy('status')" style="cursor: pointer;">
+          Status {{getSortIcon('status')}}
+        </th>
+        <th ng-click="sortBy('createdAt')" style="cursor: pointer;">
+          Created {{getSortIcon('createdAt')}}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="alert in alerts | orderBy:sortField:sortReverse">
+        <td><a href="#!/alert/{{alert.alertId}}">{{alert.alertId}}</a></td>
+        <td>{{alert.transactionId}}</td>
+        <td>{{alert.riskScore}}</td>
+        <td><span class="label label-{{getRiskClass(alert.riskLevel)}}">{{alert.riskLevel}}</span></td>
+        <td><span class="label label-{{alert.status === 'open' ? 'warning' : 'default'}}">{{alert.status}}</span></td>
+        <td>{{alert.createdAt | date:'short'}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

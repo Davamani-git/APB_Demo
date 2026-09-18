@@ -1,0 +1,111 @@
+<div class="alert-detail">
+  <div class="page-header">
+    <h1>Alert Details</h1>
+    <a href="#!/dashboard" class="btn btn-default">Back to Dashboard</a>
+  </div>
+  
+  <div class="alert alert-danger" ng-if="vm.error">
+    {{vm.error}}
+  </div>
+  
+  <div class="alert alert-success" ng-if="vm.successMessage">
+    {{vm.successMessage}}
+  </div>
+  
+  <div class="text-center" ng-if="vm.loading">
+    <span class="glyphicon glyphicon-refresh spinning"></span> Loading alert details...
+  </div>
+  
+  <div ng-if="!vm.loading && vm.alert">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Alert Information</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-6">
+            <dl class="dl-horizontal">
+              <dt>Alert ID:</dt>
+              <dd>{{vm.alert.alertId}}</dd>
+              <dt>Transaction ID:</dt>
+              <dd>{{vm.alert.transactionId}}</dd>
+              <dt>Card ID:</dt>
+              <dd>{{vm.alert.cardId}}</dd>
+              <dt>Risk Score:</dt>
+              <dd>{{vm.alert.riskScore}}</dd>
+              <dt>Risk Level:</dt>
+              <dd><risk-badge level="{{vm.alert.riskLevel}}"></risk-badge></dd>
+            </dl>
+          </div>
+          <div class="col-md-6">
+            <dl class="dl-horizontal">
+              <dt>Treatment:</dt>
+              <dd><span class="label label-info">{{vm.alert.treatment}}</span></dd>
+              <dt>Status:</dt>
+              <dd><span class="label label-{{vm.alert.status === 'open' ? 'warning' : 'default'}}">{{vm.alert.status}}</span></dd>
+              <dt>Created:</dt>
+              <dd>{{vm.formatDate(vm.alert.createdAt)}}</dd>
+              <dt>Updated:</dt>
+              <dd>{{vm.formatDate(vm.alert.updatedAt)}}</dd>
+              <dt>Reviewed By:</dt>
+              <dd>{{vm.alert.reviewedBy || 'Not reviewed'}}</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Update Alert</h3>
+      </div>
+      <div class="panel-body">
+        <form name="alertForm" ng-submit="vm.updateAlert()">
+          <div class="form-group">
+            <label for="status">Status</label>
+            <select class="form-control" id="status" ng-model="vm.alert.status" required>
+              <option value="open">Open</option>
+              <option value="reviewed">Reviewed</option>
+              <option value="resolved">Resolved</option>
+              <option value="false_positive">False Positive</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="notes">Notes</label>
+            <textarea class="form-control" id="notes" rows="4" ng-model="vm.notes" placeholder="Add notes about this alert..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" ng-disabled="alertForm.$invalid">Update Alert</button>
+        </form>
+      </div>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Audit History</h3>
+      </div>
+      <div class="panel-body" ng-if="vm.auditLogs.length === 0">
+        <p class="text-muted">No audit logs available.</p>
+      </div>
+      <div class="table-responsive" ng-if="vm.auditLogs.length > 0">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Event Type</th>
+              <th>Timestamp</th>
+              <th>User</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="log in vm.auditLogs | orderBy:'timestamp':true">
+              <td><span class="label label-default">{{log.eventType}}</span></td>
+              <td>{{vm.formatDate(log.timestamp)}}</td>
+              <td>{{log.userId}}</td>
+              <td><pre>{{log.payload | json}}</pre></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
