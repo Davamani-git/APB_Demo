@@ -1,0 +1,60 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <h1>Credit Card Portfolio Dashboard</h1>
+    <nav class="nav-menu">
+      <a href="#!/dashboard" class="nav-link active">Dashboard</a>
+      <a href="#!/cards" class="nav-link">Cards</a>
+      <a href="#!/analytics" class="nav-link">Analytics</a>
+    </nav>
+  </header>
+  <div ng-if="vm.loading" class="loading">Loading...</div>
+  <div ng-if="vm.error" class="error">{{vm.error}}</div>
+  <div ng-if="!vm.loading && !vm.error" class="dashboard-content">
+    <section class="kpi-section">
+      <h2>Portfolio KPIs</h2>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Monthly Spend</div>
+          <div class="kpi-value">₹{{vm.kpis.monthlySpend | number:0}}</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Total Credit Limit</div>
+          <div class="kpi-value">₹{{vm.kpis.totalCreditLimit | number:0}}</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Available Credit</div>
+          <div class="kpi-value">₹{{vm.kpis.availableCredit | number:0}}</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Outstanding Amount</div>
+          <div class="kpi-value">₹{{vm.kpis.outstandingAmount | number:0}}</div>
+        </div>
+      </div>
+    </section>
+    <section class="portfolio-summary">
+      <h2>Portfolio Summary</h2>
+      <div class="summary-info">
+        <p><strong>Total Cards:</strong> {{vm.kpis.totalCards}}</p>
+        <p><strong>Credit Utilization:</strong> {{vm.kpis.utilizationRate}}%</p>
+      </div>
+    </section>
+    <section class="cards-overview">
+      <h2>Your Credit Cards</h2>
+      <div class="card-list">
+        <div ng-repeat="card in vm.cards" class="card-item">
+          <div class="card-header">
+            <h3>{{card.name}}</h3>
+            <span class="card-type">{{card.type}}</span>
+          </div>
+          <div class="card-details">
+            <p><strong>Card Number:</strong> **** **** **** {{card.lastFourDigits}}</p>
+            <p><strong>Credit Limit:</strong> ₹{{card.creditLimit | number:0}}</p>
+            <p><strong>Available:</strong> ₹{{card.availableCredit | number:0}}</p>
+            <p><strong>Outstanding:</strong> ₹{{card.outstandingAmount | number:0}}</p>
+          </div>
+          <a href="#!/cards/{{card.id}}" class="btn-view-details">View Details</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

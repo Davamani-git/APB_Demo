@@ -1,0 +1,55 @@
+<div class="analytics-container">
+  <header class="dashboard-header">
+    <h1>Spend Analytics</h1>
+    <nav class="nav-menu">
+      <a href="#!/dashboard" class="nav-link">Dashboard</a>
+      <a href="#!/cards" class="nav-link">Cards</a>
+      <a href="#!/analytics" class="nav-link active">Analytics</a>
+    </nav>
+  </header>
+  <div ng-if="vm.loading" class="loading">Loading...</div>
+  <div ng-if="vm.error" class="error">{{vm.error}}</div>
+  <div ng-if="!vm.loading && !vm.error" class="analytics-content">
+    <section class="filter-section">
+      <label for="cardFilter">Filter by Card:</label>
+      <select id="cardFilter" ng-model="vm.selectedCardId" ng-change="vm.onCardChange()">
+        <option value="">All Cards</option>
+        <option ng-repeat="card in vm.cards" value="{{card.id}}">{{card.name}}</option>
+      </select>
+    </section>
+    <section class="monthly-trends-section">
+      <h2>Monthly Spend Trends</h2>
+      <div class="chart-container">
+        <canvas id="monthlyTrendsChart" spend-trend-chart data="vm.monthlyTrends"></canvas>
+      </div>
+    </section>
+    <section class="category-wise-section">
+      <h2>Category-Wise Spending</h2>
+      <div class="chart-container">
+        <canvas id="categoryChart" category-chart data="vm.categoryData"></canvas>
+      </div>
+      <div class="category-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="item in vm.categoryData">
+              <td>{{item.category}}</td>
+              <td>₹{{item.amount | number:0}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <section class="card-wise-section" ng-if="!vm.selectedCardId">
+      <h2>Card-Wise Spend Analysis</h2>
+      <div class="chart-container">
+        <canvas id="cardWiseChart" card-wise-chart data="vm.cardWiseData" cards="vm.cards"></canvas>
+      </div>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,81 @@
+<div class="card-detail-container">
+  <header class="dashboard-header">
+    <h1>Card Details</h1>
+    <nav class="nav-menu">
+      <a href="#!/dashboard" class="nav-link">Dashboard</a>
+      <a href="#!/cards" class="nav-link">Cards</a>
+      <a href="#!/analytics" class="nav-link">Analytics</a>
+    </nav>
+  </header>
+  <div ng-if="vm.loading" class="loading">Loading...</div>
+  <div ng-if="vm.error" class="error">{{vm.error}}</div>
+  <div ng-if="!vm.loading && !vm.error" class="card-detail-content">
+    <section class="card-info-section">
+      <div class="card-visual-large">
+        <div class="card-chip"></div>
+        <div class="card-number">**** **** **** {{vm.card.lastFourDigits}}</div>
+        <div class="card-name-holder">{{vm.card.name}}</div>
+        <div class="card-expiry">Exp: {{vm.card.expiryDate}}</div>
+        <div class="card-issuer">{{vm.card.issuer}}</div>
+      </div>
+      <div class="card-meta">
+        <h2>{{vm.card.name}}</h2>
+        <p><strong>Card Type:</strong> {{vm.card.type}}</p>
+        <p><strong>Issuer:</strong> {{vm.card.issuer}}</p>
+        <p><strong>Status:</strong> {{vm.card.status}}</p>
+      </div>
+    </section>
+    <section class="card-kpis-section">
+      <h2>Card-Level KPIs</h2>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Monthly Spend</div>
+          <div class="kpi-value">₹{{vm.kpis.monthlySpend | number:0}}</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Credit Limit</div>
+          <div class="kpi-value">₹{{vm.kpis.creditLimit | number:0}}</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Available Credit</div>
+          <div class="kpi-value">₹{{vm.kpis.availableCredit | number:0}}</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Outstanding Amount</div>
+          <div class="kpi-value">₹{{vm.kpis.outstandingAmount | number:0}}</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Utilization Rate</div>
+          <div class="kpi-value">{{vm.kpis.utilizationRate}}%</div>
+        </div>
+      </div>
+    </section>
+    <section class="transactions-section">
+      <h2>Recent Transactions</h2>
+      <div ng-if="vm.transactions.length === 0" class="no-data">No transactions found for this card.</div>
+      <table ng-if="vm.transactions.length > 0" class="transactions-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Merchant</th>
+            <th>Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="txn in vm.transactions">
+            <td>{{txn.date}}</td>
+            <td>{{txn.description}}</td>
+            <td>{{txn.category}}</td>
+            <td>{{txn.merchant}}</td>
+            <td>₹{{txn.amount | number:0}}</td>
+            <td>{{txn.status}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+    <a href="#!/cards" class="btn-back">Back to Cards</a>
+  </div>
+</div>
