@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html ng-app="fraudDetectionApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credit Card Fraud Alert System</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .alert-card { background: white; border-radius: 4px; padding: 15px; margin: 10px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .alert-card.critical { border-left: 4px solid #d32f2f; }
+    .alert-card.high { border-left: 4px solid #f57c00; }
+    .alert-card.medium { border-left: 4px solid #fbc02d; }
+    .alert-card.low { border-left: 4px solid #388e3c; }
+    .alert-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+    .alert-status { padding: 4px 8px; border-radius: 3px; font-size: 12px; font-weight: bold; }
+    .status-created { background: #e3f2fd; color: #1976d2; }
+    .status-resolved { background: #e8f5e9; color: #388e3c; }
+    .status-expired { background: #fce4ec; color: #c2185b; }
+    .filter-bar { background: white; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
+    .filter-bar input, .filter-bar select { padding: 8px; margin-right: 10px; border: 1px solid #ddd; border-radius: 3px; }
+    .metrics { display: flex; gap: 15px; margin-bottom: 20px; }
+    .metric-card { background: white; padding: 15px; border-radius: 4px; flex: 1; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .metric-value { font-size: 32px; font-weight: bold; color: #1976d2; }
+    .metric-label { color: #666; margin-top: 5px; }
+    button { padding: 8px 16px; border: none; border-radius: 3px; cursor: pointer; background: #1976d2; color: white; }
+    button:hover { background: #1565c0; }
+    .ingestion-panel { background: white; padding: 20px; border-radius: 4px; margin-bottom: 20px; }
+    .ingestion-panel h3 { margin-top: 0; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+    .form-group input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 3px; box-sizing: border-box; }
+  </style>
+</head>
+<body>
+  <div class="container" ng-controller="AlertManagementController as vm">
+    <h1>Credit Card Fraud Alert System</h1>
+    
+    <div class="ingestion-panel">
+      <h3>Transaction Event Ingestion</h3>
+      <div class="form-group">
+        <label>Transaction ID:</label>
+        <input type="text" ng-model="vm.transaction.transaction_id" placeholder="TXN-12345">
+      </div>
+      <div class="form-group">
+        <label>Account ID:</label>
+        <input type="text" ng-model="vm.transaction.account_id" placeholder="ACC-67890">
+      </div>
+      <div class="form-group">
+        <label>Card ID:</label>
+        <input type="text" ng-model="vm.transaction.card_id" placeholder="CARD-11223">
+      </div>
+      <div class="form-group">
+        <label>Merchant:</label>
+        <input type="text" ng-model="vm.transaction.merchant" placeholder="Merchant Name">
+      </div>
+      <div class="form-group">
+        <label>Amount:</label>
+        <input type="number" ng-model="vm.transaction.amount" placeholder="100.00">
+      </div>
+      <div class="form-group">
+        <label>Currency:</label>
+        <input type="text" ng-model="vm.transaction.currency" placeholder="USD">
+      </div>
+      <div class="form-group">
+        <label>Channel:</label>
+        <input type="text" ng-model="vm.transaction.channel" placeholder="online">
+      </div>
+      <button ng-click="vm.ingestTransaction()">Ingest Transaction</button>
+      <span ng-if="vm.ingestionStatus">{{vm.ingestionStatus}}</span>
+    </div>
+    
+    <div ng-controller="AlertDashboardController as dashCtrl">
+      <div class="metrics">
+        <div class="metric-card">
+          <div class="metric-value">{{dashCtrl.metrics.total}}</div>
+          <div class="metric-label">Total Alerts</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">{{dashCtrl.metrics.critical}}</div>
+          <div class="metric-label">Critical</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">{{dashCtrl.metrics.high}}</div>
+          <div class="metric-label">High</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">{{dashCtrl.metrics.resolved}}</div>
+          <div class="metric-label">Resolved</div>
+        </div>
+      </div>
+      
+      <div class="filter-bar">
+        <input type="text" ng-model="dashCtrl.filters.search" placeholder="Search by transaction ID or customer ID">
+        <select ng-model="dashCtrl.filters.severity">
+          <option value="">All Severities</option>
+          <option value="critical">Critical</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+        <select ng-model="dashCtrl.filters.status">
+          <option value="">All Statuses</option>
+          <option value="created">Created</option>
+          <option value="resolved">Resolved</option>
+          <option value="expired">Expired</option>
+        </select>
+        <button ng-click="dashCtrl.refreshAlerts()">Refresh</button>
+      </div>
+      
+      <div>
+        <alert-card ng-repeat="alert in dashCtrl.filteredAlerts" alert-data="alert"></alert-card>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/modules/fraud-detection/fraud-detection.module.js"></script>
+  <script src="src/app/services/audit.service.js"></script>
+  <script src="src/app/services/auth.service.js"></script>
+  <script src="src/app/modules/fraud-detection/factories/risk-threshold.factory.js"></script>
+  <script src="src/app/modules/fraud-detection/factories/analytics-event.factory.js"></script>
+  <script src="src/app/modules/fraud-detection/services/transaction-ingestion.service.js"></script>
+  <script src="src/app/modules/fraud-detection/services/fraud-risk-engine.service.js"></script>
+  <script src="src/app/modules/fraud-detection/services/policy-decision.service.js"></script>
+  <script src="src/app/modules/fraud-detection/services/alert-creation.service.js"></script>
+  <script src="src/app/shared/interceptors/auth.interceptor.js"></script>
+  <script src="src/app/modules/fraud-detection/controllers/alert-management.controller.js"></script>
+  <script src="src/app/modules/fraud-detection/controllers/alert-dashboard.controller.js"></script>
+  <script src="src/app/modules/fraud-detection/directives/alert-card.directive.js"></script>
+</body>
+</html>
