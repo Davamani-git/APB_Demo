@@ -1,0 +1,27 @@
+<div class="chat-assistant" ng-controller="ChatController as chatVm">
+<button ng-click="chatVm.toggleChat()" class="chat-toggle-btn" aria-label="Toggle chat assistant" aria-expanded="{{chatVm.chatOpen}}">
+<span ng-if="!chatVm.chatOpen">Chat</span>
+<span ng-if="chatVm.chatOpen">Close</span>
+</button>
+<div ng-if="chatVm.chatOpen" class="chat-window" role="dialog" aria-labelledby="chat-heading">
+<h2 id="chat-heading">Chat Assistant</h2>
+<div ng-if="chatVm.errorMessage" class="error-message" role="alert" aria-live="assertive">
+<p>{{chatVm.errorMessage}}</p>
+</div>
+<div class="chat-messages" role="log" aria-live="polite" aria-atomic="false">
+<div ng-repeat="msg in chatVm.messages" class="chat-message" ng-class="{'user-message':msg.sender==='user','bot-message':msg.sender==='bot'}">
+<p><strong>{{msg.sender==='user'?'You':'Assistant'}}:</strong> {{msg.text}}</p>
+<ul ng-if="msg.links&&msg.links.length>0">
+<li ng-repeat="link in msg.links">
+<a ng-href="{{link.url}}" target="_blank" aria-label="Open {{link.title}}">{{link.title}}</a>
+</li>
+</ul>
+<span class="timestamp">{{msg.timestamp|date:'short'}}</span>
+</div>
+</div>
+<div class="chat-input">
+<input type="text" ng-model="chatVm.userMessage" placeholder="Type your question..." aria-label="Chat message input" ng-keyup="$event.keyCode===13&&chatVm.sendMessage()">
+<button ng-click="chatVm.sendMessage()" aria-label="Send message">Send</button>
+</div>
+</div>
+</div>

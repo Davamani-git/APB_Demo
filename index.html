@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html ng-app="helpCenterApp" lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Help Center - Home</title>
+<link rel="stylesheet" href="src/app/styles/main.css">
+</head>
+<body>
+<div ng-controller="HomeController as vm">
+<header role="banner">
+<nav role="navigation" aria-label="Main navigation">
+<ul>
+<li><a href="#/">Home</a></li>
+<li><a href="#/help-center" id="help-center-link" aria-label="Help Center">Help Center</a></li>
+</ul>
+</nav>
+</header>
+<main role="main">
+<div ng-view></div>
+</main>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+<script src="src/app/app.module.js"></script>
+<script src="src/app/app.config.js"></script>
+<script src="src/app/home/home.controller.js"></script>
+<script src="src/app/help-center/help-center.controller.js"></script>
+<script src="src/app/help-center/search/search.controller.js"></script>
+<script src="src/app/help-center/chat/chat.controller.js"></script>
+<script src="src/app/services/content.service.js"></script>
+<script src="src/app/services/search.service.js"></script>
+<script src="src/app/services/chat.service.js"></script>
+<script src="src/app/services/analytics.service.js"></script>
+</body>
+</html>

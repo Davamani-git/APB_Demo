@@ -1,0 +1,35 @@
+<div class="search-section" role="search" aria-label="Help Center search">
+<h2>Search Help Center</h2>
+<div ng-controller="SearchController as searchVm">
+<input type="text" ng-model="searchVm.searchQuery" placeholder="Enter keywords..." aria-label="Search keywords" ng-keyup="$event.keyCode===13&&searchVm.search()">
+<button ng-click="searchVm.search()" aria-label="Search">Search</button>
+<div class="filters">
+<label for="filter-category">Category:</label>
+<select id="filter-category" ng-model="searchVm.filters.category" ng-change="searchVm.applyFilter()" aria-label="Filter by category">
+<option value="">All</option>
+<option value="getting-started">Getting Started</option>
+<option value="faqs">FAQs</option>
+<option value="troubleshooting">Troubleshooting</option>
+</select>
+<label for="filter-type">Type:</label>
+<select id="filter-type" ng-model="searchVm.filters.type" ng-change="searchVm.applyFilter()" aria-label="Filter by content type">
+<option value="">All</option>
+<option value="article">Article</option>
+<option value="video">Video</option>
+<option value="download">Download</option>
+</select>
+</div>
+<div ng-if="searchVm.errorMessage" class="error-message" role="alert" aria-live="assertive">
+<p>{{searchVm.errorMessage}}</p>
+</div>
+<ul class="search-results" ng-if="searchVm.searchResults.length>0">
+<li ng-repeat="result in searchVm.searchResults">
+<h3>{{result.title}}</h3>
+<p>{{result.description}}</p>
+<span class="content-type">{{result.type}}</span>
+<a ng-href="{{result.url}}" aria-label="View {{result.title}}">View</a>
+</li>
+</ul>
+<p ng-if="searchVm.searchResults.length===0&&searchVm.searchQuery" role="status">No results found. Try different keywords or browse categories.</p>
+</div>
+</div>

@@ -1,0 +1,39 @@
+<section aria-labelledby="help-center-heading">
+<h1 id="help-center-heading">Help Center</h1>
+<p>Find answers, guides, and support resources.</p>
+<div ng-if="vm.errorMessage" class="error-message" role="alert" aria-live="assertive">
+<p>{{vm.errorMessage}}</p>
+</div>
+<div class="help-center-layout">
+<aside class="categories-sidebar" role="navigation" aria-label="Help categories">
+<h2>Categories</h2>
+<ul>
+<li ng-repeat="cat in vm.categories">
+<button ng-click="vm.selectCategory(cat)" ng-class="{'active':vm.selectedCategory.id===cat.id}" aria-label="Select {{cat.name}} category">{{cat.name}}</button>
+</li>
+</ul>
+</aside>
+<main class="content-area" role="main">
+<div ng-if="!vm.selectedCategory">
+<p>Select a category to browse help content.</p>
+</div>
+<div ng-if="vm.selectedCategory">
+<h2>{{vm.selectedCategory.name}}</h2>
+<ul class="content-list">
+<li ng-repeat="item in vm.contentItems">
+<div class="content-item">
+<h3>{{item.title}}</h3>
+<p>{{item.description}}</p>
+<span class="content-type" aria-label="Content type">{{item.type}}</span>
+<button ng-if="item.type==='article'" ng-click="vm.viewContent(item)" aria-label="Read {{item.title}}">Read</button>
+<button ng-if="item.type==='video'" ng-click="vm.viewContent(item)" aria-label="Play {{item.title}}">Play</button>
+<button ng-if="item.type==='download'" ng-click="vm.downloadMaterial(item)" aria-label="Download {{item.title}}">Download</button>
+</div>
+</li>
+</ul>
+</div>
+</main>
+</div>
+<div ng-include="'src/app/help-center/search/search.view.html'"></div>
+<div ng-include="'src/app/help-center/chat/chat.view.html'"></div>
+</section>
