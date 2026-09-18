@@ -1,0 +1,31 @@
+{
+  "name": "provider-enrollment-readiness-checker-automation",
+  "version": "1.0.0",
+  "description": "Playwright automation framework for Provider Enrollment Application Readiness Checker",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:readiness": "playwright test readiness-classification.spec.js",
+    "test:admin": "playwright test payer-rule-admin.spec.js",
+    "test:coordinator": "playwright test coordinator-workflows.spec.js",
+    "test:manager": "playwright test manager-dashboard.spec.js",
+    "test:documents": "playwright test document-management.spec.js",
+    "test:ocr": "playwright test ocr-document-processing.spec.js",
+    "report": "playwright show-report test-results/html-report"
+  },
+  "keywords": [
+    "playwright",
+    "automation",
+    "provider-enrollment",
+    "credentialing",
+    "testing"
+  ],
+  "author": "Senior Automation Framework Engineer",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "winston": "^3.11.0"
+  }
+}

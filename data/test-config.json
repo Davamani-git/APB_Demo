@@ -1,0 +1,35 @@
+{
+  "baseUrl": "https://app.providerenrollment.com",
+  "timeout": 30000,
+  "users": {
+    "coordinator1": {
+      "username": "coordinator1",
+      "password": "Pass@123",
+      "role": "Credentialing Coordinator"
+    },
+    "coordinator2": {
+      "username": "coordinator2",
+      "password": "Pass@123",
+      "role": "Credentialing Coordinator",
+      "region": "A"
+    },
+    "manager1": {
+      "username": "manager1",
+      "password": "Manager@123",
+      "role": "Enrollment Manager"
+    },
+    "admin1": {
+      "username": "admin1",
+      "password": "Admin@123",
+      "role": "System Administrator"
+    }
+  },
+  "expirationThreshold": 90,
+  "maxFileSize": 50,
+  "performanceThresholds": {
+    "applicationListLoad": 3,
+    "dashboardLoad": 5,
+    "statusRecalculation": 5,
+    "reportExport": 30
+  }
+}
