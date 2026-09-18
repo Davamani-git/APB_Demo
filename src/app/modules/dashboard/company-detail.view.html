@@ -1,0 +1,68 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <a href="#/dashboard" class="btn btn-default">Back to Dashboard</a>
+      <h1>Company Details</h1>
+      <div ng-if="vm.loading" class="text-center">
+        <p>Loading company details...</p>
+      </div>
+      <div ng-if="vm.error" class="alert alert-danger">
+        {{vm.error}}
+      </div>
+      <div ng-if="!vm.loading && !vm.error && vm.company">
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <h3>{{vm.company.companyName}}</h3>
+          </div>
+          <div class="panel-body">
+            <alert-widget company="vm.company"></alert-widget>
+            <div class="row">
+              <div class="col-md-6">
+                <p><strong>Company ID:</strong> {{vm.company.companyId}}</p>
+                <p><strong>Total Spend:</strong> {{vm.company.totalSpend | currency:'USD'}}</p>
+                <p><strong>Budget Threshold:</strong> {{vm.company.budgetThreshold | currency:'USD'}}</p>
+              </div>
+              <div class="col-md-6">
+                <p><strong>AI Providers:</strong> {{vm.company.aiProviders.join(', ')}}</p>
+                <p><strong>Last Data Sync:</strong> {{vm.company.lastDataSync | date:'medium'}}
+                  <data-freshness-indicator last-sync="vm.company.lastDataSync" is-fresh="vm.company.isDataFresh"></data-freshness-indicator>
+                </p>
+                <p><strong>Alert Status:</strong> {{vm.company.alertStatus}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3>Department-Level AI Usage</h3>
+          </div>
+          <div class="panel-body">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Department</th>
+                  <th>Spend</th>
+                  <th>Services</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="dept in vm.company.departments">
+                  <td>{{dept.departmentName}}</td>
+                  <td>{{dept.spend | currency:'USD'}}</td>
+                  <td>{{dept.services.join(', ')}}</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Total</th>
+                  <th>{{vm.getDepartmentTotalSpend() | currency:'USD'}}</th>
+                  <th></th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

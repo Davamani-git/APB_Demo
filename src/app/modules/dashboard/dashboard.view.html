@@ -1,0 +1,103 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>AI Portfolio Management Dashboard</h1>
+      <div ng-if="vm.loading" class="text-center">
+        <p>Loading portfolio data...</p>
+      </div>
+      <div ng-if="vm.error" class="alert alert-danger">
+        {{vm.error}}
+      </div>
+      <div ng-if="!vm.loading && !vm.error">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="panel panel-primary">
+              <div class="panel-heading">Total Spend</div>
+              <div class="panel-body">
+                <h3>{{vm.portfolio.totalSpend | currency:vm.portfolio.currency}}</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="panel panel-info">
+              <div class="panel-heading">Average Spend</div>
+              <div class="panel-body">
+                <h3>{{vm.benchmarks.avgSpend | currency:vm.portfolio.currency}}</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="panel panel-warning">
+              <div class="panel-heading">Active Alerts</div>
+              <div class="panel-body">
+                <h3>{{vm.benchmarks.totalAlerts}}</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="panel panel-success">
+              <div class="panel-heading">Companies</div>
+              <div class="panel-body">
+                <h3>{{vm.portfolio.companies.length}}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="btn-toolbar" role="toolbar">
+              <button class="btn btn-primary" ng-click="vm.exportPDF()">Export PDF</button>
+              <button class="btn btn-success" ng-click="vm.exportExcel()">Export Excel</button>
+              <button class="btn btn-default" ng-click="vm.refreshData()">Refresh Data</button>
+            </div>
+          </div>
+        </div>
+        <div class="row" style="margin-top: 20px;">
+          <div class="col-md-6">
+            <input type="text" class="form-control" placeholder="Filter by company name" ng-model="vm.filterText">
+          </div>
+          <div class="col-md-6">
+            <select class="form-control" ng-model="vm.sortBy">
+              <option value="companyName">Sort by Name</option>
+              <option value="totalSpend">Sort by Spend</option>
+            </select>
+          </div>
+        </div>
+        <div class="row" style="margin-top: 20px;">
+          <div class="col-md-12">
+            <h3>Portfolio Companies</h3>
+            <div class="row">
+              <div class="col-md-4" ng-repeat="company in vm.getFilteredCompanies()">
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h4>{{company.companyName}}
+                      <data-freshness-indicator last-sync="company.lastDataSync" is-fresh="company.isDataFresh"></data-freshness-indicator>
+                    </h4>
+                  </div>
+                  <div class="panel-body">
+                    <alert-widget company="company"></alert-widget>
+                    <p><strong>Total Spend:</strong> {{company.totalSpend | currency:'USD'}}</p>
+                    <p><strong>Budget Threshold:</strong> {{company.budgetThreshold | currency:'USD'}}</p>
+                    <p><strong>AI Providers:</strong> {{company.aiProviders.join(', ')}}</p>
+                    <p><strong>Departments:</strong> {{company.departments.length}}</p>
+                    <a href="#/company/{{company.companyId}}" class="btn btn-primary btn-sm">View Details</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row" ng-if="vm.recommendations.length > 0" style="margin-top: 20px;">
+          <div class="col-md-12">
+            <h3>Recommendations</h3>
+            <ul class="list-group">
+              <li class="list-group-item" ng-repeat="rec in vm.recommendations" ng-class="{'list-group-item-danger': rec.priority === 'high', 'list-group-item-warning': rec.priority === 'medium'}">
+                <strong>{{rec.companyName}}:</strong> {{rec.recommendation}}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

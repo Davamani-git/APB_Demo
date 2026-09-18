@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html ng-app="dashboardModule">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Portfolio Management Dashboard</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="src/app/assets/css/dashboard.css">
+</head>
+<body>
+  <div ng-view></div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
+  <script src="src/app/models/portfolio.model.js"></script>
+  <script src="src/app/models/company.model.js"></script>
+  <script src="src/app/services/auth.service.js"></script>
+  <script src="src/app/services/rbac.service.js"></script>
+  <script src="src/app/services/cloudIntegration.service.js"></script>
+  <script src="src/app/services/dataAggregation.factory.js"></script>
+  <script src="src/app/services/analytics.service.js"></script>
+  <script src="src/app/services/report.service.js"></script>
+  <script src="src/app/directives/data-freshness-indicator.directive.js"></script>
+  <script src="src/app/directives/alert-widget.directive.js"></script>
+  <script src="src/app/modules/dashboard/dashboard.module.js"></script>
+  <script src="src/app/modules/dashboard/dashboard.controller.js"></script>
+  <script src="src/app/modules/dashboard/company-detail.controller.js"></script>
+</body>
+</html>
