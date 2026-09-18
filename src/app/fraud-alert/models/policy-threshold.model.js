@@ -1,0 +1,1 @@
+(function(){'use strict';angular.module('fraudAlertModule').factory('PolicyThresholdModel',PolicyThresholdModel);function PolicyThresholdModel(){return function(data){this.threshold_id=data.threshold_id||'';this.risk_band=data.risk_band||'';this.min_score=data.min_score||0;this.max_score=data.max_score||100;this.action=data.action||'';};}})();

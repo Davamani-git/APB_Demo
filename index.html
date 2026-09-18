@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html ng-app="fraudAlertModule">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credit Card Fraud Alert System</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <style>
+    body{font-family:Arial,sans-serif;padding:20px;background:#f5f5f5}
+    .container{max-width:1200px;margin:0 auto;background:#fff;padding:30px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
+    h1{color:#333;margin-bottom:30px}
+    .transaction-card{border:1px solid #ddd;padding:15px;margin-bottom:15px;border-radius:5px;background:#fafafa}
+    .risk-low{border-left:4px solid #28a745}
+    .risk-medium{border-left:4px solid #ffc107}
+    .risk-high{border-left:4px solid #dc3545}
+    .badge{padding:5px 10px;border-radius:3px;font-size:12px}
+    .badge-success{background:#28a745;color:#fff}
+    .badge-warning{background:#ffc107;color:#333}
+    .badge-danger{background:#dc3545;color:#fff}
+    .alert-indicator{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+    .alert-active{background:#dc3545}
+    .loading{text-align:center;padding:40px;color:#666}
+    .error{color:#dc3545;padding:20px;text-align:center}
+    .threshold-config{background:#e9ecef;padding:20px;margin-bottom:20px;border-radius:5px}
+    .threshold-input{margin:10px 0}
+  </style>
+</head>
+<body>
+  <div class="container" ng-controller="TransactionDashboardController as vm">
+    <h1>Credit Card Fraud Alert System</h1>
+    <div class="threshold-config">
+      <h3>Alert Threshold Configuration</h3>
+      <div class="threshold-input">
+        <label>Risk Score Threshold (0-100):</label>
+        <input type="number" ng-model="vm.alertThreshold" min="0" max="100" class="form-control" style="width:200px;display:inline-block;margin-left:10px">
+        <button ng-click="vm.updateThreshold()" class="btn btn-primary" style="margin-left:10px">Update Threshold</button>
+      </div>
+      <p><small>Current threshold: {{vm.alertThreshold}} - Transactions with risk score above this value will trigger alerts</small></p>
+    </div>
+    <div ng-if="vm.loading" class="loading">
+      <p>Loading transactions...</p>
+    </div>
+    <div ng-if="vm.error" class="error">
+      <p>{{vm.error}}</p>
+    </div>
+    <div ng-if="!vm.loading && !vm.error">
+      <h3>Transaction Dashboard</h3>
+      <div ng-if="vm.transactions.length === 0">
+        <p>No transactions to display.</p>
+      </div>
+      <div ng-repeat="transaction in vm.transactions" class="transaction-card" ng-class="{'risk-low': transaction.risk_band === 'low', 'risk-medium': transaction.risk_band === 'medium', 'risk-high': transaction.risk_band === 'high'}">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <h4 style="margin:0 0 10px 0">
+              <span ng-if="transaction.alert_id" class="alert-indicator alert-active"></span>
+              {{transaction.merchant}}
+            </h4>
+            <p style="margin:5px 0"><strong>Transaction ID:</strong> {{transaction.transaction_id}}</p>
+            <p style="margin:5px 0"><strong>Amount:</strong> {{transaction.amount | currency:transaction.currency}}</p>
+            <p style="margin:5px 0"><strong>Card:</strong> ****{{transaction.card_id.slice(-4)}}</p>
+            <p style="margin:5px 0"><strong>Time:</strong> {{transaction.timestamp | date:'medium'}}</p>
+            <p style="margin:5px 0"><strong>Channel:</strong> {{transaction.channel}}</p>
+          </div>
+          <div style="text-align:right">
+            <div>
+              <span class="badge" ng-class="{'badge-success': transaction.risk_band === 'low', 'badge-warning': transaction.risk_band === 'medium', 'badge-danger': transaction.risk_band === 'high'}">{{transaction.risk_band | uppercase}}</span>
+            </div>
+            <p style="margin:10px 0"><strong>Risk Score:</strong> {{transaction.risk_score}}</p>
+            <p style="margin:5px 0"><strong>Decision:</strong> {{transaction.decision | uppercase}}</p>
+            <p ng-if="transaction.alert_id" style="margin:5px 0;color:#dc3545"><strong>Alert ID:</strong> {{transaction.alert_id}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-route.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular-resource.min.js"></script>
+  <script src="src/app/app.module.js"></script>
+  <script src="src/app/fraud-alert/models/transaction.model.js"></script>
+  <script src="src/app/fraud-alert/models/alert.model.js"></script>
+  <script src="src/app/fraud-alert/models/policy-threshold.model.js"></script>
+  <script src="src/app/fraud-alert/factories/fraud-risk-engine.factory.js"></script>
+  <script src="src/app/services/audit.service.js"></script>
+  <script src="src/app/services/alert-record.service.js"></script>
+  <script src="src/app/fraud-alert/services/transaction-ingestion.service.js"></script>
+  <script src="src/app/fraud-alert/services/policy-decision.service.js"></script>
+  <script src="src/app/fraud-alert/controllers/transaction-dashboard.controller.js"></script>
+</body>
+</html>
