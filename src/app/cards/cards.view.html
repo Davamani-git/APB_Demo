@@ -1,0 +1,59 @@
+<div class="cards-container">
+  <header class="dashboard-header">
+    <h1>Credit Card Management</h1>
+    <nav class="nav-menu">
+      <a href="#!/">Dashboard</a>
+      <a href="#!/cards">Cards</a>
+      <a href="#!/analytics">Analytics</a>
+    </nav>
+  </header>
+  <div class="cards-section" ng-if="!vm.loading">
+    <h2>All Credit Cards</h2>
+    <div class="cards-list">
+      <div class="card-detail" ng-repeat="card in vm.cards" ng-click="vm.selectCard(card)">
+        <div class="card-info">
+          <h3>{{card.name}}</h3>
+          <p class="issuer">{{card.issuer}}</p>
+          <div class="card-stats">
+            <div class="stat">
+              <label>Limit:</label>
+              <span>${{card.limit | number:2}}</span>
+            </div>
+            <div class="stat">
+              <label>Balance:</label>
+              <span>${{card.balance | number:2}}</span>
+            </div>
+            <div class="stat">
+              <label>Available:</label>
+              <span>${{card.availableCredit | number:2}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="transactions-section" ng-if="vm.selectedCard">
+    <h2>Transactions for {{vm.selectedCard.name}}</h2>
+    <table class="transactions-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Merchant</th>
+          <th>Category</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="txn in vm.cardTransactions">
+          <td>{{txn.date}}</td>
+          <td>{{txn.merchant}}</td>
+          <td>{{txn.category}}</td>
+          <td>${{txn.amount | number:2}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="loading" ng-if="vm.loading">
+    <i class="fas fa-spinner fa-spin"></i> Loading...
+  </div>
+</div>

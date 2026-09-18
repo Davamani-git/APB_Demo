@@ -1,0 +1,27 @@
+<div class="analytics-container">
+  <header class="dashboard-header">
+    <h1>Spend Analytics</h1>
+    <nav class="nav-menu">
+      <a href="#!/">Dashboard</a>
+      <a href="#!/cards">Cards</a>
+      <a href="#!/analytics">Analytics</a>
+    </nav>
+  </header>
+  <div class="analytics-section" ng-if="!vm.loading">
+    <div class="chart-container">
+      <h2>Monthly Spend Trends</h2>
+      <div class="chart-wrapper">
+        <canvas id="monthlyChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-container">
+      <h2>Category-wise Spending</h2>
+      <div class="chart-wrapper">
+        <canvas id="categoryChart"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="loading" ng-if="vm.loading">
+    <i class="fas fa-spinner fa-spin"></i> Loading analytics...
+  </div>
+</div>
