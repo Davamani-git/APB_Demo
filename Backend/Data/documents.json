@@ -1,0 +1,62 @@
+[
+  {
+    "id": "DOC-001",
+    "applicationId": "APP-001",
+    "documentType": "Medical License",
+    "issueDate": "2020-01-15T00:00:00",
+    "expirationDate": "2025-01-15T00:00:00",
+    "documentNumber": "ML-12345",
+    "issuingAuthority": "State Medical Board",
+    "notes": "Active and in good standing",
+    "createdDate": "2024-01-10T00:00:00",
+    "lastUpdated": "2024-01-10T00:00:00"
+  },
+  {
+    "id": "DOC-002",
+    "applicationId": "APP-001",
+    "documentType": "DEA Certificate",
+    "issueDate": "2021-06-01T00:00:00",
+    "expirationDate": "2024-06-01T00:00:00",
+    "documentNumber": "DEA-67890",
+    "issuingAuthority": "Drug Enforcement Administration",
+    "notes": "Expiring soon - renewal in progress",
+    "createdDate": "2024-01-10T00:00:00",
+    "lastUpdated": "2024-01-10T00:00:00"
+  },
+  {
+    "id": "DOC-003",
+    "applicationId": "APP-002",
+    "documentType": "Medical License",
+    "issueDate": "2019-03-20T00:00:00",
+    "expirationDate": "2026-03-20T00:00:00",
+    "documentNumber": "ML-54321",
+    "issuingAuthority": "State Medical Board",
+    "notes": "Valid",
+    "createdDate": "2024-01-15T00:00:00",
+    "lastUpdated": "2024-01-15T00:00:00"
+  },
+  {
+    "id": "DOC-004",
+    "applicationId": "APP-002",
+    "documentType": "Malpractice Insurance",
+    "issueDate": "2023-01-01T00:00:00",
+    "expirationDate": "2025-01-01T00:00:00",
+    "documentNumber": "MPI-11111",
+    "issuingAuthority": "Medical Insurance Company",
+    "notes": "$1M/$3M coverage",
+    "createdDate": "2024-01-15T00:00:00",
+    "lastUpdated": "2024-01-15T00:00:00"
+  },
+  {
+    "id": "DOC-005",
+    "applicationId": "APP-003",
+    "documentType": "Board Certification",
+    "issueDate": "2018-07-10T00:00:00",
+    "expirationDate": "2024-07-10T00:00:00",
+    "documentNumber": "BC-99999",
+    "issuingAuthority": "American Board of Internal Medicine",
+    "notes": "Expiring in 6 months",
+    "createdDate": "2024-01-12T00:00:00",
+    "lastUpdated": "2024-01-12T00:00:00"
+  }
+]

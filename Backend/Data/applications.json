@@ -1,0 +1,32 @@
+[
+  {
+    "id": "APP-001",
+    "providerName": "Dr. Sarah Johnson",
+    "startDate": "2024-03-15T00:00:00",
+    "readinessStatus": "Incomplete",
+    "payers": ["PAYER-001", "PAYER-002"],
+    "coordinatorId": "COORD-001",
+    "createdDate": "2024-01-10T00:00:00",
+    "lastUpdated": "2024-01-20T00:00:00"
+  },
+  {
+    "id": "APP-002",
+    "providerName": "Dr. Michael Chen",
+    "startDate": "2024-04-01T00:00:00",
+    "readinessStatus": "Ready to Submit",
+    "payers": ["PAYER-001"],
+    "coordinatorId": "COORD-001",
+    "createdDate": "2024-01-15T00:00:00",
+    "lastUpdated": "2024-01-25T00:00:00"
+  },
+  {
+    "id": "APP-003",
+    "providerName": "Dr. Emily Rodriguez",
+    "startDate": "2024-03-20T00:00:00",
+    "readinessStatus": "Expiring Soon",
+    "payers": ["PAYER-002", "PAYER-003"],
+    "coordinatorId": "COORD-002",
+    "createdDate": "2024-01-12T00:00:00",
+    "lastUpdated": "2024-01-22T00:00:00"
+  }
+]

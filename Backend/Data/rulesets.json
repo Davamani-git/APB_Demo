@@ -1,0 +1,67 @@
+[
+  {
+    "id": "RULESET-001",
+    "payerName": "Blue Cross Blue Shield",
+    "payerId": "PAYER-001",
+    "version": "1.0",
+    "effectiveDate": "2024-01-01T00:00:00",
+    "expiringThreshold": 90,
+    "requiredDocuments": [
+      "Medical License",
+      "DEA Certificate",
+      "Malpractice Insurance",
+      "Board Certification"
+    ],
+    "requiredFields": [
+      "NPI",
+      "Tax ID",
+      "Practice Address",
+      "Specialty"
+    ],
+    "ruleDescription": "Standard credentialing requirements for BCBS network participation",
+    "createdDate": "2024-01-01T00:00:00",
+    "lastUpdated": "2024-01-01T00:00:00"
+  },
+  {
+    "id": "RULESET-002",
+    "payerName": "United Healthcare",
+    "payerId": "PAYER-002",
+    "version": "2.0",
+    "effectiveDate": "2024-01-01T00:00:00",
+    "expiringThreshold": 60,
+    "requiredDocuments": [
+      "Medical License",
+      "DEA Certificate",
+      "Malpractice Insurance",
+      "State License"
+    ],
+    "requiredFields": [
+      "NPI",
+      "Tax ID",
+      "Practice Address"
+    ],
+    "ruleDescription": "Updated requirements for United Healthcare credentialing effective 2024",
+    "createdDate": "2024-01-01T00:00:00",
+    "lastUpdated": "2024-01-01T00:00:00"
+  },
+  {
+    "id": "RULESET-003",
+    "payerName": "Aetna",
+    "payerId": "PAYER-003",
+    "version": "1.5",
+    "effectiveDate": "2024-01-01T00:00:00",
+    "expiringThreshold": 90,
+    "requiredDocuments": [
+      "Medical License",
+      "Malpractice Insurance",
+      "Board Certification"
+    ],
+    "requiredFields": [
+      "NPI",
+      "Tax ID"
+    ],
+    "ruleDescription": "Aetna credentialing requirements for primary care providers",
+    "createdDate": "2024-01-01T00:00:00",
+    "lastUpdated": "2024-01-01T00:00:00"
+  }
+]
