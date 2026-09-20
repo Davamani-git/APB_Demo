@@ -1,0 +1,140 @@
+[
+  {
+    "id": "APP-001",
+    "providerName": "Dr. Sarah Johnson",
+    "submissionDate": "2024-01-15T10:00:00Z",
+    "overallStatus": "Expiring Soon",
+    "priorityScore": 85,
+    "riskScore": 78,
+    "coordinatorName": "Emily Chen",
+    "payers": [
+      {
+        "payerId": "PAY-001",
+        "payerName": "Blue Cross Blue Shield",
+        "status": "Expiring Soon",
+        "ruleSetVersion": "1.2",
+        "requirements": [
+          {
+            "name": "Medical License",
+            "status": "Expiring Soon",
+            "expirationDate": "2024-04-15T00:00:00Z",
+            "recommendation": "Medical License expires in 45 days. Consider renewal."
+          },
+          {
+            "name": "DEA Certificate",
+            "status": "Present and Valid",
+            "expirationDate": "2025-06-30T00:00:00Z"
+          },
+          {
+            "name": "Malpractice Insurance",
+            "status": "Present and Valid",
+            "expirationDate": "2024-12-31T00:00:00Z"
+          }
+        ]
+      },
+      {
+        "payerId": "PAY-002",
+        "payerName": "Aetna",
+        "status": "Ready to Submit",
+        "ruleSetVersion": "2.0",
+        "requirements": [
+          {
+            "name": "Medical License",
+            "status": "Present and Valid",
+            "expirationDate": "2025-03-15T00:00:00Z"
+          },
+          {
+            "name": "Board Certification",
+            "status": "Present and Valid",
+            "expirationDate": "2026-01-01T00:00:00Z"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "APP-002",
+    "providerName": "Dr. Michael Rodriguez",
+    "submissionDate": "2024-02-01T14:30:00Z",
+    "overallStatus": "Incomplete",
+    "priorityScore": 92,
+    "riskScore": 88,
+    "coordinatorName": "James Wilson",
+    "payers": [
+      {
+        "payerId": "PAY-003",
+        "payerName": "UnitedHealthcare",
+        "status": "Incomplete",
+        "ruleSetVersion": "1.5",
+        "requirements": [
+          {
+            "name": "Medical License",
+            "status": "Present and Valid",
+            "expirationDate": "2025-08-20T00:00:00Z"
+          },
+          {
+            "name": "Hospital Privileges",
+            "status": "Missing",
+            "recommendation": "Please provide Hospital Privileges"
+          },
+          {
+            "name": "CV/Resume",
+            "status": "Missing",
+            "recommendation": "Please provide CV/Resume"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "APP-003",
+    "providerName": "Dr. Lisa Thompson",
+    "submissionDate": "2024-01-20T09:15:00Z",
+    "overallStatus": "Ready to Submit",
+    "priorityScore": 45,
+    "riskScore": 35,
+    "coordinatorName": "Emily Chen",
+    "payers": [
+      {
+        "payerId": "PAY-001",
+        "payerName": "Blue Cross Blue Shield",
+        "status": "Ready to Submit",
+        "ruleSetVersion": "1.2",
+        "requirements": [
+          {
+            "name": "Medical License",
+            "status": "Present and Valid",
+            "expirationDate": "2026-05-10T00:00:00Z"
+          },
+          {
+            "name": "DEA Certificate",
+            "status": "Present and Valid",
+            "expirationDate": "2025-11-15T00:00:00Z"
+          },
+          {
+            "name": "Malpractice Insurance",
+            "status": "Present and Valid",
+            "expirationDate": "2025-03-30T00:00:00Z"
+          }
+        ]
+      },
+      {
+        "payerId": "PAY-004",
+        "payerName": "Cigna",
+        "status": "Ready to Submit",
+        "ruleSetVersion": "1.0",
+        "requirements": [
+          {
+            "name": "Medical License",
+            "status": "Present and Valid",
+            "expirationDate": "2026-05-10T00:00:00Z"
+          },
+          {
+            "name": "Professional References",
+            "status": "Present and Valid"
+          }
+        ]
+      }
+    ]
+  }
+]

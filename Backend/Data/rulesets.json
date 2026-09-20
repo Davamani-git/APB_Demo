@@ -1,0 +1,181 @@
+[
+  {
+    "id": "RS-001",
+    "payerId": "PAY-001",
+    "payerName": "Blue Cross Blue Shield",
+    "version": "1.2",
+    "effectiveDate": "2023-01-01T00:00:00Z",
+    "endDate": null,
+    "isActive": true,
+    "requiredDocuments": [
+      {
+        "documentType": "Medical License",
+        "description": "Current state medical license",
+        "isMandatory": true,
+        "expirationRequired": true
+      },
+      {
+        "documentType": "DEA Certificate",
+        "description": "Drug Enforcement Administration certificate",
+        "isMandatory": true,
+        "expirationRequired": true
+      },
+      {
+        "documentType": "Malpractice Insurance",
+        "description": "Professional liability insurance",
+        "isMandatory": true,
+        "expirationRequired": true
+      }
+    ],
+    "requiredDataFields": [
+      {
+        "fieldName": "NPI Number",
+        "fieldType": "string",
+        "isMandatory": true,
+        "validationRule": "10-digit numeric",
+        "description": "National Provider Identifier"
+      },
+      {
+        "fieldName": "Tax ID",
+        "fieldType": "string",
+        "isMandatory": true,
+        "validationRule": "9-digit numeric",
+        "description": "Federal Tax Identification Number"
+      },
+      {
+        "fieldName": "Practice Address",
+        "fieldType": "string",
+        "isMandatory": true,
+        "description": "Primary practice location"
+      }
+    ],
+    "createdBy": "admin@system.com",
+    "lastModified": "2023-01-01T00:00:00Z"
+  },
+  {
+    "id": "RS-002",
+    "payerId": "PAY-002",
+    "payerName": "Aetna",
+    "version": "2.0",
+    "effectiveDate": "2023-06-01T00:00:00Z",
+    "endDate": null,
+    "isActive": true,
+    "requiredDocuments": [
+      {
+        "documentType": "Medical License",
+        "description": "Current state medical license",
+        "isMandatory": true,
+        "expirationRequired": true
+      },
+      {
+        "documentType": "Board Certification",
+        "description": "Specialty board certification",
+        "isMandatory": true,
+        "expirationRequired": true
+      }
+    ],
+    "requiredDataFields": [
+      {
+        "fieldName": "NPI Number",
+        "fieldType": "string",
+        "isMandatory": true,
+        "validationRule": "10-digit numeric",
+        "description": "National Provider Identifier"
+      },
+      {
+        "fieldName": "Specialty",
+        "fieldType": "string",
+        "isMandatory": true,
+        "description": "Primary medical specialty"
+      }
+    ],
+    "createdBy": "admin@system.com",
+    "lastModified": "2023-06-01T00:00:00Z"
+  },
+  {
+    "id": "RS-003",
+    "payerId": "PAY-003",
+    "payerName": "UnitedHealthcare",
+    "version": "1.5",
+    "effectiveDate": "2023-03-15T00:00:00Z",
+    "endDate": null,
+    "isActive": true,
+    "requiredDocuments": [
+      {
+        "documentType": "Medical License",
+        "description": "Current state medical license",
+        "isMandatory": true,
+        "expirationRequired": true
+      },
+      {
+        "documentType": "Hospital Privileges",
+        "description": "Documentation of hospital admitting privileges",
+        "isMandatory": true,
+        "expirationRequired": false
+      },
+      {
+        "documentType": "CV/Resume",
+        "description": "Current curriculum vitae",
+        "isMandatory": true,
+        "expirationRequired": false
+      }
+    ],
+    "requiredDataFields": [
+      {
+        "fieldName": "NPI Number",
+        "fieldType": "string",
+        "isMandatory": true,
+        "validationRule": "10-digit numeric",
+        "description": "National Provider Identifier"
+      },
+      {
+        "fieldName": "Years in Practice",
+        "fieldType": "number",
+        "isMandatory": true,
+        "description": "Number of years practicing medicine"
+      }
+    ],
+    "createdBy": "admin@system.com",
+    "lastModified": "2023-03-15T00:00:00Z"
+  },
+  {
+    "id": "RS-004",
+    "payerId": "PAY-004",
+    "payerName": "Cigna",
+    "version": "1.0",
+    "effectiveDate": "2023-01-01T00:00:00Z",
+    "endDate": null,
+    "isActive": true,
+    "requiredDocuments": [
+      {
+        "documentType": "Medical License",
+        "description": "Current state medical license",
+        "isMandatory": true,
+        "expirationRequired": true
+      },
+      {
+        "documentType": "Professional References",
+        "description": "Three professional references",
+        "isMandatory": true,
+        "expirationRequired": false
+      }
+    ],
+    "requiredDataFields": [
+      {
+        "fieldName": "NPI Number",
+        "fieldType": "string",
+        "isMandatory": true,
+        "validationRule": "10-digit numeric",
+        "description": "National Provider Identifier"
+      },
+      {
+        "fieldName": "Languages Spoken",
+        "fieldType": "array",
+        "isMandatory": false,
+        "description": "Languages spoken by provider"
+      }
+    ],
+    "createdBy": "admin@system.com",
+    "lastModified": "2023-01-01T00:00:00Z"
+  }
+]
