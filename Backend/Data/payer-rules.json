@@ -1,0 +1,102 @@
+[
+  {
+    "id": "rule-001",
+    "payerName": "Medicare",
+    "version": "1.0",
+    "effectiveDate": "2024-01-01",
+    "isActive": true,
+    "requirements": [
+      {
+        "name": "Medical License",
+        "type": "Document",
+        "mandatory": true,
+        "expirationThresholdDays": 30,
+        "validationRules": ["Must be current and valid", "State-issued"]
+      },
+      {
+        "name": "DEA Certificate",
+        "type": "Document",
+        "mandatory": true,
+        "expirationThresholdDays": 30,
+        "validationRules": ["Federal DEA registration", "Must match provider name"]
+      },
+      {
+        "name": "Malpractice Insurance",
+        "type": "Document",
+        "mandatory": true,
+        "expirationThresholdDays": 30,
+        "validationRules": ["Minimum coverage $1M/$3M", "Current certificate"]
+      },
+      {
+        "name": "NPI Number",
+        "type": "Data",
+        "mandatory": true,
+        "validationRules": ["Valid 10-digit NPI", "Type 1 (Individual)"]
+      }
+    ]
+  },
+  {
+    "id": "rule-002",
+    "payerName": "Blue Cross Blue Shield",
+    "version": "1.0",
+    "effectiveDate": "2024-01-01",
+    "isActive": true,
+    "requirements": [
+      {
+        "name": "Medical License",
+        "type": "Document",
+        "mandatory": true,
+        "expirationThresholdDays": 30
+      },
+      {
+        "name": "Board Certification",
+        "type": "Document",
+        "mandatory": true,
+        "expirationThresholdDays": 30
+      },
+      {
+        "name": "Malpractice Insurance",
+        "type": "Document",
+        "mandatory": true,
+        "expirationThresholdDays": 30
+      },
+      {
+        "name": "Hospital Privileges",
+        "type": "Document",
+        "mandatory": false
+      }
+    ]
+  },
+  {
+    "id": "rule-003",
+    "payerName": "Aetna",
+    "version": "1.0",
+    "effectiveDate": "2024-01-01",
+    "isActive": true,
+    "requirements": [
+      {
+        "name": "Medical License",
+        "type": "Document",
+        "mandatory": true,
+        "expirationThresholdDays": 30
+      },
+      {
+        "name": "DEA Certificate",
+        "type": "Document",
+        "mandatory": true,
+        "expirationThresholdDays": 30
+      },
+      {
+        "name": "Professional Liability Insurance",
+        "type": "Document",
+        "mandatory": true,
+        "expirationThresholdDays": 30
+      },
+      {
+        "name": "CV/Resume",
+        "type": "Document",
+        "mandatory": true
+      }
+    ]
+  }
+]

@@ -1,0 +1,171 @@
+[
+  {
+    "id": "app-001",
+    "providerName": "Dr. Sarah Johnson",
+    "overallStatus": "Incomplete",
+    "priority": "High",
+    "targetPayers": ["Medicare", "Blue Cross Blue Shield"],
+    "daysUntilExpiration": 10,
+    "payerRequirements": [
+      {
+        "payerName": "Medicare",
+        "payerStatus": "Incomplete",
+        "requirements": [
+          {
+            "requirementName": "Medical License",
+            "requirementType": "Document",
+            "status": "Present & Valid",
+            "expirationDate": "2025-12-31",
+            "details": "Valid state medical license"
+          },
+          {
+            "requirementName": "DEA Certificate",
+            "requirementType": "Document",
+            "status": "Expiring Soon",
+            "expirationDate": "2024-02-15",
+            "details": "DEA registration expires soon"
+          }
+        ],
+        "deficiencies": [
+          {
+            "requirementName": "DEA Certificate",
+            "issue": "Document expires in 10 days",
+            "expirationDate": "2024-02-15",
+            "outreachRecommendations": [
+              "Immediately contact provider for DEA renewal",
+              "Verify renewal application status",
+              "Set high-priority follow-up"
+            ]
+          }
+        ]
+      },
+      {
+        "payerName": "Blue Cross Blue Shield",
+        "payerStatus": "Ready to Submit",
+        "requirements": [
+          {
+            "requirementName": "Medical License",
+            "requirementType": "Document",
+            "status": "Present & Valid",
+            "expirationDate": "2025-12-31",
+            "details": "Valid state medical license"
+          },
+          {
+            "requirementName": "Board Certification",
+            "requirementType": "Document",
+            "status": "Present & Valid",
+            "expirationDate": "2026-06-30",
+            "details": "Board certified in Internal Medicine"
+          }
+        ],
+        "deficiencies": []
+      }
+    ],
+    "createdDate": "2024-01-01",
+    "lastUpdated": "2024-01-05"
+  },
+  {
+    "id": "app-002",
+    "providerName": "Dr. Michael Chen",
+    "overallStatus": "Ready to Submit",
+    "priority": "Low",
+    "targetPayers": ["Aetna"],
+    "daysUntilExpiration": 90,
+    "payerRequirements": [
+      {
+        "payerName": "Aetna",
+        "payerStatus": "Ready to Submit",
+        "requirements": [
+          {
+            "requirementName": "Medical License",
+            "requirementType": "Document",
+            "status": "Present & Valid",
+            "expirationDate": "2025-08-31",
+            "details": "Valid state medical license"
+          },
+          {
+            "requirementName": "DEA Certificate",
+            "requirementType": "Document",
+            "status": "Present & Valid",
+            "expirationDate": "2025-09-30",
+            "details": "Valid DEA registration"
+          },
+          {
+            "requirementName": "Professional Liability Insurance",
+            "requirementType": "Document",
+            "status": "Present & Valid",
+            "expirationDate": "2025-12-31",
+            "details": "Current malpractice coverage"
+          }
+        ],
+        "deficiencies": []
+      }
+    ],
+    "createdDate": "2024-01-02",
+    "lastUpdated": "2024-01-05"
+  },
+  {
+    "id": "app-003",
+    "providerName": "Dr. Emily Rodriguez",
+    "overallStatus": "Expiring Soon",
+    "priority": "Medium",
+    "targetPayers": ["Medicare", "Aetna"],
+    "daysUntilExpiration": 25,
+    "payerRequirements": [
+      {
+        "payerName": "Medicare",
+        "payerStatus": "Expiring Soon",
+        "requirements": [
+          {
+            "requirementName": "Medical License",
+            "requirementType": "Document",
+            "status": "Present & Valid",
+            "expirationDate": "2025-11-30",
+            "details": "Valid state medical license"
+          },
+          {
+            "requirementName": "Malpractice Insurance",
+            "requirementType": "Document",
+            "status": "Expiring Soon",
+            "expirationDate": "2024-02-28",
+            "details": "Insurance policy expires soon"
+          }
+        ],
+        "deficiencies": [
+          {
+            "requirementName": "Malpractice Insurance",
+            "issue": "Document expires in 25 days",
+            "expirationDate": "2024-02-28",
+            "outreachRecommendations": [
+              "Contact provider for insurance renewal confirmation",
+              "Request updated certificate of insurance",
+              "Schedule follow-up in 2 weeks"
+            ]
+          }
+        ]
+      },
+      {
+        "payerName": "Aetna",
+        "payerStatus": "Ready to Submit",
+        "requirements": [
+          {
+            "requirementName": "Medical License",
+            "requirementType": "Document",
+            "status": "Present & Valid",
+            "expirationDate": "2025-11-30",
+            "details": "Valid state medical license"
+          },
+          {
+            "requirementName": "CV/Resume",
+            "requirementType": "Document",
+            "status": "Present & Valid",
+            "details": "Current CV on file"
+          }
+        ],
+        "deficiencies": []
+      }
+    ],
+    "createdDate": "2024-01-03",
+    "lastUpdated": "2024-01-05"
+  }
+]
