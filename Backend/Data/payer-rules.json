@@ -1,0 +1,97 @@
+[
+  {
+    "id": "rule-001",
+    "payerName": "Blue Cross Blue Shield",
+    "version": "2025.1",
+    "effectiveDate": "2025-01-01T00:00:00",
+    "endDate": null,
+    "isActive": true,
+    "requiredDocuments": [
+      "Medical License",
+      "DEA Certificate",
+      "Malpractice Insurance",
+      "Board Certification"
+    ],
+    "requiredDataFields": [
+      "NPI Number",
+      "Tax ID",
+      "Practice Address",
+      "Phone Number"
+    ],
+    "expirationThreshold": 90
+  },
+  {
+    "id": "rule-002",
+    "payerName": "Aetna",
+    "version": "2025.1",
+    "effectiveDate": "2025-01-01T00:00:00",
+    "endDate": null,
+    "isActive": true,
+    "requiredDocuments": [
+      "Medical License",
+      "DEA Certificate",
+      "Malpractice Insurance"
+    ],
+    "requiredDataFields": [
+      "NPI Number",
+      "Tax ID",
+      "Board Certification"
+    ],
+    "expirationThreshold": 90
+  },
+  {
+    "id": "rule-003",
+    "payerName": "Medicare",
+    "version": "2025.1",
+    "effectiveDate": "2025-01-01T00:00:00",
+    "endDate": null,
+    "isActive": true,
+    "requiredDocuments": [
+      "Medical License",
+      "DEA Certificate",
+      "Malpractice Insurance"
+    ],
+    "requiredDataFields": [
+      "NPI Number",
+      "Tax ID",
+      "Board Certification"
+    ],
+    "expirationThreshold": 60
+  },
+  {
+    "id": "rule-004",
+    "payerName": "United Healthcare",
+    "version": "2025.1",
+    "effectiveDate": "2025-01-01T00:00:00",
+    "endDate": null,
+    "isActive": true,
+    "requiredDocuments": [
+      "Medical License",
+      "DEA Certificate",
+      "Malpractice Insurance"
+    ],
+    "requiredDataFields": [
+      "NPI Number",
+      "Tax ID",
+      "Board Certification"
+    ],
+    "expirationThreshold": 90
+  },
+  {
+    "id": "rule-005",
+    "payerName": "Cigna",
+    "version": "2025.1",
+    "effectiveDate": "2025-01-01T00:00:00",
+    "endDate": null,
+    "isActive": true,
+    "requiredDocuments": [
+      "Medical License",
+      "Malpractice Insurance"
+    ],
+    "requiredDataFields": [
+      "NPI Number",
+      "Tax ID"
+    ],
+    "expirationThreshold": 90
+  }
+]

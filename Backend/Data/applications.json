@@ -1,0 +1,131 @@
+[
+  {
+    "id": "app-001",
+    "applicationId": "APP-20250115-APP001",
+    "providerName": "Dr. Sarah Johnson",
+    "coordinator": "Emily Chen",
+    "submissionDate": "2025-01-15T00:00:00",
+    "targetPayers": ["Blue Cross Blue Shield", "Aetna"],
+    "overallStatus": "Incomplete",
+    "priorityScore": 65,
+    "payerRequirements": [],
+    "documents": [
+      {
+        "id": "doc-001",
+        "name": "Medical License",
+        "type": "Medical License",
+        "uploadDate": "2025-01-10T00:00:00",
+        "expirationDate": "2026-12-31T00:00:00"
+      },
+      {
+        "id": "doc-002",
+        "name": "DEA Certificate",
+        "type": "DEA Certificate",
+        "uploadDate": "2025-01-10T00:00:00",
+        "expirationDate": "2025-03-15T00:00:00"
+      }
+    ],
+    "dataFields": [
+      {
+        "name": "NPI Number",
+        "value": "1234567890",
+        "required": true
+      },
+      {
+        "name": "Tax ID",
+        "value": "",
+        "required": true
+      }
+    ]
+  },
+  {
+    "id": "app-002",
+    "applicationId": "APP-20250116-APP002",
+    "providerName": "Dr. Michael Chen",
+    "coordinator": "Robert Martinez",
+    "submissionDate": "2025-01-16T00:00:00",
+    "targetPayers": ["Medicare", "United Healthcare"],
+    "overallStatus": "Ready to Submit",
+    "priorityScore": 25,
+    "payerRequirements": [],
+    "documents": [
+      {
+        "id": "doc-003",
+        "name": "Medical License",
+        "type": "Medical License",
+        "uploadDate": "2025-01-12T00:00:00",
+        "expirationDate": "2027-06-30T00:00:00"
+      },
+      {
+        "id": "doc-004",
+        "name": "Malpractice Insurance",
+        "type": "Malpractice Insurance",
+        "uploadDate": "2025-01-12T00:00:00",
+        "expirationDate": "2026-12-31T00:00:00"
+      },
+      {
+        "id": "doc-005",
+        "name": "DEA Certificate",
+        "type": "DEA Certificate",
+        "uploadDate": "2025-01-12T00:00:00",
+        "expirationDate": "2027-08-15T00:00:00"
+      }
+    ],
+    "dataFields": [
+      {
+        "name": "NPI Number",
+        "value": "9876543210",
+        "required": true
+      },
+      {
+        "name": "Tax ID",
+        "value": "12-3456789",
+        "required": true
+      },
+      {
+        "name": "Board Certification",
+        "value": "Internal Medicine",
+        "required": true
+      }
+    ]
+  },
+  {
+    "id": "app-003",
+    "applicationId": "APP-20250117-APP003",
+    "providerName": "Dr. Amanda Rodriguez",
+    "coordinator": "Emily Chen",
+    "submissionDate": "2025-01-17T00:00:00",
+    "targetPayers": ["Cigna"],
+    "overallStatus": "Expiring Soon",
+    "priorityScore": 85,
+    "payerRequirements": [],
+    "documents": [
+      {
+        "id": "doc-006",
+        "name": "Medical License",
+        "type": "Medical License",
+        "uploadDate": "2025-01-14T00:00:00",
+        "expirationDate": "2026-08-31T00:00:00"
+      },
+      {
+        "id": "doc-007",
+        "name": "Malpractice Insurance",
+        "type": "Malpractice Insurance",
+        "uploadDate": "2025-01-14T00:00:00",
+        "expirationDate": "2025-02-28T00:00:00"
+      }
+    ],
+    "dataFields": [
+      {
+        "name": "NPI Number",
+        "value": "5555555555",
+        "required": true
+      },
+      {
+        "name": "Tax ID",
+        "value": "98-7654321",
+        "required": true
+      }
+    ]
+  }
+]
