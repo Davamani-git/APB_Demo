@@ -1,0 +1,14 @@
+<div class="analytics-container">
+  <h2>Spend Analytics</h2>
+  <div ng-if="vm.loading" class="loading">Loading...</div>
+  <div ng-if="!vm.loading">
+    <div class="chart-section">
+      <h3>Category-Wise Spending</h3>
+      <chart-wrapper chart-type="'pie'" chart-labels="vm.categoryData.labels" chart-data="vm.categoryData.data"></chart-wrapper>
+    </div>
+    <div class="chart-section">
+      <h3>Monthly Spend Trend</h3>
+      <chart-wrapper chart-type="'line'" chart-labels="vm.monthlyData.labels" chart-data="vm.monthlyData.data"></chart-wrapper>
+    </div>
+  </div>
+</div>

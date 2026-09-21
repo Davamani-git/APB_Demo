@@ -1,0 +1,18 @@
+<div class="cards-container">
+  <h2>My Credit Cards</h2>
+  <div ng-if="vm.loading" class="loading">Loading...</div>
+  <div ng-if="!vm.loading" class="card-list">
+    <div class="card-item" ng-repeat="card in vm.cards">
+      <div class="card-header">
+        <h3>{{card.name}}</h3>
+        <span class="card-number">**** {{card.last4}}</span>
+      </div>
+      <div class="card-details">
+        <p><strong>Credit Limit:</strong> ₹{{card.creditLimit | number}}</p>
+        <p><strong>Available Credit:</strong> ₹{{card.availableCredit | number}}</p>
+        <p><strong>Outstanding Balance:</strong> ₹{{card.outstandingBalance | number}}</p>
+      </div>
+      <a href="#!/cards/{{card.id}}" class="btn-view-details">View Details</a>
+    </div>
+  </div>
+</div>

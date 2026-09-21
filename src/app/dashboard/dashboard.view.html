@@ -1,0 +1,10 @@
+<div class="dashboard-container">
+  <h2>Dashboard Overview</h2>
+  <div ng-if="vm.loading" class="loading">Loading...</div>
+  <div ng-if="!vm.loading" class="kpi-grid">
+    <kpi-card title="'Monthly Spend'" value="vm.kpis.monthlySpend" icon="'₹'"></kpi-card>
+    <kpi-card title="'Total Credit Limit'" value="vm.kpis.totalCreditLimit" icon="'₹'"></kpi-card>
+    <kpi-card title="'Available Credit'" value="vm.kpis.availableCredit" icon="'₹'"></kpi-card>
+    <kpi-card title="'Outstanding Amount'" value="vm.kpis.outstandingAmount" icon="'₹'"></kpi-card>
+  </div>
+</div>
