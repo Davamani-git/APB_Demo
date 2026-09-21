@@ -1,0 +1,20 @@
+angular.module('creditCardApp').controller('CardsController',['CardService','TransactionService',function(CardService,TransactionService){
+var vm=this;
+vm.cards=[];
+vm.selectedCard=null;
+vm.transactions=[];
+vm.loading=true;
+CardService.getAllCards().then(function(cards){
+vm.cards=cards;
+vm.loading=false;
+if(cards.length>0){
+vm.selectCard(cards[0]);
+}
+});
+vm.selectCard=function(card){
+vm.selectedCard=card;
+TransactionService.getTransactionsByCard(card.id).then(function(txns){
+vm.transactions=txns;
+});
+};
+}]);

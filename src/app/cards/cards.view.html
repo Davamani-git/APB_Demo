@@ -1,0 +1,30 @@
+<div>
+<h2 style="margin-bottom:20px;color:#2c3e50">My Credit Cards</h2>
+<div ng-if="vm.loading" style="text-align:center;padding:40px">Loading...</div>
+<div ng-if="!vm.loading">
+<div class="card-list">
+<h3 style="margin-bottom:15px">All Cards</h3>
+<div ng-repeat="card in vm.cards" class="card-item" ng-class="{selected:vm.selectedCard.id===card.id}" ng-click="vm.selectCard(card)">
+<div>
+<strong>{{card.name}}</strong>
+<div class="card-details">**** **** **** {{card.lastFour}}</div>
+</div>
+<div class="card-details">
+<div>Limit: ₹{{card.creditLimit | number:0}}</div>
+<div>Available: ₹{{card.availableCredit | number:0}}</div>
+</div>
+</div>
+</div>
+<div class="transactions-section" ng-if="vm.selectedCard">
+<h3 style="margin-bottom:15px">Transaction History - {{vm.selectedCard.name}}</h3>
+<div ng-if="vm.transactions.length===0" style="text-align:center;padding:20px;color:#7f8c8d">No transactions found</div>
+<div ng-repeat="txn in vm.transactions" class="transaction-item">
+<div>
+<div><strong>{{txn.description}}</strong></div>
+<div class="transaction-date">{{txn.date}} | {{txn.category}}</div>
+</div>
+<div class="transaction-amount" ng-class="{negative:txn.amount<0}">₹{{txn.amount | number:0}}</div>
+</div>
+</div>
+</div>
+</div>
