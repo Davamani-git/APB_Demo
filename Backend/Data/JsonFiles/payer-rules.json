@@ -1,0 +1,156 @@
+[
+  {
+    "id": "RULE-001",
+    "payerId": "PAYER-001",
+    "payerName": "Blue Cross Blue Shield",
+    "version": "1.0",
+    "effectiveDate": "2025-01-01T00:00:00Z",
+    "endDate": null,
+    "requiredDocuments": [
+      {
+        "documentType": "LICENSE",
+        "documentName": "Medical License",
+        "requiresExpiration": true
+      },
+      {
+        "documentType": "DEA",
+        "documentName": "DEA Certificate",
+        "requiresExpiration": true
+      },
+      {
+        "documentType": "INSURANCE",
+        "documentName": "Malpractice Insurance",
+        "requiresExpiration": true
+      },
+      {
+        "documentType": "CERTIFICATION",
+        "documentName": "Board Certification",
+        "requiresExpiration": false
+      }
+    ],
+    "requiredDataFields": [
+      {
+        "fieldName": "npi_number",
+        "fieldLabel": "NPI Number",
+        "dataType": "string",
+        "mandatory": true
+      },
+      {
+        "fieldName": "tax_id",
+        "fieldLabel": "Tax ID",
+        "dataType": "string",
+        "mandatory": true
+      },
+      {
+        "fieldName": "practice_address",
+        "fieldLabel": "Practice Address",
+        "dataType": "string",
+        "mandatory": true
+      }
+    ],
+    "expirationThresholdDays": 90
+  },
+  {
+    "id": "RULE-002",
+    "payerId": "PAYER-002",
+    "payerName": "Aetna",
+    "version": "1.0",
+    "effectiveDate": "2025-01-01T00:00:00Z",
+    "endDate": null,
+    "requiredDocuments": [
+      {
+        "documentType": "LICENSE",
+        "documentName": "Medical License",
+        "requiresExpiration": true
+      },
+      {
+        "documentType": "INSURANCE",
+        "documentName": "Malpractice Insurance",
+        "requiresExpiration": true
+      },
+      {
+        "documentType": "CV",
+        "documentName": "Curriculum Vitae",
+        "requiresExpiration": false
+      }
+    ],
+    "requiredDataFields": [
+      {
+        "fieldName": "npi_number",
+        "fieldLabel": "NPI Number",
+        "dataType": "string",
+        "mandatory": true
+      },
+      {
+        "fieldName": "board_certification",
+        "fieldLabel": "Board Certification",
+        "dataType": "string",
+        "mandatory": true
+      },
+      {
+        "fieldName": "specialty",
+        "fieldLabel": "Medical Specialty",
+        "dataType": "string",
+        "mandatory": true
+      }
+    ],
+    "expirationThresholdDays": 90
+  },
+  {
+    "id": "RULE-003",
+    "payerId": "PAYER-003",
+    "payerName": "UnitedHealthcare",
+    "version": "1.0",
+    "effectiveDate": "2025-01-01T00:00:00Z",
+    "endDate": null,
+    "requiredDocuments": [
+      {
+        "documentType": "LICENSE",
+        "documentName": "Medical License",
+        "requiresExpiration": true
+      },
+      {
+        "documentType": "DEA",
+        "documentName": "DEA Certificate",
+        "requiresExpiration": true
+      },
+      {
+        "documentType": "INSURANCE",
+        "documentName": "Malpractice Insurance",
+        "requiresExpiration": true
+      },
+      {
+        "documentType": "CAQH",
+        "documentName": "CAQH Profile",
+        "requiresExpiration": false
+      }
+    ],
+    "requiredDataFields": [
+      {
+        "fieldName": "npi_number",
+        "fieldLabel": "NPI Number",
+        "dataType": "string",
+        "mandatory": true
+      },
+      {
+        "fieldName": "tax_id",
+        "fieldLabel": "Tax ID",
+        "dataType": "string",
+        "mandatory": true
+      },
+      {
+        "fieldName": "caqh_number",
+        "fieldLabel": "CAQH Number",
+        "dataType": "string",
+        "mandatory": true
+      },
+      {
+        "fieldName": "group_npi",
+        "fieldLabel": "Group NPI",
+        "dataType": "string",
+        "mandatory": false
+      }
+    ],
+    "expirationThresholdDays": 90
+  }
+]

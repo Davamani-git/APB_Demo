@@ -1,0 +1,107 @@
+[
+  {
+    "id": "APP-001",
+    "providerId": "PROV-12345",
+    "providerName": "Dr. Sarah Johnson",
+    "coordinatorId": "COORD-001",
+    "coordinatorName": "Emily Martinez",
+    "overallStatus": "Incomplete",
+    "priorityScore": 75,
+    "submissionDate": "2025-11-15T00:00:00Z",
+    "lastUpdated": "2025-12-20T10:30:00Z",
+    "payers": [
+      {
+        "payerId": "PAYER-001",
+        "payerName": "Blue Cross Blue Shield",
+        "status": "Incomplete",
+        "requirements": [
+          {
+            "type": "Document",
+            "name": "Medical License",
+            "status": "Missing"
+          },
+          {
+            "type": "Document",
+            "name": "DEA Certificate",
+            "status": "Present & Valid",
+            "expirationDate": "2026-06-30T00:00:00Z",
+            "daysUntilExpiration": 192
+          },
+          {
+            "type": "DataField",
+            "name": "NPI Number",
+            "status": "Present & Valid",
+            "value": "1234567890"
+          }
+        ],
+        "recommendations": [
+          "Upload required document: Medical License"
+        ]
+      },
+      {
+        "payerId": "PAYER-002",
+        "payerName": "Aetna",
+        "status": "Expiring Soon",
+        "requirements": [
+          {
+            "type": "Document",
+            "name": "Malpractice Insurance",
+            "status": "Expiring Soon",
+            "expirationDate": "2026-02-15T00:00:00Z",
+            "daysUntilExpiration": 57
+          },
+          {
+            "type": "DataField",
+            "name": "Board Certification",
+            "status": "Present & Valid",
+            "value": "Internal Medicine"
+          }
+        ],
+        "recommendations": [
+          "Document Malpractice Insurance expires in 57 days - consider renewal"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "APP-002",
+    "providerId": "PROV-67890",
+    "providerName": "Dr. Michael Chen",
+    "coordinatorId": "COORD-002",
+    "coordinatorName": "Robert Williams",
+    "overallStatus": "Ready to Submit",
+    "priorityScore": 30,
+    "submissionDate": "2025-12-01T00:00:00Z",
+    "lastUpdated": "2025-12-20T14:45:00Z",
+    "payers": [
+      {
+        "payerId": "PAYER-003",
+        "payerName": "UnitedHealthcare",
+        "status": "Ready to Submit",
+        "requirements": [
+          {
+            "type": "Document",
+            "name": "Medical License",
+            "status": "Present & Valid",
+            "expirationDate": "2027-03-31T00:00:00Z",
+            "daysUntilExpiration": 466
+          },
+          {
+            "type": "Document",
+            "name": "DEA Certificate",
+            "status": "Present & Valid",
+            "expirationDate": "2026-12-31T00:00:00Z",
+            "daysUntilExpiration": 376
+          },
+          {
+            "type": "DataField",
+            "name": "Tax ID",
+            "status": "Present & Valid",
+            "value": "12-3456789"
+          }
+        ],
+        "recommendations": []
+      }
+    ]
+  }
+]

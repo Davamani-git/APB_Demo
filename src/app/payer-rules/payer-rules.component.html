@@ -1,0 +1,111 @@
+<div class="container">
+  <div class="card">
+    <h2>Payer Requirement Rule Sets</h2>
+
+    <div *ngIf="loading" class="loading">
+      Loading payer rules...
+    </div>
+    <div *ngIf="error" class="error">
+      {{ error }}
+    </div>
+
+    <div *ngIf="!loading && !error">
+      <div class="filter-section">
+        <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="applySearch()" 
+               placeholder="Search by payer name or ID...">
+      </div>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Payer Name</th>
+            <th>Payer ID</th>
+            <th>Version</th>
+            <th>Effective Date</th>
+            <th>Required Documents</th>
+            <th>Required Fields</th>
+            <th>Expiration Threshold</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let rule of filteredRules">
+            <td>{{ rule.payerName }}</td>
+            <td>{{ rule.payerId }}</td>
+            <td>{{ rule.version }}</td>
+            <td>{{ rule.effectiveDate | date:'mediumDate' }}</td>
+            <td>{{ rule.requiredDocuments.length }}</td>
+            <td>{{ rule.requiredDataFields.length }}</td>
+            <td>{{ rule.expirationThresholdDays }} days</td>
+            <td>
+              <button class="btn btn-primary" (click)="viewRuleDetails(rule)">
+                View Details
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="selectedRule" class="card" style="margin-top: 20px; border: 2px solid #3498db;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h3>{{ selectedRule.payerName }} - Rule Details</h3>
+      <button class="btn btn-secondary" (click)="closeDetails()">Close</button>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+      <div>
+        <p><strong>Payer ID:</strong> {{ selectedRule.payerId }}</p>
+        <p><strong>Version:</strong> {{ selectedRule.version }}</p>
+        <p><strong>Effective Date:</strong> {{ selectedRule.effectiveDate | date:'medium' }}</p>
+      </div>
+      <div>
+        <p><strong>End Date:</strong> {{ selectedRule.endDate ? (selectedRule.endDate | date:'medium') : 'Active' }}</p>
+        <p><strong>Expiration Threshold:</strong> {{ selectedRule.expirationThresholdDays }} days</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 20px;">
+      <h4>Required Documents ({{ selectedRule.requiredDocuments.length }})</h4>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Document Type</th>
+            <th>Document Name</th>
+            <th>Requires Expiration</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let doc of selectedRule.requiredDocuments">
+            <td>{{ doc.documentType }}</td>
+            <td>{{ doc.documentName }}</td>
+            <td>{{ doc.requiresExpiration ? 'Yes' : 'No' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top: 20px;">
+      <h4>Required Data Fields ({{ selectedRule.requiredDataFields.length }})</h4>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Field Name</th>
+            <th>Field Label</th>
+            <th>Data Type</th>
+            <th>Mandatory</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let field of selectedRule.requiredDataFields">
+            <td>{{ field.fieldName }}</td>
+            <td>{{ field.fieldLabel }}</td>
+            <td>{{ field.dataType }}</td>
+            <td>{{ field.mandatory ? 'Yes' : 'No' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

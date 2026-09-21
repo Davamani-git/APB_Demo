@@ -1,0 +1,80 @@
+<div class="container">
+  <div *ngIf="loading" class="loading">
+    Loading dashboard...
+  </div>
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!loading && !error">
+    <div class="dashboard-stats">
+      <div class="stat-card" (click)="navigateToApplications('ready')" style="cursor: pointer;">
+        <h3>Ready to Submit</h3>
+        <div class="stat-value">{{ stats.readyCount }}</div>
+      </div>
+
+      <div class="stat-card" (click)="navigateToApplications('incomplete')" style="cursor: pointer;">
+        <h3>Incomplete</h3>
+        <div class="stat-value">{{ stats.incompleteCount }}</div>
+      </div>
+
+      <div class="stat-card" (click)="navigateToApplications('expiring')" style="cursor: pointer;">
+        <h3>Expiring Soon</h3>
+        <div class="stat-value">{{ stats.expiringCount }}</div>
+      </div>
+
+      <div class="stat-card" (click)="navigateToApplications()" style="cursor: pointer;">
+        <h3>Total Applications</h3>
+        <div class="stat-value">{{ stats.totalApplications }}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Breakdown by Coordinator</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Coordinator</th>
+            <th>Ready</th>
+            <th>Incomplete</th>
+            <th>Expiring Soon</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let coord of stats.coordinatorBreakdown">
+            <td>{{ coord.name }}</td>
+            <td>{{ coord.ready }}</td>
+            <td>{{ coord.incomplete }}</td>
+            <td>{{ coord.expiring }}</td>
+            <td>{{ coord.total }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Breakdown by Payer</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Payer</th>
+            <th>Ready</th>
+            <th>Incomplete</th>
+            <th>Expiring Soon</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let payer of stats.payerBreakdown">
+            <td>{{ payer.name }}</td>
+            <td>{{ payer.ready }}</td>
+            <td>{{ payer.incomplete }}</td>
+            <td>{{ payer.expiring }}</td>
+            <td>{{ payer.total }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

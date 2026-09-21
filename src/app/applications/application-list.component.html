@@ -1,0 +1,77 @@
+<div class="container">
+  <div class="card">
+    <h2>Provider Enrollment Applications</h2>
+
+    <div *ngIf="loading" class="loading">
+      Loading applications...
+    </div>
+    <div *ngIf="error" class="error">
+      {{ error }}
+    </div>
+
+    <div *ngIf="!loading && !error">
+      <div class="filter-section">
+        <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()" 
+               placeholder="Search by provider name or ID...">
+
+        <select [(ngModel)]="filterStatus" (ngModelChange)="applyFilters()">
+          <option value="">All Statuses</option>
+          <option value="ready">Ready to Submit</option>
+          <option value="incomplete">Incomplete</option>
+          <option value="expiring">Expiring Soon</option>
+        </select>
+
+        <select [(ngModel)]="filterCoordinator" (ngModelChange)="applyFilters()">
+          <option value="">All Coordinators</option>
+          <option *ngFor="let coord of coordinators" [value]="coord">{{ coord }}</option>
+        </select>
+
+        <select [(ngModel)]="filterPayer" (ngModelChange)="applyFilters()">
+          <option value="">All Payers</option>
+          <option *ngFor="let payer of payers" [value]="payer">{{ payer }}</option>
+        </select>
+
+        <button class="btn btn-secondary" (click)="resetFilters()">Reset Filters</button>
+      </div>
+
+      <div *ngIf="filteredApplications.length === 0" class="loading">
+        No applications found matching the current filters.
+      </div>
+
+      <table class="table" *ngIf="filteredApplications.length > 0">
+        <thead>
+          <tr>
+            <th>Application ID</th>
+            <th>Provider Name</th>
+            <th>Coordinator</th>
+            <th>Status</th>
+            <th>Priority</th>
+            <th>Payers</th>
+            <th>Last Updated</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let app of filteredApplications" [class]="getPriorityClass(app.priorityScore)">
+            <td>{{ app.id }}</td>
+            <td>{{ app.providerName }}</td>
+            <td>{{ app.coordinatorName }}</td>
+            <td>
+              <span class="status-badge" [class]="getStatusClass(app.overallStatus)">
+                {{ app.overallStatus }}
+              </span>
+            </td>
+            <td>{{ app.priorityScore }}</td>
+            <td>{{ app.payers?.length || 0 }}</td>
+            <td>{{ app.lastUpdated | date:'short' }}</td>
+            <td>
+              <button class="btn btn-primary" (click)="viewApplication(app.id)">
+                View Details
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
