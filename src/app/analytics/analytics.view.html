@@ -1,0 +1,34 @@
+<div class="analytics-container">
+  <header class="dashboard-header">
+    <h1>Spend Analytics</h1>
+    <nav class="dashboard-nav">
+      <a href="#!/dashboard">Dashboard</a>
+      <a href="#!/cards">Cards</a>
+      <a href="#!/analytics">Analytics</a>
+    </nav>
+  </header>
+  <div ng-if="!vm.loading">
+    <div class="filter-section">
+      <label>Filter by Card:</label>
+      <select ng-model="vm.selectedCardId" ng-change="vm.filterByCard()">
+        <option value="">All Cards</option>
+        <option ng-repeat="card in vm.cards" value="{{card.id}}">{{card.name}}</option>
+      </select>
+    </div>
+    <div class="chart-section">
+      <div class="chart-container">
+        <h3>Category-wise Spending</h3>
+        <canvas id="categoryChart"></canvas>
+      </div>
+      <div class="chart-container">
+        <h3>Monthly Spend Trend</h3>
+        <canvas id="monthlyTrendChart"></canvas>
+      </div>
+      <div class="chart-container">
+        <h3>Card-wise Spending</h3>
+        <canvas id="cardWiseChart"></canvas>
+      </div>
+    </div>
+  </div>
+  <div ng-if="vm.loading" class="loading">Loading...</div>
+</div>

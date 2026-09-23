@@ -1,0 +1,21 @@
+<div class="cards-container">
+  <header class="dashboard-header">
+    <h1>My Credit Cards</h1>
+    <nav class="dashboard-nav">
+      <a href="#!/dashboard">Dashboard</a>
+      <a href="#!/cards">Cards</a>
+      <a href="#!/analytics">Analytics</a>
+    </nav>
+  </header>
+  <div class="cards-list" ng-if="!vm.loading">
+    <div class="card-item" ng-repeat="card in vm.cards">
+      <h3>{{card.name}}</h3>
+      <p>{{card.type}} ending in {{card.lastFour}}</p>
+      <p><strong>Credit Limit:</strong> ₹{{card.creditLimit | number:0}}</p>
+      <p><strong>Available Credit:</strong> ₹{{card.availableCredit | number:0}}</p>
+      <p><strong>Outstanding:</strong> ₹{{card.outstanding | number:0}}</p>
+      <a href="#!/cards/{{card.id}}" class="btn-view">View Transactions</a>
+    </div>
+  </div>
+  <div ng-if="vm.loading" class="loading">Loading...</div>
+</div>

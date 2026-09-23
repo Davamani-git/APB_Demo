@@ -1,0 +1,29 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <h1>Credit Card Dashboard</h1>
+    <nav class="dashboard-nav">
+      <a href="#!/dashboard">Dashboard</a>
+      <a href="#!/cards">Cards</a>
+      <a href="#!/analytics">Analytics</a>
+    </nav>
+  </header>
+  <div class="kpi-section" ng-if="!vm.loading">
+    <div class="kpi-card">
+      <h3>Monthly Spend</h3>
+      <p class="kpi-value">₹{{vm.kpis.monthlySpend | number:0}}</p>
+    </div>
+    <div class="kpi-card">
+      <h3>Total Credit Limit</h3>
+      <p class="kpi-value">₹{{vm.kpis.totalCreditLimit | number:0}}</p>
+    </div>
+    <div class="kpi-card">
+      <h3>Available Credit</h3>
+      <p class="kpi-value">₹{{vm.kpis.availableCredit | number:0}}</p>
+    </div>
+    <div class="kpi-card">
+      <h3>Outstanding Amount</h3>
+      <p class="kpi-value">₹{{vm.kpis.outstandingAmount | number:0}}</p>
+    </div>
+  </div>
+  <div ng-if="vm.loading" class="loading">Loading...</div>
+</div>
