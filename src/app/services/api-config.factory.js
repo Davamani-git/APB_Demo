@@ -1,19 +1,31 @@
 (function() {
   'use strict';
-  angular.module('providerEnrollmentApp').factory('ApiConfigFactory', ['$window', ApiConfigFactory]);
-  function ApiConfigFactory($window) {
-    var config = {
-      baseUrl: '/api/v1',
-      timeout: 30000,
-      headers: {
-        'Content-Type': 'application/json'
+  angular.module('creditDashboardApp').factory('ApiConfigFactory', ['$window', function($window) {
+    var baseUrl = '/api';
+    var version = 'v1';
+    return {
+      getBaseUrl: function() {
+        return baseUrl;
+      },
+      getVersion: function() {
+        return version;
+      },
+      getHeaders: function() {
+        return {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + ($window.sessionStorage.getItem('authToken') || '')
+        };
+      },
+      getCardsEndpoint: function() {
+        return baseUrl + '/cards';
+      },
+      getKpiEndpoint: function() {
+        return baseUrl + '/cards/kpi';
+      },
+      getTransactionsEndpoint: function() {
+        return baseUrl + '/transactions';
       }
     };
-    return {
-      getBaseUrl: function() { return config.baseUrl; },
-      getTimeout: function() { return config.timeout; },
-      getHeaders: function() { return config.headers; },
-      getEndpoint: function(path) { return config.baseUrl + path; }
-    };
-  }
+  }]);
+  angular.module('creditDashboardApp').factory('ApiConfigFactory').$inject = ['$window'];
 })();

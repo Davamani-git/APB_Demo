@@ -1,0 +1,13 @@
+<div class="card-panel panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">{{cardData.issuer}} {{cardData.maskedNumber}}</h3>
+  </div>
+  <div class="panel-body">
+    <p><strong>Credit Limit:</strong> ₹{{cardData.creditLimit | number:0}}</p>
+    <p><strong>Available Credit:</strong> ₹{{cardData.availableCredit | number:0}}</p>
+    <p><strong>Outstanding:</strong> ₹{{cardData.outstandingAmount | number:0}}</p>
+    <p><strong>Due Date:</strong> {{cardData.dueDate | date:'dd MMM yyyy'}}</p>
+    <p><strong>Status:</strong> <span class="label label-success">{{cardData.status}}</span></p>
+    <a href="#/cards/{{cardData.id}}" class="btn btn-primary btn-sm">View Details</a>
+  </div>
+</div>

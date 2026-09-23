@@ -1,31 +1,30 @@
 (function() {
   'use strict';
-  angular.module('providerEnrollmentApp').config(['$routeProvider', '$locationProvider', configRoutes]);
-  function configRoutes($routeProvider, $locationProvider) {
+  angular.module('creditDashboardApp').config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
     $routeProvider
-      .when('/applications', {
-        templateUrl: 'src/app/applications/application-list.view.html',
-        controller: 'ApplicationListController',
-        controllerAs: 'vm'
-      })
-      .when('/applications/:id', {
-        templateUrl: 'src/app/applications/application-detail.view.html',
-        controller: 'ApplicationDetailController',
-        controllerAs: 'vm'
-      })
       .when('/dashboard', {
-        templateUrl: 'src/app/dashboard/dashboard.view.html',
+        templateUrl: 'src/app/dashboard/views/dashboard.html',
         controller: 'DashboardController',
         controllerAs: 'vm'
       })
-      .when('/admin/rules', {
-        templateUrl: 'src/app/admin/payer-rule-admin.view.html',
-        controller: 'PayerRuleAdminController',
+      .when('/cards', {
+        templateUrl: 'src/app/cards/views/cards.html',
+        controller: 'CardsController',
+        controllerAs: 'vm'
+      })
+      .when('/cards/:cardId', {
+        templateUrl: 'src/app/cards/views/card-detail.html',
+        controller: 'CardDetailController',
+        controllerAs: 'vm'
+      })
+      .when('/analytics', {
+        templateUrl: 'src/app/analytics/views/analytics.html',
+        controller: 'AnalyticsController',
         controllerAs: 'vm'
       })
       .otherwise({
-        redirectTo: '/applications'
+        redirectTo: '/dashboard'
       });
-    $locationProvider.hashPrefix('!');
-  }
+    $locationProvider.hashPrefix('');
+  }]);
 })();

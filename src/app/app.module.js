@@ -1,4 +1,4 @@
 (function() {
   'use strict';
-  angular.module('providerEnrollmentApp', ['ngRoute']);
+  angular.module('creditDashboardApp', ['ngRoute']);
 })();
